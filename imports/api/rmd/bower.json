@@ -1,0 +1,35 @@
+{
+  "name": "showdown-rechords",
+  "version": "0.0.1",
+  "description": "Markdown dialect for lead sheets",
+  "keywords": [
+    "markdown",
+    "md",
+    "showdown",
+    "extension"
+  ],
+  "license": "MIT",
+  "author": "Matthias Roggo",
+  "main": "./dist/rechords.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/showdownjs/showdown-extension-boilerplate.git",
+    "web": "https://github.com/showdownjs/showdown-extension-boilerplate"
+  },
+  "dependencies": {
+    "showdown": "1.x.x"
+  },
+  "ignore": [
+    ".editorconfig",
+    ".gitattributes",
+    ".gitignore",
+    ".jscs.json",
+    ".jshintignore",
+    ".jshintrc",
+    ".travis.yml",
+    "Gruntfile.js",
+    "package.json",
+    "src/*",
+    "test/*"
+  ]
+}
