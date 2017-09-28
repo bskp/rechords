@@ -19,8 +19,6 @@
         .filter(filter())
         .map(map('test/issues/'));
 
-  console.log('asdf');
-  console.log(cases);
   // Test cases
   describe('Rechords Extension testcases', function () {
     for (var i = 0; i < cases.length; ++i) {
