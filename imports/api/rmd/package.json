@@ -34,5 +34,8 @@
   },
   "scripts": {
     "test": "grunt test"
+  },
+  "dependencies": {
+    "showdown": "^1.7.4"
   }
 }

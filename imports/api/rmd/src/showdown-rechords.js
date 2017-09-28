@@ -32,7 +32,7 @@
   // this is the best place to put them.
 
   // The following method will register the extension with showdown
-  showdown.extension('showdown-extension-boilerplate', function () {
+  showdown.extension('showdown-rechords', function () {
 
     return {
       type: 'lang', //or output

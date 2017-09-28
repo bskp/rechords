@@ -7,14 +7,26 @@
 
   require('source-map-support').install();
   require('chai').should();
+  var showdown = require('showdown');
+  require('../src/showdown-rechords.js');
 
   var fs = require('fs'),
+      converter = new showdown.Converter({extensions: ['showdown-rechords']}),
       cases = fs.readdirSync('test/cases/')
         .filter(filter())
         .map(map('test/cases/')),
       issues = fs.readdirSync('test/issues/')
         .filter(filter())
         .map(map('test/issues/'));
+
+  console.log('asdf');
+  console.log(cases);
+  // Test cases
+  describe('Rechords Extension testcases', function () {
+    for (var i = 0; i < cases.length; ++i) {
+      it(cases[i].name, assertion(cases[i], converter));
+    }
+  });
 
   function filter() {
     return function (file) {

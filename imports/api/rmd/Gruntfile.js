@@ -76,7 +76,7 @@ module.exports = function (grunt) {
     //Run tests
     simplemocha: {
       node: {
-        src: 'test/node/**/*.js',
+        src: 'test/all.js',
         options: {
           globals: ['should'],
           timeout: 3000,
