@@ -1,3 +1,4 @@
+/* vim: set tabstop=2:softtabstop=2 */
 /**
  * Showdown's Extension boilerplate
  *
@@ -32,50 +33,83 @@
   // this is the best place to put them.
   require('source-map-support').install();
 
+  showdown.setOption('simpleLineBreaks', true);
+  showdown.setOption('smoothLivePreview', true);
+  showdown.setOption('simplifiedAutoLink', true);
+  showdown.setOption('openLinksInNewWindow', true);
+
   var Hypher = require('hypher'),
     german = require('hyphenation.de'),
     english = require('hyphenation.en-us'),
     h = new Hypher(english),
-    verseRegex = /([^\n]+):\W*\n((.+\n)+)\n/gi,
     lineRegex = /(.+?\n)/gi,
-    wordRegex = /\S+/gi,
+    wordRegex = /\S+ ?/gi,
     chordRegex = /\[(.+?)\]/gi;
-
-  function parseVerse (match, id, content) {
-    return '<h3>' + id + '</h3>\n<p>\n' + content.replace(lineRegex, parseLine) + '</p>';
-  }
 
   function parseLine (match, content) {
     // TODO: akkordzeile erkennen und anders behandeln
-    return content.replace(wordRegex, parseWord) + '<br />\n';
+    return content.replace(wordRegex, parseWord) + '<br />';
+  }
+
+  function mergeCoupled (arr) {
+    var pending = '',
+        out = [];
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].endsWith('_')) {
+        pending = arr[i].replace('_', ' ');
+        continue;
+      }
+      out.push(pending + arr[i]);
+    }
+    return out;
   }
 
   function parseWord (match) {
-    match += ' ';  // re-append swallowed space
-    // TODO: akkorde herausfischen (nicht nur löschen, wie jetzt), und vor der
-    // jeweiligen silbe einsetzen.
-    var text = match.replace(chordRegex, ''),
-        out = h.hyphenate(text).map(function (s) {
-      return '<span·class="s">' + s + '</span>\n';
+    var chords = [],
+    text = match.replace(chordRegex, function (match, chord) {
+      chords.push('\n<span·class="chord">' + chord + '</span>');
+      return '';
+    }),
+    chunks = h.hyphenate(text),
+    out = mergeCoupled(chunks).map(function (s) {
+      return '\n<span·class="s">' + s + '</span>';
     }).join('');
 
-    return out;
+    return chords.join('') + out;
   }
 
   // The following method will register the extension with showdown
   showdown.extension('showdown-rechords', function () {
 
-    return {
-      type: 'lang', //or output
-      filter: function (text, converter, options) {
-        // your code here
-        // ...
-        // text is the text being parsed
-        // converter is an instance of the converter
-        // ...
-        // don't forget to return the altered text. If you don't, nothing will appear in the output
-        return text.replace(verseRegex, parseVerse);
+    return [
+      // Title
+      {
+        type: 'lang',
+        regex: /([^\n]+)\n([^\n]+)\n=+\n/,
+        replace: function (match, song, artist) {
+          return '<h1>' + song + '</h1>\n<h2>' + artist + '</h2>\n\n';
+        }
+      },
+
+      // Tags
+      {
+        type: 'lang',
+        regex: /(#(\S+) *)+/,
+        replace: function (tags) {
+          return '<ul class="tags">' + tags.replace(/#(\S+) */g, function (match, tag) {
+            return '\n    <li>' + tag + '</li>';
+          }) + '\n</ul>';
+        }
+      },
+
+      // Verses
+      {
+        type: 'lang',
+        regex: /([^\n]+):\W*\n((.+\n)+)\n/gi,
+        replace: function (match, id, content) {
+          return '<h3>' + id + '</h3>\n<p>' + content.replace(lineRegex, parseLine).replace(/<br \/>$/, '') + '</p>';
+        }
       }
-    };
+    ];
   });
 }));
