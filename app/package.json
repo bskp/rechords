@@ -1,0 +1,19 @@
+{
+  "name": "rechords",
+  "private": true,
+  "scripts": {
+    "start": "meteor run"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "meteor-node-stubs": "~0.2.4",
+    "prop-types": "^15.6.0",
+    "react": "^15.6.2",
+    "react-addons-pure-render-mixin": "^15.6.2",
+    "react-dom": "^15.6.2",
+    "react-router-dom": "^4.2.2",
+    "showdown": "^1.7.4",
+    "showdown-rechords": "file:../showdown-rechords",
+    "slug": "^0.9.1"
+  }
+}

@@ -6,7 +6,8 @@ import RmdParser from '../api/rmd-parser.js';
 export default class Editor extends Component {
 
     handleContextMenu = (event) => {
-        Songs.upsert( this.songFromDom() );
+        let ta = this.refs.source;
+        Songs.update( this.props.song._id, {$set: { text: ta.value }} );
 
         this.props.modeCallback(false);
         event.preventDefault();
@@ -16,18 +17,17 @@ export default class Editor extends Component {
         let song = this.props.song;
 
         song.text = this.refs.source.innerHTML;
-        let parser = new RmdParser(song.text);
-        song.title = parser.title;
-        song.author = parser.author;
+        song.title = song.title;
+        song.author = song.author;
 
-        Songs.upsert(song);
+        return song
     }
 
     render() {
         return (
             <div id="editor" className="content" onContextMenu={this.handleContextMenu}>
                 <h1>Ein Lied: {this.props.song.title}</h1>
-                <pre ref="source" contentEditable={true}>{this.props.song.text}</pre>
+                <textarea ref="source" defaultValue={this.props.song.text} />
             </div>
 
         );

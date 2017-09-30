@@ -10,14 +10,17 @@
   ],
   "license": "MIT",
   "author": "Matthias Roggo",
-  "main": "./dist/rechords.js",
+  "main": "./dist/showdown-rechords.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/showdownjs/showdown-extension-boilerplate.git",
     "web": "https://github.com/showdownjs/showdown-extension-boilerplate"
   },
   "dependencies": {
-    "showdown": "1.x.x"
+    "showdown": "^1.7.4",
+    "hyphenation.de": "^0.2.1",
+    "hyphenation.en-us": "^0.2.1",
+    "hypher": "^0.2.5"
   },
   "ignore": [
     ".editorconfig",

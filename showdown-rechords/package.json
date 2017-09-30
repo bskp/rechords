@@ -10,8 +10,8 @@
   ],
   "license": "MIT",
   "author": "Matthias Roggo",
-  "main": "./dist/rechords.js",
-  "repository-NOT YET": {
+  "main": "./dist/showdown-rechords.js",
+  "repository": {
     "type": "git",
     "url": "https://github.com/showdownjs/showdown-extension-boilerplate.git",
     "web": "https://github.com/showdownjs/showdown-extension-boilerplate"
@@ -19,6 +19,7 @@
   "devDependencies": {
     "chai": "^2.3.0",
     "grunt": "^0.4.5",
+    "grunt-changelog": "^0.3.2",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-contrib-uglify": "^0.9.1",
@@ -36,7 +37,6 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "hyphenation.de": "^0.2.1",
     "hyphenation.en-us": "^0.2.1",
     "hypher": "^0.2.5",
     "showdown": "^1.7.4"

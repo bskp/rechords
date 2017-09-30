@@ -6,12 +6,12 @@
 (function () {
 
   require('source-map-support').install();
+  var showdown = require('showdown'),
+      ext = require('../src/showdown-rechords.js');
   require('chai').should();
-  var showdown = require('showdown');
-  require('../src/showdown-rechords.js');
 
   var fs = require('fs'),
-      converter = new showdown.Converter({extensions: ['showdown-rechords']}),
+      converter = new showdown.Converter({extensions: [ext]}),
       cases = fs.readdirSync('test/cases/')
         .filter(filter())
         .map(map('test/cases/')),

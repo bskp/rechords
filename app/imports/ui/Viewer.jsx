@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import RmdParser from '../api/rmd-parser.js';
 
 export default class Viewer extends Component {
 
@@ -12,7 +13,7 @@ export default class Viewer extends Component {
         return (
             <div id="viewer" className="content" onContextMenu={this.handleContextMenu}>
                 <h1>Ein Lied: {this.props.song.title}</h1>
-                <div>{this.props.song.text}</div>
+                <span dangerouslySetInnerHTML={{__html: new RmdParser(this.props.song.text).html}} />
             </div>
 
         );

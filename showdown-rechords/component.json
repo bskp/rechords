@@ -1,7 +1,7 @@
 {
-  "name": "showdown-extension-boilerplate",
+  "name": "showdown-rechords",
   "repository": "showdownjs/showdown-extension-boilerplate",
-  "description": "A boilerplate that can be used to jumpstart your showdown extension development",
+  "description": "Markdown dialect for lead sheets",
   "version": "0.0.1",
   "keywords": [
     "markdown",
@@ -13,7 +13,7 @@
     "showdownjs/showdown": "1.*.*"
   },
   "scripts": [
-    "./dist/showdown-extension-boilerplate.js"
+    "./dist/showdown-rechords.js"
   ],
   "license": "MIT"
 }
