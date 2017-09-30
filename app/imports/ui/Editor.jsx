@@ -5,36 +5,39 @@ import RmdParser from '../api/rmd-parser.js';
 
 export default class Editor extends Component {
 
-    handleContextMenu = (event) => {
-        let ta = this.refs.source;
-        Songs.update( this.props.song._id, {$set: { text: ta.value }} );
+  constructor() {
+    super();
+  }
 
-        this.props.modeCallback(false);
-        event.preventDefault();
-    }
+  handleContextMenu = (event) => {
+    Songs.update( this.props.song._id, {$set: { 
+      text: this.domSong.md,
+      title: this.domSong.title,
+      author: this.domSong.author
+    }} );
 
-    songFromDom = () => {
-        let song = this.props.song;
+    this.props.modeCallback(false);
+    event.preventDefault();
+  }
 
-        song.text = this.refs.source.innerHTML;
-        song.title = song.title;
-        song.author = song.author;
+  parse = () => {
+    this.domSong = new RmdParser(this.refs.source.value);
+  }
 
-        return song
-    }
+  render() {
+    let md = this.props.song.text;
+    this.domSong = new RmdParser(md);
+    return (
+      <div id="editor" className="content" onContextMenu={this.handleContextMenu}>
+      <h1>Ein Lied: {this.props.song.title}</h1>
+      <textarea ref="source" onKeyUp={this.parse} defaultValue={md} />
+      </div>
 
-    render() {
-        return (
-            <div id="editor" className="content" onContextMenu={this.handleContextMenu}>
-                <h1>Ein Lied: {this.props.song.title}</h1>
-                <textarea ref="source" defaultValue={this.props.song.text} />
-            </div>
-
-        );
-    }
+    );
+  }
 }
 
 Editor.propTypes = {
-    song: PropTypes.object.isRequired,
-    modeCallback: PropTypes.func.isRequired
+  song: PropTypes.object.isRequired,
+  modeCallback: PropTypes.func.isRequired
 };
