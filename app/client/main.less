@@ -51,6 +51,43 @@ body {
 
   width: 100%;
   min-height: 100%;
+
+  font-size: 1.2em;
+
+  h3 {
+      font-weight: normal;
+      font-style: italic;
+      font-size: 1em;
+      margin-bottom: -0.5em;
+  }
+
+  p {
+      line-height: 1.4em;
+  }
+
+  .chord {
+      @cw: 2em;
+      font-weight: bold;
+      position: relative;
+      display: inline-block;
+      top: -1em;
+      margin-top: 1em;
+      width: @cw;
+      margin-right: -@cw;
+
+      & + .chord {
+          left: 1*@cw;
+          & + .chord {
+              left: 2*@cw;
+              & + .chord {
+                  left: 3*@cw;
+                  & + .chord {
+                      left: 4*@cw;
+                  }
+              }
+          }
+      }
+  }
 }
 
 aside {

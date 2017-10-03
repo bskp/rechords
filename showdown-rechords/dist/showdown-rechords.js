@@ -1,4 +1,4 @@
-;/*! showdown-rechords 30-09-2017 *//* vim: set tabstop=2:softtabstop=2 */
+;/*! showdown-rechords 01-10-2017 *//* vim: set tabstop=2:softtabstop=2 */
 
 module.exports = function showdownRechords() {
 
@@ -32,12 +32,12 @@ module.exports = function showdownRechords() {
   function parseWord (match) {
     var chords = [],
     text = match.replace(chordRegex, function (match, chord) {
-      chords.push('\n<span·class="chord">' + chord + '</span>');
+      chords.push('<span class="chord">' + chord + '</span>');
       return '';
     }),
     chunks = h.hyphenate(text),
     out = mergeCoupled(chunks).map(function (s) {
-      return '\n<span·class="s">' + s + '</span>';
+      return '<span class="s">' + s + '</span>';
     }).join('');
 
     return chords.join('') + out;

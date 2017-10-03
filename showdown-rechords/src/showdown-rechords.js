@@ -7,13 +7,18 @@ module.exports = function showdownRechords() {
   var Hypher = require('hypher'),
     english = require('hyphenation.en-us'),
     h = new Hypher(english),
-    lineRegex = /(.+?\n)/gi,
+    lineRegex = /(.+?)(\n\n?)/gi,
     wordRegex = /\S+ ?/gi,
     chordRegex = /\[(.+?)\]/gi;
 
-  function parseLine (match, content) {
+  function parseLine (match, content, nl) {
     // TODO: akkordzeile erkennen und anders behandeln
-    return content.replace(wordRegex, parseWord) + '<br />';
+    var line = content.replace(wordRegex, parseWord);
+    if (nl.length > 1) {
+      return line + '\n</p><p>';
+    } else {
+      return line + '<br />';
+    }
   }
 
   function mergeCoupled (arr) {
@@ -32,12 +37,12 @@ module.exports = function showdownRechords() {
   function parseWord (match) {
     var chords = [],
     text = match.replace(chordRegex, function (match, chord) {
-      chords.push('\n<span·class="chord">' + chord + '</span>');
+      chords.push('<span class="chord">' + chord + '</span>');
       return '';
     }),
     chunks = h.hyphenate(text),
     out = mergeCoupled(chunks).map(function (s) {
-      return '\n<span·class="s">' + s + '</span>';
+      return '<span class="s">' + s + '</span>';
     }).join('');
 
     return chords.join('') + out;
@@ -67,9 +72,12 @@ module.exports = function showdownRechords() {
     // Verses
     {
       type: 'lang',
-      regex: /([^\n]+):\W*\n((.+\n)+)\n/gi,
+      regex: /([^\n]+): *\n((.+[^:] *\n)+)(\n+(?=([^\n]+: *\n|\n|$))|$)/gi,
       replace: function (match, id, content) {
-        return '<h3>' + id + '</h3>\n<p>' + content.replace(lineRegex, parseLine).replace(/<br \/>$/, '') + '</p>';
+        var verse = '<h3>' + id + '</h3>\n<p>' + content.replace(lineRegex, parseLine) + '</p>';
+        //verse.replace('<br /><br />', '</p><p>');
+        verse = verse.replace(/<br \/>\s*<\/p>/g, '\n</p>');
+        return verse;
       }
     }
   ];

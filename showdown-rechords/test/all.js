@@ -67,6 +67,10 @@
     // Remove extra lines
     testCase.expected = testCase.expected.trim();
 
+    // One bracketed statement per line for easier diffability (@rom)
+    testCase.expected = testCase.expected.replace(/([^\n])(<[^/])/g, '$1\n$2');
+    testCase.actual = testCase.actual.replace(/([^\n])(<[^/])/g, '$1\n$2');
+
     // Convert whitespace to a visible character so that it shows up on error reports
     testCase.expected = testCase.expected.replace(/ /g, '·');
     testCase.expected = testCase.expected.replace(/\n/g, '•\n');
@@ -74,7 +78,6 @@
     testCase.actual = testCase.actual.replace(/\n/g, '•\n');
 
     return testCase;
-
   }
 
   function assertion(testCase, converter) {

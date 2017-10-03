@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Songs} from '../api/collections.js';
 import RmdParser from '../api/rmd-parser.js';
+var slug = require('slug')
 
 export default class Editor extends Component {
 
@@ -10,11 +11,20 @@ export default class Editor extends Component {
   }
 
   handleContextMenu = (event) => {
-    Songs.update( this.props.song._id, {$set: { 
+
+    let song = {
       text: this.domSong.md,
       title: this.domSong.title,
-      author: this.domSong.author
-    }} );
+      title_: slug(this.domSong.title),
+      author: this.domSong.author,
+      author_: slug(this.domSong.author)
+    }
+
+    if ('_id' in this.props.song) {
+      Songs.update( this.props.song._id, {$set: song } );
+    } else {
+      Songs.insert( song );
+    }
 
     this.props.modeCallback(false);
     event.preventDefault();
