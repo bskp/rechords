@@ -20,8 +20,13 @@ export default class Editor extends Component {
       author_: slug(this.domSong.author)
     }
 
+
     if ('_id' in this.props.song) {
-      Songs.update( this.props.song._id, {$set: song } );
+      if (song.text.match(/^\s*$/) == null) {
+        Songs.update( this.props.song._id, {$set: song } );
+      } else {
+        Songs.remove( this.props.song._id);
+      }
     } else {
       Songs.insert( song );
     }

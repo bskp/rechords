@@ -9,10 +9,14 @@ export default class Viewer extends Component {
 		event.preventDefault();
 	}
 
+
+	// transponieren
+
 	render() {
+
 		return (
 			<div id="viewer" className="content" onContextMenu={this.handleContextMenu}>
-			<span dangerouslySetInnerHTML={{__html: new RmdParser(this.props.song.text).html}} />
+			<span ref="html" dangerouslySetInnerHTML={{__html: new RmdParser(this.props.song.text).html}} />
 			</div>
 
 		);
