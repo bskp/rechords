@@ -84,6 +84,19 @@ module.exports = function (grunt) {
         }
       }
     },
+    // Ok, obviously didn't get the logic of the grunt stuff
+
+    othermocha: {
+      node: {
+        src: 'test/single.js',
+        options: {
+          globals: ['should'],
+          timeout: 3000,
+          ignoreLeaks: false,
+          reporter: 'spec'
+        }
+      }
+    },
 
 
     /**
@@ -157,6 +170,7 @@ module.exports = function (grunt) {
   // Alias tasks
   grunt.registerTask('lint', ['jshint', 'jscs']);
   grunt.registerTask('test', ['lint', 'simplemocha']);
+  grunt.registerTask('singletest', ['othermocha']);
   grunt.registerTask('build', ['test', 'concat', 'uglify']);
   grunt.registerTask('prep-release', ['build', 'changelog']);
 

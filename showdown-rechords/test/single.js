@@ -3,6 +3,7 @@
  * The way you test your code is up to you
  * In showdown, we use this particular setup
  */
+// TODO: make common module
 (function (filename) {
   if (arguments.length === 0)  {}
   // do nothing
@@ -18,6 +19,10 @@
   require('chai').should();
 
   var fs = require('fs'),
+  // TODO: I did not yet figure out how 
+  // to pass argumements from grunt to the simplemocha task
+  // Therefore one task is hardcoded
+  // The filename is hardcoded overwriting the filter function (see below)
       converter = new showdown.Converter({extensions: [ext]}),
       cases = fs.readdirSync('test/cases/')
         .filter(filter())
@@ -35,8 +40,8 @@
 
   function filter() {
     return function (file) {
-      var ext = file.slice(-3);
-      return (ext === '.md');
+      // HERE: change the name to current dev test
+      return (file === 'verse.md');
     };
   }
 
