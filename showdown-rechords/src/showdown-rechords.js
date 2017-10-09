@@ -17,7 +17,7 @@ module.exports = function showdownRechords() {
     if (nl.length > 1) {
       return line + '\n</p><p>';
     } else {
-      return line + '<br />';
+      return line + '<br>';
     }
   }
 
@@ -74,7 +74,7 @@ module.exports = function showdownRechords() {
       type: 'lang',
       // regex: /([^\n]+): *\n((.+[^:] *\n)+)(\n+(?=([^\n]+: *\n|\n|$))|$)/gi,
       // Wouldn't a regex like this do the job?
-      regex: /(?:(.+): *\n)?([^:\n]+\n{1,2})+(?!\n{3,}|\n{2,}[^:]+:)/gi,
+      regex: /(?:(.+): *\n)?(([^:\n]+(\n{1,2}|$))+)(?!\n{3,}|\n{2,}[^:]+:)/gi,
       // However, don't get what the three arguments are...
       replace: function (match, id, content) {
         console.log(JSON.stringify({
@@ -82,8 +82,12 @@ module.exports = function showdownRechords() {
           id: id,
           content: content
         }));
-        var verse = '<h3>' + id + '</h3>\n<p>' + content.replace(lineRegex, parseLine) + '</p>';
+        var id_string = '';
+        if(id) {
+          id_string = '<h3>' + id + '</h3>\n';
+        }
         //verse.replace('<br /><br />', '</p><p>');
+          var verse = id_string +'<p>' + content.replace(lineRegex, parseLine) + '</p>';
         verse = verse.replace(/<br \/>\s*<\/p>/g, '\n</p>');
         return verse;
       }
