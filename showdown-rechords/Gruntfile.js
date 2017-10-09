@@ -75,19 +75,6 @@ module.exports = function (grunt) {
     //Run tests
     simplemocha: {
       node: {
-        src: 'test/all.js',
-        options: {
-          globals: ['should'],
-          timeout: 3000,
-          ignoreLeaks: false,
-          reporter: 'spec'
-        }
-      }
-    },
-    // Ok, obviously didn't get the logic of the grunt stuff
-
-    othermocha: {
-      node: {
         src: 'test/single.js',
         options: {
           globals: ['should'],
