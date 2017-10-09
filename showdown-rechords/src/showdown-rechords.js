@@ -72,8 +72,16 @@ module.exports = function showdownRechords() {
     // Verses
     {
       type: 'lang',
-      regex: /([^\n]+): *\n((.+[^:] *\n)+)(\n+(?=([^\n]+: *\n|\n|$))|$)/gi,
+      // regex: /([^\n]+): *\n((.+[^:] *\n)+)(\n+(?=([^\n]+: *\n|\n|$))|$)/gi,
+      // Wouldn't a regex like this do the job?
+      regex: /(?:(.+): *\n)?([^:\n]+\n{1,2})+(?!\n{3,}|\n{2,}[^:]+:)/gi,
+      // However, don't get what the three arguments are...
       replace: function (match, id, content) {
+        console.log(JSON.stringify({
+          match: match,
+          id: id,
+          content: content
+        }));
         var verse = '<h3>' + id + '</h3>\n<p>' + content.replace(lineRegex, parseLine) + '</p>';
         //verse.replace('<br /><br />', '</p><p>');
         verse = verse.replace(/<br \/>\s*<\/p>/g, '\n</p>');
