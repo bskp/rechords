@@ -17,6 +17,7 @@ export default class Viewer extends Component {
 		return (
 			<div id="viewer" className="content" onContextMenu={this.handleContextMenu}>
 			<span ref="html" dangerouslySetInnerHTML={{__html: new RmdParser(this.props.song.text).html}} />
+			<h1>Transpose {this.props.relativeTranspose}</h1>
 			</div>
 
 		);
@@ -25,7 +26,8 @@ export default class Viewer extends Component {
 
 Viewer.propTypes = {
 	song: PropTypes.object.isRequired,
-	modeCallback: PropTypes.func.isRequired
+	modeCallback: PropTypes.func.isRequired,
+	relativeTranspose: PropTypes.number.isRequired
 };
 
 //export default withRouter(Viewer);  // injects history, location, match
