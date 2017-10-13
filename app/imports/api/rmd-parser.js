@@ -1,6 +1,20 @@
 
 var showdown = require('showdown');
 var rmd = require('showdown-rechords');
+var xss = require('xss');
+var options = {
+  whiteList: {
+    a: ['href', 'title'],
+    span: ['class'],
+    h1: [],
+    h2: [],
+    h3: [],
+    ul: ['class'],
+    li: [],
+    p: [],
+    br: []
+  }
+};
 const parser = new showdown.Converter({extensions: [rmd]});
 
 showdown.setOption('simpleLineBreaks', true);
@@ -12,7 +26,7 @@ export default class RmdParser {
   constructor(md) {
     this.md = md;
 
-    this.html = parser.makeHtml(md);
+    this.html = xss(parser.makeHtml(md), options);
     this.dom = new DOMParser().parseFromString(this.html, "text/html");
 
     this.title = '';
