@@ -59,7 +59,7 @@ module.exports = function (grunt) {
       files:  {
         src: [
           'src/**/*.js',
-          'test/**/*.js'
+          'test/**/all.js'
         ]
       }
     },
@@ -75,7 +75,7 @@ module.exports = function (grunt) {
     //Run tests
     simplemocha: {
       node: {
-        src: 'test/single.js',
+        src: 'test/all.js',
         options: {
           globals: ['should'],
           timeout: 3000,

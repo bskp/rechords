@@ -6,24 +6,15 @@ module.exports = function showdownRechords() {
 
   var Hypher = require('hypher'),
     english = require('hyphenation.en-us'),
-    h = new Hypher(english),
-    lineRegex = /(.+?)(\n\n?)/gi,
-    wordRegex = /\S+ ?/gi,
-    chordRegex = /\[(.+?)\]/gi;
+    h = new Hypher(english);
 
-  function parseLine (match, content, nl) {
-    // TODO: akkordzeile erkennen und anders behandeln
-    var line = content.replace(wordRegex, parseWord);
-    if (nl.length > 1) {
-      return line + '\n</p><p>';
-    } else {
-      return line + '<br>';
-    }
-  }
-
-  function mergeCoupled (arr) {
+  /**
+   * Merges every array item ending with '_' with its successor.
+   * @param {*} arr Array of Strings
+   */
+  function mergeCoupled(arr) {
     var pending = '',
-        out = [];
+      out = [];
     for (var i = 0; i < arr.length; i++) {
       if (arr[i].endsWith('_')) {
         pending = arr[i].replace('_', ' ');
@@ -34,16 +25,24 @@ module.exports = function showdownRechords() {
     return out;
   }
 
-  function parseWord (match) {
+  function parseLine(match, content) {
+    // TODO: akkordzeile erkennen und anders behandeln
+    var line = content.replace(/\S+ ?/gi, parseWord);
+    return line + '<br />';  // line is allowed to be empty.
+  }
+
+  function parseWord(match) {
+    // TODO: support multiple chords per word. Currently, all chords bubble up
+    // up to the beginning of the word, instead of staying with their syllable.
     var chords = [],
-    text = match.replace(chordRegex, function (match, chord) {
-      chords.push('<span class="chord">' + chord + '</span>');
-      return '';
-    }),
-    chunks = h.hyphenate(text),
-    out = mergeCoupled(chunks).map(function (s) {
-      return '<span class="s">' + s + '</span>';
-    }).join('');
+      text = match.replace(/\[(.+?)\]/gi, function (match, chord) {
+        chords.push('<span class="chord">' + chord + '</span>');
+        return '';
+      }),
+      chunks = h.hyphenate(text),
+      out = mergeCoupled(chunks).map(function (s) {
+        return '<span class="s">' + s + '</span>';
+      }).join('');
 
     return chords.join('') + out;
   }
@@ -72,23 +71,20 @@ module.exports = function showdownRechords() {
     // Verses
     {
       type: 'lang',
-      // regex: /([^\n]+): *\n((.+[^:] *\n)+)(\n+(?=([^\n]+: *\n|\n|$))|$)/gi,
-      // Wouldn't a regex like this do the job?
-      regex: /(?:(.+): *\n)?(([^:\n]+(\n{1,2}|$))+)(?!\n{3,}|\n{2,}[^:]+:)/gi,
-      // However, don't get what the three arguments are...
+      regex: /([^\n]+): *\n((.+[^:] *\n)+)(\n+(?=([^\n]+: *\n|\n|$))|$)/gi,
+
       replace: function (match, id, content) {
-        console.log(JSON.stringify({
-          match: match,
-          id: id,
-          content: content
-        }));
-        var id_string = '';
-        if(id) {
-          id_string = '<h3>' + id + '</h3>\n';
+        var h3 = '';
+        if (id) {
+          h3 = '<h3>' + id + '</h3>\n';
         }
-        //verse.replace('<br /><br />', '</p><p>');
-          var verse = id_string +'<p>' + content.replace(lineRegex, parseLine) + '</p>';
-        verse = verse.replace(/<br \/>\s*<\/p>/g, '\n</p>');
+
+        // Process line
+        var verse = h3 + '<p>' + content.replace(/(.*?)\n/g, parseLine) + '</p>';
+
+        // Fix last lines
+        verse = verse.replace(/(<br \/>)+\s*<\/p>/g, '\n</p>'); // Trim all linebreaks at verse-ends
+        verse = verse.replace(/<br \/><br \/>/g, '\n</p><p>'); // 2x line break -> paragraph break
         return verse;
       }
     }

@@ -10,4 +10,3 @@ Von Mani Matters Live-Auftritten sind nur wenige Filmdokumente vorhanden. Eine A
 1:
 I han es [C]Zündhölzli azündt
 und das [G7]het e flamme ggä
-
