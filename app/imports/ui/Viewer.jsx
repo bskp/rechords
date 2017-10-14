@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import RmdParser from '../api/rmd-parser.js';
+import parse from '../api/rmd-parser.js';
 
 export default class Viewer extends Component {
 
@@ -16,7 +16,7 @@ export default class Viewer extends Component {
 
 		return (
 			<div id="viewer" className="content" onContextMenu={this.handleContextMenu}>
-			<span ref="html" dangerouslySetInnerHTML={{__html: new RmdParser(this.props.song.text).html}} />
+			<span ref="html" dangerouslySetInnerHTML={{__html: parse(this.props.song).html}} />
 			</div>
 
 		);

@@ -1,6 +1,7 @@
 
 var showdown = require('showdown');
 var rmd = require('showdown-rechords');
+var slug = require('slug')
 var xss = require('xss');
 var options = {
   whiteList: {
@@ -15,41 +16,47 @@ var options = {
     br: []
   }
 };
-const parser = new showdown.Converter({extensions: [rmd]});
+const converter = new showdown.Converter({ extensions: [rmd] });
 
 showdown.setOption('simpleLineBreaks', true);
 showdown.setOption('smoothLivePreview', true);
 showdown.setOption('simplifiedAutoLink', true);
 showdown.setOption('openLinksInNewWindow', true);
 
-export default class RmdParser {
-  constructor(md) {
-    this.md = md;
+export default function parse(song) {
+  // Create HTML
+  song.html = xss(converter.makeHtml(song.text), options);
+  song.title = '';
+  song.author = '';
+  song.tags = [];
 
-    this.html = xss(parser.makeHtml(md), options);
-    this.dom = new DOMParser().parseFromString(this.html, "text/html");
+  // URL-compatible strings
+  song.title_ = '';
+  song.author_ = '';
 
-    this.title = '';
-    this.author = '';
+  // song._id may be present or not, but most importantly: unaffected!
 
-    let h1 = this.dom.getElementsByTagName('h1');
-    if (h1.length > 0) {
-      this.title = h1[0].innerText;
-    }
+  // Set Metadata
+  let dom = new DOMParser().parseFromString(song.html, "text/html");
 
-    let h2 = this.dom.getElementsByTagName('h2');
-    if (h2.length > 0) {
-      this.author = h2[0].innerText;
-    }
-
-    this.tags = [];
-
-    let tags = this.dom.getElementsByClassName('tags');
-    if (tags.length > 0) {
-      for (let tag of tags[0].children) {
-        this.tags.push( tag.innerText );
-      }
-    }
-
+  let h1 = dom.getElementsByTagName('h1');
+  if (h1.length > 0) {
+    song.title = h1[0].innerText;
+    song.title_ = slug(song.title);
   }
+
+  let h2 = dom.getElementsByTagName('h2');
+  if (h2.length > 0) {
+    song.author = h2[0].innerText;
+    song.author_ = slug(song.author);
+  }
+
+  let tags = dom.getElementsByClassName('tags');
+  if (tags.length > 0) {
+    for (let tag of tags[0].children) {
+      song.tags.push(tag.innerText);
+    }
+  }
+
+  return song;
 }
