@@ -34,7 +34,7 @@ export default class Viewer extends Component {
         onContextMenu={this.handleContextMenu}
       >
         <TranposeSetter onChange={this.handleTranspose} />
-        <span dangerouslySetInnerHTML={{ __html: this.mdParser.html }} />
+        <span ref="html" dangerouslySetInnerHTML={{ __html: this.mdParser.html }} />
 		<ul>
 		{/* no unique key */}
 		{this.mdParser.chords.map((c) => (<li>{c}</li>))}
