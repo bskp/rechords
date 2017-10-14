@@ -55,7 +55,8 @@ class App extends Component {
                             if (this.state.editing) {
                                 return <Editor song={song} modeCallback={this.setEditing}/>
                             } else {
-                                return <Viewer song={song} modeCallback={this.setEditing} relativeTranspose="2" />
+                                // this is Ugly: Props are implicit. ARRRRG...
+                                return <Viewer song={song} modeCallback={this.setEditing} />
                             }
                         }}/>
 
