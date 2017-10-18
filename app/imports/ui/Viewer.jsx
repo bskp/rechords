@@ -11,6 +11,7 @@ export class Widget extends Component {
 export default class Viewer extends Component {
   constructor() {
     super();
+	  this.setState({relTranspose: 0})
   }
 
   handleContextMenu = event => {
@@ -19,29 +20,35 @@ export default class Viewer extends Component {
   };
 
   // transponieren
-  handleTranspose = event => {
+  doshit = pitch => {
+	  console.debug("Shit Done");
+	  this.setState({relTranspose: pitch})
+	  
     // What now?
   };
+
 
   render() {
     // <TransposeSetter> {this.props.relativeTranspose}</TransposeSetter>
 	this.mdParser = new RmdParser(this.props.song.text);
 	let chords = this.mdParser.chords;
 	console.log(chords);
-	let ed_guess = ChrodLib.guessKey(this.mdParser.chords);
-	let chrodlib = new ChrodLib(ed_guess);
+	let chrodlib = new ChrodLib();
     return (
       <div
         id="viewer"
         className="content"
         onContextMenu={this.handleContextMenu}
       >
-        <TranposeSetter onChange={this.handleTranspose} />
+        <TranposeSetter 
+		 doshit={this.doshit} 
+		 options={{relTranspose:5}}
+		 />
         <span ref="html" dangerouslySetInnerHTML={{ __html: this.mdParser.html }} />
 		<ul>
 		{/* no unique key */}
 		{chords.map((c) => (<li>{c}</li>))}
-		{chrodlib.transpose(chords, -3).join('|')}
+		{chrodlib.transpose(chords, this.state.relTranspose).join('|')}
 		</ul>
       </div>
     );

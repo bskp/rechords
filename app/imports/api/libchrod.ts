@@ -85,19 +85,18 @@ var keys: Array<Key> = [
   H
 ];
 
-var forwardMap: Map<string, number> = new Map();
+const forwardMap: Map<string, number> = new Map();
 keys.forEach(k => forwardMap.set(k.name, k.idx));
 
-var sf = new Map([[2, 3], [2, 3]]);
 
-var bMap: Map<number, string> = new Map();
+const bMap: Map<number, string> = new Map();
 keys
   .filter(k => k.beOrNot != ToBorSharp.Sharp)
   .forEach(k => bMap.set(k.idx, k.name));
 
-var shMap = new Map();
+const shMap = new Map();
   keys.filter(k => k.beOrNot != ToBorSharp.Flat)
-  .map(k => shMap.set(k.idx, k.name));
+  .forEach(k => shMap.set(k.idx, k.name));
 
 class Scale {
   /**
@@ -106,12 +105,10 @@ class Scale {
      * @param {Array<number>} pitches 
      */
   bmap: Map<number, ToBorSharp>;
-  constructor(public name: string, public pitches: Array<number>, bmap) {
+  constructor(public name: string, public pitches: Array<number>, bmap : Map<Key,ToBorSharp>) {
     this.bmap = new Map();
-    for (var [key, value] of bmap) {
-      console.debug(key, value);
-      this.bmap.set(key.idx, value);
-    }
+    bmap.forEach((val, key) => this.bmap.set(key.idx, val))
+    
   }
 
   /**
@@ -178,11 +175,10 @@ class Chord {
   idx: number;
   constructor(
     public key: Key,
-    public pitches: Array<Number>,
+    public keys: Array<Number>,
     public str: string
   ) {
     this.idx = key.idx;
-    this.str = str;
   }
 
   /**
@@ -294,8 +290,9 @@ export default class ChrodLib {
    * @returns {*} penalties
    */
   static covarianceWithScales(chordsList) {
-    let pitches = chordsList
-      .map(chstr => Chord.parseChordString(chstr))
+    let chords : Chord[] = chordsList
+      .map(chstr => Chord.parseChordString(chstr));
+      let pitches = chords 
       .reduce((ar, chord) => ar.concat(chord.keys), []);
     console.debug(pitches);
 
@@ -314,7 +311,7 @@ export default class ChrodLib {
           // TODO: use reduce and weight the grundton more
           .map(shifted => shifted_scale.some(p => p == shifted));
 
-        let pentalty = matches.reduce((sum, val) => (val ? sum + 2 : sum - 1));
+        let pentalty = matches.reduce((sum, val) => (val ? sum + 2 : sum - 1), 0);
 
         pitchmatch[bMap.get(i)] = matches;
         penalties[bMap.get(i)] = pentalty;
@@ -333,7 +330,10 @@ export default class ChrodLib {
      * @param {number} shift
      */
 
-  transpose(chordsList, shift) {
+  transpose(chordsList: string[], shift: number) {
+    if (!chordsList || chordsList.length == 0) {
+      return [];
+    }
     let scale = ChrodLib.guessKey(chordsList);
     console.debug(scale);
 

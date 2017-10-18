@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 export default class TranposeSetter extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.transpose = 2;
 
   }
 
-  doSomething(event) {
+  doSomething= (event) => {
     console.log(event);
     const target = event.target;
     const value = target.value;
@@ -16,8 +16,10 @@ export default class TranposeSetter extends Component {
     this.setState({
       [name]: value
     });
-    this.emit
+    this.emit();
   }
+
+
   // Inherited from React.Component
   render() {
     // TODO: make object and calculate resulting key
@@ -33,7 +35,7 @@ export default class TranposeSetter extends Component {
     return (
       <div name="transposer">
         <select
-          onChange={this.doSomething}
+          onChange={this.props.doshit}
           type="number"
           id="relativeTransposeInput"
           defaultValue="1"
@@ -44,4 +46,9 @@ export default class TranposeSetter extends Component {
       </div>
     );
   }
+
 }
+
+TranposeSetter.propTypes = {
+  doshit: React.PropTypes.func
+};
