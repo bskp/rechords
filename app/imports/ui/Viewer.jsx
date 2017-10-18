@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import RmdParser from "../api/rmd-parser.js";
 import TranposeSetter from "./TransposeSetter.jsx";
-
+import ChrodLib from '../api/libchrod.js'
 export class Widget extends Component {
   render() {
     return <h1>Gagi</h1>;
@@ -26,7 +26,10 @@ export default class Viewer extends Component {
   render() {
     // <TransposeSetter> {this.props.relativeTranspose}</TransposeSetter>
 	this.mdParser = new RmdParser(this.props.song.text);
-	console.log(this.mdParser.chords)
+	let chords = this.mdParser.chords;
+	console.log(chords);
+	let ed_guess = ChrodLib.guessKey(this.mdParser.chords);
+	let chrodlib = new ChrodLib(ed_guess);
     return (
       <div
         id="viewer"
@@ -37,7 +40,8 @@ export default class Viewer extends Component {
         <span ref="html" dangerouslySetInnerHTML={{ __html: this.mdParser.html }} />
 		<ul>
 		{/* no unique key */}
-		{this.mdParser.chords.map((c) => (<li>{c}</li>))}
+		{chords.map((c) => (<li>{c}</li>))}
+		{chrodlib.transpose(chords, -3).join('|')}
 		</ul>
       </div>
     );

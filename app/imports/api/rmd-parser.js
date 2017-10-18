@@ -1,4 +1,5 @@
 var showdown = require("showdown");
+import ChrodLib from './libchrod.js'
 var rmd = require("showdown-rechords");
 const parser = new showdown.Converter({ extensions: [rmd] });
 
@@ -54,5 +55,7 @@ export default class RmdParser {
         this.chords.push(chord.innerText);
       }
     }
+    console.log(this.chords);
+    console.log(ChrodLib.guessKey(this.chords))
   }
 }
