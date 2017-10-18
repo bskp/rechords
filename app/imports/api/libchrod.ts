@@ -1,8 +1,8 @@
-var ToBorSharp = {
-  None: 0,
-  Flat: 1,
-  Sharp: 2
-};
+enum ToBorSharp {
+  None,
+  Flat,
+  Sharp
+}
 
 /*
 For Example: Gm
@@ -17,8 +17,10 @@ class Key {
    * @param {String} name 
    * @param {Number} idx 
    */
-  constructor(name, idx) {
-    this.name = name;
+  idx: number;
+  beOrNot: ToBorSharp;
+
+  constructor(public name: string, idx: number) {
     this.idx = (idx + 12) % 12;
 
     if (name.endsWith("b")) {
@@ -61,7 +63,7 @@ var B = new Key("B", 11),
   Cis = new Key("C#", 1),
   C = new Key("C", 0);
 // new Key('Cb', -1),
-var keys = [
+var keys: Array<Key> = [
   C,
   Cis,
   Des,
@@ -83,15 +85,19 @@ var keys = [
   H
 ];
 
-var forwardMap = new Map(keys.map(k => [k.name, k.idx]));
+var forwardMap: Map<string, number> = new Map();
+keys.forEach(k => forwardMap.set(k.name, k.idx));
 
-var bMap = new Map(
-  keys.filter(k => k.beOrNot != ToBorSharp.Sharp).map(k => [k.idx, k.name])
-);
+var sf = new Map([[2, 3], [2, 3]]);
 
-var shMap = new Map(
-  keys.filter(k => k.beOrNot != ToBorSharp.Flat).map(k => [k.idx, k.name])
-);
+var bMap: Map<number, string> = new Map();
+keys
+  .filter(k => k.beOrNot != ToBorSharp.Sharp)
+  .forEach(k => bMap.set(k.idx, k.name));
+
+var shMap = new Map();
+  keys.filter(k => k.beOrNot != ToBorSharp.Flat)
+  .map(k => shMap.set(k.idx, k.name));
 
 class Scale {
   /**
@@ -99,10 +105,8 @@ class Scale {
      * @param {string} name 
      * @param {Array<number>} pitches 
      */
-  constructor(name, pitches, bmap) {
-    this.name = name;
-    this.pitches = pitches;
-
+  bmap: Map<number, ToBorSharp>;
+  constructor(public name: string, public pitches: Array<number>, bmap) {
     this.bmap = new Map();
     for (var [key, value] of bmap) {
       console.debug(key, value);
@@ -117,7 +121,7 @@ class Scale {
    */
   // TODO: actually use this function
   test(base, pitch) {
-    return pitches
+    return this.pitches
       .map(p_orig => base + p_orig)
       .some(p_shift => p_shift == pitch);
   }
@@ -171,10 +175,13 @@ var Scales = {
 
 class Chord {
   // TODO: string rep?
-  constructor(key, pitches, str) {
-    this.key = key;
+  idx: number;
+  constructor(
+    public key: Key,
+    public pitches: Array<Number>,
+    public str: string
+  ) {
     this.idx = key.idx;
-    this.keys = pitches;
     this.str = str;
   }
 
@@ -183,26 +190,26 @@ class Chord {
    * @param {Key} key 
    */
   static minor(key) {
-    base = key.idx;
-    keys = [base, base + 3, base + 7].map(p => p % 12);
-    return new Chord(key, keys, 'm');
+    let base = key.idx;
+    let keys = [base, base + 3, base + 7].map(p => p % 12);
+    return new Chord(key, keys, "m");
   }
 
   static major(key) {
-    base = key.idx;
-    keys = [base, base + 4, base + 7].map(p => p % 12);
-    return new Chord(key, keys, '');
+    let base = key.idx;
+    let keys = [base, base + 4, base + 7].map(p => p % 12);
+    return new Chord(key, keys, "");
   }
 
   static plus(key) {
-    base = key.idx;
-    keys = [base, base + 4, base + 8].map(p => p % 12);
-    return new Chord(key, keys, '+');
+    let base = key.idx;
+    let keys = [base, base + 4, base + 8].map(p => p % 12);
+    return new Chord(key, keys, "+");
   }
   static minus(key) {
-    base = key.idx;
-    keys = [base, base + 3, base + 6].map(p => p % 12);
-    return new Chord(key, keys, 'dim');
+    let base = key.idx;
+    let keys = [base, base + 3, base + 6].map(p => p % 12);
+    return new Chord(key, keys, "dim");
   }
 
   /**
@@ -265,11 +272,11 @@ export default class ChrodLib {
    */
   static selectBest(keyss) {
     let best_val = -1000;
-    let best = {};
+    let best: { scale: string; key: string };
 
-    for (scalename of Object.getOwnPropertyNames(keyss)) {
-      scale = keyss[scalename];
-      for (key of Object.getOwnPropertyNames(scale)) {
+    for (let scalename of Object.getOwnPropertyNames(keyss)) {
+      let scale = keyss[scalename];
+      for (let key of Object.getOwnPropertyNames(scale)) {
         let val = scale[key];
         console.debug(val);
         if (val > best_val) {
@@ -287,15 +294,15 @@ export default class ChrodLib {
    * @returns {*} penalties
    */
   static covarianceWithScales(chordsList) {
-    pitches = chordsList
+    let pitches = chordsList
       .map(chstr => Chord.parseChordString(chstr))
       .reduce((ar, chord) => ar.concat(chord.keys), []);
     console.debug(pitches);
 
     let penalties_byScale = {};
     let pitch_match_byScale = {};
-    for (scalename of Object.getOwnPropertyNames(Scales)) {
-      scale = Scales[scalename];
+    for (let scalename of Object.getOwnPropertyNames(Scales)) {
+      let scale = Scales[scalename];
 
       console.debug(scale);
       let penalties = {};
@@ -340,15 +347,17 @@ export default class ChrodLib {
 
     // TODO: attach a transpose function to Scale object
     let bornot = current_scale.bmap.get(transposed_pitch);
-    
+
     let pitchmap;
     if (bornot == ToBorSharp.Flat) {
       pitchmap = bMap;
     } else {
       pitchmap = shMap;
     }
-    let tr_chords = chordsList.map( ch_str => Chord.parseChordString(ch_str))
-    .map(ch => pitchmap.get((ch.idx+12+shift)%12)+ch.str)
+    let tr_chords = chordsList
+      .map(ch_str => Chord.parseChordString(ch_str))
+      .map(ch => pitchmap.get((ch.idx + 12 + shift) % 12) + ch.str);
+      let transposed_key = pitchmap.get(transposed_pitch);
     console.debug("Transposed Key", transposed_key);
     console.debug(tr_chords);
     return tr_chords;
