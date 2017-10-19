@@ -5,10 +5,9 @@ export default class TranposeSetter extends Component {
   constructor(props) {
     super(props);
     this.transpose = 2;
-
   }
 
-  doSomething= (event) => {
+  doSomething = event => {
     console.log(event);
     const target = event.target;
     const value = target.value;
@@ -17,8 +16,7 @@ export default class TranposeSetter extends Component {
       [name]: value
     });
     this.props.doshit(Number.parseInt(value));
-  }
-
+  };
 
   // Inherited from React.Component
   render() {
@@ -30,23 +28,27 @@ export default class TranposeSetter extends Component {
       if (i === selection) {
         const selected = true;
       }
-      options.push({key: i, selected: selected});
+      options.push({ key: i,  });
     }
     return (
       <div name="transposer">
         <select
+          name="relTranspose"
           onChange={this.doSomething}
           type="number"
           id="relativeTransposeInput"
-          defaultValue = "0"
+          defaultValue="0"
         >
-          {options.map(o => <option  key={o.key} value={o.key}>{o.key}</option>)}
+          {options.map(o => (
+            <option key={o.key} value={o.key}>
+              {o.desc}
+            </option>
+          ))}
         </select>
-        <h3>{this.transpose}</h3>
+        <span>{JSON.stringify(this.state)}</span>
       </div>
     );
   }
-
 }
 
 TranposeSetter.propTypes = {

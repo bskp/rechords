@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import RmdParser from "../api/rmd-parser.js";
 import TranposeSetter from "./TransposeSetter.jsx";
-import ChrodLib from '../api/libchrod.js'
+import ChrodLib from "../api/libchrod.js";
 export class Widget extends Component {
   render() {
     return <h1>Gagi</h1>;
@@ -10,9 +10,9 @@ export class Widget extends Component {
 }
 export default class Viewer extends Component {
   constructor() {
-	super();
-	// Ugly jsx
-	  this.state = {relTranspose: 3};
+    super();
+    // Ugly jsx
+    this.state = { relTranspose: 3 };
   }
 
   handleContextMenu = event => {
@@ -22,35 +22,44 @@ export default class Viewer extends Component {
 
   // transponieren
   doshit = pitch => {
-	  console.debug("Shit Done", pitch);
+    console.debug("Shit Done", pitch);
 
-	  this.setState({relTranspose: pitch})
-	  
+    this.setState({ relTranspose: pitch });
+
     // What now?
   };
 
-
   render() {
     // <TransposeSetter> {this.props.relativeTranspose}</TransposeSetter>
-	this.mdParser = new RmdParser(this.props.song.text);
-	let chords = this.mdParser.chords;
-	console.log(chords);
-	let chrodlib = new ChrodLib();
+    this.mdParser = new RmdParser(this.props.song.text);
+    let chords = this.mdParser.chords;
+    console.log(chords);
+    let chrodlib = new ChrodLib();
     return (
       <div
         id="viewer"
         className="content"
         onContextMenu={this.handleContextMenu}
       >
-        <TranposeSetter 
-		 doshit={this.doshit} 
-		 />
-        <span ref="html" dangerouslySetInnerHTML={{ __html: this.mdParser.html }} />
-		<ul>
-		{/* no unique key */}
-		{chords.map((c) => (<li>{c}</li>))}
-		{chrodlib.transpose(chords, this.state.relTranspose).join('|')}
-		</ul>
+        <span
+          ref="html"
+          dangerouslySetInnerHTML={{ __html: this.mdParser.html }}
+        />
+        <ul>
+          <TranposeSetter doshit={this.doshit} />
+          <table className='chordtable'>
+            <tr>
+              <td>Orig:</td>
+              {chords.map(c => <td>{c}</td>)}
+            </tr>
+            <tr>
+              <td>Tran:</td>
+              {chrodlib
+                .transpose(chords, this.state.relTranspose)
+                .map(c => <td>{c}</td>)}
+            </tr>
+          </table>
+        </ul>
       </div>
     );
   }

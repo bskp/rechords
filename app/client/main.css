@@ -37,6 +37,15 @@ html {
   font-size: 14px;
   background-color: grey;
 }
+.chordtable {
+  text-align: center;
+}
+.chordtable td {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
 .container {
   display: flex;
   width: 100%;
