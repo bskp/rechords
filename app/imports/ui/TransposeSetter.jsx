@@ -16,7 +16,7 @@ export default class TranposeSetter extends Component {
     this.setState({
       [name]: value
     });
-    this.emit();
+    this.props.doshit(Number.parseInt(value));
   }
 
 
@@ -35,10 +35,10 @@ export default class TranposeSetter extends Component {
     return (
       <div name="transposer">
         <select
-          onChange={this.props.doshit}
+          onChange={this.doSomething}
           type="number"
           id="relativeTransposeInput"
-          defaultValue="1"
+          defaultValue = "0"
         >
           {options.map(o => <option  key={o.key} value={o.key}>{o.key}</option>)}
         </select>

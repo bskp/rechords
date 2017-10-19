@@ -10,8 +10,9 @@ export class Widget extends Component {
 }
 export default class Viewer extends Component {
   constructor() {
-    super();
-	  this.setState({relTranspose: 0})
+	super();
+	// Ugly jsx
+	  this.state = {relTranspose: 3};
   }
 
   handleContextMenu = event => {
@@ -21,7 +22,8 @@ export default class Viewer extends Component {
 
   // transponieren
   doshit = pitch => {
-	  console.debug("Shit Done");
+	  console.debug("Shit Done", pitch);
+
 	  this.setState({relTranspose: pitch})
 	  
     // What now?
@@ -42,7 +44,6 @@ export default class Viewer extends Component {
       >
         <TranposeSetter 
 		 doshit={this.doshit} 
-		 options={{relTranspose:5}}
 		 />
         <span ref="html" dangerouslySetInnerHTML={{ __html: this.mdParser.html }} />
 		<ul>
