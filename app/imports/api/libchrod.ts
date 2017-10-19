@@ -21,7 +21,7 @@ class Key {
   beOrNot: ToBorSharp;
 
   constructor(public name: string, idx: number) {
-    this.idx = (idx + 12) % 12;
+    this.idx = (idx + 48) % 12;
 
     if (name.endsWith("b")) {
       this.beOrNot = ToBorSharp.Flat;
@@ -44,8 +44,9 @@ var ChordScales = {
 // TODO: better structure (Map or Object[pseudo enum])
 
 var B = new Key("B", 11),
-  H = new Key("H", 11),
-  Hes = new Key("Hb", 10),
+// furzidee
+  // H = new Key("H", 11),
+  // Hes = new Key("Hb", 10),
   Bes = new Key("Bb", 10),
   Ais = new Key("A#", 10),
   A = new Key("A", 9),
@@ -80,14 +81,13 @@ var keys: Array<Key> = [
   A,
   Ais,
   Bes,
-  Hes,
+  // Hes,
   B,
-  H
+  // H
 ];
 
 const forwardMap: Map<string, number> = new Map();
 keys.forEach(k => forwardMap.set(k.name, k.idx));
-
 
 const bMap: Map<number, string> = new Map();
 keys
@@ -95,7 +95,8 @@ keys
   .forEach(k => bMap.set(k.idx, k.name));
 
 const shMap = new Map();
-  keys.filter(k => k.beOrNot != ToBorSharp.Flat)
+keys
+  .filter(k => k.beOrNot != ToBorSharp.Flat)
   .forEach(k => shMap.set(k.idx, k.name));
 
 class Scale {
@@ -105,10 +106,13 @@ class Scale {
      * @param {Array<number>} pitches 
      */
   bmap: Map<number, ToBorSharp>;
-  constructor(public name: string, public pitches: Array<number>, bmap : Map<Key,ToBorSharp>) {
+  constructor(
+    public name: string,
+    public pitches: Array<number>,
+    bmap: Map<Key, ToBorSharp>
+  ) {
     this.bmap = new Map();
-    bmap.forEach((val, key) => this.bmap.set(key.idx, val))
-    
+    bmap.forEach((val, key) => this.bmap.set(key.idx, val));
   }
 
   /**
@@ -141,7 +145,7 @@ var Scales = {
       [D, ToBorSharp.Sharp],
       [A, ToBorSharp.Sharp],
       [E, ToBorSharp.Sharp],
-      [H, ToBorSharp.Sharp],
+      [B, ToBorSharp.Sharp],
       [Fis, ToBorSharp.Sharp]
     ])
   ),
@@ -160,7 +164,7 @@ var Scales = {
       [Es, ToBorSharp.Flat],
       // [Ces, ToBorSharp.Flat], -> H
       [E, ToBorSharp.Sharp],
-      [H, ToBorSharp.Sharp],
+      [B, ToBorSharp.Sharp],
       [Fis, ToBorSharp.Sharp],
       [Cis, ToBorSharp.Sharp],
       [Gis, ToBorSharp.Sharp]
@@ -173,11 +177,7 @@ var Scales = {
 class Chord {
   // TODO: string rep?
   idx: number;
-  constructor(
-    public key: Key,
-    public keys: Array<Number>,
-    public str: string
-  ) {
+  constructor(public key: Key, public keys: Array<Number>, public str: string) {
     this.idx = key.idx;
   }
 
@@ -290,10 +290,10 @@ export default class ChrodLib {
    * @returns {*} penalties
    */
   static covarianceWithScales(chordsList) {
-    let chords : Chord[] = chordsList
-      .map(chstr => Chord.parseChordString(chstr));
-      let pitches = chords 
-      .reduce((ar, chord) => ar.concat(chord.keys), []);
+    let chords: Chord[] = chordsList.map(chstr =>
+      Chord.parseChordString(chstr)
+    );
+    let pitches = chords.reduce((ar, chord) => ar.concat(chord.keys), []);
     console.debug(pitches);
 
     let penalties_byScale = {};
@@ -311,7 +311,10 @@ export default class ChrodLib {
           // TODO: use reduce and weight the grundton more
           .map(shifted => shifted_scale.some(p => p == shifted));
 
-        let pentalty = matches.reduce((sum, val) => (val ? sum + 2 : sum - 1), 0);
+        let pentalty = matches.reduce(
+          (sum, val) => (val ? sum + 2 : sum - 1),
+          0
+        );
 
         pitchmatch[bMap.get(i)] = matches;
         penalties[bMap.get(i)] = pentalty;
@@ -343,7 +346,7 @@ export default class ChrodLib {
     // generated from an external json file, ideally
     let current_scale = Scales[scale.scale];
 
-    let transposed_pitch = (current_pitch + 12 + shift) % 12;
+    let transposed_pitch = (current_pitch + 48 + shift) % 12;
 
     // TODO: attach a transpose function to Scale object
     let bornot = current_scale.bmap.get(transposed_pitch);
@@ -356,8 +359,8 @@ export default class ChrodLib {
     }
     let tr_chords = chordsList
       .map(ch_str => Chord.parseChordString(ch_str))
-      .map(ch => pitchmap.get((ch.idx + 12 + shift) % 12) + ch.str);
-      let transposed_key = pitchmap.get(transposed_pitch);
+      .map(ch => pitchmap.get((ch.idx + 48 + shift) % 12) + ch.str);
+    let transposed_key = pitchmap.get(transposed_pitch);
     console.debug("Transposed Key", transposed_key);
     console.debug(tr_chords);
     return tr_chords;
