@@ -151,7 +151,7 @@ var Scales = {
   ),
   // harmonic is actually more often than "normal" minor
   harmonic: new Scale(
-    "major",
+    "harmonic",
     [0, 2, 3, 5, 7, 8, 11],
     new Map([
       [A, ToBorSharp.None],
