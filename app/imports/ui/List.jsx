@@ -20,7 +20,7 @@ class ListItem extends Component {
             Songs.update(this.props.song._id, this.props.song);
         }
         return (
-            <li><NavLink to={`/s/${this.props.song.author_}/${this.props.song.title_}`}
+            <li><NavLink to={`/view/${this.props.song.author_}/${this.props.song.title_}`}
                          activeClassName="selected">{this.props.song.title}</NavLink></li>
         );
     }

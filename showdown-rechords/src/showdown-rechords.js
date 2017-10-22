@@ -10,7 +10,7 @@ module.exports = function showdownRechords() {
 
   /**
    * Merges every array item ending with '_' with its successor.
-   * @param {*} arr Array of Strings
+   * @param {Array<String>} arr Array of Strings
    */
   function mergeCoupled(arr) {
     var pending = '',

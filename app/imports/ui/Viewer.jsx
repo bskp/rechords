@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import parse from '../api/rmd-parser.js';
+import {withRouter} from 'react-router-dom';
 
-export default class Viewer extends Component {
+class Viewer extends Component {
 
 	handleContextMenu = (event) => {
-		this.props.modeCallback(true);
+		let m = this.props.match.params;
+		this.props.history.push('/edit/' + m.author + '/' + m.title);
 		event.preventDefault();
 	}
 
@@ -16,7 +17,7 @@ export default class Viewer extends Component {
 
 		return (
 			<div id="viewer" className="content" onContextMenu={this.handleContextMenu}>
-			<span ref="html" dangerouslySetInnerHTML={{__html: parse(this.props.song).html}} />
+			<span ref="html" dangerouslySetInnerHTML={{__html: this.props.song.getHtml()}} />
 			</div>
 
 		);
@@ -25,7 +26,6 @@ export default class Viewer extends Component {
 
 Viewer.propTypes = {
 	song: PropTypes.object.isRequired,
-	modeCallback: PropTypes.func.isRequired
 };
 
-//export default withRouter(Viewer);  // injects history, location, match
+export default withRouter(Viewer);  // injects history, location, match
