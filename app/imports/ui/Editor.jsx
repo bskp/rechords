@@ -32,7 +32,6 @@ class Editor extends Component {
     let md = this.props.song.text;
     return (
       <div id="editor" className="content" onContextMenu={this.handleContextMenu}>
-        <h1>Ein Lied: {this.props.song.title}</h1>
         <textarea ref="source" onKeyUp={this.update} defaultValue={md} />
       </div>
 

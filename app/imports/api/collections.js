@@ -25,7 +25,7 @@ showdown.setOption('smoothLivePreview', true);
 showdown.setOption('simplifiedAutoLink', true);
 showdown.setOption('openLinksInNewWindow', true);
 
-export const Songs = new Mongo.Collection('songs');
+export default Songs = new Mongo.Collection('songs');
 
 Songs.helpers({
 
