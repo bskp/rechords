@@ -1,51 +1,39 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {Songs} from '../api/collections.js';
-import RmdParser from '../api/rmd-parser.js';
-var slug = require('slug')
+import { Songs } from '../api/collections.js';
+import {withRouter} from 'react-router-dom';
 
-export default class Editor extends Component {
+class Editor extends Component {
 
   constructor() {
     super();
   }
 
   handleContextMenu = (event) => {
+    this.props.song.parse(this.refs.source.value);
 
-    let song = {
-      text: this.domSong.md,
-      title: this.domSong.title,
-      title_: slug(this.domSong.title),
-      author: this.domSong.author,
-      author_: slug(this.domSong.author)
-    }
+    Meteor.call('saveSong', this.props.song, function (error) {
+      console.log(error);
+    });
 
+		this.props.history.push('/view/' + this.props.song.author_ + '/' + this.props.song.title_);
 
-    if ('_id' in this.props.song) {
-      if (song.text.match(/^\s*$/) == null) {
-        Songs.update( this.props.song._id, {$set: song } );
-      } else {
-        Songs.remove( this.props.song._id);
-      }
-    } else {
-      Songs.insert( song );
-    }
-
-    this.props.modeCallback(false);
     event.preventDefault();
   }
 
-  parse = () => {
-    this.domSong = new RmdParser(this.refs.source.value);
+  update = () => {
+    /*
+    this.props.song = Songs._transform(this.props.song);
+    this.props.song.parse(this.refs.source.value);
+    */
   }
 
   render() {
     let md = this.props.song.text;
-    this.domSong = new RmdParser(md);
     return (
       <div id="editor" className="content" onContextMenu={this.handleContextMenu}>
-      <h1>Ein Lied: {this.props.song.title}</h1>
-      <textarea ref="source" onKeyUp={this.parse} defaultValue={md} />
+        <h1>Ein Lied: {this.props.song.title}</h1>
+        <textarea ref="source" onKeyUp={this.update} defaultValue={md} />
       </div>
 
     );
@@ -54,5 +42,6 @@ export default class Editor extends Component {
 
 Editor.propTypes = {
   song: PropTypes.object.isRequired,
-  modeCallback: PropTypes.func.isRequired
 };
+
+export default withRouter(Editor);  // injects history, location, match

@@ -15,6 +15,8 @@
     "showdown": "^1.7.4",
     "showdown-rechords": "file:../showdown-rechords",
     "slug": "^0.9.1",
-    "source-map-support": "^0.5.0"
+    "source-map-support": "^0.5.0",
+    "xmldom": "^0.1.27",
+    "xss": "^0.3.4"
   }
 }

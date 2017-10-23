@@ -1,21 +1,17 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import RmdParser from "../api/rmd-parser.js";
+import {withRouter} from 'react-router-dom';
 import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod.js";
-export class Widget extends Component {
-  render() {
-    return <h1>Gagi</h1>;
-  }
-}
-export default class Viewer extends Component {
+class Viewer extends Component {
   constructor() {
     super();
     this.state = { relTranspose: 0 };
   }
 
   handleContextMenu = event => {
-    this.props.modeCallback(true);
+		let m = this.props.match.params;
+		this.props.history.push('/edit/' + m.author + '/' + m.title);
     event.preventDefault();
   };
 
@@ -30,8 +26,7 @@ export default class Viewer extends Component {
 
   render() {
     // <TransposeSetter> {this.props.relativeTranspose}</TransposeSetter>
-    this.mdParser = new RmdParser(this.props.song.text);
-    let chords = this.mdParser.chords;
+    let chords = this.props.song.getChords();
     console.log(chords);
     let chrodlib = new ChrodLib();
     return (
@@ -42,7 +37,7 @@ export default class Viewer extends Component {
       >
         <span
           ref="html"
-          dangerouslySetInnerHTML={{ __html: this.mdParser.html }}
+          dangerouslySetInnerHTML={{ __html: this.props.song.getHtml() }}
         />
         <ul>
           <TranposeSetter
@@ -69,8 +64,7 @@ export default class Viewer extends Component {
 // this probably would belong inside the class
 Viewer.propTypes = {
   song: PropTypes.object.isRequired,
-  modeCallback: PropTypes.func.isRequired
   // relativeTranspose: PropTypes.number.isRequired
 };
 
-//export default withRouter(Viewer);  // injects history, location, match
+export default withRouter(Viewer);  // injects history, location, match

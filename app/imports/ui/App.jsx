@@ -42,27 +42,35 @@ class App extends Component {
                             </div>
                         )}/>
 
-                        <Route path='/s/:author/:title' render={(match) => {
+                        <Route path='/view/:author/:title' render={(match) => {
                             let song = Songs.findOne({
                                 author_: match.match.params.author,
                                 title_: match.match.params.title
                             });
 
                             if (song === undefined) {
-                                return (<h2>gibts nicht.</h2>)
+                                return (<h2>404. {match.match.params.title}</h2>)
                             }
+                            return <Viewer song={song} />
+                        }}/>
 
-                            if (this.state.editing) {
-                                return <Editor song={song} modeCallback={this.setEditing}/>
-                            } else {
-                                // this is Ugly: Props are implicit. ARRRRG...
-                                return <Viewer song={song} modeCallback={this.setEditing} />
+                        <Route path='/edit/:author/:title' render={(match) => {
+                            let song = Songs.findOne({
+                                author_: match.match.params.author,
+                                title_: match.match.params.title
+                            });
+
+                            if (song === undefined) {
+                                return (<h2>404. {match.match.params.title}</h2>)
                             }
+                            return <Editor song={song} />
                         }}/>
 
                         <Route path="/new" render={() => {
-                            return <Editor song={empty_song} modeCallback={this.setEditing}/>
+                            return <Editor song={empty_song} />
                         }}/>
+
+                        <Route component={NoMatch}/>
                     </Switch>
 
 
@@ -72,6 +80,12 @@ class App extends Component {
         );
     }
 }
+
+const NoMatch = ({ location }) => (
+  <div>
+    <h3>No match for <code>{location.pathname}</code></h3>
+  </div>
+)
 
 App.propTypes = {
     songs: PropTypes.array.isRequired,

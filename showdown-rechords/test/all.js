@@ -4,27 +4,21 @@
  * In showdown, we use this particular setup
  */
 (function (filename) {
-  if (arguments.length === 0)  {}
-  // do nothing
-  else {
-    grunt.log.writeln(filename);
-  }
-  
-
 
   require('source-map-support').install();
   var showdown = require('showdown'),
-      ext = require('../src/showdown-rechords.js');
-  require('chai').should();
+    ext = require('../src/showdown-rechords.js'),
+    chai = require('chai');
+  chai.should();
 
   var fs = require('fs'),
-      converter = new showdown.Converter({extensions: [ext]}),
-      cases = fs.readdirSync('test/cases/')
-        .filter(filter())
-        .map(map('test/cases/')),
-      issues = fs.readdirSync('test/issues/')
-        .filter(filter())
-        .map(map('test/issues/'));
+    converter = new showdown.Converter({extensions:[ext]}),
+    cases = fs.readdirSync('test/cases/')
+      .filter(filter())
+      .map(map('test/cases/')),
+    issues = fs.readdirSync('test/issues/')
+      .filter(filter())
+      .map(map('test/issues/'));
 
   // Test cases
   describe('Rechords Extension testcases', function () {
@@ -49,8 +43,8 @@
         md = fs.readFileSync(mdPath, 'utf8');
 
       return {
-        name:     name,
-        input:    md,
+        name: name,
+        input: md,
         expected: html
       };
     };

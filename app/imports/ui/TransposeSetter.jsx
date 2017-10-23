@@ -27,7 +27,8 @@ var intervalls = new Map([
 export default class TranposeSetter extends Component {
   constructor(props) {
     super(props);
-    this.state = { relTranspose: this.props.intialTranspose };
+    let initialTranspose = this.props.intialTranspose?this.props.intialTranspose:0 ; 
+    this.state = { relTranspose: initialTranspose};
   }
 
   doSomething = event => {
@@ -95,5 +96,5 @@ export default class TranposeSetter extends Component {
 
 TranposeSetter.propTypes = {
   doshit: React.PropTypes.func,
-  initialTranspose: React.PropTypes.number.isRequired
+  initialTranspose: React.PropTypes.number
 };

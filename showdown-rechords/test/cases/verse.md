@@ -5,7 +5,6 @@ I saw your legends lined up
 
 [G]Please, please, please, sister Socrates
 
-
 And watched the [C]migrants smoke in the [D7]old orange grove
 And the [G]red rocket blaze over [em]Cape Canaveral
 

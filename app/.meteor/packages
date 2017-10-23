@@ -22,3 +22,5 @@ react-meteor-data
 less@2.7.9
 juliancwirko:postcss
 barbatus:typescript
+dburles:collection-helpers
+check
