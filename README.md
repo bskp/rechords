@@ -1,4 +1,4 @@
-# ReChord's
+# Rechords
 ## showdown-rechords
 Implementation of markdown dialect extended by anotation for chords using https://github.com/showdownjs/showdown
  
