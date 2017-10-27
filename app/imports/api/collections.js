@@ -58,6 +58,7 @@ Songs.helpers({
     // only member that exist in the mongo db are published
     // to the outside.
     this.html = xss(converter.makeHtml(this.text), options);
+    console.log(this.html);
     this.title = "";
     this.author = "";
     // Not sure if this works

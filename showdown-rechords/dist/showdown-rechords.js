@@ -1,4 +1,4 @@
-;/*! showdown-rechords 13-10-2017 *//* vim: set tabstop=2:softtabstop=2 */
+;/*! showdown-rechords 27-10-2017 *//* vim: set tabstop=2:softtabstop=2 */
 
 module.exports = function showdownRechords() {
 
@@ -8,12 +8,10 @@ module.exports = function showdownRechords() {
     english = require('hyphenation.en-us'),
     h = new Hypher(english);
 
-  function parseLine(match, content) {
-    // TODO: akkordzeile erkennen und anders behandeln
-    var line = content.replace(/\S+ ?/gi, parseWord);
-    return line + '<br />';
-  }
-
+  /**
+   * Merges every array item ending with '_' with its successor.
+   * @param {Array<String>} arr Array of Strings
+   */
   function mergeCoupled(arr) {
     var pending = '',
       out = [];
@@ -27,7 +25,16 @@ module.exports = function showdownRechords() {
     return out;
   }
 
+  function parseLine(match, content) {
+    // TODO: akkordzeile erkennen und anders behandeln
+    var line = content.replace(/\S+ ?/gi, parseWord);
+    return line + '<br />';  // line is allowed to be empty.
+
+  }
+
   function parseWord(match) {
+    // TODO: support multiple chords per word. Currently, all chords bubble up
+    // up to the beginning of the word, instead of staying with their syllable.
     var chords = [],
       text = match.replace(/\[(.+?)\]/gi, function (match, chord) {
         chords.push('<span class="chord">' + chord + '</span>');
@@ -65,7 +72,7 @@ module.exports = function showdownRechords() {
     // Verses
     {
       type: 'lang',
-      regex: /([^\n]+): *\n((.+[^:] *\n)+)(\n+(?=([^\n]+: *\n|\n|$))|$)/gi,
+      regex: /([^\n<]+): *\n(([^]+[^:] *\n)+)(\n+(?=([^\n=]+: *\n|\n|$))|$)/gi,
 
       replace: function (match, id, content) {
         var h3 = '';
