@@ -36,16 +36,15 @@ Songs.helpers({
     return this.html;
   },
 
-  // Arg, crap. Can we parse imediately?
   getChords() {
-    if (!("html" in this)) {
+    if (!("chords" in this)) {
       this.parse(this.text);
     }
     return this.chords;
   },
 
   getTags() {
-    if (!("html" in this)) {
+    if (!("tags" in this)) {
       this.parse(this.text);
     }
     return this.tags;
