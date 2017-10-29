@@ -29,7 +29,6 @@ module.exports = function showdownRechords() {
     // TODO: akkordzeile erkennen und anders behandeln
     var line = content.replace(/\S+ ?/gi, parseWord);
     return line + '<br />';  // line is allowed to be empty.
-
   }
 
   function parseWord(match) {
@@ -72,7 +71,7 @@ module.exports = function showdownRechords() {
     // Verses
     {
       type: 'lang',
-      regex: /([^\n<]+): *\n(([^]+[^:] *\n)+)(\n+(?=([^\n=]+: *\n|\n|$))|$)/gi,
+      regex: /([^\n:]+): *\n((.+[^:] *\n)+)(\n+(?=([^\n]+: *\n|\n|$))|$)/gi,
 
       replace: function (match, id, content) {
         var h3 = '';

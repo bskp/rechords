@@ -33,7 +33,7 @@ class Editor extends Component {
     return (
       <div id="editor" className="content" onContextMenu={this.handleContextMenu}>
         <h1>Ein Lied: {this.props.song.title}</h1>
-        <textarea ref="source" onKeyUp={this.update} defaultValue={md} />
+        <textarea id="mainTextArea" ref="source" onKeyUp={this.update} defaultValue={md} />
       </div>
 
     );
