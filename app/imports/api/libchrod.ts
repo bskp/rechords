@@ -274,11 +274,11 @@ export default class ChrodLib {
       let scale = keyss[scalename];
       for (let key of Object.getOwnPropertyNames(scale)) {
         let val = scale[key];
-        console.debug(val);
+        //console.debug(val);
         if (val > best_val) {
           best_val = val;
           best = { scale: scalename, key: key };
-          console.debug("setting best", best);
+          //console.debug("setting best", best);
         }
       }
     }
@@ -294,19 +294,19 @@ export default class ChrodLib {
       Chord.parseChordString(chstr)
     );
     let pitches = chords.reduce((ar, chord) => ar.concat(chord.keys), []);
-    console.debug(pitches);
+    //console.debug(pitches);
 
     let penalties_byScale = {};
     let pitch_match_byScale = {};
     for (let scalename of Object.getOwnPropertyNames(Scales)) {
       let scale = Scales[scalename];
 
-      console.debug(scale);
+      //console.debug(scale);
       let penalties = {};
       let pitchmatch = {};
       for (var i = 0; i < 12; i++) {
         let shifted_scale = scale.pitches.map(p => (p + i) % 12);
-        console.debug(shifted_scale);
+        //console.debug(shifted_scale);
         let matches = pitches
           // TODO: use reduce and weight the grundton more
           .map(shifted => shifted_scale.some(p => p == shifted));
@@ -321,7 +321,7 @@ export default class ChrodLib {
       }
       penalties_byScale[scale.name] = penalties;
     }
-    console.log(penalties_byScale);
+    //console.log(penalties_byScale);
     return penalties_byScale;
   }
 
@@ -338,7 +338,7 @@ export default class ChrodLib {
       return [];
     }
     let scale = ChrodLib.guessKey(chordsList);
-    console.debug(scale);
+    //console.debug(scale);
 
     let current_pitch = forwardMap.get(scale.key);
 
@@ -361,8 +361,8 @@ export default class ChrodLib {
       .map(ch_str => Chord.parseChordString(ch_str))
       .map(ch => pitchmap.get((ch.idx + 48 + shift) % 12) + ch.str);
     let transposed_key = pitchmap.get(transposed_pitch);
-    console.debug("Transposed Key", transposed_key);
-    console.debug(tr_chords);
+    //console.debug("Transposed Key", transposed_key);
+    //console.debug(tr_chords);
     return tr_chords;
     // TODO: generate new chords list
   }
