@@ -25,8 +25,7 @@ showdown.setOption("smoothLivePreview", true);
 showdown.setOption("simplifiedAutoLink", true);
 showdown.setOption("openLinksInNewWindow", true);
 
-// TODO: shouldnt it be possible to just extend Mongo.Collection?
-export const Songs = new Mongo.Collection("songs");
+export default Songs = new Mongo.Collection('songs');
 
 Songs.helpers({
   getHtml() {

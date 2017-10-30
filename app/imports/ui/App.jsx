@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import {createContainer} from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
-import {Songs} from '../api/collections.js';
+import Songs from '../api/collections.js';
 
 import List from './List.jsx';
 import Viewer from './Viewer.jsx';
@@ -21,20 +21,35 @@ const empty_song = {
 // App component - represents the whole app
 class App extends Component {
 
-
     constructor(props) {
         super(props);
-        this.state = {editing: false};
     }
 
-    setEditing = (editing) => {
-        this.setState({editing: editing});
+    getSongTree() {
+        let filter = {};
+        let out = {};
+
+        this.props.songs.forEach((song) => {
+            if (out[song.author] === undefined) {
+                out[song.author] = [];
+            }
+            out[song.author].push(song);
+        });
+        return out;
     }
 
     render() {
+        let list = ( <p>Geduld...</p>);
+        if (!this.props.dataLoading) {
+            list = (<List tree={this.getSongTree()}/>);
+            //list = (<em>fettich.  </em>);
+        }
+
         return (
             <BrowserRouter>
                 <div className="container">
+                    {list}
+
                     <Switch>
                         <Route exact path='/' render={(props) => (
                             <div className="content">
@@ -72,9 +87,6 @@ class App extends Component {
 
                         <Route component={NoMatch}/>
                     </Switch>
-
-
-                    <List songs={this.props.songs}/>
                 </div>
             </BrowserRouter>
         );
@@ -88,12 +100,16 @@ const NoMatch = ({ location }) => (
 )
 
 App.propTypes = {
+    dataLoading: PropTypes.bool.isRequired,
     songs: PropTypes.array.isRequired,
 };
 
-export default createContainer(() => {
-    return {
-        songs: Songs.find({}).fetch(),
-    };
-}, App);
+export default withTracker(props => {
+  const handle = Meteor.subscribe('songs');
 
+  return {
+    //currentUser: Meteor.user(),
+    dataLoading: !handle.ready(),
+    songs: Songs.find({}, {sort: {title: 1}}).fetch(),
+  };
+})(App);
