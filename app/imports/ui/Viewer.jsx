@@ -36,6 +36,7 @@ class Viewer extends Component {
           ref="html"
           dangerouslySetInnerHTML={{ __html: this.props.song.getHtml() }}
         />
+        
         <section>
           <TranposeSetter
             doshit={this.handleTransposeSetter}

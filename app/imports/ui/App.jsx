@@ -66,6 +66,7 @@ class App extends Component {
                             if (song === undefined) {
                                 return (<h2>404. {match.match.params.title}</h2>)
                             }
+
                             return <Viewer song={song} />
                         }}/>
 
@@ -78,11 +79,14 @@ class App extends Component {
                             if (song === undefined) {
                                 return (<h2>404. {match.match.params.title}</h2>)
                             }
+
+                            song = Songs._transform(song);
                             return <Editor song={song} />
                         }}/>
 
                         <Route path="/new" render={() => {
-                            return <Editor song={empty_song} />
+                            song = Songs._transform(empty_song);
+                            return <Editor song={song} />
                         }}/>
 
                         <Route component={NoMatch}/>

@@ -216,6 +216,8 @@ class Chord {
   static parseChordString(chordString) {
     let parsedChordString = chordString.match(/([a-h](#|b)?)(-|\+|m?)(.*)/i);
 
+    if (parsedChordString == null) return;
+
     let keystr = parsedChordString[1].toUpperCase();
 
     let keydx = forwardMap.get(keystr);

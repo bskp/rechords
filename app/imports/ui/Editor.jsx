@@ -13,7 +13,7 @@ class Editor extends Component {
     this.props.song.parse(this.refs.source.value);
 
     Meteor.call('saveSong', this.props.song, function (error) {
-      console.log(error);
+      console.error(error);
     });
 
 		this.props.history.push('/view/' + this.props.song.author_ + '/' + this.props.song.title_);
