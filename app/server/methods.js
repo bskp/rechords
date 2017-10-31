@@ -1,4 +1,4 @@
-import { Songs } from '../imports/api/collections.js';
+import Songs from '../imports/api/collections.js';
 import { check } from 'meteor/check'
 var slug = require('slug')
 

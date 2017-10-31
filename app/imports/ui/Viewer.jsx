@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod.js";
+
 class Viewer extends Component {
   constructor() {
     super();
@@ -10,24 +11,20 @@ class Viewer extends Component {
   }
 
   handleContextMenu = event => {
-		let m = this.props.match.params;
-		this.props.history.push('/edit/' + m.author + '/' + m.title);
+    let m = this.props.match.params;
+    this.props.history.push('/edit/' + m.author + '/' + m.title);
     event.preventDefault();
   };
 
   // transponieren
   handleTransposeSetter = pitch => {
-    console.debug("Shit Done", pitch);
-
     this.setState({ relTranspose: pitch });
 
     // What now?
   };
 
   render() {
-    // <TransposeSetter> {this.props.relativeTranspose}</TransposeSetter>
     let chords = this.props.song.getChords();
-    console.log(chords);
     let chrodlib = new ChrodLib();
     return (
       <div
@@ -35,28 +32,33 @@ class Viewer extends Component {
         className="content"
         onContextMenu={this.handleContextMenu}
       >
-        <span
+        <section
           ref="html"
           dangerouslySetInnerHTML={{ __html: this.props.song.getHtml() }}
         />
-        <ul>
+        
+        <section>
           <TranposeSetter
             doshit={this.handleTransposeSetter}
             intialTranspose={this.state.relTranspose}
           />
           <table className="chordtable">
-            <tr>
-              <td>Orig:</td>
-              {chords.map(c => <td>{c}</td>)}
-            </tr>
-            <tr>
-              <td>Tran:</td>
-              {chrodlib
-                .transpose(chords, this.state.relTranspose)
-                .map(c => <td>{c}</td>)}
-            </tr>
+            <tbody>
+              <tr>
+                <td>Orig:</td>
+                {chords.map((c, i) =>
+                  <td key={i}>{c}</td>
+                )}
+              </tr>
+              <tr>
+                <td>Tran:</td>
+                {chrodlib.transpose(chords, this.state.relTranspose).map((c, i) =>
+                  <td key={i}>{c}</td>
+                )}
+              </tr>
+            </tbody>
           </table>
-        </ul>
+        </section>
       </div>
     );
   }

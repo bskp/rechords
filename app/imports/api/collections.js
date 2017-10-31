@@ -25,8 +25,7 @@ showdown.setOption("smoothLivePreview", true);
 showdown.setOption("simplifiedAutoLink", true);
 showdown.setOption("openLinksInNewWindow", true);
 
-// TODO: shouldnt it be possible to just extend Mongo.Collection?
-export const Songs = new Mongo.Collection("songs");
+export default Songs = new Mongo.Collection('songs');
 
 Songs.helpers({
   getHtml() {
@@ -57,7 +56,6 @@ Songs.helpers({
     // only member that exist in the mongo db are published
     // to the outside.
     this.html = xss(converter.makeHtml(this.text), options);
-    console.log(this.html);
     this.title = "";
     this.author = "";
     // Not sure if this works
@@ -116,7 +114,7 @@ class RmdHelpers {
         chords.push(chord_dom.textContent);
       }
     }
-    console.log(chords);
+    //console.log(chords);
     // console.log(ChrodLib.guessKey(this.chords));
     return chords;
   }

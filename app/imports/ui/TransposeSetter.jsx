@@ -95,6 +95,6 @@ export default class TranposeSetter extends Component {
 }
 
 TranposeSetter.propTypes = {
-  doshit: React.PropTypes.func,
-  initialTranspose: React.PropTypes.number
+  doshit: PropTypes.func,
+  initialTranspose: PropTypes.number
 };

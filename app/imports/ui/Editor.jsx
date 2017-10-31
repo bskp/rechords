@@ -13,7 +13,7 @@ class Editor extends Component {
     this.props.song.parse(this.refs.source.value);
 
     Meteor.call('saveSong', this.props.song, function (error) {
-      console.log(error);
+      console.error(error);
     });
 
 		this.props.history.push('/view/' + this.props.song.author_ + '/' + this.props.song.title_);
@@ -30,10 +30,16 @@ class Editor extends Component {
 
   render() {
     let md = this.props.song.text;
+    let rows = md.match(/\n/g).length * 1.4 + 10;
+    rows = Math.max(50, rows);
+
+    let style = {
+      'min-height': rows + 'em',
+    }
+
     return (
       <div id="editor" className="content" onContextMenu={this.handleContextMenu}>
-        <h1>Ein Lied: {this.props.song.title}</h1>
-        <textarea id="mainTextArea" ref="source" onKeyUp={this.update} defaultValue={md} />
+        <textarea ref="source" onKeyUp={this.update} defaultValue={md} style={style}/>
       </div>
 
     );

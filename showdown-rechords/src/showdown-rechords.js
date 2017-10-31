@@ -60,9 +60,9 @@ module.exports = function showdownRechords() {
     // Tags
     {
       type: 'lang',
-      regex: /(#(\S+) *)+/,
+      regex: /^\s*(#(\S+) *)+\s*$/gm,
       replace: function (tags) {
-        return '<ul class="tags">' + tags.replace(/#(\S+) */g, function (match, tag) {
+        return '<ul class="tags">' + tags.replace(/\s*#(\S+)\s*/g, function (match, tag) {
           return '\n    <li>' + tag + '</li>';
         }) + '\n</ul>';
       }

@@ -42,6 +42,7 @@ html {
 
   min-height: 100%;
   display: flex;
+  width: 100%;
 
   font-family: sans-serif;
   font-size: 14px;
@@ -110,10 +111,18 @@ aside {
   box-sizing: border-box;
   width: 300px;
 
+  padding-left: 0.5em;
+
   color: white;
+  background-color: grey;
 
   .selected {
-    font-weight: bold;
+    color: white;
+  }
+
+  h2 {
+    font-size: 1em;
+    text-transform: uppercase;
   }
 
   li {
@@ -123,8 +132,9 @@ aside {
   li a, li button {
     color: black;
     display: block;
-    padding: 15px;
-    border-bottom: #eee dotted 1px;
+    padding: 5px;
+    padding-left: 1em;
+    //border-bottom: #eee dotted 1px;
   }
 
   ul {
@@ -139,7 +149,7 @@ aside {
   width: 100%;
   min-height: 100%;
 
-  padding: 1em 2em 5em;
+  padding: 1em 2em 1em;
 
   background-color: white;
 }
@@ -155,15 +165,9 @@ h1 {
 
 // Editor.jsx
 // TODO: attach at jsx level?
-#mainTextArea {
-  height: 100%;
-
-  border : solid 1px lightgray;
-
-  padding: 8px;
-
-  border-radius: 8px;
-
-
+#editor textarea {
+  overflow-y: hidden;
+  &:focus {
+    outline: none;
+  }
 }
-
