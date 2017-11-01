@@ -54,8 +54,7 @@ class App extends Component {
 
         return (
             <BrowserRouter>
-                <div className="container">
-
+                <div id="route">
                     {list}
 
                     <Switch>

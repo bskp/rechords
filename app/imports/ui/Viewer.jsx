@@ -33,6 +33,7 @@ class Viewer extends Component {
         onContextMenu={this.handleContextMenu}
       >
         <section
+          className="chordsheet"
           ref="html"
           dangerouslySetInnerHTML={{ __html: this.props.song.getHtml() }}
         />

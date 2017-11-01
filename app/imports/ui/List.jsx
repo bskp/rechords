@@ -74,7 +74,7 @@ export default class List extends Component {
                         <ListGroup label={group} songs={this.props.tree[group]} key={group}/>
                     )}
                     <li>
-                        <NavLink to="/new">Add Song…</NavLink>
+                        <h2><NavLink to="/new">Add Song…</NavLink></h2>
                     </li>
                 </ul>
             </aside>

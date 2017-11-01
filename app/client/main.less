@@ -34,18 +34,18 @@ html {
 
 
 // Layout
-#content, body {
-  padding: 0;
+body {
   margin: 0;
+  padding: 0;
+}
 
-  width: 100%;
-
-  min-height: 100%;
+#body {
   display: flex;
+  min-height: 100%;
   width: 100%;
 
   font-family: sans-serif;
-  font-size: 14px;
+  font-size: 18px;
   background-color: grey;
 }
 
@@ -61,47 +61,57 @@ html {
 }
 
 
-.container {
+#route {
   display: flex;
-
-  width: 100%;
   min-height: 100%;
+  width: 100%;
+}
 
-  font-size: 1.2em;
+.chordsheet {
+  color: darkgray;
+
+  h1, h2, h3 {
+    color: black;
+  }
 
   h3 {
-      font-weight: normal;
-      font-style: italic;
-      font-size: 1em;
-      margin-bottom: -0.5em;
+    font-weight: normal;
+    font-style: italic;
+    font-size: 1em;
+    margin-bottom: -0.5em;
   }
 
   p {
       line-height: 1.4em;
   }
 
-  .chord {
-      @cw: 2em;
-      font-weight: bold;
-      position: relative;
-      display: inline-block;
-      top: -1em;
-      margin-top: 1em;
-      width: @cw;
-      margin-right: -@cw;
+  .s {
+    color: black;
+  }
 
-      & + .chord {
-          left: 1*@cw;
-          & + .chord {
-              left: 2*@cw;
-              & + .chord {
-                  left: 3*@cw;
-                  & + .chord {
-                      left: 4*@cw;
-                  }
-              }
-          }
-      }
+  .chord {
+    @cw: 2em;
+    color: black;
+    font-weight: bold;
+    position: relative;
+    display: inline-block;
+    top: -1em;
+    margin-top: 1em;
+    width: @cw;
+    margin-right: -@cw;
+
+    & + .chord {
+        left: 1*@cw;
+        & + .chord {
+            left: 2*@cw;
+            & + .chord {
+                left: 3*@cw;
+                & + .chord {
+                    left: 4*@cw;
+                }
+            }
+        }
+    }
   }
 }
 
@@ -129,7 +139,12 @@ aside {
     display: block;
   }
 
-  li a, li button {
+  a {
+    color: inherit;
+    font-weight: inherit;
+  }
+
+  li > a, li button {
     color: black;
     display: block;
     padding: 5px;
@@ -142,13 +157,18 @@ aside {
   }
 }
 
+.contentColumn {
+  box-sizing: border-box;
+  overflow: hidden;
+  min-height: 100%;
+}
+
 .content {
   box-sizing: border-box;
   overflow: hidden;
-
-  width: 100%;
   min-height: 100%;
 
+  width: 100%;
   padding: 1em 2em 1em;
 
   background-color: white;
@@ -165,9 +185,18 @@ h1 {
 
 // Editor.jsx
 // TODO: attach at jsx level?
-#editor textarea {
-  overflow-y: hidden;
-  &:focus {
-    outline: none;
+#editor {
+  display: flex;
+
+  section {
+    width: 50%;
+  }
+
+  textarea {
+    width: 50%;
+    overflow-y: hidden;
+    &:focus {
+      outline: none;
+    }
   }
 }

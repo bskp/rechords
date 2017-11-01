@@ -5,8 +5,9 @@ import {withRouter} from 'react-router-dom';
 
 class Editor extends Component {
 
-  constructor() {
+  constructor(props) {
     super();
+    this.state = {song: props.song};
   }
 
   handleContextMenu = (event) => {
@@ -22,6 +23,11 @@ class Editor extends Component {
   }
 
   update = () => {
+    this.setState((previous, props) =>  {
+      this.state.song.parse(this.refs.source.value);
+      return {song: this.state.song};
+    })
+    console.log('song updated');
     /*
     this.props.song = Songs._transform(this.props.song);
     this.props.song.parse(this.refs.source.value);
@@ -29,16 +35,21 @@ class Editor extends Component {
   }
 
   render() {
-    let md = this.props.song.text;
+    let md = this.state.song.text;
     let rows = md.match(/\n/g).length * 1.4 + 10;
     rows = Math.max(50, rows);
 
     let style = {
-      'min-height': rows + 'em',
+      minHeight: rows + 'em',
     }
 
     return (
       <div id="editor" className="content" onContextMenu={this.handleContextMenu}>
+        <section
+          className="chordsheet"
+          ref="html"
+          dangerouslySetInnerHTML={{ __html: this.state.song.getHtml() }}
+        />
         <textarea ref="source" onKeyUp={this.update} defaultValue={md} style={style}/>
       </div>
 
