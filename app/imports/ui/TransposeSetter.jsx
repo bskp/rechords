@@ -1,5 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
+import "rc-tooltip/assets/bootstrap.css";
+const createSliderWithTooltip = Slider.createSliderWithTooltip;
 
 // Javascript style "static" import
 var abs = Math.abs,
@@ -44,6 +48,13 @@ export default class TranposeSetter extends Component {
     this.props.doshit(Number.parseInt(value));
   };
 
+  handleSlider = value => {
+    this.setState({
+      relTranspose: value
+    });
+    this.props.doshit(Number.parseInt(value));
+  };
+
   static equivalentShift(pitch) {
     let pit = Number.parseInt(pitch);
     let int = pit / 12;
@@ -53,33 +64,40 @@ export default class TranposeSetter extends Component {
     return str;
   }
 
+  tipFormatter = v => {
+    return v;
+  }
+
   // Inherited from React.Component
   render() {
     // TODO: make object and calculate resulting key
-    const options = [];
-    const selection = 2; //convertthis.props.selection;
-
-    for (var i = -17; i <= 17; i++) {
-      var selected = false;
-      if (i === selection) {
-        const selected = true;
-      }
-      let desc = TranposeSetter.intFromPitch(i);
-      options.push({ key: i, desc: desc });
-    }
+    const wrapperStyle = { width: 400, margin: 20 };
+    const marks = {
+      "-7": -7,
+      '-3': -3,
+      0: 0,
+      3: 3,
+      7: 7
+    };
     return (
       <div name="transposer">
-        <input
-          id="typeinp"
-          type="range"
-          min="-7"
-          max="7"
-          name="relTranspose"
-          value={this.state.relTranspose}
-          onChange={this.doSomething}
-          step="1"
-        />
-        <span>{TranposeSetter.intFromPitch(this.state.relTranspose)}</span>
+        <div style={wrapperStyle}>
+          <Slider
+            id="typeinp"
+            min={-7}
+            max={7}
+            name="relTranspose"
+            value={this.state.relTranspose}
+            onChange={this.handleSlider}
+            marks = {marks}
+            step={1}
+            tipFormatter = {this.tipFormatter}
+            dots
+
+
+          />
+        </div>
+        {/*<span>{TranposeSetter.intFromPitch(this.state.relTranspose)}</span> */}
         {/* &#8644;
         <span id="equiv">
           {TranposeSetter.equivalentShift(this.state.relTranspose)}
@@ -88,9 +106,13 @@ export default class TranposeSetter extends Component {
       </div>
     );
   }
+  /**
+   * 
+   * @param {number} i 
+   */
   static intFromPitch(i) {
     let vz = i < 0 ? "-" : "+";
-    return vz + Math.abs(i) + "Halbtöne / " + vz + intervalls.get(Math.abs(i));
+    return vz + Math.abs(i) + " Halbtöne = " + vz + intervalls.get(Math.abs(i));
   }
 }
 

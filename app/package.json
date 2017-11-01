@@ -7,8 +7,10 @@
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
+    "indexof": "0.0.1",
     "meteor-node-stubs": "~0.2.4",
     "prop-types": "^15.6.0",
+    "rc-slider": "^8.3.5",
     "react": "^15.6.2",
     "react-addons-pure-render-mixin": "^15.6.2",
     "react-dom": "^15.6.2",
