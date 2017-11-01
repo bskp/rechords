@@ -176,8 +176,9 @@ var Scales = {
 
 class Chord {
   // TODO: string rep?
+  // TODO: str should be an emum
   idx: number;
-  constructor(public key: Key, public keys: Array<Number>, public str: string) {
+  constructor(public key: Key, public keys: Array<Number>, public str: string, public rest: string = '') {
     this.idx = key.idx;
   }
 
@@ -185,27 +186,27 @@ class Chord {
    * 
    * @param {Key} key 
    */
-  static minor(key) {
+  static minor(key, rest) {
     let base = key.idx;
     let keys = [base, base + 3, base + 7].map(p => p % 12);
-    return new Chord(key, keys, "m");
+    return new Chord(key, keys, "m", rest);
   }
 
-  static major(key) {
+  static major(key, rest) {
     let base = key.idx;
     let keys = [base, base + 4, base + 7].map(p => p % 12);
-    return new Chord(key, keys, "");
+    return new Chord(key, keys, "", rest);
   }
 
-  static plus(key) {
+  static plus(key, rest) {
     let base = key.idx;
     let keys = [base, base + 4, base + 8].map(p => p % 12);
-    return new Chord(key, keys, "+");
+    return new Chord(key, keys, "+", rest);
   }
-  static minus(key) {
+  static minus(key, rest) {
     let base = key.idx;
     let keys = [base, base + 3, base + 6].map(p => p % 12);
-    return new Chord(key, keys, "dim");
+    return new Chord(key, keys, "dim", rest);
   }
 
   /**
@@ -214,7 +215,7 @@ class Chord {
      * @returns {Chord} 
      */
   static parseChordString(chordString) {
-    let parsedChordString = chordString.match(/([a-h](#|b)?)(-|\+|m?)(.*)/i);
+    let parsedChordString = chordString.match(/([a-h](#|b)?)(-|\+|m?(?!aj))(.*)/i);
 
     if (parsedChordString == null) return;
 
@@ -224,19 +225,21 @@ class Chord {
 
     let key = new Key(keystr, keydx);
 
+    let rest = parsedChordString[4];
+
     if (parsedChordString[3] == "m") {
-      return Chord.minor(key);
+      return Chord.minor(key, rest);
     } else if (parsedChordString[3] == "+") {
-      return Chord.plus(key);
+      return Chord.plus(key, rest);
     } else if (parsedChordString[3] == "-") {
-      return Chord.minus(key);
+      return Chord.minus(key, rest);
     } else {
-      return Chord.major(key);
+      return Chord.major(key, rest);
     }
   }
 
   get chordString() {
-    return this.key + this.str;
+    return this.key + this.str + this.rest;
   }
 }
 
@@ -359,9 +362,11 @@ export default class ChrodLib {
     } else {
       pitchmap = shMap;
     }
+    // Todo: chord should shift itself -> chord.transpose()
     let tr_chords = chordsList
       .map(ch_str => Chord.parseChordString(ch_str))
-      .map(ch => pitchmap.get((ch.idx + 48 + shift) % 12) + ch.str);
+      .map(ch => pitchmap.get((ch.idx + 48 + shift) % 12) + ch.str + ch.rest);
+
     let transposed_key = pitchmap.get(transposed_pitch);
     //console.debug("Transposed Key", transposed_key);
     //console.debug(tr_chords);
