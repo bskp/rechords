@@ -88,7 +88,7 @@ Songs.helpers({
   }
 });
 
-class RmdHelpers {
+export class RmdHelpers {
   static collectTags(dom) {
     let tags = [];
     let uls = dom.getElementsByTagName("ul");
@@ -105,13 +105,16 @@ class RmdHelpers {
     return tags;
   }
   static collectChords(dom) {
+    return this.collectChordsDom(dom).map(c => c.textContent);
+  }
+  static collectChordsDom(dom) {
     let chords = [];
 
     let uls = dom.getElementsByTagName("span");
     for (i = 0; i < uls.length; i++) {
       let chord_dom = uls[i];
       if (chord_dom.getAttribute("class") == "chord") {
-        chords.push(chord_dom.textContent);
+        chords.push(chord_dom);
       }
     }
     //console.log(chords);
