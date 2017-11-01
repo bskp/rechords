@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 var abs = Math.abs,
   sign = Math.sign;
 var intervalls = new Map([
-  [0, "Nulline"],
+  [0, "Original"],
   [1, "Kl. Sekunde"],
   [2, "Gr. Sekunde"],
   [3, "Kl. Terz"],
@@ -27,8 +27,10 @@ var intervalls = new Map([
 export default class TranposeSetter extends Component {
   constructor(props) {
     super(props);
-    let initialTranspose = this.props.intialTranspose?this.props.intialTranspose:0 ; 
-    this.state = { relTranspose: initialTranspose};
+    let initialTranspose = this.props.intialTranspose
+      ? this.props.intialTranspose
+      : 0;
+    this.state = { relTranspose: initialTranspose };
   }
 
   doSomething = event => {
@@ -67,30 +69,28 @@ export default class TranposeSetter extends Component {
     }
     return (
       <div name="transposer">
-        <select
+        <input
+          id="typeinp"
+          type="range"
+          min="-7"
+          max="7"
           name="relTranspose"
+          value={this.state.relTranspose}
           onChange={this.doSomething}
-          type="number"
-          id="relativeTransposeInput"
-          defaultValue="0"
-        >
-          {options.map(o => (
-            <option key={o.key} value={o.key}>
-              {o.desc}
-            </option>
-          ))}
-        </select>
-        &#8644;
+          step="1"
+        />
+        <span>{TranposeSetter.intFromPitch(this.state.relTranspose)}</span>
+        {/* &#8644;
         <span id="equiv">
           {TranposeSetter.equivalentShift(this.state.relTranspose)}
-        </span>
+        </span> */}
         {/*<span>{JSON.stringify(this.state)}</span>*/}
       </div>
     );
   }
   static intFromPitch(i) {
     let vz = i < 0 ? "-" : "+";
-    return vz + Math.abs(i) + " / " + vz + intervalls.get(Math.abs(i));
+    return vz + Math.abs(i) + "Halbtöne / " + vz + intervalls.get(Math.abs(i));
   }
 }
 
