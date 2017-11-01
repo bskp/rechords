@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "meteor run",
-		"preinstall": "grunt --gruntfile ../showdown-rechords/Gruntfile.js prep-release"
+    "preinstall": "grunt --gruntfile ../showdown-rechords/Gruntfile.js prep-release"
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
