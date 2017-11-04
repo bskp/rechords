@@ -28,10 +28,6 @@ class Editor extends Component {
       return {song: this.state.song};
     })
     console.log('song updated');
-    /*
-    this.props.song = Songs._transform(this.props.song);
-    this.props.song.parse(this.refs.source.value);
-    */
   }
 
   render() {

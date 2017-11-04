@@ -54,46 +54,47 @@ class App extends Component {
 
         return (
             <BrowserRouter>
-                <div id="route">
-                    {list}
-
-                    <Switch>
-                        <Route exact path='/' render={(props) => (
-                            <div className="content">
-                                <h1>hallo zusammen!</h1>
-                            </div>
-                        )} />
+                <Switch>
+                    <Route exact path='/' render={(props) => (
+                        <div className="content">
+                            <h1>hallo zusammen!</h1>
+                        </div>
+                    )} />
 
 
-                        <Route path='/view/:author/:title' render={(match) => {
-                            let song = getSong(match.match.params);
+                    <Route path='/view/:author/:title' render={(match) => {
+                        let song = getSong(match.match.params);
 
-                            if (song === undefined) {
-                                return (<h2>404. {match.match.params.title}</h2>)
-                            }
+                        if (song === undefined) {
+                            return (<h2>404. {match.match.params.title}</h2>)
+                        }
 
-                            return <Viewer song={song} />
-                        }} />
+                        return (
+                        <div className="container">
+                            {list}
+                            <Viewer song={song} />
+                        </div>
+                        )
+                    }} />
 
-                        <Route path='/edit/:author/:title' render={(match) => {
-                            let song = getSong(match.match.params);
+                    <Route path='/edit/:author/:title' render={(match) => {
+                        let song = getSong(match.match.params);
 
-                            if (song === undefined) {
-                                return (<h2>404. {match.match.params.title}</h2>)
-                            }
+                        if (song === undefined) {
+                            return (<h2>404. {match.match.params.title}</h2>)
+                        }
 
-                            song = Songs._transform(song);
-                            return <Editor song={song} />
-                        }} />
+                        song = Songs._transform(song);
+                        return <Editor song={song} />
+                    }} />
 
-                        <Route path="/new" render={() => {
-                            song = Songs._transform(empty_song);
-                            return <Editor song={song} />
-                        }} />
+                    <Route path="/new" render={() => {
+                        song = Songs._transform(empty_song);
+                        return <Editor song={song} />
+                    }} />
 
-                        <Route component={NoMatch} />
-                    </Switch>
-                </div>
+                    <Route component={NoMatch} />
+                </Switch>
             </BrowserRouter>
         );
     }
