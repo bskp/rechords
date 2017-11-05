@@ -2,18 +2,20 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { withTracker } from 'meteor/react-meteor-data';
+import { CSSTransitionGroup } from 'react-transition-group'
 
 import Songs from '../api/collections.js';
 
 import List from './List.jsx';
 import Viewer from './Viewer.jsx';
 import Editor from './Editor.jsx';
+import Collapsed from './Collapsed.jsx';
 
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 const empty_song = {
     title: "New Song",
-    text: "Enter lyrics to get started!",
+    text: "Titel\nInterpret\n========\n\n#Schlagwort\n\n1:\nDas ist die [A]erste Strophe\nHat zum Teil auch [em]Akkorde\n\nref:\nTra la lalala\nla la lala la la\n\n2:\nUnd noch eine weil's so schön ist",
     author: "Unknown"
 };
 
@@ -56,9 +58,12 @@ class App extends Component {
             <BrowserRouter>
                 <Switch>
                     <Route exact path='/' render={(props) => (
-                        <div className="content">
-                            <h1>hallo zusammen!</h1>
-                        </div>
+                            <div className="container">
+                                {list}
+                                <div className="content">
+                                <h1>so.</h1>
+                                </div>
+                            </div>
                     )} />
 
 
@@ -70,10 +75,10 @@ class App extends Component {
                         }
 
                         return (
-                        <div className="container">
-                            {list}
-                            <Viewer song={song} />
-                        </div>
+                            <div className="container">
+                                {list}
+                                <Viewer song={song} />
+                            </div>
                         )
                     }} />
 
@@ -85,7 +90,10 @@ class App extends Component {
                         }
 
                         song = Songs._transform(song);
-                        return <Editor song={song} />
+
+                        return (
+                            <Editor song={song} />
+                        )
                     }} />
 
                     <Route path="/new" render={() => {

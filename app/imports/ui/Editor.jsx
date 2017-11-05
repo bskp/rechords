@@ -1,38 +1,52 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Songs } from '../api/collections.js';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import Collapsed from './Collapsed.jsx';
 
 class Editor extends Component {
 
   constructor(props) {
     super();
-    this.state = {song: props.song};
+    this.state = { song: props.song };
   }
 
   handleContextMenu = (event) => {
     this.props.song.parse(this.refs.source.value);
 
-    Meteor.call('saveSong', this.props.song, function (error) {
-      console.error(error);
-    });
+    Meteor.call('saveSong', this.props.song, (error, success) => {
+      if (error !== undefined) {
+        console.error.log(error);
+      }
 
-		this.props.history.push('/view/' + this.props.song.author_ + '/' + this.props.song.title_);
+      if (success) {
+        this.props.history.push('/view/' + this.props.song.author_ + '/' + this.props.song.title_);
+      } else {
+        this.props.history.push('/');
+      }
+    });
 
     event.preventDefault();
   }
 
   update = () => {
-    this.setState((previous, props) =>  {
+    this.setState((previous, props) => {
       this.state.song.parse(this.refs.source.value);
-      return {song: this.state.song};
+      return { song: this.state.song };
     })
     console.log('song updated');
   }
 
   render() {
     let md = this.state.song.text;
-    let rows = md.match(/\n/g).length * 1.4 + 10;
+
+    let rows = md.match(/\n/g)
+    if (rows == null) {
+      rows = 0;
+    } else {
+      rows.length * 1.4 + 10;
+    }
+
     rows = Math.max(50, rows);
 
     let style = {
@@ -40,13 +54,14 @@ class Editor extends Component {
     }
 
     return (
-      <div id="editor" className="content" onContextMenu={this.handleContextMenu}>
+      <div id="editor" onContextMenu={this.handleContextMenu}>
+        <Collapsed id="list" onClick={this.handleContextMenu} />
         <section
-          className="chordsheet"
+          className="chordsheet content"
           ref="html"
           dangerouslySetInnerHTML={{ __html: this.state.song.getHtml() }}
         />
-        <textarea ref="source" onKeyUp={this.update} defaultValue={md} style={style}/>
+        <textarea ref="source" className="content" onKeyUp={this.update} defaultValue={md} style={style} />
       </div>
 
     );

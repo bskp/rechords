@@ -24,13 +24,11 @@ button {
 textarea {
   display: block;
   width: 100%;
-  height: 100%
 }
 
-html {
-  height: 100%;
-}
-
+// Globals
+@accent: rgb(221, 68, 7);
+//@accent: rgb(0, 148, 253);
 
 // Layout
 body {
@@ -40,7 +38,6 @@ body {
 
 #body {
   display: flex;
-  min-height: 100%;
   width: 100%;
 
   font-family: sans-serif;
@@ -62,15 +59,20 @@ body {
 
 #route {
   display: flex;
-  min-height: 100%;
   width: 100%;
 }
 
 .chordsheet {
-  color: darkgray;
+  color: hsv(hsvhue(@accent), 0.2, 0.5);
 
   h1, h2, h3 {
     color: black;
+  }
+
+  h1 { color: @accent }
+
+  h1, h2 {
+    display: inline-block;
   }
 
   h3 {
@@ -90,7 +92,7 @@ body {
 
   .chord {
     @cw: 2em;
-    color: black;
+    color: @accent;
     font-weight: bold;
     position: relative;
     display: inline-block;
@@ -120,10 +122,22 @@ aside {
   box-sizing: border-box;
   width: 300px;
 
+  &.collapsed {
+    width: 30px;
+    cursor: pointer;
+  }
+
+  &#list {
+    background-color: hsv(hsvhue(@accent), 0.2, 0.5);
+  }
+
+  &#edit {
+    background-color: hsv(hsvhue(@accent), 0.8, 0.8);
+  }
+
   padding-left: 0.5em;
 
   color: white;
-  background-color: grey;
 
   .selected {
     color: white;
@@ -156,16 +170,10 @@ aside {
   }
 }
 
-.contentColumn {
-  box-sizing: border-box;
-  overflow: hidden;
-  min-height: 100%;
-}
-
 .content {
   box-sizing: border-box;
   overflow: hidden;
-  min-height: 100%;
+  min-height: 100vh;
 
   width: 100%;
   padding: 1em 2em 1em;
@@ -194,12 +202,14 @@ h1 {
 // TODO: attach at jsx level?
 #editor {
   display: flex;
+  width: 100%;
 
   section {
     width: 50%;
   }
 
   textarea {
+    background-color: hsv(hsvhue(@accent), 0.7, 0.8);
     font-family: 'Input Mono', sans-serif;
     font-weight: 300;
     font-size: 0.9em;
@@ -208,5 +218,20 @@ h1 {
     &:focus {
       outline: none;
     }
+  }
+}
+
+#transposer {
+  position: fixed;
+  height: 400px;
+  right: 70px;
+
+  .rc-slider-track {
+    background-color: @accent;
+  }
+
+  .rc-slider-handle,
+  .rc-slider-dot-active {
+    border-color: @accent;
   }
 }

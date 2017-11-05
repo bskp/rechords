@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod.js";
 import { RmdHelpers } from "../api/collections.js";
+import Collapsed from './Collapsed.jsx';
 // var DOMParser = require("xmldom").DOMParser;
 
 class Viewer extends Component {
@@ -77,24 +78,27 @@ class Viewer extends Component {
     }
 
     return (
-      <div
-        id="viewer"
-        className="content"
-        onContextMenu={this.handleContextMenu}
-      >
-        <section>
-          <TranposeSetter
-            doshit={this.handleTransposeSetter}
-            intialTranspose={this.state.relTranspose}
+      <div className="container">
+        <div
+          id="viewer"
+          className="content"
+          onContextMenu={this.handleContextMenu}
+        >
+          <section>
+            <TranposeSetter
+              doshit={this.handleTransposeSetter}
+              intialTranspose={this.state.relTranspose}
+            />
+            {/* Leave Chord Table for the moment */}
+            {/*chordtable*/}
+          </section>
+          <section
+            ref="html"
+            className="chordsheet"
+            dangerouslySetInnerHTML={{ __html: html_transposed }}
           />
-          {/* Leave Chord Table for the moment */}
-          {chordtable}
-        </section>
-        <section
-          ref="html"
-          className="chordsheet"
-          dangerouslySetInnerHTML={{ __html: html_transposed }}
-        />
+        </div>
+        <Collapsed id="edit" onClick={this.handleContextMenu} />
       </div>
     );
   }

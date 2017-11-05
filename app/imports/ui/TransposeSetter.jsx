@@ -71,7 +71,6 @@ export default class TranposeSetter extends Component {
   // Inherited from React.Component
   render() {
     // TODO: make object and calculate resulting key
-    const wrapperStyle = { width: 400, margin: 20 };
     const marks = {
       "-7": -7,
       '-3': -3,
@@ -80,8 +79,7 @@ export default class TranposeSetter extends Component {
       7: 7
     };
     return (
-      <div name="transposer">
-        <div style={wrapperStyle}>
+      <div id="transposer">
           <Slider
             id="typeinp"
             min={-7}
@@ -93,10 +91,10 @@ export default class TranposeSetter extends Component {
             step={1}
             tipFormatter = {this.tipFormatter}
             dots
+            vertical={true}
 
 
           />
-        </div>
         {/*<span>{TranposeSetter.intFromPitch(this.state.relTranspose)}</span> */}
         {/* &#8644;
         <span id="equiv">

@@ -71,6 +71,11 @@ Songs.helpers({
     // Set Metadata
     let dom = new DOMParser().parseFromString(this.html, "text/html");
 
+    if (dom === undefined) {
+      // Delete song
+      return;
+    }
+
     let h1 = dom.getElementsByTagName("h1");
     if (h1.length > 0) {
       this.title = h1[0].textContent;
@@ -92,12 +97,12 @@ export class RmdHelpers {
   static collectTags(dom) {
     let tags = [];
     let uls = dom.getElementsByTagName("ul");
-    for (i = 0; i < uls.length; i++) {
+    for (let i = 0; i < uls.length; i++) {
       let ul = uls[i];
       if (ul.getAttribute("class") != "tags") continue;
 
       let lis = ul.getElementsByTagName("li");
-      for (j = 0; j < lis.length; j++) {
+      for (let j = 0; j < lis.length; j++) {
         let li = lis[j];
         tags.push(li.textContent);
       }
@@ -111,7 +116,7 @@ export class RmdHelpers {
     let chords = [];
 
     let uls = dom.getElementsByTagName("span");
-    for (i = 0; i < uls.length; i++) {
+    for (let i = 0; i < uls.length; i++) {
       let chord_dom = uls[i];
       if (chord_dom.getAttribute("class") == "chord") {
         chords.push(chord_dom);

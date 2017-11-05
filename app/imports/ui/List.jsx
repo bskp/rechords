@@ -68,13 +68,13 @@ export default class List extends Component {
         }
 
         return (
-            <aside>
+            <aside id="list">
                 <ul>
                     {groups.map((group) => 
                         <ListGroup label={group} songs={this.props.tree[group]} key={group}/>
                     )}
                     <li>
-                        <h2><NavLink to="/new">Add Song…</NavLink></h2>
+                        <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
                     </li>
                 </ul>
             </aside>

@@ -19,15 +19,15 @@ Meteor.methods({
         if ('_id' in song) {
             if (song.text.match(/^\s*$/) == null) {
                 Songs.update(song._id, song);
+                return true;
             } else {
                 Songs.remove(song._id);
+                return false;
             }
         } else {
-                Songs.remove(song._id);
             Songs.insert(song);
+            return true;
         }
-
-        return song._id;
     }
 
   });
