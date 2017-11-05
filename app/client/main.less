@@ -72,14 +72,14 @@ body {
   h1 { color: @accent }
 
   h1, h2 {
+    font-size: 2em;
     display: inline-block;
   }
 
   h3 {
-    font-weight: normal;
-    font-style: italic;
     font-size: 1em;
-    margin-bottom: -0.5em;
+    margin-bottom: -1em;
+    margin-top: 2em;
   }
 
   p {
@@ -135,15 +135,10 @@ aside {
     background-color: hsv(hsvhue(@accent), 0.8, 0.8);
   }
 
-  padding-left: 0.5em;
-
   color: white;
 
-  .selected {
-    color: white;
-  }
-
   h2 {
+    padding-left: 0.9em;
     font-size: 1em;
     text-transform: uppercase;
   }
@@ -160,9 +155,12 @@ aside {
   li > a, li button {
     color: black;
     display: block;
-    padding: 5px;
+    padding: 0.3em;
     padding-left: 1em;
-    //border-bottom: #eee dotted 1px;
+
+    &.selected {
+      background-color: hsv(hsvhue(@accent), 0.8, 0.8);
+    }
   }
 
   ul {
