@@ -92,8 +92,6 @@ export default class TranposeSetter extends Component {
             tipFormatter = {this.tipFormatter}
             dots
             vertical={true}
-
-
           />
         {/*<span>{TranposeSetter.intFromPitch(this.state.relTranspose)}</span> */}
         {/* &#8644;

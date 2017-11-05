@@ -55,7 +55,10 @@ class Editor extends Component {
 
     return (
       <div id="editor" onContextMenu={this.handleContextMenu}>
-        <Collapsed id="list" onClick={this.handleContextMenu} />
+        <Collapsed id="list" onClick={this.handleContextMenu}>
+          <h1>sichern<br />&amp;&nbsp;zurück</h1>
+          <p>Schneller:&nbsp;Rechtsklick!</p>
+        </Collapsed>
         <section
           className="chordsheet content"
           ref="html"

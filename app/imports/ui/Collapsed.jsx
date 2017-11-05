@@ -8,7 +8,8 @@ class Collapsed extends Component {
         return <aside
             className="collapsed"
             id={this.props.id}
-        >&nbsp;</aside>
+            onClick={this.props.onClick}
+        >{this.props.children}&nbsp;</aside>
     }
 }
 

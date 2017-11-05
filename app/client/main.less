@@ -67,14 +67,20 @@ body {
 
   h1, h2, h3 {
     color: black;
+    margin-top: 0;
   }
-
-  h1 { color: @accent }
 
   h1, h2 {
     font-size: 2em;
     display: inline-block;
   }
+
+  h1 {
+    color: @accent;
+    margin-bottom: 0;
+    margin-right: 0.5em;
+  }
+
 
   h3 {
     font-size: 1em;
@@ -123,8 +129,20 @@ aside {
   width: 300px;
 
   &.collapsed {
-    width: 30px;
+    @width: 30px;
+    overflow: hidden;
+    width: @width;
     cursor: pointer;
+    transition: width 0.3s;
+    z-index: 100;
+    box-sizing: border-box;
+    padding-left: @width;
+    
+    p { color: black; }
+
+    &:hover {
+      width: 300px;
+    }
   }
 
   &#list {
@@ -177,14 +195,6 @@ aside {
   padding: 1em 2em 1em;
 
   background-color: white;
-}
-
-h1 {
-  font-size: 1.5em;
-  margin: 0;
-  margin-bottom: 10px;
-  display: inline-block;
-  margin-right: 1em;
 }
 
 // CSS-wise transparent container to satisfy react.

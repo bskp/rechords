@@ -98,7 +98,10 @@ class Viewer extends Component {
             dangerouslySetInnerHTML={{ __html: html_transposed }}
           />
         </div>
-        <Collapsed id="edit" onClick={this.handleContextMenu} />
+        <Collapsed id="edit" onClick={this.handleContextMenu}>
+          <h1>bearbeiten</h1>
+          <p>Schneller:&nbsp;Rechtsklick!</p>
+        </Collapsed>
       </div>
     );
   }

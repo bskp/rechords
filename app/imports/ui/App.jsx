@@ -61,7 +61,7 @@ class App extends Component {
                             <div className="container">
                                 {list}
                                 <div className="content">
-                                <h1>so.</h1>
+                                <h1>Probieren wirs einmal!</h1>
                                 </div>
                             </div>
                     )} />
