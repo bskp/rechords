@@ -15,7 +15,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 const empty_song = {
     title: "New Song",
-    text: "Titel\nInterpret\n========\n\n#Schlagwort\n\n1:\nDas ist die [A]erste Strophe\nHat zum Teil auch [em]Akkorde\n\nref:\nTra la lalala\nla la lala la la\n\n2:\nUnd noch eine weil's so schön ist",
+    text: "Titel\nInterpret\n========\n\n#Schlagwort\n\nText ohne vorangehenden Titel mit Doppelpunkt ist einfach Kommentar.\n\n1:\nDas ist die [A]erste Strophe\nHat zum Teil auch [em]Akkorde\n\nref:\nTra la lalala\nla la lala la la\n\n2:\nUnd noch eine weil's so schön ist",
     author: "Unknown"
 };
 
