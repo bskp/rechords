@@ -218,7 +218,11 @@ class Chord {
 
     if (parsedChordString == null) return;
 
-    let keystr = parsedChordString[1].toUpperCase();
+    let keystr = parsedChordString[1].charAt(0).toUpperCase();
+    if ( parsedChordString[1].length > 1 ){
+      keystr+=parsedChordString[1
+      ].charAt(1);
+    }
 
     let keydx = forwardMap.get(keystr);
 
