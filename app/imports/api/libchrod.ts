@@ -32,6 +32,10 @@ class Key {
     }
     // todo: neutral, flat or sharp?
   }
+  static parseName(name: string) {
+    let idx = forwardMap.get(name);
+    return new Key(name, idx); 
+  }
 }
 
 // TODO: Implement all Stuff related to transposing chords in major, minor keys...
@@ -105,7 +109,7 @@ class Scale {
      * @param {string} name 
      * @param {Array<number>} pitches 
      */
-  bmap: Map<number, ToBorSharp>;
+  public bmap: Map<number, ToBorSharp>;
   constructor(
     public name: string,
     public pitches: Array<number>,
@@ -127,7 +131,7 @@ class Scale {
       .some(p_shift => p_shift == pitch);
   }
 }
-var Scales = {
+var Scales:{major: Scale, harmonic: Scale} = {
   // Arg, the harmonic depends on which cord is being played
   major: new Scale(
     "major",
@@ -382,9 +386,23 @@ export default class ChrodLib {
      * 
      * @param {String} chord 
      */
-  transposeSingle(chord) {
-    if (chord.key.beOrNot) {
+  shift(scale: {key: string, scale: string}, shift: number) :
+  {key: string, scale: string}
+  {
+    let keyobj = Key.parseName(scale.key);
+    let scaleobj: Scale = Scales[scale.scale];
+
+    // TODO: one function for the modulo shit
+    const tr_idx = (keyobj.idx+shift+48)%12;
+    let bornot = scaleobj.bmap.get(tr_idx);
+    let  key: string;
+    if (bornot == ToBorSharp.Sharp) {
+      key = shMap.get(tr_idx);
+    } else {
+      key = bMap.get(tr_idx);
     }
+    return {key: key, scale: scale.scale};
+
   }
 }
 

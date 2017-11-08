@@ -77,6 +77,8 @@ class Viewer extends Component {
       chordtable = "";
     }
 
+    let key = ChrodLib.guessKey(chords);
+
     return (
       <div className="container">
         <div
@@ -88,6 +90,7 @@ class Viewer extends Component {
             <TranposeSetter
               doshit={this.handleTransposeSetter}
               intialTranspose={this.state.relTranspose}
+              keym={key}
             />
             {/* Leave Chord Table for the moment */}
             {/*chordtable*/}

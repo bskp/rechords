@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ChrodLib from "../api/libchrod.js";
 import PropTypes from "prop-types";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -71,13 +72,25 @@ export default class TranposeSetter extends Component {
   // Inherited from React.Component
   render() {
     // TODO: make object and calculate resulting key
-    const marks = {
+    let marks = {
       "-7": -7,
       '-3': -3,
-      0: 0,
-      3: 3,
-      7: 7
+      // TODO: key here
+      0: 'Original',
+      3: "+3",
+      7: "+7"
     };
+    if ( this.props.keym) {
+      let key = this.props.keym;
+      keys = {};
+      let libChrod = new ChrodLib();
+      for (var i=-7; i<=7; i++) {
+        let keyobj = libChrod.shift(key, i);
+        keys[i] = keyobj.key;  
+        if (i==0) { keys[i]+=" "+key.scale}
+      }
+      marks = keys;
+    }
     return (
       <div id="transposer">
           <Slider
@@ -114,5 +127,6 @@ export default class TranposeSetter extends Component {
 
 TranposeSetter.propTypes = {
   doshit: PropTypes.func,
-  initialTranspose: PropTypes.number
+  initialTranspose: PropTypes.number,
+  key: PropTypes.string
 };
