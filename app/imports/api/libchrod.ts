@@ -33,7 +33,7 @@ class Key {
     // todo: neutral, flat or sharp?
   }
   static parseName(name: string) {
-    let idx = forwardMap.get(name);
+    let idx = forwardMap.get(name.toUpperCase());
     return new Key(name, idx); 
   }
 }
@@ -276,11 +276,12 @@ export default class ChrodLib {
     return ChrodLib.selectBest(keyss);
   }
 
-  static parseTags(tags: Array<string>) {
+  static parseTags(tags: Array<string>) : {key: string, scale: string} {
     for (let tag of tags) {
-      let res = tag.match(/([A-H]b?)-(\w+))/i)
+      let res = tag.match(/([A-H]b?)-(\w+)/i)
 
       var fuzzy_scales = new Map([
+        ["minor", Scales.harmonic],
         ["dur", Scales.major],
         ["major", Scales.major],
         ["moll", Scales.harmonic]
@@ -289,9 +290,10 @@ export default class ChrodLib {
       if (res) {
         let scale_str = res[2];
         let scale = fuzzy_scales.get(scale_str.toLowerCase());
-        
-        return 
+        let key = Key.parseName(res[1]);
+        return {key: key.name, scale: scale.name};
       }
+      return undefined;
 
     }
   }
