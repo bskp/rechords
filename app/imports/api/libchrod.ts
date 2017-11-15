@@ -275,6 +275,27 @@ export default class ChrodLib {
     let keyss = ChrodLib.covarianceWithScales(chordsList);
     return ChrodLib.selectBest(keyss);
   }
+
+  static parseTags(tags: Array<string>) {
+    for (let tag of tags) {
+      let res = tag.match(/([A-H]b?)-(\w+))/i)
+
+      var fuzzy_scales = new Map([
+        ["dur", Scales.major],
+        ["major", Scales.major],
+        ["moll", Scales.harmonic]
+      ]);
+
+      if (res) {
+        let scale_str = res[2];
+        let scale = fuzzy_scales.get(scale_str.toLowerCase());
+        
+        return 
+      }
+
+    }
+  }
+
   /**
    * 
    * @param {} keyss List of Scales and 

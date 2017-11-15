@@ -36,6 +36,7 @@ class Viewer extends Component {
     let chords_str = this.props.song.getChords();
 
     let chords_dom = RmdHelpers.collectChordsDom(dom);
+    let tags = this.props.song.getTags();
 
     let chords_str_transposed = chrodlib.transpose(
       chords_str,
@@ -77,7 +78,10 @@ class Viewer extends Component {
       chordtable = "";
     }
 
-    let key = ChrodLib.guessKey(chords);
+    let key = ChrodLib.parseTags(tags);
+    if (!key) {
+      key = ChrodLib.guessKey(chords);
+    }
 
     return (
       <div className="container">
