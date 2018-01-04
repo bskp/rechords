@@ -58,7 +58,7 @@ Songs.helpers({
     this.html = xss(converter.makeHtml(this.text), options);
     this.title = "";
     this.author = "";
-    // Not sure if this works
+
     this.tags = [];
     this.chords = [];
 

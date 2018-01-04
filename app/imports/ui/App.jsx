@@ -71,7 +71,14 @@ class App extends Component {
                         let song = getSong(match.match.params);
 
                         if (song === undefined) {
-                            return (<h2>404. {match.match.params.title}</h2>)
+                            return (
+                                <div className="container">
+                                    <aside id="list">&nbsp;</aside>
+                                    <div className="content">
+                                        <h1>404</h1>
+                                    </div>
+                                </div>
+                            )
                         }
 
                         return (

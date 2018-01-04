@@ -28,7 +28,7 @@ textarea {
 
 // Globals
 @accent: rgb(221, 68, 7);
-//@accent: rgb(0, 148, 253);
+//@accent: rgb(0, 141, 235);
 
 // Layout
 body {
@@ -40,7 +40,7 @@ body {
   display: flex;
   width: 100%;
 
-  font-family: sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 18px;
   background-color: grey;
 }
@@ -76,7 +76,6 @@ body {
   }
 
   h1 {
-    color: @accent;
     margin-bottom: 0;
     margin-right: 0.5em;
   }
@@ -94,10 +93,12 @@ body {
 
   .s {
     color: black;
+    display: inline-block;
+    white-space: pre-wrap;
   }
 
   .chord {
-    @cw: 2em;
+    @cw: 3em;
     color: @accent;
     font-weight: bold;
     position: relative;
@@ -138,7 +139,11 @@ aside {
     box-sizing: border-box;
     padding-left: @width;
     
-    p { color: black; }
+    p { 
+      color: black;
+      text-transform: uppercase;
+      font-size: 0.7em;
+    }
 
     &:hover {
       width: 300px;
@@ -150,7 +155,7 @@ aside {
   }
 
   &#edit {
-    background-color: hsv(hsvhue(@accent), 0.8, 0.8);
+    background-color: hsv(hsvhue(@accent), 0.7, 0.8);
   }
 
   color: white;
@@ -195,6 +200,11 @@ aside {
   padding: 1em 2em 1em;
 
   background-color: white;
+
+
+  h1 {
+    color: @accent;
+  }
 }
 
 // CSS-wise transparent container to satisfy react.
@@ -218,7 +228,7 @@ aside {
 
   textarea {
     background-color: hsv(hsvhue(@accent), 0.7, 0.8);
-    font-family: 'Input Mono', sans-serif;
+    font-family: 'Input Mono', Courier New, Courier, monospace;
     font-weight: 300;
     font-size: 0.9em;
     width: 50%;
@@ -232,7 +242,15 @@ aside {
 #transposer {
   position: fixed;
   height: 400px;
-  right: 70px;
+  right: 50px;
+
+  .rc-slider {
+    width: 50px;
+  }
+
+  .rc-slider-mark {
+    top: -18px;
+  }
 
   .rc-slider-track {
     background-color: @accent;
@@ -250,9 +268,26 @@ ul.tags {
     font-size: 0.7em;
     font-weight: bold;
     text-transform: uppercase;
-    background-color: hsv(hsvhue(@accent), 0.8, 0.9);
+    background-color: hsv(hsvhue(@accent), 0.2, 0.5);
     color: white;
     border-radius: 3px;
     padding: 0.2em 0.4em;
+  }
+}
+
+@media print {
+  aside, #transposer, .tags { display: none; }
+
+  #body {
+    font-size: 12pt;
+    width: 210mm;
+  }
+
+  .chordsheet {
+    columns: 2;
+  }
+
+  #head, h1, h2 {
+    column-span: all;
   }
 }
