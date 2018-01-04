@@ -361,15 +361,33 @@ export default class ChrodLib {
     return penalties_byScale;
   }
 
-  // Non static function
-  // in order to be able to
+  // Static interface. TMP.
+  // TBD: scale/key as instance fields.
   /**
      * 
      * @param {Array<String>} chordsList 
      * @param {number} shift
      */
 
-  transpose(chordsList: string[], shift: number) {
+  transpose(chord: string, meta: {scale: string; key: string}, shift: number) {
+    let current_pitch = forwardMap.get(meta.key);
+    let current_scale = Scales[meta.scale];
+
+    let transposed_pitch = (current_pitch + 48 + shift) % 12;
+    let bornot = current_scale.bmap.get(transposed_pitch);
+
+    let pitchmap = bornot == ToBorSharp.Flat ? bMap : shMap;
+
+    let ch = Chord.parseChordString(chord);
+    let base = pitchmap.get((ch.idx + 48 + shift) % 12)
+    if (ch.str[0] == 'm') {
+      base = base.toLowerCase();
+    }
+    return base + ch.str + '<sup>' + ch.rest + '</sup>';
+  }
+
+
+  transposeAll(chordsList: string[], shift: number) {
     if (!chordsList || chordsList.length == 0) {
       return [];
     }

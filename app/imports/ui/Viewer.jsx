@@ -5,7 +5,8 @@ import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod.js";
 import { RmdHelpers } from "../api/collections.js";
 import Collapsed from './Collapsed.jsx';
-// var DOMParser = require("xmldom").DOMParser;
+
+var Parser = require("html-react-parser");
 
 class Viewer extends Component {
   constructor() {
@@ -19,11 +20,8 @@ class Viewer extends Component {
     event.preventDefault();
   };
 
-  // transponieren
   handleTransposeSetter = pitch => {
     this.setState({ relTranspose: pitch });
-
-    // What now?
   };
 
   render() {
@@ -31,32 +29,26 @@ class Viewer extends Component {
     let chrodlib = new ChrodLib();
     let rmd_html = this.props.song.getHtml();
 
-    let dom = new DOMParser().parseFromString(rmd_html, "text/html");
+    let key = ChrodLib.guessKey(chords);
 
-    let chords_str = this.props.song.getChords();
+    let dT = this.state.relTranspose;
 
-    let chords_dom = RmdHelpers.collectChordsDom(dom);
-    let tags = this.props.song.getTags();
+    // Parse HTML to react-vdom and replace chord values.
+    let vdom = Parser(rmd_html, {
+      replace: function(domNode) {
+        if (domNode.attribs && domNode.attribs.class == 'chord') {
+          let chord = domNode.children[0];
+          let html = chrodlib.transpose(chord.data, key, dT);
+          let c = Parser(html);
+          return <span className="chord">{c}</span>
+        }
+      }
+    });
 
-    let chords_str_transposed = chrodlib.transpose(
-      chords_str,
-      this.state.relTranspose
-    );
+    // Idee: obige replace-funktion könnte vom TransposeSetter geholt werden. Dadurch könnte der relTranspose-Zustand völlig in 
+    // den TransposeSetter wandern. 
 
-    for (let i = 0; i < chords_dom.length; i++) {
-      let chord_dom = chords_dom[i];
-      let chord_tr = chords_str_transposed[i];
-
-      console.debug("Old", chord_dom.textContent, "new", chord_tr);
-      // chord_dom.appendData(" -> "+chord_tr)
-      chord_dom.textContent = chord_tr;
-    }
-
-    // TODO: maybe better use this wrapper?
-    // However, for the moment only the browser  implementation is  working
-    // https://www.npmjs.com/package/simple-xml-dom
-    let html_transposed = new XMLSerializer().serializeToString(dom);
-
+    /*
     if (this.state.relTranspose != 0) {
       chordtable = (
         <table className="chordtable">
@@ -77,11 +69,8 @@ class Viewer extends Component {
     } else {
       chordtable = "";
     }
+    */
 
-    let key = ChrodLib.parseTags(tags);
-    if (!key) {
-      key = ChrodLib.guessKey(chords);
-    }
 
     return (
       <div className="container">
@@ -96,14 +85,10 @@ class Viewer extends Component {
               intialTranspose={this.state.relTranspose}
               keym={key}
             />
-            {/* Leave Chord Table for the moment */}
-            {/*chordtable*/}
           </section>
-          <section
-            ref="html"
-            className="chordsheet"
-            dangerouslySetInnerHTML={{ __html: html_transposed }}
-          />
+          <section ref="html" className="chordsheet">
+            {vdom}
+          </section>
         </div>
         <Collapsed id="edit" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
@@ -116,7 +101,6 @@ class Viewer extends Component {
 // this probably would belong inside the class
 Viewer.propTypes = {
   song: PropTypes.object.isRequired
-  // relativeTranspose: PropTypes.number.isRequired
 };
 
 export default withRouter(Viewer); // injects history, location, match
