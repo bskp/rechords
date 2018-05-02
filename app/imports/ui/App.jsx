@@ -134,7 +134,6 @@ export default withTracker(props => {
     const revHandle = Meteor.subscribe('revisions');
 
     return {
-        //currentUser: Meteor.user(),
         dataLoading: !songHandle.ready() && !revHandle.ready(),
         songs: Songs.find({}, { sort: { title: 1 } }).fetch(),
     };

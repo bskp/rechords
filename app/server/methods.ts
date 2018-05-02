@@ -1,12 +1,13 @@
-import Songs from '../imports/api/collections.js';
+import Songs, {Song} from '../imports/api/collections.js';
 import { Revisions } from '../imports/api/collections.js';
 import { check } from 'meteor/check'
 var slug = require('slug')
 
 Meteor.methods({
 
-    saveSong(song) {
+    saveSong(song: Song) {
         //  Attach helpers
+
         song = Songs._transform(song);
 
         // Parse server-side
@@ -21,7 +22,7 @@ Meteor.methods({
 
         // Check for modifications
         let storedSong = Songs.findOne(song._id);
-        if (storedSong.text == song.text) return true;
+        if (storedSong != undefined && storedSong.text == song.text) return true;
 
         // Save Song
         if ('_id' in song) {

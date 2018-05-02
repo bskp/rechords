@@ -19,18 +19,17 @@ class Editor extends Component {
   }
 
   handleContextMenu = (event) => {
-    //this.props.song.parse(this.refs.source.value);
-    // ist wohl gar nicht mehr nötig
-    
     if (this.state.versionTab) {
       this.toggleRevTab();
       event.preventDefault();
       return;
     }
 
+    this.props.song.parse(this.state.md)
+
     Meteor.call('saveSong', this.props.song, (error, isValid) => {
       if (error !== undefined) {
-        console.error.log(error);
+        console.log(error);
       }
 
       if (isValid) {
@@ -67,7 +66,6 @@ class Editor extends Component {
       let versions = n == 0 ? undefined : (
         <Collapsed id="revs" className="revision" onClick={this.toggleRevTab}>
           <h1>Verlauf</h1>
-          <span className="label">asdf</span>
           <p>Es existieren {n} vorherige Versionen. Klicke, um diese zu durchstöbern!</p>
         </Collapsed>
       );
@@ -77,8 +75,8 @@ class Editor extends Component {
         <div id="editor" onContextMenu={this.handleContextMenu}>
 
           <Collapsed id="list" onClick={this.handleContextMenu}>
-            <h1>sichern<br />&amp;&nbsp;zurück</h1>
-            <p>Schneller:&nbsp;Rechtsklick!</p>
+            <h1>sichern<br />&amp; zurück</h1>
+            <p>Schneller: Rechtsklick!</p>
           </Collapsed>
 
           <Preview md={this.state.md} song={this.props.song} />

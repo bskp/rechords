@@ -162,10 +162,15 @@ body {
     }
   }
 
+  li {
+    line-height: 1.6em;
+  }
+
   ul.tags {
     li {
       display: inline-block;
       font-size: 0.7em;
+      line-height: 1.2em;
       font-weight: bold;
       text-transform: uppercase;
       background-color: hsv(hsvhue(@accent), 0.2, 0.5);
@@ -196,6 +201,7 @@ aside {
     opacity: 0.7;
   }
 
+
   &.collapsed {
     @width: 30px;
     overflow: hidden;
@@ -211,6 +217,11 @@ aside {
     
     &:hover {
       width: 300px;
+    }
+
+    // Avoid linebreaks during slide-in/--out
+    * {
+      width: 245px;
     }
   }
 
@@ -292,10 +303,15 @@ textarea {
   font-size: 0.9em;
   width: inherit;
   overflow-y: hidden;
-  white-space: nowrap;
+  white-space: pre;
 
   &:focus {
     outline: none;
+  }
+
+  &::selection {
+    color: hsva(hsvhue(@accent), 0.4, 0.8, 1.0);
+    background-color: hsva(hsvhue(@accent), 0.3, 0.3, 1.0);
   }
 }
 
