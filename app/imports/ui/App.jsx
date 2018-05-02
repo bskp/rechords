@@ -12,6 +12,7 @@ import Editor from './Editor.jsx';
 import Collapsed from './Collapsed.jsx';
 
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import DocumentTitle from 'react-document-title';
 
 const empty_song = {
     title: "New Song",
@@ -59,6 +60,7 @@ class App extends Component {
                 <Switch>
                     <Route exact path='/' render={(props) => (
                             <div className="container">
+                                <DocumentTitle title="Hölibu 3000" />
                                 {list}
                                 <div className="content chordsheet">
                                     <span id="logo">
@@ -76,9 +78,13 @@ class App extends Component {
                         if (song === undefined) {
                             return (
                                 <div className="container">
+                                    <DocumentTitle title="Hölibu | 404" />
                                     <aside id="list">&nbsp;</aside>
-                                    <div className="content">
-                                        <h1>404</h1>
+                                    <div className="content chordsheet">
+                                        <span id="logo">
+                                            <h1>404</h1>
+                                            <h2>n/A</h2>
+                                        </span>
                                     </div>
                                 </div>
                             )
@@ -86,6 +92,7 @@ class App extends Component {
 
                         return (
                             <div className="container">
+                                <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
                                 {list}
                                 <Viewer song={song} />
                             </div>
@@ -102,13 +109,21 @@ class App extends Component {
                         song = Songs._transform(song);
 
                         return (
-                            <Editor song={song} />
+                            <>
+                                <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title + " (bearbeiten)"}/>
+                                <Editor song={song} />
+                            </>
                         )
                     }} />
 
                     <Route path="/new" render={() => {
                         song = Songs._transform(empty_song);
-                        return <Editor song={song} />
+                        return (
+                            <>
+                                <DocumentTitle title="Hölibu | Neues Lied" />
+                                <Editor song={song} />
+                            </>
+                        )
                     }} />
 
                     <Route component={NoMatch} />
