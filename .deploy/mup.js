@@ -20,7 +20,7 @@ module.exports = {
     },
 
     env: {
-      ROOT_URL: 'http://sing.rezept.ee',
+      ROOT_URL: 'http://beta.hoelibu.ch',
       PORT: 3333,
       MONGO_URL: 'mongodb://localhost/meteor'
     },

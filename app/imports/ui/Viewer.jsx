@@ -75,8 +75,8 @@ class Viewer extends Component {
     return (
       <div className="container">
         <div
-          id="viewer"
-          className="content"
+          className="content chordsheet"
+          id="chordsheet"
           onContextMenu={this.handleContextMenu}
         >
           <section>
@@ -86,11 +86,11 @@ class Viewer extends Component {
               keym={key}
             />
           </section>
-          <section ref="html" className="chordsheet">
+          <section ref="html">
             {vdom}
           </section>
         </div>
-        <Collapsed id="edit" onClick={this.handleContextMenu}>
+        <Collapsed className="source" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
           <p>Schneller:&nbsp;Rechtsklick!</p>
         </Collapsed>

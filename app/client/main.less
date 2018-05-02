@@ -56,18 +56,52 @@ body {
   }
 }
 
-
 #route {
   display: flex;
   width: 100%;
 }
 
-.chordsheet {
-  color: hsv(hsvhue(@accent), 0.2, 0.5);
 
-  h1, h2, h3 {
+// Content role mixins
+.chordsheet {
+  h1 {
+    color: @accent;
+  }
+
+  color: black;  // for aside only, is overridden in #chordsheet
+  background-color: white;
+}
+
+.source {
+  background-color: hsv(hsvhue(@accent), 0.7, 0.8);
+}
+
+.revision {
+  color: hsv(hsvhue(@accent), 0.4, 0.8);
+  background-color: hsv(hsvhue(@accent), 0.7, 0.4);
+}
+
+.revisions {
+  color: hsv(hsvhue(@accent), 0.3, 0.7);
+  background-color: hsv(hsvhue(@accent), 0.5, 0.2);
+}
+
+
+// Special content
+#logo * {
+  font-size: 15em;
+  margin: 0;
+  line-height: 0.8em;
+}
+
+#chordsheet {
+  .chordsheet;
+
+  color: hsv(hsvhue(@accent), 0.4, 0.6);
+
+  h2, h3 {
     color: black;
-    margin-top: 0;
+    //margin-top: 0;
   }
 
   h1, h2 {
@@ -79,7 +113,6 @@ body {
     margin-bottom: 0;
     margin-right: 0.5em;
   }
-
 
   h3 {
     font-size: 1em;
@@ -108,26 +141,60 @@ body {
     width: @cw;
     margin-right: -@cw;
 
+    sup {
+      vertical-align: 0.4em;
+      font-size: 0.7em;
+      letter-spacing: 0.02em;
+      padding-left: 0.1em;
+    }
+
     & + .chord {
-        left: 1*@cw;
-        & + .chord {
-            left: 2*@cw;
-            & + .chord {
-                left: 3*@cw;
-                & + .chord {
-                    left: 4*@cw;
-                }
-            }
-        }
+      left: 1*@cw;
+      & + .chord {
+          left: 2*@cw;
+          & + .chord {
+              left: 3*@cw;
+              & + .chord {
+                  left: 4*@cw;
+              }
+          }
+      }
     }
   }
-}
+
+  ul.tags {
+    li {
+      display: inline-block;
+      font-size: 0.7em;
+      font-weight: bold;
+      text-transform: uppercase;
+      background-color: hsv(hsvhue(@accent), 0.2, 0.5);
+      color: white;
+      border-radius: 3px;
+      padding: 0.2em 0.4em;
+    }
+  }
+} // .chordsheet
 
 aside {
   flex-grow: 0;
   flex-shrink: 0;
   box-sizing: border-box;
   width: 300px;
+
+  padding-top: 1em;
+
+  h1, h2, h3 {
+    font-size: 2em;
+  }
+
+  & > h1 {
+    margin-top: 0;
+  }
+
+  p { 
+    opacity: 0.7;
+  }
 
   &.collapsed {
     @width: 30px;
@@ -138,13 +205,10 @@ aside {
     z-index: 100;
     box-sizing: border-box;
     padding-left: @width;
-    
-    p { 
-      color: black;
-      text-transform: uppercase;
-      font-size: 0.7em;
-    }
 
+    // Mitigates the rendering bug of the contained .label
+    position: relative;
+    
     &:hover {
       width: 300px;
     }
@@ -154,8 +218,26 @@ aside {
     background-color: hsv(hsvhue(@accent), 0.2, 0.5);
   }
 
-  &#edit {
-    background-color: hsv(hsvhue(@accent), 0.7, 0.8);
+  &#revs {
+
+    ol {
+      list-style-type: lower-greek;
+
+      li {
+        font-size: 0.8em;
+        padding: 0.3em;
+
+        &:hover {
+          background-color: hsva(0,0,0,0.3)
+        }
+
+        &.active {
+          background-color: hsva(0,0,0,0.5)
+        }
+
+      }
+    }
+
   }
 
   color: white;
@@ -164,10 +246,6 @@ aside {
     padding-left: 0.9em;
     font-size: 1em;
     text-transform: uppercase;
-  }
-
-  li {
-    display: block;
   }
 
   a {
@@ -199,12 +277,43 @@ aside {
   width: 100%;
   padding: 1em 2em 1em;
 
-  background-color: white;
+  :first-child {
+    margin-top: 0;
 
-
-  h1 {
-    color: @accent;
+    &+h2{
+      margin-top: 0;
+    }
   }
+}
+
+textarea {
+  font-family: 'Input Mono', Courier New, Courier, monospace;
+  font-weight: 300;
+  font-size: 0.9em;
+  width: inherit;
+  overflow-y: hidden;
+  white-space: nowrap;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+hr {
+  border-style: solid;
+  margin-bottom: 1em;
+}
+
+.label {
+  font-weight: bold;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  background-color: inherit;
+
+  display: block;
+  padding: 0.2em;
+  position: fixed;
+  bottom: 1em;
 }
 
 // CSS-wise transparent container to satisfy react.
@@ -221,28 +330,11 @@ aside {
 #editor {
   display: flex;
   width: 100%;
-
-  section {
-    width: 50%;
-  }
-
-  textarea {
-    background-color: hsv(hsvhue(@accent), 0.7, 0.8);
-    font-family: 'Input Mono', Courier New, Courier, monospace;
-    font-weight: 300;
-    font-size: 0.9em;
-    width: 50%;
-    overflow-y: hidden;
-    &:focus {
-      outline: none;
-    }
-  }
 }
 
 #transposer {
-  position: fixed;
   height: 400px;
-  right: 50px;
+  float: right;
 
   .rc-slider {
     width: 50px;
@@ -262,19 +354,6 @@ aside {
   }
 }
 
-ul.tags {
-  li {
-    display: inline-block;
-    font-size: 0.7em;
-    font-weight: bold;
-    text-transform: uppercase;
-    background-color: hsv(hsvhue(@accent), 0.2, 0.5);
-    color: white;
-    border-radius: 3px;
-    padding: 0.2em 0.4em;
-  }
-}
-
 @media print {
   aside, #transposer, .tags { display: none; }
 
@@ -283,7 +362,7 @@ ul.tags {
     width: 210mm;
   }
 
-  .chordsheet {
+  #chordsheet {
     columns: 2;
   }
 

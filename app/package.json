@@ -3,25 +3,31 @@
   "private": true,
   "scripts": {
     "start": "meteor run",
+    "debug": "meteor run --inspect",
     "preinstall": "grunt --gruntfile ../showdown-rechords/Gruntfile.js prep-release"
   },
   "dependencies": {
-    "babel-runtime": "^6.26.0",
-    "html-react-parser": "^0.4.1",
+    "@babel/runtime": "^7.0.0-beta.46",
+    "@types/meteor": "^1.4.15",
+    "@types/react-dom": "^16.0.5",
+    "html-react-parser": "^0.4.3",
     "indexof": "0.0.1",
-    "meteor-node-stubs": "~0.2.4",
-    "prop-types": "^15.6.0",
-    "rc-slider": "^8.3.5",
-    "react": "^15.6.2",
-    "react-addons-pure-render-mixin": "^15.6.2",
-    "react-dom": "^15.6.2",
+    "meteor-node-stubs": "^0.3.2",
+    "moment": "^2.22.1",
+    "rc-slider": "^8.6.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
     "react-router-dom": "^4.2.2",
-    "react-transition-group": "^2.2.1",
-    "showdown": "^1.7.4",
+    "react-transition-group": "^2.3.1",
+    "showdown": "^1.8.6",
     "showdown-rechords": "file:../showdown-rechords",
     "slug": "^0.9.1",
-    "source-map-support": "^0.5.0",
+    "source-map-support": "^0.5.5",
     "xmldom": "^0.1.27",
-    "xss": "^0.3.4"
+    "xss": "^0.3.8"
+  },
+  "devDependencies": {
+    "@types/node": "^9.6.8",
+    "@types/react": "^16.3.13"
   }
 }

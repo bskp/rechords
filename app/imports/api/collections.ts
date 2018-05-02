@@ -5,6 +5,7 @@ var rmd = require("showdown-rechords");
 var DOMParser = require("xmldom").DOMParser;
 var slug = require("slug");
 var xss = require("xss");
+
 var options = {
   whiteList: {
     a: ["href", "title"],
@@ -15,9 +16,12 @@ var options = {
     ul: ["class"],
     li: [],
     p: [],
-    br: []
+    br: [],
+    strong: [],
+    em: []
   }
 };
+
 const converter = new showdown.Converter({ extensions: [rmd] });
 
 showdown.setOption("simpleLineBreaks", true);
@@ -25,29 +29,41 @@ showdown.setOption("smoothLivePreview", true);
 showdown.setOption("simplifiedAutoLink", true);
 showdown.setOption("openLinksInNewWindow", true);
 
-export default Songs = new Mongo.Collection('songs');
+export class Song {
+  _id?: string;
 
-Songs.helpers({
+  text: string;
+
+  title: string;
+  author: string;
+
+  tags?: Array<string>;
+  chords?: Array<string>;
+  html?: string;
+
+  title_: string;
+  author_:string;
+
   getHtml() {
     if (!("html" in this)) {
       this.parse(this.text);
     }
     return this.html;
-  },
+  }
 
   getChords() {
     if (!("chords" in this)) {
       this.parse(this.text);
     }
     return this.chords;
-  },
+  }
 
   getTags() {
     if (!("tags" in this)) {
       this.parse(this.text);
     }
     return this.tags;
-  },
+  }
 
   parse(md) {
     this.text = md;
@@ -91,7 +107,34 @@ Songs.helpers({
     this.tags = RmdHelpers.collectTags(dom);
     this.chords = RmdHelpers.collectChords(dom);
   }
-});
+
+  getRevisions() {
+    return Revisions.find({
+      of: this._id
+    }, { 
+      sort: {timestamp: -1} 
+    });
+  }
+
+  getRevision(steps: number) {
+    return this.getRevisions().fetch()[steps]
+  }
+}
+
+export class Revision {
+  text: string;
+  of: string;
+
+  ip: string;
+  timestamp: Date;
+}
+
+
+let Revisions = new Mongo.Collection<Revision>('revisions');
+Revisions.setClass(Revision);
+let Songs = new Mongo.Collection<Song>('songs');
+Songs.setClass(Song);
+
 
 export class RmdHelpers {
   static collectTags(dom) {
@@ -127,3 +170,7 @@ export class RmdHelpers {
     return chords;
   }
 }
+
+export { Revisions };
+
+export default Songs;

@@ -60,8 +60,11 @@ class App extends Component {
                     <Route exact path='/' render={(props) => (
                             <div className="container">
                                 {list}
-                                <div className="content">
-                                <h1>Probieren wirs einmal!</h1>
+                                <div className="content chordsheet">
+                                    <span id="logo">
+                                        <h2>Hölibu</h2>
+                                        <h1>3000</h1>
+                                    </span>
                                 </div>
                             </div>
                     )} />
@@ -127,11 +130,12 @@ App.propTypes = {
 };
 
 export default withTracker(props => {
-    const handle = Meteor.subscribe('songs');
+    const songHandle = Meteor.subscribe('songs');
+    const revHandle = Meteor.subscribe('revisions');
 
     return {
         //currentUser: Meteor.user(),
-        dataLoading: !handle.ready(),
+        dataLoading: !songHandle.ready() && !revHandle.ready(),
         songs: Songs.find({}, { sort: { title: 1 } }).fetch(),
     };
 })(App);

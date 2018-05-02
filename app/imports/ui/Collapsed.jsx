@@ -6,7 +6,7 @@ class Collapsed extends Component {
 
     render() {
         return <aside
-            className="collapsed"
+            className={"collapsed " + this.props.className}
             id={this.props.id}
             onClick={this.props.onClick}
         >{this.props.children}&nbsp;</aside>

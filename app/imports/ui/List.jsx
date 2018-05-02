@@ -13,14 +13,6 @@ class ListItem extends Component {
 
 
     render() {
-        // Generate url-safe strings if missing
-        /*
-        if (!this.props.song.hasOwnProperty("author_") || !this.props.song.hasOwnProperty("title_")) {
-            this.props.song.author_ = slug(this.props.song.author);
-            this.props.song.title_ = slug(this.props.song.title);
-            Songs.update(this.props.song._id, this.props.song);
-        }
-        */
         return (
             <li><NavLink to={`/view/${this.props.song.author_}/${this.props.song.title_}`}
                 activeClassName="selected">{this.props.song.title}</NavLink></li>
