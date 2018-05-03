@@ -34,6 +34,8 @@ textarea {
 body {
   margin: 0;
   padding: 0;
+
+  .select(none);
 }
 
 #body {
@@ -164,6 +166,16 @@ body {
 
   li {
     line-height: 1.6em;
+    list-style-type: none;
+
+    &::before {
+      content: '–';
+      display: inline-block;
+      position: relative;
+      width: 0;
+      left: -1em;
+
+    }
   }
 
   ul.tags {
@@ -302,7 +314,7 @@ textarea {
   font-weight: 300;
   font-size: 0.9em;
   width: inherit;
-  overflow-y: hidden;
+  overflow: hidden;
   white-space: pre;
 
   &:focus {
@@ -310,6 +322,11 @@ textarea {
   }
 
   &::selection {
+    color: hsva(hsvhue(@accent), 0.4, 0.8, 1.0);
+    background-color: hsva(hsvhue(@accent), 0.3, 0.3, 1.0);
+  }
+
+  &::-moz-selection {
     color: hsva(hsvhue(@accent), 0.4, 0.8, 1.0);
     background-color: hsva(hsvhue(@accent), 0.3, 0.3, 1.0);
   }
@@ -385,4 +402,14 @@ hr {
   #head, h1, h2 {
     column-span: all;
   }
+}
+
+.select(@mode: none;) {
+  -webkit-touch-callout: @mode; /* iOS Safari */
+    -webkit-user-select: @mode; /* Safari */
+     -khtml-user-select: @mode; /* Konqueror HTML */
+       -moz-user-select: @mode; /* Firefox */
+        -ms-user-select: @mode; /* Internet Explorer/Edge */
+            user-select: @mode; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
 }

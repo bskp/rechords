@@ -3,6 +3,7 @@ import { Mongo } from "meteor/mongo";
 var showdown = require("showdown");
 var rmd = require("showdown-rechords");
 var DOMParser = require("xmldom").DOMParser;
+var Parser = require("html-react-parser");
 var slug = require("slug");
 var xss = require("xss");
 
@@ -63,6 +64,10 @@ export class Song {
       this.parse(this.text);
     }
     return this.tags;
+  }
+
+  getVirtualDom() {
+    return Parser(this.html);
   }
 
   parse(md) {
