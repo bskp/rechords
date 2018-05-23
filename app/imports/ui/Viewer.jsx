@@ -31,6 +31,8 @@ class Viewer extends Component {
 
     let key = ChrodLib.guessKey(chords);
 
+    // TODO: if key undef, write something there
+
     let dT = this.state.relTranspose;
 
     // Parse HTML to react-vdom and replace chord values.

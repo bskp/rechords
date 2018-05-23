@@ -38,19 +38,15 @@ class Key {
   }
 }
 
-// TODO: Implement all Stuff related to transposing chords in major, minor keys...
-/*
-var ChordScales = {
-  major: new ChordScale('Major', 'C Dm Em F G Am H-')
-}
+
+/* Since the number of notes is limited
+and will not be extended, it is legit
+to hardcode the notes and makes things
+easier in this class.
 */
 
-// TODO: better structure (Map or Object[pseudo enum])
-
 var B = new Key("B", 11),
-// furzidee
   // H = new Key("H", 11),
-  // Hes = new Key("Hb", 10),
   Bes = new Key("Bb", 10),
   Ais = new Key("A#", 10),
   A = new Key("A", 9),
@@ -67,7 +63,6 @@ var B = new Key("B", 11),
   Des = new Key("Db", 1),
   Cis = new Key("C#", 1),
   C = new Key("C", 0);
-// new Key('Cb', -1),
 var keys: Array<Key> = [
   C,
   Cis,
@@ -85,8 +80,8 @@ var keys: Array<Key> = [
   A,
   Ais,
   Bes,
-  // Hes,
   B,
+  // TODO: is h recognized or not?
   // H
 ];
 
@@ -98,11 +93,12 @@ keys
   .filter(k => k.beOrNot != ToBorSharp.Sharp)
   .forEach(k => bMap.set(k.idx, k.name));
 
-const shMap = new Map();
+const shMap: Map<number,string> = new Map();
 keys
   .filter(k => k.beOrNot != ToBorSharp.Flat)
   .forEach(k => shMap.set(k.idx, k.name));
 
+// TODO: move to another file
 class Scale {
   /**
      * 
@@ -179,10 +175,9 @@ var Scales:{major: Scale, harmonic: Scale} = {
 };
 
 class Chord {
-  // TODO: string rep?
-  // TODO: str should be an emum
   idx: number;
-  constructor(public key: Key, public keys: Array<Number>, public str: string, public rest: string = '') {
+  constructor(public key: Key, public keys: Array<Number>, public str: string,
+     public suff: string = '', public pref: string = '') {
     this.idx = key.idx;
   }
 
@@ -190,27 +185,27 @@ class Chord {
    * 
    * @param {Key} key 
    */
-  static minor(key, rest) {
+  static minor(key, rest, pref) {
     let base = key.idx;
     let keys = [base, base + 3, base + 7].map(p => p % 12);
-    return new Chord(key, keys, "m", rest);
+    return new Chord(key, keys, "m", rest, pref);
   }
 
-  static major(key, rest) {
+  static major(key, rest, pref) {
     let base = key.idx;
     let keys = [base, base + 4, base + 7].map(p => p % 12);
-    return new Chord(key, keys, "", rest);
+    return new Chord(key, keys, "", rest, pref);
   }
 
-  static plus(key, rest) {
+  static plus(key, rest, pref) {
     let base = key.idx;
     let keys = [base, base + 4, base + 8].map(p => p % 12);
-    return new Chord(key, keys, "+", rest);
+    return new Chord(key, keys, "+", rest, pref);
   }
-  static minus(key, rest) {
+  static minus(key, rest, pref) {
     let base = key.idx;
     let keys = [base, base + 3, base + 6].map(p => p % 12);
-    return new Chord(key, keys, "dim", rest);
+    return new Chord(key, keys, "dim", rest, pref);
   }
 
   /**
@@ -218,36 +213,39 @@ class Chord {
      * @param {string} chordString 
      * @returns {Chord} 
      */
-  static parseChordString(chordString) {
-    let parsedChordString = chordString.match(/([a-h](#|b)?)(-|\+|m?(?!aj))(.*)/i);
+  static parseChordString(chordString) : Chord {
+    let parsedChordString = chordString.match(/(^.*?)([a-h](#|b)?)(-|\+|m?(?!aj))(.*)/i);
 
     if (parsedChordString == null) return;
 
-    let keystr = parsedChordString[1].charAt(0).toUpperCase();
-    if ( parsedChordString[1].length > 1 ){
-      keystr+=parsedChordString[1
-      ].charAt(1);
+    let keystr = parsedChordString[2].charAt(0).toUpperCase();
+    if ( parsedChordString[2].length > 1 ){
+      keystr+=parsedChordString[2].charAt(1);
     }
 
     let keydx = forwardMap.get(keystr);
 
     let key = new Key(keystr, keydx);
 
-    let rest = parsedChordString[4];
+    let suff = parsedChordString[5];
+    let pref = parsedChordString[1];
 
-    if (parsedChordString[3] == "m") {
-      return Chord.minor(key, rest);
-    } else if (parsedChordString[3] == "+") {
-      return Chord.plus(key, rest);
-    } else if (parsedChordString[3] == "-") {
-      return Chord.minus(key, rest);
+    // TODO: Filter bass
+    // easiest way: match any note in the suff string
+
+    if (parsedChordString[4] == "m") {
+      return Chord.minor(key, suff, pref);
+    } else if (parsedChordString[4] == "+") {
+      return Chord.plus(key, suff, pref);
+    } else if (parsedChordString[4] == "-") {
+      return Chord.minus(key, suff, pref);
     } else {
-      return Chord.major(key, rest);
+      return Chord.major(key, suff, pref);
     }
   }
 
   get chordString() {
-    return this.key + this.str + this.rest;
+    return this.key + this.str + this.suff;
   }
 }
 
@@ -379,12 +377,39 @@ export default class ChrodLib {
     let pitchmap = bornot == ToBorSharp.Flat ? bMap : shMap;
 
     let ch = Chord.parseChordString(chord);
+
     let base = pitchmap.get((ch.idx + 48 + shift) % 12)
+    // Create pitchmap class to 
     if (ch.str[0] == 'm') {
       base = base.toLowerCase();
     }
-    return base + ch.str + '<sup>' + ch.rest + '</sup>';
+
+    let suff = this.shift_suff(ch.suff, shift, pitchmap);
+
+
+    // TODO: transpose suffix
+    // TODO: 
+    return ch.pref + base + ch.str + '<sup>' + suff + '</sup>';
   }
+
+  private shift_suff(suff: string, shift:number, pitchmap: Map<number, string>) : string {
+     let match = suff.match(/[A-H](b|#)?/)
+     if (match == null) {
+       return suff;
+     } else {
+       let orig:string = match[0];
+       let orig_idx = forwardMap.get(orig);
+       let idx = (orig_idx+48+shift)%12;
+       let result = pitchmap.get(idx);
+
+       return suff.replace(orig, result);
+       
+
+
+     }
+
+  }
+
 
 
   transposeAll(chordsList: string[], shift: number) {
@@ -414,7 +439,7 @@ export default class ChrodLib {
     // Todo: chord should shift itself -> chord.transpose()
     let tr_chords = chordsList
       .map(ch_str => Chord.parseChordString(ch_str))
-      .map(ch => pitchmap.get((ch.idx + 48 + shift) % 12) + ch.str + ch.rest);
+      .map(ch => pitchmap.get((ch.idx + 48 + shift) % 12) + ch.str + ch.suff);
 
     let transposed_key = pitchmap.get(transposed_pitch);
     //console.debug("Transposed Key", transposed_key);

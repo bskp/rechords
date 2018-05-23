@@ -125,6 +125,7 @@ export default class TranposeSetter extends Component {
   }
 }
 
+// ToDO: convert to tsx
 TranposeSetter.propTypes = {
   doshit: PropTypes.func,
   initialTranspose: PropTypes.number,
