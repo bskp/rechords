@@ -79,7 +79,7 @@ class Editor extends Component {
             <p>Schneller: Rechtsklick!</p>
           </Collapsed>
 
-          <Preview md={this.state.md} song={this.props.song} />
+          <Preview md={this.state.md} song={this.props.song} updateHandler={this.update}/>
           <Source md={this.state.md} updateHandler={this.update} className="source" />
 
           {versions}
@@ -113,28 +113,3 @@ Editor.propTypes = {
 };
 
 export default withRouter(Editor);  // injects history, location, match
-
-/*
-class LiveEdit extends Component {
-
-  render() {
-    let revs = this.props.song.getRevisions();
-    let n = revs.count();
-
-    return (
-      <Preview md={this.state.md} song={this.props.song} />
-      <Source md={this.props.song.text} updateHandler={this.update} />
-
-      <Collapsed id="revs">
-        <h1>Versionen</h1>
-        <ol>
-          {revs.map((rev, idx) =>
-            <RevLink rev={rev} idx={n - idx} key={rev._id} />
-          )}
-        </ol>
-      </Collapsed>
-    )
-  }
-
-}
-*/

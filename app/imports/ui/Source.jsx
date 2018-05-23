@@ -27,18 +27,14 @@ export default class Source extends Component {
         minHeight: rows + 'em',
     }
 
-    let defaultValue = this.props.readOnly ? undefined : this.props.md;
-    let value = this.props.readOnly ? this.props.md : undefined;
-
     return (
       <div className={"content " + this.props.className}>
           {this.props.children}
         <textarea 
           ref="source" 
           className="container"
-          onKeyUp={this.callUpdateHandler} 
-          value={value} 
-          defaultValue={defaultValue} 
+          onChange={this.callUpdateHandler} 
+          value={this.props.md} 
           style={style} 
           readOnly={this.props.readOnly}
         />
