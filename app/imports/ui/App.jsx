@@ -20,6 +20,28 @@ const empty_song = {
     author: "Unknown"
 };
 
+const nA404 = (
+    <div className="container">
+        <DocumentTitle title="Hölibu | 404" />
+        <aside id="list">&nbsp;</aside>
+        <div className="content chordsheet">
+            <span id="logo">
+                <h1>404</h1>
+                <h2>n/A</h2>
+            </span>
+        </div>
+    </div>
+)
+
+const logo = (
+    <div className="content chordsheet">
+        <span id="logo">
+            <h2>Hölibu</h2>
+            <h1>3000</h1>
+        </span>
+    </div>
+)
+
 
 // App component - represents the whole app
 class App extends Component {
@@ -42,10 +64,17 @@ class App extends Component {
     }
 
     render() {
-        let list = (<p>laden...</p>);
-        if (!this.props.dataLoading) {
-            list = (<List tree={this.getSongTree()} />);
+        if (this.props.dataLoading) {
+            return (
+                <div className="container">
+                    <DocumentTitle title="Hölibu 3000" />
+                    <aside id="list" />
+                    {logo}
+                </div>
+            )
         }
+
+        let list = (<List tree={this.getSongTree()} />);
 
         const getSong = (params) => {
             return song = Songs.findOne({
@@ -62,12 +91,7 @@ class App extends Component {
                             <div className="container">
                                 <DocumentTitle title="Hölibu 3000" />
                                 {list}
-                                <div className="content chordsheet">
-                                    <span id="logo">
-                                        <h2>Hölibu</h2>
-                                        <h1>3000</h1>
-                                    </span>
-                                </div>
+                                {logo}
                             </div>
                     )} />
 
@@ -76,18 +100,7 @@ class App extends Component {
                         let song = getSong(match.match.params);
 
                         if (song === undefined) {
-                            return (
-                                <div className="container">
-                                    <DocumentTitle title="Hölibu | 404" />
-                                    <aside id="list">&nbsp;</aside>
-                                    <div className="content chordsheet">
-                                        <span id="logo">
-                                            <h1>404</h1>
-                                            <h2>n/A</h2>
-                                        </span>
-                                    </div>
-                                </div>
-                            )
+                            return nA404; 
                         }
 
                         return (
@@ -103,7 +116,7 @@ class App extends Component {
                         let song = getSong(match.match.params);
 
                         if (song === undefined) {
-                            return (<h2>404. {match.match.params.title}</h2>)
+                            return na404;
                         }
 
                         song = Songs._transform(song);
