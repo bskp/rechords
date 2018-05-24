@@ -7,28 +7,33 @@
     "preinstall": "grunt --gruntfile ../showdown-rechords/Gruntfile.js prep-release"
   },
   "dependencies": {
-    "@babel/runtime": "^7.0.0-beta.46",
+    "@babel/runtime": "^7.0.0-beta.47",
     "@types/meteor": "^1.4.15",
     "@types/react-dom": "^16.0.5",
-    "html-react-parser": "^0.4.3",
+    "html-react-parser": "^0.4.6",
     "indexof": "0.0.1",
     "meteor-node-stubs": "^0.3.2",
     "moment": "^2.22.1",
     "rc-slider": "^8.6.1",
-    "react": "^16.3.2",
+    "react": "^16.4.0",
     "react-document-title": "^2.0.3",
-    "react-dom": "^16.3.2",
+    "react-dom": "^16.4.0",
     "react-router-dom": "^4.2.2",
     "react-transition-group": "^2.3.1",
     "showdown": "^1.8.6",
     "showdown-rechords": "file:../showdown-rechords",
     "slug": "^0.9.1",
-    "source-map-support": "^0.5.5",
+    "source-map-support": "^0.5.6",
     "xmldom": "^0.1.27",
     "xss": "^0.3.8"
   },
   "devDependencies": {
-    "@types/node": "^9.6.8",
-    "@types/react": "^16.3.13"
+    "@types/core-js": "^0.9.46",
+    "@types/node": "^9.6.18",
+    "@types/react": "^16.3.14",
+    "@types/requirejs": "^2.1.31",
+    "meteor-typings": "^1.4.1",
+    "typescript": "^2.8.3",
+    "typescript-plugin-add-type": "^1.0.2"
   }
 }
