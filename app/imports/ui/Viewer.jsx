@@ -42,7 +42,8 @@ class Viewer extends Component {
           let chord = domNode.children[0];
           let html = chrodlib.transpose(chord.data, key, dT);
           let c = Parser(html);
-          return <span className="chord">{c}</span>
+          // return <span className="chord">{c}</span>
+          return c;
         }
       }
     });

@@ -182,6 +182,14 @@ body {
           }
       }
     }
+  } 
+
+  // Alternatively multiple classes could be set
+  // in the html
+  .opt_chord {
+      .chord;
+      // color: hsv(hsvhue(@accent), .3, hsvvalue(@accent)); 
+      color: lighten(desaturate(@accent, 30%, relative), 30%);
   }
 
   & > li {
@@ -212,6 +220,8 @@ body {
     }
   }
 } // .chordsheet
+
+
 
 aside {
   flex-grow: 0;
