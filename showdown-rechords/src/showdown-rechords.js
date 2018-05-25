@@ -5,6 +5,7 @@ module.exports = function showdownRechords() {
   require('source-map-support').install();
 
   var Hypher = require('hypher'),
+    // TODO: recognize language by heur. or tag
     english = require('hyphenation.en-us'),
     h = new Hypher(english);
 
@@ -28,23 +29,60 @@ module.exports = function showdownRechords() {
   function parseLine(match, content) {
     // TODO: akkordzeile erkennen und anders behandeln
     var line = content.replace(/\S+ ?/gi, parseWord);
-    return line + '<br />';  // line is allowed to be empty.
+    return line + '<br />'; // line is allowed to be empty.
+  }
+
+  function backMap(chunks) {
+    var out = [];
+    for (var i = 0; i < chunks.length; i++) {
+      var c = chunks[i];
+      for (var j = 0; j < c.length; j++) {
+        out.push(i);
+      }
+    }
+    return out;
+
+
   }
 
   function parseWord(match) {
     // TODO: support multiple chords per word. Currently, all chords bubble up
     // up to the beginning of the word, instead of staying with their syllable.
-    var chords = [],
-      text = match.replace(/\[(.+?)\]/gi, function (match, chord) {
-        chords.push('<span class="chord">' + chord + '</span>');
-        return '';
-      }),
-      chunks = h.hyphenate(text),
-      out = mergeCoupled(chunks).map(function (s) {
-        return '<span class="s">' + s + '</span>';
-      }).join('');
+    // TODO: make chords a class?
+    var chords = [];
+    var chposs = [];
+    var chregex = /\[(.+?)\]/gi;
+    var text = match.replace(chregex, function (match, chord, pos) {
+      chords.push('<span class="chord">' + chord + '</span>');
+      chposs.push(pos);
+      return '';
+    });
+    var chunks = h.hyphenate(text);
+    var backmap = backMap(chunks);
 
-    return chords.join('') + out;
+    // TODO: add tracking for chunks (char -> syllable)
+    var sylls = mergeCoupled(chunks).map(function (s) {
+      return '<span class="s">' + s + '</span>';
+    });
+    console.debug(chposs);
+    var out = '';
+    var chidx = 0;
+    for (var i=0; i < sylls.length; i++) {
+      chpos = chposs[chidx];
+      if(chpos != undefined) {
+        sypos = backmap[chpos];
+        if(sypos <= i) {
+          out += chords[chidx];
+          chidx++;
+        }
+      }
+      out += sylls[i];
+
+
+    }
+    return out;
+
+
   }
 
   return [
