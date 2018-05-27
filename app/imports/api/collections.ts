@@ -19,7 +19,8 @@ var options = {
     p: [],
     br: [],
     strong: [],
-    em: []
+    em: [],
+    code: []
   }
 };
 
