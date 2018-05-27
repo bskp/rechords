@@ -49,38 +49,20 @@ module.exports = function showdownRechords() {
     // TODO: support multiple chords per word. Currently, all chords bubble up
     // up to the beginning of the word, instead of staying with their syllable.
     // TODO: make chords a class?
-    var chords = [];
-    var chposs = [];
-    var chregex = /\[(.+?)\]/gi;
-    var text = match.replace(chregex, function (match, chord, pos) {
-      chords.push('<span class="chord">' + chord + '</span>');
-      chposs.push(pos);
-      return '';
-    });
-    var chunks = h.hyphenate(text);
-    var backmap = backMap(chunks);
 
-    // TODO: add tracking for chunks (char -> syllable)
-    var sylls = mergeCoupled(chunks).map(function (s) {
-      return '<span class="s">' + s + '</span>';
-    });
-    console.debug(chposs);
-    var out = '';
-    var chidx = 0;
-    for (var i=0; i < sylls.length; i++) {
-      chpos = chposs[chidx];
-      if(chpos != undefined) {
-        sypos = backmap[chpos];
-        if(sypos <= i) {
-          out += chords[chidx];
-          chidx++;
-        }
-      }
-      out += sylls[i];
+    var chords = [], chunks = [];
+    var chunkidx = 0;
 
+    var isChord = match[0];
+
+    for (var i = 0; i < match.length; i++ ) {
+      if match
 
     }
-    return out;
+
+
+
+
 
 
   }
