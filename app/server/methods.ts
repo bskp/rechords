@@ -7,8 +7,7 @@ Meteor.methods({
 
     saveSong(song: Song) {
         //  Attach helpers
-
-        // song = Songs._transform(song);
+        song = Songs._transform(song);
 
         // Parse server-side
         song.parse(song.text);

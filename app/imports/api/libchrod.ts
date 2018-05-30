@@ -388,10 +388,13 @@ export default class ChrodLib {
 
     let suff = this.shift_suff(ch.suff, shift, pitchmap);
 
+    let clazz = 'chord';
 
-    let clazz = ch.optional?"opt_chord":"chord";
-    return `<span class="${clazz}">
-    ${base} ${ch.str} <sup> ${suff} </sup></span>`;
+    if (ch.optional) {
+      clazz += ' optional';
+    }
+
+    return `<span class="${clazz}">${base}${ch.str}<sup>${suff}</sup></span>`;
   }
 
   private shift_suff(suff: string, shift:number, pitchmap: Map<number, string>) : string {

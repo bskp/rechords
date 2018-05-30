@@ -170,6 +170,20 @@ body {
       background-color: hsv(hsvhue(@accent), 0.1, 0.95);
     }
 
+    &.optional {
+      &:before { 
+        content: '('; 
+      }
+      &:after { 
+        content: ')'; 
+      }
+      &:after, &:before{
+        font-weight: 200;
+        vertical-align: 0.05em;
+      }
+    }
+
+
     & + .chord {
       left: 1*@cw;
       & + .chord {
@@ -183,14 +197,6 @@ body {
       }
     }
   } 
-
-  // Alternatively multiple classes could be set
-  // in the html
-  .opt_chord {
-      .chord;
-      // color: hsv(hsvhue(@accent), .3, hsvvalue(@accent)); 
-      color: lighten(desaturate(@accent, 30%, relative), 30%);
-  }
 
   & > li {
     line-height: 1.6em;
