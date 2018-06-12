@@ -177,6 +177,10 @@ body {
 
     &:focus {
       background-color: hsv(hsvhue(@accent), 0.1, 0.95);
+
+      &:empty:before {
+        content: "\feff"; // Patches height rendering of empty contenteditables
+      }
     }
 
     & + .chord {

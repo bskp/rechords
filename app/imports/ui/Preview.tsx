@@ -15,11 +15,34 @@ export default class Preview extends React.Component<P, {}> {
     super(props);
   }
 
+  componentDidUpdate() {
+    let html : HTMLElement = this.refs.html as HTMLElement;
+    
+    function traverse(node : HTMLElement) : void {
+      for (const child of node.children) {
+        if (child.innerHTML.endsWith('|')) {
+          child.innerHTML = child.innerHTML.replace('|', '');
+          let range = document.createRange();
+          range.selectNodeContents(child);
+          let sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        } else {
+          traverse(child as HTMLElement);
+        }
+      }
+
+    }
+
+    traverse(html);
+
+  }
+
   public handleClick(event: React.MouseEvent<HTMLElement>) {
     let node: Element = event.target as Element;
     if (!(node instanceof HTMLSpanElement) || node.className != 's') return;
 
-    let md = this.prependChord(this.props.md, node, 'G');
+    let md = this.prependChord(this.props.md, node, '|');
     this.props.updateHandler(md);
   }
 
@@ -145,14 +168,70 @@ export default class Preview extends React.Component<P, {}> {
     return md;
   }
 
-  public handleChordBlur(event : React.SyntheticEvent<HTMLSpanElement>) {
-    let chord = event.currentTarget.innerText;
+  private replace(md : string, chord : HTMLSpanElement, content : string) : string {
 
-    let md_ = this.removeChord(this.props.md, event.currentTarget);
-    if (chord.length > 0) {
-      md_ = this.prependChord(md_, event.currentTarget, chord);
+    let md_ = this.removeChord(this.props.md, chord);
+    if (content.length > 0) {
+      md_ = this.prependChord(md_, chord, content);
     }
+    return md_;
+  }
+
+  public handleChordBlur(event : React.SyntheticEvent<HTMLSpanElement>) {
+    let md_ = this.replace(this.props.md, event.currentTarget, event.currentTarget.innerText);
     this.props.updateHandler(md_);
+  }
+  
+  public handleChordKeyPress(event : React.KeyboardEvent<HTMLSpanElement>) {
+    if (event.key == 'Enter') {
+      window.getSelection().removeAllRanges();
+      event.currentTarget.blur();
+      return;
+    }
+
+    /*
+    if (event.key == 'Tab') {
+      event.preventDefault();
+
+      let next = event.currentTarget.nextElementSibling;
+      // next is on span.chord now.
+
+      do {
+        if (next.nextElementSibling != null) {
+          // next has sibling
+          next = next.nextElementSibling;
+          continue;
+        }
+
+        if (next instanceof HTMLParagraphElement) {
+          // next is <p>
+          next = next.firstElementChild;
+          continue;
+        } 
+
+        if (next.nextSibling == null && next.parentElement.nextElementSibling != null) {
+          // next has no sibling, but next's parent has a sibling (typically <h3>)
+          next = next.parentElement.nextElementSibling;
+        }
+
+      } while (next.className != 's' && next.className != 'chord');
+
+
+      if (next.className == 's') {
+        let md = this.replace(this.props.md, event.currentTarget, event.currentTarget.innerText);
+        md = this.prependChord(md, next, '|');
+        this.props.updateHandler(md);
+        return;
+      } 
+      
+      if (next.className == 'chord') {
+        let chord = next as HTMLSpanElement;
+        let md = this.replace(this.props.md, chord, chord.innerText + '|');
+        this.props.updateHandler(md);
+        return;
+      }
+    }
+    */
   }
 
   render() {
@@ -165,7 +244,7 @@ export default class Preview extends React.Component<P, {}> {
             className='chord'
             contentEditable={true}
             onBlur={this.handleChordBlur.bind(this)}
-            //ref={input => input && chord.endsWith('|') && input.focus()}
+            onKeyDown={this.handleChordKeyPress.bind(this)}
           >
             {chord}
         </span>;

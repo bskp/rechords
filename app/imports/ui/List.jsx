@@ -55,7 +55,7 @@ export default class List extends Component {
 
     render() {
         let groups = [];
-        for (key in this.props.tree) {
+        for (let key in this.props.tree) {
             groups.push(key);
         }
 
