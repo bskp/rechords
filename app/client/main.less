@@ -183,6 +183,20 @@ body {
       }
     }
 
+    &.optional {
+      &:before { 
+        content: '('; 
+      }
+      &:after { 
+        content: ')'; 
+      }
+      &:after, &:before{
+        font-weight: 200;
+        vertical-align: 0.05em;
+      }
+    }
+
+
     & + .chord {
       left: 1*@cw;
       & + .chord {
@@ -195,7 +209,7 @@ body {
           }
       }
     }
-  }
+  } 
 
   &.interactive {
     .s:hover {
@@ -243,6 +257,8 @@ body {
     }
   }
 } // .chordsheet
+
+
 
 aside {
   flex-grow: 0;

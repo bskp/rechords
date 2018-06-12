@@ -1,0 +1,28 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"lib": [
+			"es6",
+			"dom.iterable",
+			"dom"
+		],
+		"preserveConstEnums": true,
+		"sourceMap": true,
+							    
+		"plugins": [
+			{
+				"name": "typescript-plugin-add-type"
+			}
+		],
+
+		"typeRoots": [
+			"./node_modules/@types",
+			"./node_modules"
+		],
+		"types": [
+			"meteor-typings",
+			"core-js",
+			"requirejs"
+		]
+	}
+}

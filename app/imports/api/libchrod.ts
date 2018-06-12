@@ -177,7 +177,7 @@ var Scales:{major: Scale, harmonic: Scale} = {
 class Chord {
   idx: number;
   constructor(public key: Key, public keys: Array<Number>, public str: string,
-     public suff: string = '', public pref: string = '') {
+     public suff: string = '', public optional: boolean = false) {
     this.idx = key.idx;
   }
 
@@ -185,27 +185,27 @@ class Chord {
    * 
    * @param {Key} key 
    */
-  static minor(key, rest, pref) {
+  static minor(key: Key, suff: string, optional: boolean) {
     let base = key.idx;
     let keys = [base, base + 3, base + 7].map(p => p % 12);
-    return new Chord(key, keys, "m", rest, pref);
+    return new Chord(key, keys, "m", suff, optional);
   }
 
-  static major(key, rest, pref) {
+  static major(key: Key, suff: string, optional: boolean) {
     let base = key.idx;
     let keys = [base, base + 4, base + 7].map(p => p % 12);
-    return new Chord(key, keys, "", rest, pref);
+    return new Chord(key, keys, "", suff, optional);
   }
 
-  static plus(key, rest, pref) {
+  static plus(key: Key, suff: string, optional: boolean) {
     let base = key.idx;
     let keys = [base, base + 4, base + 8].map(p => p % 12);
-    return new Chord(key, keys, "+", rest, pref);
+    return new Chord(key, keys, "+", suff, optional);
   }
-  static minus(key, rest, pref) {
+  static minus(key: Key, suff: string, optional: boolean) {
     let base = key.idx;
     let keys = [base, base + 3, base + 6].map(p => p % 12);
-    return new Chord(key, keys, "dim", rest, pref);
+    return new Chord(key, keys, "dim", suff, optional);
   }
 
   /**
@@ -214,7 +214,15 @@ class Chord {
      * @returns {Chord} 
      */
   static parseChordString(chordString) : Chord {
-    let parsedChordString = chordString.match(/(^.*?)([a-h](#|b)?)(-|\+|m?(?!aj))(.*)/i);
+
+  let checkOptional:Array<string> = chordString.match(/(^\(?)([^)]*)(\)?)/);
+  let content = checkOptional[2];
+  let optional:boolean = false;
+  if (checkOptional[1] && checkOptional[3]) {
+    optional = true;
+  }
+
+    let parsedChordString = content.match(/()([a-h](#|b)?)(-|\+|m?(?!aj))(.*)/i);
 
     if (parsedChordString == null) return;
 
@@ -228,25 +236,19 @@ class Chord {
     let key = new Key(keystr, keydx);
 
     let suff = parsedChordString[5];
-    let pref = parsedChordString[1];
 
-    // TODO: Filter bass
-    // easiest way: match any note in the suff string
 
     if (parsedChordString[4] == "m") {
-      return Chord.minor(key, suff, pref);
+      return Chord.minor(key, suff, optional);
     } else if (parsedChordString[4] == "+") {
-      return Chord.plus(key, suff, pref);
+      return Chord.plus(key, suff, optional);
     } else if (parsedChordString[4] == "-") {
-      return Chord.minus(key, suff, pref);
+      return Chord.minus(key, suff, optional);
     } else {
-      return Chord.major(key, suff, pref);
+      return Chord.major(key, suff, optional);
     }
   }
 
-  get chordString() {
-    return this.key + this.str + this.suff;
-  }
 }
 
 export default class ChrodLib {
@@ -386,10 +388,13 @@ export default class ChrodLib {
 
     let suff = this.shift_suff(ch.suff, shift, pitchmap);
 
+    let clazz = 'chord';
 
-    // TODO: transpose suffix
-    // TODO: 
-    return ch.pref + base + ch.str + '<sup>' + suff + '</sup>';
+    if (ch.optional) {
+      clazz += ' optional';
+    }
+
+    return `<span class="${clazz}">${base}${ch.str}<sup>${suff}</sup></span>`;
   }
 
   private shift_suff(suff: string, shift:number, pitchmap: Map<number, string>) : string {
