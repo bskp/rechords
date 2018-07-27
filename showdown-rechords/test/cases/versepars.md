@@ -17,7 +17,7 @@ And the [G]red rocket blaze over [em]Cape Canaveral
 You’ve been a [C]father to me in [D7]1960’s, speak
 Give me co[G]matose joy like we’re [em]on TV
 While the [am]mountain’s side was shining
-wild [D7]colors of my des[em9][em]tiny[am][cm]
+wild [D7]colors of my des[em9][em]tiny
 
 I watched your [am]face age backwards
 Changing [D7]shape in my mem[em9][em]ory
