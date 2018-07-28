@@ -82,7 +82,7 @@ export default class TranposeSetter extends Component {
     };
     if ( this.props.keym) {
       let key = this.props.keym;
-      keys = {};
+      let keys = {};
       let libChrod = new ChrodLib();
       for (var i=-7; i<=7; i++) {
         let keyobj = libChrod.shift(key, i);

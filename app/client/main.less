@@ -126,12 +126,15 @@ body {
       line-height: 1.4em;
   }
 
+  /*
   .s {
     color: black;
     display: inline-block;
     white-space: pre-wrap;
 
   }
+  */
+
 
   &.interactive .s:hover {
     background-color: hsv(hsvhue(@accent), 0.1, 0.9);
@@ -140,10 +143,11 @@ body {
     cursor: pointer;
   }
 
-  .chord {
+  i {
     @cw: 3em;
     color: @accent;
     font-weight: bold;
+    font-style: normal;
     position: relative;
     display: inline-block;
     top: -1em;
@@ -170,13 +174,13 @@ body {
       background-color: hsv(hsvhue(@accent), 0.1, 0.95);
     }
 
-    & + .chord {
+    & + i {
       left: 1*@cw;
-      & + .chord {
+      & + i {
           left: 2*@cw;
-          & + .chord {
+          & + i {
               left: 3*@cw;
-              & + .chord {
+              & + i {
                   left: 4*@cw;
               }
           }
@@ -186,11 +190,13 @@ body {
 
   // Alternatively multiple classes could be set
   // in the html
+  /*
   .opt_chord {
       .chord;
       // color: hsv(hsvhue(@accent), .3, hsvvalue(@accent)); 
       color: lighten(desaturate(@accent, 30%, relative), 30%);
   }
+  */
 
   li {
     line-height: 1.6em;

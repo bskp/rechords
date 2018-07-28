@@ -77,7 +77,7 @@ class App extends Component {
         let list = (<List tree={this.getSongTree()} />);
 
         const getSong = (params) => {
-            return song = Songs.findOne({
+            return Songs.findOne({
                 author_: params.author,
                 title_: params.title
             });
