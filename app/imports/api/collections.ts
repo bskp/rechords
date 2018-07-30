@@ -164,10 +164,10 @@ export class RmdHelpers {
   static collectChordsDom(dom) {
     let chords = [];
 
-    let uls = dom.getElementsByTagName("span");
+    let uls = dom.getElementsByTagName("i");
     for (let i = 0; i < uls.length; i++) {
       let chord_dom = uls[i];
-      if (chord_dom.getAttribute("class") == "chord") {
+      if (true) {
         chords.push(chord_dom);
       }
     }

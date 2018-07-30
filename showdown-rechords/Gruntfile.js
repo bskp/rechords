@@ -155,7 +155,7 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
 
   // Alias tasks
-  grunt.registerTask('lint', ['jshint', 'jscs']);
+  grunt.registerTask('lint', ['jshint']);
   grunt.registerTask('test', ['lint', 'simplemocha']);
   grunt.registerTask('singletest', ['othermocha']);
   grunt.registerTask('build', ['test', 'concat', 'uglify']);
