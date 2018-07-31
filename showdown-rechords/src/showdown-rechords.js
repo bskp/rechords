@@ -6,7 +6,7 @@ module.exports = function showdownRechords() {
   function parseLine(match, content) {
     // Only match chords followed by a letter or '.'
     // these chords are attached to the letter
-    var line = content.replace(/\[([^[\]]*?)\](?=[\w\.])/gi, '</span><span><i class="i">$1 </i>');
+    var line = content.replace(/\[([^[\]]*?)\](?=[\w\.äöüÄÖÜ])/gi, '</span><span><i class="i">$1 </i>');
     // the rest of the chords will be a different class
     var clazz;
     var mmatch = (/^( *\[([^\[\]]*?\]) *)+$/gi).test(line);
@@ -15,7 +15,7 @@ module.exports = function showdownRechords() {
     } else {
       clazz = "r";
     }
-    line = line.replace(/\[(.*?)\]/gi, '</span><span><i class="'+clazz+'">$1 </i>');
+    line = line.replace(/\[(.*?)\]/gi, '</span><span><i class="'+clazz+'">$1 </i>_');
     console.debug(line);
     return '<div class="line"><span>' + line + '</span></div>\n'; // line is allowed to be empty.
   }
