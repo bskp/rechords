@@ -11,6 +11,7 @@ var options = {
   whiteList: {
     a: ["href", "title"],
     span: ["class"],
+    div: ["class"],
     i: ["class"],
     h1: [],
     h2: [],

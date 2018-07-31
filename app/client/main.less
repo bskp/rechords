@@ -143,22 +143,22 @@ body {
     cursor: pointer;
   }
 
-  i.i, i.r {
+  i {
     @cw: 3em;
     color: @accent;
     font-weight: bold;
     font-style: normal;
-    position: relative;
-    display: inline-block;
-    top: -1em;
-    margin-top: 1em;
-    width: @cw;
-    margin-right: -@cw;
-    word-wrap: normal;
+    // position: relative;
+    // display: inline-block;
+    // top: -1em;
+    // margin-top: 1em;
+    // width: @cw;
+    // margin-right: -@cw;
+    // word-wrap: normal;
 
-    height: 1em;
-    line-height: 1em;
-    padding-top: 0.2em;
+    // height: 1em;
+    // line-height: 1em;
+    // padding-top: 0.2em;
     
     .select(text);
     .noFocusBorder;
@@ -195,6 +195,25 @@ body {
     font-weight: bold;
     padding-right: 1em;
 
+  }
+  i {
+    position:relative;
+    display:inline-block;
+    flex:.5;
+    
+   }
+  
+  span {
+    flex-direction:column;
+    display:flex;
+    white-space:pre-wrap;
+  
+  }
+  
+  .line {
+    display:flex;
+    flex-direction:row;
+    align-items:flex-end;  
   }
 
   // Alternatively multiple classes could be set
