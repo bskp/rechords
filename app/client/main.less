@@ -143,7 +143,7 @@ body {
     cursor: pointer;
   }
 
-  i {
+  i.i, i.r {
     @cw: 3em;
     color: @accent;
     font-weight: bold;
@@ -173,20 +173,25 @@ body {
     &:focus {
       background-color: hsv(hsvhue(@accent), 0.1, 0.95);
     }
-
-    & + i {
-      left: 1*@cw;
-      & + i {
-          left: 2*@cw;
-          & + i {
-              left: 3*@cw;
-              & + i {
-                  left: 4*@cw;
-              }
-          }
-      }
+    // only chords
+    // this is may be not necessary
+    // however it makes it possible to adjust the lineheight
+    // of only chord lines
+    // chords without letters (syllable)
+  }
+    i.r {
+      display: inline-block;
+      color: black;
     }
-  } 
+
+
+   
+  i.o {
+    color: darkcyan;
+    font-weight: bold;
+    padding-right: 1em;
+
+  }
 
   // Alternatively multiple classes could be set
   // in the html

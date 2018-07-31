@@ -4,7 +4,19 @@ module.exports = function showdownRechords() {
   require('source-map-support').install(); // For mocha.
 
   function parseLine(match, content) {
-    var line = content.replace(/\[(.*?)\]/gi, '<i>$1</i>');
+    // Only match chords followed by a letter or '.'
+    // these chords are attached to the letter
+    var line = content.replace(/\[([^[\]]*?)\](?=[\w\.])/gi, '<i class="i">$1</i>');
+    // the rest of the chords will be a different class
+    var clazz;
+    var mmatch = (/^( *\[([^\[\]]*?\]) *)+$/gi).test(line);
+    if (mmatch) {
+      clazz = "o"; 
+    } else {
+      clazz = "r";
+    }
+    line = line.replace(/\[(.*?)\]/gi, '<i class="'+clazz+'">$1</i>');
+    console.debug(line);
     return line + '<br />\n'; // line is allowed to be empty.
   }
 

@@ -41,7 +41,7 @@
   function filter() {
     return function (file) {
       // HERE: change the name to current dev test
-      return (file === 'verse.md');
+      return (file === 'chords_only.md');
     };
   }
 
