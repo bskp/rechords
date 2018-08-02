@@ -4,9 +4,9 @@ module.exports = function showdownRechords() {
   require('source-map-support').install(); // For mocha.
 
   function parseLine(match, content) {
-    let line = content.replace(/^([^\[]+)/, '<i>$1</i>');
+    var line = content.replace(/^([^\[]+)/, '<i>$1</i>');
     line = line.replace(/\[([^\]]*)\]([^\[]*)/gi, function(match, chord, text) {
-      if (text == '') {
+      if (text === '') {
         text = ' ';
       }
       return '<i data-chord="' + chord + '">' + text + '</i>';
