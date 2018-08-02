@@ -4,20 +4,14 @@ module.exports = function showdownRechords() {
   require('source-map-support').install(); // For mocha.
 
   function parseLine(match, content) {
-    // Only match chords followed by a letter or '.'
-    // these chords are attached to the letter
-    var line = content.replace(/\[([^[\]]*?)\](?=[\w\.äöüÄÖÜ])/gi, '</span><span><i class="i">$1 </i>');
-    // the rest of the chords will be a different class
-    var clazz;
-    var mmatch = (/^( *\[([^\[\]]*?\]) *)+$/gi).test(line);
-    if (mmatch) {
-      clazz = "o"; 
-    } else {
-      clazz = "r";
-    }
-    line = line.replace(/\[(.*?)\]/gi, '</span><span><i class="'+clazz+'">$1 </i>_');
-    console.debug(line);
-    return '<div class="line"><span>' + line + '</span></div>\n'; // line is allowed to be empty.
+    let line = content.replace(/^([^\[]+)/, '<i>$1</i>');
+    line = line.replace(/\[([^\]]*)\]([^\[]*)/gi, function(match, chord, text) {
+      if (text == '') {
+        text = ' ';
+      }
+      return '<i data-chord="' + chord + '">' + text + '</i>';
+    });
+    return '<span class="line">' + line + '</span>\n';
   }
 
   return [
@@ -58,6 +52,7 @@ module.exports = function showdownRechords() {
 
         // Process line
         var verse = h3 + '<p>\n' + content.replace(/(.*?)\n/g, parseLine) + '</p>';
+        console.log("{" + verse + "}");
 
         // Fix last lines
         verse = verse.replace(/<br \/>\n<br \/>/g, '\n</p>\n<p>'); // 2x line break -> paragraph break

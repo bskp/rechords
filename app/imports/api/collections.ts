@@ -12,16 +12,17 @@ var options = {
     a: ["href", "title"],
     span: ["class"],
     div: ["class"],
-    i: ["class"],
+    i: ["class", "data-chord"],
     h1: [],
     h2: [],
     h3: [],
     ul: ["class"],
     li: [],
-    p: [],
+    p: ["class"],
     br: [],
     strong: [],
-    em: []
+    em: [],
+    code: []
   }
 };
 
@@ -112,7 +113,7 @@ export class Song {
     }
 
     this.tags = RmdHelpers.collectTags(dom);
-    this.chords = RmdHelpers.collectChords(dom);
+    //this.chords = RmdHelpers.collectChords(dom);
   }
 
   getRevisions() {

@@ -122,107 +122,66 @@ body {
     margin-top: 2em;
   }
 
-  p {
-      line-height: 1.4em;
+  i {
+    color: black;
+    font-style: normal;
+    margin-bottom: 0.2em;
   }
 
   /*
-  .s {
-    color: black;
-    display: inline-block;
-    white-space: pre-wrap;
-
-  }
-  */
-
-
-  &.interactive .s:hover {
+  &.interactive i:hover {
     background-color: hsv(hsvhue(@accent), 0.1, 0.9);
     border-radius: 0.2em;
     transition: background-color 0.2s;
     cursor: pointer;
   }
+  */
 
-  @lh: 1em;
-  i {
-    @cw: 3em;
-    color: @accent;
-    font-weight: bold;
-    font-style: normal;
-    // position: relative;
-    // display: inline-block;
-    // top: -1em;
-    // margin-top: 1em;
-    // width: @cw;
-    // margin-right: -@cw;
-    // word-wrap: normal;
-
-    // height: 1em;
-    // line-height: 1em;
-    // padding-top: 0.2em;
-    
-    .select(text);
-    .noFocusBorder;
-
-    sup {
-      vertical-align: 0.4em;
-      font-size: 0.7em;
-      letter-spacing: 0.02em;
-      padding-left: 0.1em;
-    }
-
-    &:focus {
-      background-color: hsv(hsvhue(@accent), 0.1, 0.95);
-    }
-    // only chords
-    // this is may be not necessary
-    // however it makes it possible to adjust the lineheight
-    // of only chord lines
-    // chords without letters (syllable)
-  }
-
-  i {
-    position:relative;
-    display:inline-block;
-    flex:.5;
-    
-  }
-
-  i.r {
-    display: inline-block;
-    color: black;
-  }
-   
-  i.o {
-    color: darkcyan;
-    font-weight: bold;
-    padding-right: 1em;
-
-  }
-  
-  .line span {
+  .line i {
     flex-direction:column;
     display:flex;
     white-space:pre-wrap;
-    line-height: @lh;
-  
+
+    .before {  // aka. Chords.
+
+      color: @accent;
+      font-weight: bold;
+      font-style: normal;
+
+      .select(text);
+      .noFocusBorder;
+
+      margin-right: 0.5em;
+
+      sup {
+        vertical-align: 0.4em;
+        font-size: 0.7em;
+        letter-spacing: 0.02em;
+        padding-left: 0.1em;
+      }
+
+      &:focus {
+        background-color: hsv(hsvhue(@accent), 0.1, 0.95);
+      }
+
+      &[optional] {
+        // optional chords.
+        color: lighten(desaturate(@accent, 30%, relative), 30%);
+      }
+    }
+
+    &::before {
+      content: attr(data-chord);
+      .before();
+    }
   }
   
   .line {
-    display:flex;
-    flex-direction:row;
-    align-items:flex-end;  
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;  
+    min-height: 1em;
   }
-
-  // Alternatively multiple classes could be set
-  // in the html
-  /*
-  .opt_chord {
-      .chord;
-      // color: hsv(hsvhue(@accent), .3, hsvvalue(@accent)); 
-      color: lighten(desaturate(@accent, 30%, relative), 30%);
-  }
-  */
 
   li {
     line-height: 1.6em;

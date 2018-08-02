@@ -36,6 +36,8 @@ class Viewer extends Component {
     let dT = this.state.relTranspose;
 
     // Parse HTML to react-vdom and replace chord values.
+    let vdom = Parser(rmd_html);
+    /*
     let vdom = Parser(rmd_html, {
       replace: function(domNode) {
         if (domNode.name && domNode.name == 'i') {
@@ -47,6 +49,7 @@ class Viewer extends Component {
         }
       }
     });
+    */
 
     // Idee: obige replace-funktion könnte vom TransposeSetter geholt werden. Dadurch könnte der relTranspose-Zustand völlig in 
     // den TransposeSetter wandern. 

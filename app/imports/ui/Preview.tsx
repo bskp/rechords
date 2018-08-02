@@ -39,7 +39,7 @@ export default class Preview extends React.Component<P, {}> {
       }
 
       node = node.previousElementSibling;
-      if (node.className == 'chord') {
+      if (node.tagName == 'I') {
         chordIdx++;
       }
     }
@@ -55,7 +55,7 @@ export default class Preview extends React.Component<P, {}> {
 
     // Apply patch to markdown
     let verses : RegExp = /([^\n:]+): *\n((?:.+[^:] *\n)+)(?:\n+(?=(?:[^\n]+: *\n|\n|$))|$)/gi;
-    // stolen from showdown-rechords.js:74
+    // stolen from showdown-rechords.js:45
 
     // Iterate over verses
     let countedVerses : number = 0;
@@ -159,16 +159,17 @@ export default class Preview extends React.Component<P, {}> {
     this.props.song.parse(this.props.md);
 
     let vdom = Parser(this.props.song.getHtml(), {replace: (node) => {
-      if (node.attribs != undefined && node.attribs.class != undefined && node.attribs.class == 'chord') {
-        let chord : string = node.children[0].data;
-        return <span
-            className='chord'
-            contentEditable={true}
-            onBlur={this.handleChordBlur.bind(this)}
-            //ref={input => input && chord.endsWith('|') && input.focus()}
-          >
-            {chord}
-        </span>;
+      if (node.name == 'i' && 'data-chord' in node.attribs) {
+        return (
+          <i>
+            <span 
+              className="before"
+              contentEditable={true}
+              onBlur={this.handleChordBlur.bind(this)}
+            >{node.attribs['data-chord']}</span>
+            {node.children[0].data}
+          </i>
+        );
       }
       return node;
     }});
