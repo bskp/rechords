@@ -36,20 +36,19 @@ class Viewer extends Component {
     let dT = this.state.relTranspose;
 
     // Parse HTML to react-vdom and replace chord values.
-    let vdom = Parser(rmd_html);
-    /*
     let vdom = Parser(rmd_html, {
       replace: function(domNode) {
         if (domNode.name && domNode.name == 'i') {
-          let chord = domNode.children[0];
-          let chord_transposed_data = chrodlib.transpose(chord.data, key, dT);
-          chord.data = chord_transposed_data; 
+          let chord = domNode.attribs['data-chord'];
+          if (chord) {
+            let chord_transposed_data = chrodlib.transpose(chord, key, dT);
+            domNode.attribs["data-chord"]= chord_transposed_data;
+          }
           // return <span className="chord">{c}</span>
           return domNode;
         }
       }
     });
-    */
 
     // Idee: obige replace-funktion könnte vom TransposeSetter geholt werden. Dadurch könnte der relTranspose-Zustand völlig in 
     // den TransposeSetter wandern. 

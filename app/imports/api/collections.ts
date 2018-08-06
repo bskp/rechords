@@ -1,5 +1,6 @@
 import { Mongo } from "meteor/mongo";
 
+var DATACHORD = 'data-chord';
 var showdown = require("showdown");
 var rmd = require("showdown-rechords");
 var DOMParser = require("xmldom").DOMParser;
@@ -113,7 +114,7 @@ export class Song {
     }
 
     this.tags = RmdHelpers.collectTags(dom);
-    //this.chords = RmdHelpers.collectChords(dom);
+    this.chords = RmdHelpers.collectChords(dom);
   }
 
   getRevisions() {
@@ -161,7 +162,7 @@ export class RmdHelpers {
     return tags;
   }
   static collectChords(dom) {
-    return this.collectChordsDom(dom).map(c => c.textContent);
+    return this.collectChordsDom(dom);
   }
   static collectChordsDom(dom) {
     let chords = [];
@@ -169,8 +170,9 @@ export class RmdHelpers {
     let uls = dom.getElementsByTagName("i");
     for (let i = 0; i < uls.length; i++) {
       let chord_dom = uls[i];
-      if (true) {
-        chords.push(chord_dom);
+      if (chord_dom.hasAttribute(DATACHORD)) {
+        var chord = chord_dom.getAttribute(DATACHORD);
+        chords.push(chord);
       }
     }
     //console.log(chords);
