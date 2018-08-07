@@ -38,12 +38,11 @@ class Viewer extends Component {
     // Parse HTML to react-vdom and replace chord values.
     let vdom = Parser(rmd_html, {
       replace: function(domNode) {
-        if (domNode.attribs && domNode.attribs.class == 'chord') {
-          let chord = domNode.children[0];
-          let html = chrodlib.transpose(chord.data, key, dT);
-          let c = Parser(html);
-          // return <span className="chord">{c}</span>
-          return c;
+        if (domNode.name && domNode.name == 'i' && 'data-chord' in domNode.attribs) {
+          let chord = domNode.attribs['data-chord'];
+          let t = chrodlib.transpose(chord, key, dT);
+          let chord_ = <span className="before {t.className}">{t.base}<sup>{t.suff}</sup></span>;
+          return <i>{chord_} {domNode.children[0].data}</i>;
         }
       }
     });

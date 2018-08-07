@@ -394,7 +394,12 @@ export default class ChrodLib {
       clazz += ' optional';
     }
 
-    return `<span class="${clazz}">${base}${ch.str}<sup>${suff}</sup></span>`;
+    return {
+      base: base + ch.str,
+      suff: suff,
+      className: clazz
+    }
+    //return <span className="before {clazz}">{base}{ch.str}<sup>{suff}</sup></span>;
   }
 
   private shift_suff(suff: string, shift:number, pitchmap: Map<number, string>) : string {

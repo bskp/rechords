@@ -11,12 +11,14 @@ var options = {
   whiteList: {
     a: ["href", "title"],
     span: ["class"],
+    div: ["class"],
+    i: ["class", "data-chord"],
     h1: [],
     h2: [],
     h3: [],
     ul: ["class"],
     li: [],
-    p: [],
+    p: ["class"],
     br: [],
     strong: [],
     em: [],
@@ -111,7 +113,7 @@ export class Song {
     }
 
     this.tags = RmdHelpers.collectTags(dom);
-    this.chords = RmdHelpers.collectChords(dom);
+    //this.chords = RmdHelpers.collectChords(dom);
   }
 
   getRevisions() {
@@ -164,10 +166,10 @@ export class RmdHelpers {
   static collectChordsDom(dom) {
     let chords = [];
 
-    let uls = dom.getElementsByTagName("span");
+    let uls = dom.getElementsByTagName("i");
     for (let i = 0; i < uls.length; i++) {
       let chord_dom = uls[i];
-      if (chord_dom.getAttribute("class") == "chord") {
+      if (true) {
         chords.push(chord_dom);
       }
     }

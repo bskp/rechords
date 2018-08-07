@@ -1,50 +1,17 @@
-/* vim: set tabstop=2:softtabstop=2 */
+/* vim: set tabstop=4:softtabstop=4 */
 
 module.exports = function showdownRechords() {
-
-  require('source-map-support').install();
-
-  var Hypher = require('hypher'),
-    english = require('hyphenation.en-us'),
-    h = new Hypher(english);
-
-  /**
-   * Merges every array item ending with '_' with its successor.
-   * @param {Array<String>} arr Array of Strings
-   */
-  function mergeCoupled(arr) {
-    var pending = '',
-      out = [];
-    for (var i = 0; i < arr.length; i++) {
-      if (arr[i].endsWith('_')) {
-        pending = arr[i].replace('_', ' ');
-        continue;
-      }
-      out.push(pending + arr[i]);
-    }
-    return out;
-  }
+  require('source-map-support').install(); // For mocha.
 
   function parseLine(match, content) {
-    // TODO: akkordzeile erkennen und anders behandeln
-    var line = content.replace(/\S+ ?/gi, parseWord);
-    return line + '<br />';  // line is allowed to be empty.
-  }
-
-  function parseWord(match) {
-    // TODO: support multiple chords per word. Currently, all chords bubble up
-    // up to the beginning of the word, instead of staying with their syllable.
-    var chords = [],
-      text = match.replace(/\[(.+?)\]/gi, function (match, chord) {
-        chords.push('<span class="chord">' + chord + '</span>');
-        return '';
-      }),
-      chunks = h.hyphenate(text),
-      out = mergeCoupled(chunks).map(function (s) {
-        return '<span class="s">' + s + '</span>';
-      }).join('');
-
-    return chords.join('') + out;
+    var line = content.replace(/^([^\[]+)/, '<i>$1</i>');
+    line = line.replace(/\[([^\]]*)\]([^\[]*)/gi, function(match, chord, text) {
+      if (text === '') {
+        text = ' ';
+      }
+      return '<i data-chord="' + chord + '">' + text + '</i>';
+    });
+    return '<span class="line">' + line + '</span>\n';
   }
 
   return [
@@ -62,9 +29,13 @@ module.exports = function showdownRechords() {
       type: 'lang',
       regex: /^\s*(#(\S+) *)+\s*$/gm,
       replace: function (tags) {
-        return '<ul class="tags">' + tags.replace(/\s*#(\S+)\s*/g, function (match, tag) {
-          return '\n    <li>' + tag + '</li>';
-        }) + '\n</ul>';
+        return (
+          '<ul class="tags">' +
+          tags.replace(/\s*#(\S+)\s*/g, function (match, tag) {
+            return '\n    <li>' + tag + '</li>';
+          }) +
+          '\n</ul>'
+        );
       }
     },
 
@@ -80,11 +51,12 @@ module.exports = function showdownRechords() {
         }
 
         // Process line
-        var verse = h3 + '<p>' + content.replace(/(.*?)\n/g, parseLine) + '</p>';
+        var verse = h3 + '<p>\n' + content.replace(/(.*?)\n/g, parseLine) + '</p>';
 
         // Fix last lines
-        verse = verse.replace(/(<br \/>)+\s*<\/p>/g, '\n</p>'); // Trim all linebreaks at verse-ends
-        verse = verse.replace(/<br \/><br \/>/g, '\n</p><p>'); // 2x line break -> paragraph break
+        verse = verse.replace(/<br \/>\n<br \/>/g, '\n</p>\n<p>'); // 2x line break -> paragraph break
+        verse = verse.replace(/<p>\s*?<\/p>/g, ''); // drop empty paragraphs
+        verse = verse.replace(/(<br \/>)*\s*?<\/p>/g, '\n</p>\n'); // Normalize <br /> and whitespace at paragraph ends
         return verse;
       }
     }

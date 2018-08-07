@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
-var slug = require('slug')
-import { Songs } from '../api/collections.js';
-
-
 class ListItem extends Component {
     constructor(props) {
         super(props);

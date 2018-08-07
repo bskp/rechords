@@ -12,4 +12,4 @@ And the [G]red rocket blaze over [em]Cape Canaveral
 [G7]Hey, hey, hey, mother interstate
 Can you deliver me from evil
 Make me honest, make me a wedding cake
-Atone, I will [Cm]atone
+Atone, I will [cm]atone

@@ -2,7 +2,7 @@
   "name": "showdown-rechords",
   "repository": "showdownjs/showdown-extension-boilerplate",
   "description": "Markdown dialect for lead sheets",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "keywords": [
     "markdown",
     "md",
