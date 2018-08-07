@@ -1,6 +1,10 @@
 import Songs, {Song} from '../api/collections.js';
 import * as React from 'react';
 
+var Hypher = require('hypher'),
+english = require('hyphenation.en-us'),
+h = new Hypher(english);
+
 var Parser = require("html-react-parser");
 
 interface P {
@@ -15,43 +19,55 @@ export default class Preview extends React.Component<P, {}> {
     super(props);
   }
 
-  public handleClick(event: React.MouseEvent<HTMLElement>) {
-    let node: Element = event.target as Element;
-    if (!(node instanceof HTMLSpanElement) || node.className != 's') return;
-
-    let md = this.prependChord(this.props.md, node, 'G');
-    this.props.updateHandler(md);
-  }
-
-  public removeChord(md : string, node : Element) : string {
-    // Count chords between clicked chord and preceding h3 (ie. verse label)
-    let chordIdx : number = 0;
-
-    while(true) {
-      if (node.previousElementSibling == null) {
-        let par_or_h3 = node.parentElement.previousElementSibling;
-        if (par_or_h3 instanceof HTMLParagraphElement) {
-          node = par_or_h3.lastElementChild;
+  componentDidUpdate() {
+    let html : HTMLElement = this.refs.html as HTMLElement;
+    
+    function traverse(node : HTMLElement) : void {
+      for (const child of node.children) {
+        if (child.innerHTML.endsWith('|')) {
+          child.innerHTML = child.innerHTML.replace('|', '');
+          let range = document.createRange();
+          range.selectNodeContents(child);
+          let sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+          return;
         } else {
-          node = par_or_h3;
-          break;
+          traverse(child as HTMLElement);
         }
       }
 
-      node = node.previousElementSibling;
-      if (node.tagName == 'I') {
-        chordIdx++;
-      }
     }
 
-    // Count h3-occurences up to the current paragraph
-    let verse : number = 0;
-    while (node != null) {
-      node = node.previousSibling as Element;
-      if (node instanceof HTMLHeadingElement && node.tagName == 'H3') {
-        verse++;
-      }
+    traverse(html);
+
+  }
+
+  public handleClick(event: React.MouseEvent<HTMLElement>) {
+    let node: Element = event.target as Element;
+    if (!(node instanceof HTMLElement) || node.tagName != 'I') return;
+
+    let md = this.prependChord(this.props.md, node, '|');
+    this.props.updateHandler(md);
+  }
+
+
+  public handleChordBlur(event : React.SyntheticEvent<HTMLLIElement>) {
+    let chord = event.currentTarget.innerText;
+
+    let i = event.currentTarget.parentElement;
+
+    let md_ = this.removeChord(this.props.md, i);
+
+    if (chord.length > 0) {
+      md_ = this.prependChord(md_, i, chord);
     }
+    this.props.updateHandler(md_);
+  }
+
+
+  public removeChord(md : string, node : Element) : string {
+    let pos = this.localize(node);
 
     // Apply patch to markdown
     let verses : RegExp = /([^\n:]+): *\n((?:.+[^:] *\n)+)(?:\n+(?=(?:[^\n]+: *\n|\n|$))|$)/gi;
@@ -60,15 +76,16 @@ export default class Preview extends React.Component<P, {}> {
     // Iterate over verses
     let countedVerses : number = 0;
     md = md.replace(verses, (match:string, title:string, v:string) => {
-      if (countedVerses++ == verse) {
+      if (countedVerses++ == pos.verse) {
+        var countedLetters = 0;
 
-        // Iterate over chord in the appropriate verse
-        let countedChords : number = 0;
-        v = v.replace(/\[.*?\]/g, (c : string) => {
-          if (countedChords++ == chordIdx) {
-            return '';
+        v = v.replace(/([^\[]*)([^\]]*\])/g, (match, text, chord) => {
+          countedLetters += text.replace(/\s/g, '').length;
+          if (countedLetters == pos.letter) {
+            countedLetters = Number.POSITIVE_INFINITY;
+            return text;
           }
-          return c;
+          return match;
         });
       };
 
@@ -79,36 +96,8 @@ export default class Preview extends React.Component<P, {}> {
   }
 
 
-  public prependChord(md : string, node : Element, chord : string, consume : number = 0) : string {
-    // Count letters between clicked syllable and preceding h3 (ie. verse label)
-    let letter : number = 0;
-
-    while(true) {
-      if (node.previousElementSibling == null) {
-        let par_or_h3 = node.parentElement.previousElementSibling;
-        if (par_or_h3 instanceof HTMLParagraphElement) {
-          node = par_or_h3.lastElementChild;
-          letter += node.innerHTML.trim().length;
-        } else {
-          node = par_or_h3;
-          break;
-        }
-      }
-
-      node = node.previousElementSibling;
-      if (node.className == 's') {
-        letter += node.innerHTML.trim().length;
-      }
-    }
-
-    // Count h3-occurences up to the current paragraph
-    let verse : number = 0;
-    while (node != null) {
-      node = node.previousSibling as Element;
-      if (node instanceof HTMLHeadingElement && node.tagName == 'H3') {
-        verse++;
-      }
-    }
+  public prependChord(md : string, segment : Element, chord : string) : string {
+    let pos = this.localize(segment);
 
     // Apply patch to markdown
     let verses : RegExp = /([^\n:]+): *\n((?:.+[^:] *\n)+)(?:\n+(?=(?:[^\n]+: *\n|\n|$))|$)/gi;
@@ -117,7 +106,7 @@ export default class Preview extends React.Component<P, {}> {
     // Iterate over verses
     let countedVerses : number = 0;
     md = md.replace(verses, (match:string, title:string, v:string) => {
-      if (countedVerses++ == verse) {
+      if (countedVerses++ == pos.verse) {
 
         // Iterate over letters in the appropriate verse
         let countedLetters : number = 0;
@@ -131,7 +120,7 @@ export default class Preview extends React.Component<P, {}> {
             in_chord = true;
             return l;
           }
-          if (!in_chord && countedLetters++ == letter) {
+          if (!in_chord && countedLetters++ == pos.letter) {
             return '[' + chord + ']' + l;
           }
 
@@ -145,31 +134,86 @@ export default class Preview extends React.Component<P, {}> {
     return md;
   }
 
-  public handleChordBlur(event : React.SyntheticEvent<HTMLSpanElement>) {
-    let chord = event.currentTarget.innerText;
 
-    let md_ = this.removeChord(this.props.md, event.currentTarget);
-    if (chord.length > 0) {
-      md_ = this.prependChord(md_, event.currentTarget, chord);
+  localize(segment : Element) {
+    if (segment.tagName != 'I') {
+      throw("Illegal argument: invoke localize() with a <i>-element");
+
     }
-    this.props.updateHandler(md_);
+
+    // Count letters between clicked syllable and preceding h3 (ie. verse label)
+    let letter : number = 0;
+    let h3;
+
+    while(true) {
+      if (segment.previousElementSibling != null) {
+        segment = segment.previousElementSibling;
+      } else {
+        // reached the start of the current line
+        let line = segment.parentElement;
+
+        if (line.previousElementSibling != null) {
+          // go to preceding line
+          line = line.previousElementSibling as HTMLElement;
+        } else {
+          // this was the last line of the paragraph. 
+          // The element preceding it may either be another paragraph or a h3 / title
+          let par_or_h3 = line.parentElement.previousElementSibling;
+          if (par_or_h3 instanceof HTMLParagraphElement) {
+            line = par_or_h3.lastElementChild as HTMLElement;
+          } else {
+            h3 = par_or_h3;
+            break;
+          }
+        }
+        segment = line.lastElementChild;
+      }
+
+      // Count letters in this segment
+      letter += segment.childNodes[segment.childNodes.length - 1].textContent.replace(/\s/g, '').length;
+    }
+    // Count h3-occurences up to the current paragraph
+    let verse : number = 0;
+    while (h3 != null) {
+      h3 = h3.previousSibling as Element;
+      if (h3 instanceof HTMLHeadingElement && h3.tagName == 'H3') {
+        verse++;
+      }
+    }
+
+    return {
+      letter: letter,
+      verse: verse
+    };
   }
+
 
   render() {
     this.props.song.parse(this.props.md);
 
     let vdom = Parser(this.props.song.getHtml(), {replace: (node) => {
-      if (node.name == 'i' && 'data-chord' in node.attribs) {
-        return (
-          <i>
-            <span 
-              className="before"
-              contentEditable={true}
-              onBlur={this.handleChordBlur.bind(this)}
-            >{node.attribs['data-chord']}</span>
-            {node.children[0].data}
-          </i>
-        );
+      if (node.name == 'i') {
+        let chord;
+        if ('data-chord' in node.attribs) {
+          chord = <span 
+                className="before"
+                contentEditable={true}
+                suppressContentEditableWarning
+                onBlur={this.handleChordBlur.bind(this)}
+              >{node.attribs['data-chord']}</span>
+        }
+        return <React.Fragment>
+                {node.children[0].data.split(' ').map((word, idx, array) => {
+                    if (word == '') return ' ';
+                    let isLast = idx == array.length - 1;
+                    let nextNotEmpty = !isLast && array[idx + 1].length > 0;
+                    if (nextNotEmpty){
+                      word += ' ';
+                    } 
+                    return <i key={idx}>{idx == 0 ? chord : undefined}{word}</i>
+                  }
+                )}
+                </React.Fragment>
       }
       return node;
     }});

@@ -39,7 +39,6 @@
   },
   "dependencies": {
     "hyphenation.en-us": "^0.2.1",
-    "hypher": "^0.2.5",
     "showdown": "^1.7.4"
   }
 }

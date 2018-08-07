@@ -52,7 +52,6 @@ module.exports = function showdownRechords() {
 
         // Process line
         var verse = h3 + '<p>\n' + content.replace(/(.*?)\n/g, parseLine) + '</p>';
-        console.log("{" + verse + "}");
 
         // Fix last lines
         verse = verse.replace(/<br \/>\n<br \/>/g, '\n</p>\n<p>'); // 2x line break -> paragraph break
