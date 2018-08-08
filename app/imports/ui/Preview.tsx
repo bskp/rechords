@@ -52,7 +52,8 @@ export default class Preview extends React.Component<P, {}> {
   }
 
 
-  public handleChordBlur(event : React.SyntheticEvent<HTMLLIElement>) {
+  public handleChordBlur(event : React.SyntheticEvent<HTMLElement>) {
+    event.currentTarget.removeAttribute('data-initial');
     let chord = event.currentTarget.innerText;
 
     let i = event.currentTarget.parentElement;
@@ -63,6 +64,26 @@ export default class Preview extends React.Component<P, {}> {
       md_ = this.prependChord(md_, i, chord);
     }
     this.props.updateHandler(md_);
+  }
+
+  public handleChordKey(event : React.KeyboardEvent<HTMLElement>) {
+    let n = event.currentTarget;
+    if (event.key == 'Enter') {
+      event.preventDefault();
+      n.blur();
+      return;
+    }
+    if (event.key == 'Escape') {
+      event.preventDefault();
+      n.innerText = n.getAttribute('data-initial');
+      n.blur();
+      return;
+    }
+
+    if (!n.hasAttribute('data-initial')) {
+      n.setAttribute('data-initial', n.innerText);
+    }
+
   }
 
 
@@ -203,6 +224,7 @@ export default class Preview extends React.Component<P, {}> {
                 contentEditable={true}
                 suppressContentEditableWarning
                 onBlur={this.handleChordBlur.bind(this)}
+                onKeyDown={this.handleChordKey.bind(this)}
               >{node.attribs['data-chord']}</span>
         }
         return <React.Fragment>
