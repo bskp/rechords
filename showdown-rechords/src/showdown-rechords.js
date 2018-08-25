@@ -18,7 +18,7 @@ module.exports = function showdownRechords() {
     // Title
     {
       type: 'lang',
-      regex: /([^\n]+)\n([^\n]+)\n=+\n/,
+      regex: /([^\n]+)\n([^\n]+)\n=+\s*\n/,
       replace: function (match, song, artist) {
         return '<h1>' + song + '</h1>\n<h2>' + artist + '</h2>\n\n';
       }
@@ -31,7 +31,10 @@ module.exports = function showdownRechords() {
       replace: function (tags) {
         return (
           '<ul class="tags">' +
-          tags.replace(/\s*#(\S+)\s*/g, function (match, tag) {
+          tags.replace(/\s*#([^\s:]+)(?::(\S*))?\s*/g, function (match, tag, value) {
+            if (value !== undefined) {
+              tag += '<b>' + value + '</b>';
+            }
             return '\n    <li>' + tag + '</li>';
           }) +
           '\n</ul>'

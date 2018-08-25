@@ -4,7 +4,8 @@
   "scripts": {
     "start": "meteor run",
     "debug": "meteor run --inspect",
-    "preinstall": "grunt --gruntfile ../showdown-rechords/Gruntfile.js prep-release --force"
+    "preinstall": "grunt --gruntfile ../showdown-rechords/Gruntfile.js prep-release --force",
+    "postinstall": "cp -R ../showdown-rechords node_modules/"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.47",

@@ -14,6 +14,7 @@ var options = {
     span: ["class"],
     div: ["class"],
     i: ["class", "data-chord"],
+    b: [],
     h1: [],
     h2: [],
     h3: [],
