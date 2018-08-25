@@ -7,6 +7,9 @@ h = new Hypher(english);
 
 var Parser = require("html-react-parser");
 
+// The almighty expression matching a verse. Stolen from showdown-rechords.js:45
+const verseRegex = /([^\n:]+): *\n((?:.+[^:] *\n)+)(?:\n+(?=(?:[^\n]+: *\n|\n|$))|$)/gi;
+
 interface P {
   md: string;
   song: Song;
@@ -47,7 +50,13 @@ export default class Preview extends React.Component<P, {}> {
     let node: Element = event.target as Element;
     if (!(node instanceof HTMLElement) || node.tagName != 'I') return;
 
-    let md = this.prependChord(this.props.md, node, '|');
+    let offset = 0;
+    for (let child of node.children) {
+      offset += 2;
+      offset += this.textLen(child.innerText);
+    }
+
+    let md = this.prependChord(this.props.md, node, '|', offset);
     this.props.updateHandler(md);
   }
 
@@ -60,7 +69,7 @@ export default class Preview extends React.Component<P, {}> {
 
     let md_ = this.removeChord(this.props.md, i);
 
-    if (chord.replace(/\s/g, '').length > 0) {
+    if (this.textLen(chord) > 0) {
       md_ = this.prependChord(md_, i, chord);
     }
     this.props.updateHandler(md_);
@@ -87,25 +96,30 @@ export default class Preview extends React.Component<P, {}> {
   }
 
 
+  /*  Return the string's length omitting all whitespace.
+   *  
+   */
+  private textLen(str : string) {
+    if (str === undefined) return 0;
+    return str.replace(/\s/g, '').length;
+  }
+
+
   public removeChord(md : string, node : Element) : string {
     let pos = this.localize(node);
-
-    // Apply patch to markdown
-    let verses : RegExp = /([^\n:]+): *\n((?:.+[^:] *\n)+)(?:\n+(?=(?:[^\n]+: *\n|\n|$))|$)/gi;
-    // stolen from showdown-rechords.js:45
+    // "pos" specifies where the chord to remove _begins_, expressed as "nth verse and mth letter".
 
     // Iterate over verses
     let countedVerses : number = 0;
-    md = md.replace(verses, (match:string, title:string, v:string) => {
+    md = md.replace(verseRegex, (match:string, title:string, v:string) => {
       if (countedVerses++ == pos.verse) {
-        var countedLetters = 0;
 
-        v = v.replace(/([^\[]*)([^\]]*\])/g, (match, text, chord) => {
-          countedLetters += text.replace(/\s/g, '').length;
-          if (countedLetters == pos.letter) {
-            countedLetters = Number.POSITIVE_INFINITY;
-            return text;
-          }
+        // Iterate over letters
+        var countedLetters = 0;
+        v = v.replace(/(\[[^\]]*\])|([^\[]*)/g, (match) => {
+          let adding = this.textLen(match);
+          if (countedLetters == pos.letter) match = '';
+          countedLetters += adding;
           return match;
         });
       };
@@ -117,31 +131,19 @@ export default class Preview extends React.Component<P, {}> {
   }
 
 
-  public prependChord(md : string, segment : Element, chord : string) : string {
+  public prependChord(md : string, segment : Element, chord : string, offset = 0) : string {
     let pos = this.localize(segment);
 
     // Apply patch to markdown
-    let verses : RegExp = /([^\n:]+): *\n((?:.+[^:] *\n)+)(?:\n+(?=(?:[^\n]+: *\n|\n|$))|$)/gi;
-    // stolen from showdown-rechords.js:74
-
     // Iterate over verses
     let countedVerses : number = 0;
-    md = md.replace(verses, (match:string, title:string, v:string) => {
+    md = md.replace(verseRegex, (match:string, title:string, v:string) => {
       if (countedVerses++ == pos.verse) {
 
         // Iterate over letters in the appropriate verse
-        let countedLetters : number = 0;
-        let in_chord : boolean = false;
+        let countedLetters : number = -offset;
         v = v.replace(/\S/g, (l:string) => {
-          if (l == ']' && in_chord) {
-            in_chord = false;
-            return l;
-          }
-          if (l == '[' && !in_chord) {
-            in_chord = true;
-            return l;
-          }
-          if (!in_chord && countedLetters++ == pos.letter) {
+          if (countedLetters++ == pos.letter) {
             return '[' + chord + ']' + l;
           }
 
@@ -159,7 +161,6 @@ export default class Preview extends React.Component<P, {}> {
   localize(segment : Element) {
     if (segment.tagName != 'I') {
       throw("Illegal argument: invoke localize() with a <i>-element");
-
     }
 
     // Count letters between clicked syllable and preceding h3 (ie. verse label)
@@ -167,6 +168,7 @@ export default class Preview extends React.Component<P, {}> {
     let h3;
 
     while(true) {
+
       if (segment.previousElementSibling != null) {
         segment = segment.previousElementSibling;
       } else {
@@ -192,9 +194,19 @@ export default class Preview extends React.Component<P, {}> {
         }
         segment = line.lastElementChild;
       }
-
+       
       // Count letters in this segment
-      letter += segment.childNodes[segment.childNodes.length - 1].textContent.replace(/\s/g, '').length;
+      for (const node of segment.childNodes) {
+        if (node.nodeName == '#text') {
+          letter += node.textContent.replace(/\s/g, '').length;
+          continue;
+        }
+        if (node.nodeName == 'SPAN' && node.className == 'before') {
+          letter += 2;
+          letter += this.textLen(node.textContent);
+          continue;
+        }
+      }
     }
     // Count h3-occurences up to the current paragraph
     let verse : number = 0;

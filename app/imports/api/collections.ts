@@ -175,8 +175,6 @@ export class RmdHelpers {
         chords.push(chord);
       }
     }
-    //console.log(chords);
-    // console.log(ChrodLib.guessKey(this.chords));
     return chords;
   }
 }
