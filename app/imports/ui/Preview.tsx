@@ -56,7 +56,13 @@ export default class Preview extends React.Component<P, {}> {
       offset += this.textLen(child.innerText);
     }
 
-    let md = this.prependChord(this.props.md, node, '|', offset);
+    let skipWhitespace = true;
+    if (this.textLen(node.innerText) == 0) {
+      // if a last-of-line, fake-syllable was clicked, attach chord _before_ whitespace (ie. newline)
+      skipWhitespace = false;
+    }
+
+    let md = this.prependChord(this.props.md, node, '|', offset, skipWhitespace);
     this.props.updateHandler(md);
   }
 
@@ -69,8 +75,10 @@ export default class Preview extends React.Component<P, {}> {
 
     let md_ = this.removeChord(this.props.md, i);
 
+
     if (this.textLen(chord) > 0) {
-      md_ = this.prependChord(md_, i, chord);
+      let skipWhitespace = this.textLen(event.currentTarget.nextSibling.textContent) > 0 // ie. a fakey chord
+      md_ = this.prependChord(md_, i, chord, 0, skipWhitespace);
     }
     this.props.updateHandler(md_);
   }
@@ -131,7 +139,7 @@ export default class Preview extends React.Component<P, {}> {
   }
 
 
-  public prependChord(md : string, segment : Element, chord : string, offset = 0) : string {
+  public prependChord(md : string, segment : Element, chord : string, offset = 0, skipWhitespace = true) : string {
     let pos = this.localize(segment);
 
     // Apply patch to markdown
@@ -143,8 +151,14 @@ export default class Preview extends React.Component<P, {}> {
         // Iterate over letters in the appropriate verse
         let countedLetters : number = -offset;
         v = v.replace(/\S/g, (l:string) => {
-          if (countedLetters++ == pos.letter) {
-            return '[' + chord + ']' + l;
+          if (skipWhitespace) {
+            if (countedLetters++ == pos.letter) {
+              return '[' + chord + ']' + l;
+            }
+          } else {
+            if (++countedLetters == pos.letter) {
+              return l + '[' + chord + ']';
+            }
           }
 
           return l;
@@ -244,14 +258,20 @@ export default class Preview extends React.Component<P, {}> {
                     if (word == '') return ' ';
                     let isLast = idx == array.length - 1;
                     let nextNotEmpty = !isLast && array[idx + 1].length > 0;
+                    let hasChord = idx == 0 && 'data-chord' in node.attribs ? 'hasChord' : '';
 
                     if (nextNotEmpty){
                       word += ' ';
                     } 
-                    return <i key={idx}>{idx == 0 ? chord : undefined}{word}</i>
+                    return <i key={idx} className={hasChord}>{idx == 0 ? chord : undefined}{word}</i>
                   }
                 )}
                 </React.Fragment>
+      }
+      else if (node.name == 'span' && 'attribs' in node && 'class' in node.attribs && 'line' == node.attribs.class) {
+        // Fakey syllable to allow appended chords
+        node.children.push(<i>      </i>);
+
       }
       return node;
     }});
