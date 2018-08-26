@@ -57,8 +57,9 @@ export default class Preview extends React.Component<P, {}> {
     }
 
     let skipWhitespace = true;
-    if (this.textLen(node.innerText) == 0) {
+    if (this.textLen(node.lastChild.textContent) == 0) {
       // if a last-of-line, fake-syllable was clicked, attach chord _before_ whitespace (ie. newline)
+      offset = 0;
       skipWhitespace = false;
     }
 
