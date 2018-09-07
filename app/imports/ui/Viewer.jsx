@@ -42,7 +42,7 @@ class Viewer extends Component {
           let chord = domNode.attribs['data-chord'];
           let t = chrodlib.transpose(chord, key, dT);
           let chord_ = <span className={"before " + t.className}>{t.base}<sup>{t.suff}</sup></span>;
-          return <i>{chord_} {domNode.children[0].data}</i>;
+          return <i>{chord_}{domNode.children[0].data}</i>;
         }
       }
     });

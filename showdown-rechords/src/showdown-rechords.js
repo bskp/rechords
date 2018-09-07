@@ -45,7 +45,7 @@ module.exports = function showdownRechords() {
     // Verses
     {
       type: 'lang',
-      regex: /([^\n:]+): *\n((.+[^:] *\n)+)(\n+(?=([^\n]+: *\n|\n|$))|$)/gi,
+      regex: /(.*?): *\n((?:[^\n:\-<>]*\n)+)/gi,
 
       replace: function (match, id, content) {
         var h3 = '';
@@ -53,15 +53,24 @@ module.exports = function showdownRechords() {
           h3 = '<h3>' + id + '</h3>\n';
         }
 
-        // Process line
-        var verse = h3 + '<p>\n' + content.replace(/(.*?)\n/g, parseLine) + '</p>';
+        content = content.replace(/\n$/, ''); // remove end-of-verser linebreaks
+        content = content.replace(/\n{3,}/g, '\n\n'); // remove excessive line breaks
+        content = content.replace(/(.*?)\n/g, parseLine);
 
-        // Fix last lines
-        verse = verse.replace(/<br \/>\n<br \/>/g, '\n</p>\n<p>'); // 2x line break -> paragraph break
-        verse = verse.replace(/<p>\s*?<\/p>/g, ''); // drop empty paragraphs
-        verse = verse.replace(/(<br \/>)*\s*?<\/p>/g, '\n</p>\n'); // Normalize <br /> and whitespace at paragraph ends
+        var verse = h3 + '<p>\n' + content + '</p>';
+
         return verse;
       }
-    }
+    },
+
+
+    // References
+    {
+      type: 'lang',
+      regex: /-> *(.*)\n/gm,
+      replace: function(match, ref) {
+        return '<div class="ref">' + ref + '</div>';
+      }
+    },
   ];
 };

@@ -7,8 +7,8 @@ h = new Hypher(english);
 
 var Parser = require("html-react-parser");
 
-// The almighty expression matching a verse. Stolen from showdown-rechords.js:45
-const verseRegex = /([^\n:]+): *\n((?:.+[^:] *\n)+)(?:\n+(?=(?:[^\n]+: *\n|\n|$))|$)/gi;
+// The almighty expression matching a verse. Stolen from showdown-rechords.js:48
+const verseRegex = /(.*?): *\n((?:[^\n:\-<>]*\n)+)/gi;
 
 interface P {
   md: string;
@@ -133,7 +133,7 @@ export default class Preview extends React.Component<P, {}> {
         });
       };
 
-      return title + ':\n' + v + '\n';
+      return title + ':\n' + v;
     });
 
     return md;
@@ -166,7 +166,7 @@ export default class Preview extends React.Component<P, {}> {
         });
       };
 
-      return title + ':\n' + v + '\n';
+      return title + ':\n' + v;
     });
 
     return md;
