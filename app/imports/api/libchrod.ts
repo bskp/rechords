@@ -329,6 +329,7 @@ export default class ChrodLib {
     let chords: Chord[] = chordsList.map(chstr =>
       Chord.parseChordString(chstr)
     );
+    chords = chords.filter(chord => chord !== undefined);
     let pitches = chords.reduce((ar, chord) => ar.concat(chord.keys), []);
     //console.debug(pitches);
 
@@ -379,6 +380,7 @@ export default class ChrodLib {
     let pitchmap = bornot == ToBorSharp.Flat ? bMap : shMap;
 
     let ch = Chord.parseChordString(chord);
+    if (ch === undefined) return null;
 
     let base = pitchmap.get((ch.idx + 48 + shift) % 12)
     // Create pitchmap class to 

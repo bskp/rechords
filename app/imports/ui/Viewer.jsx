@@ -41,7 +41,12 @@ class Viewer extends Component {
         if (domNode.name && domNode.name == 'i' && 'data-chord' in domNode.attribs) {
           let chord = domNode.attribs['data-chord'];
           let t = chrodlib.transpose(chord, key, dT);
-          let chord_ = <span className={"before " + t.className}>{t.base}<sup>{t.suff}</sup></span>;
+          let chord_;
+          if (t == null) {
+            chord_ = <span className="before">{chord}</span>;
+          } else {
+            chord_ = <span className={"before " + t.className}>{t.base}<sup>{t.suff}</sup></span>;
+          }
           return <i>{chord_}{domNode.children[0].data}</i>;
         }
       }
