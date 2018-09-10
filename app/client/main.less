@@ -42,7 +42,7 @@ body {
   display: flex;
   width: 100%;
 
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: 'Roboto';
   font-size: 18px;
   background-color: grey;
 }
@@ -138,7 +138,11 @@ body {
     border-left: 4px solid @accent;
   }
 
- code {
+  p {
+    font-weight: 300;
+  }
+
+  code {
     display: inline-blocK;
     font-family: 'Input Mono', Courier New, Courier, monospace;
     font-size: 0.8em;
@@ -167,6 +171,7 @@ body {
 
   .line i {
     font-style: normal;
+    font-weight: 400;
     color: black;
 
     flex-direction:column;
@@ -174,15 +179,17 @@ body {
     white-space:pre-wrap;
 
 
+    /* currently not in use: Both Viewer and Preview have preprocessors.
     &::before {
       content: attr(data-chord);
       .before();
     }
+    */
 
     .before {  // aka. Chords.
 
       color: @accent;
-      font-weight: bold;
+      font-weight: 600;
       font-style: normal;
 
       .select(none);
@@ -190,7 +197,7 @@ body {
 
       margin-top: 0.1em;
       margin-right: 0.5em;
-      margin-bottom: -0.1em;
+      margin-bottom: -0.3em;
 
 
       sup {
@@ -248,16 +255,15 @@ body {
   ul.tags {
     li {
       display: inline-block;
-      font-size: 14px;
-      line-height: 1em;
-      font-weight: bold;
+      font-size: 0.75em;
+      line-height: 1.5em;
+      font-weight: 600;
       text-transform: uppercase;
       background-color: hsv(hsvhue(@accent), 0.2, 0.5);
       color: white;
-      border-radius: 0.3em;
-      //padding: 0.4em 0.4em 0.25em;
-      padding: 5px 6px 3px;
-      vertical-align: top; // fixes un-alignedness in Webkit
+      border-radius: 0.2em;
+      padding: 0 0.4em 0.1em;
+      margin-right: 0.5em;
 
       &::before{
         content: none;
@@ -265,11 +271,9 @@ body {
 
       b {
         display: inline-block;
-        //margin: -0.4em -0.4em -0.25em;
-        margin: -5px -6px -3px;
-        //padding: 0.4em  0.4em  0.25em;
-        padding: 5px 6px 3px;
-        margin-left: 2px;
+        padding: 0 0.4em 0.1em;
+        margin: 0 -0.4em -0.1em;
+        margin-left: 0.3em;
         background-color: @accent;
         border-top-right-radius: inherit;
         border-bottom-right-radius: inherit;

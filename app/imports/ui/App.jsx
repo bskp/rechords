@@ -130,7 +130,7 @@ class App extends Component {
                     }} />
 
                     <Route path="/new" render={() => {
-                        song = Songs._transform(empty_song);
+                        var song = Songs._transform(empty_song);
                         return (
                             <>
                                 <DocumentTitle title="Hölibu | Neues Lied" />
