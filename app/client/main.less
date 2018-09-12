@@ -262,7 +262,7 @@ body {
       background-color: hsv(hsvhue(@accent), 0.2, 0.5);
       color: white;
       border-radius: 0.2em;
-      padding: 0 0.4em 0.1em;
+      padding: 0 0.4em;
       margin-right: 0.5em;
 
       &::before{
@@ -271,8 +271,8 @@ body {
 
       b {
         display: inline-block;
-        padding: 0 0.4em 0.1em;
-        margin: 0 -0.4em -0.1em;
+        padding: 0 0.4em;
+        margin: 0 -0.4em;
         margin-left: 0.3em;
         background-color: @accent;
         border-top-right-radius: inherit;
@@ -359,6 +359,7 @@ aside {
   h2 {
     padding-left: 0.9em;
     font-size: 1em;
+    margin-bottom: 0;
     text-transform: uppercase;
   }
 
@@ -370,7 +371,7 @@ aside {
   li > a, li button {
     color: black;
     display: block;
-    padding: 0.3em;
+    padding: 0.1em;
     padding-left: 1em;
 
     &.selected {
