@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Songs, { Revisions } from '../api/collections.js';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Prompt } from 'react-router-dom';
 import Collapsed from './Collapsed.jsx';
 import Source from './Source.jsx';
 import RevBrowser from './RevBrowser.jsx';
 import Preview from './Preview.tsx';
-import moment from 'moment';
+
 
 class Editor extends Component {
 
@@ -61,6 +61,11 @@ class Editor extends Component {
     let revs = this.props.song.getRevisions();
     let n = revs.count();
 
+    let prompt = <Prompt
+            when={this.state.md != this.props.song.text}
+            message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
+          />
+
     if (this.state.versionTab == false) {
 
       let versions = n == 0 ? undefined : (
@@ -83,6 +88,7 @@ class Editor extends Component {
           <Source md={this.state.md} updateHandler={this.update} className="source" />
 
           {versions}
+          {prompt}
         </div>
       );
 
@@ -101,6 +107,7 @@ class Editor extends Component {
             <span className="label">Version in Bearbeitung</span>
           </Source>
           <RevBrowser song={this.props.song} />
+          {prompt}
         </div>
       );
 

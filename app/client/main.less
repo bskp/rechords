@@ -99,26 +99,41 @@ body {
 #chordsheet {
   .chordsheet;
 
-  color: hsv(hsvhue(@accent), 0.4, 0.6);
+  padding-top: 2em;
+  padding-bottom: 4em;
+  padding-left: 6em;
 
-  h2, h3 {
+  color: hsv(hsvhue(@accent), 0.3, 0.7);
+
+  h2, h3, h4 {
     color: black;
   }
 
   h1, h2 {
-    font-size: 2em;
+    margin-bottom: 1rem;
+    font-size: 2.4em;
     display: inline-block;
   }
 
   h1 {
-    margin-bottom: 0;
     margin-right: 0.5em;
+    margin-left: -0.1em;
   }
 
   h3 {
+    margin: 0;
+    margin-top: -1em;
     font-size: 1em;
-    margin-bottom: -1em;
+    position: relative;
+    bottom: -2.37em;
+    left: -6em;
+    width: 5em;
+    text-align: right;  
+  }
+
+  h4 {
     margin-top: 2em;
+    margin-bottom: -0.5em;
   }
 
   a {
@@ -136,10 +151,6 @@ body {
     padding-left: 8px;
     margin-left: -12px;
     border-left: 4px solid @accent;
-  }
-
-  p {
-    font-weight: 300;
   }
 
   code {
@@ -195,7 +206,7 @@ body {
       .select(none);
       .noFocusBorder;
 
-      margin-top: 0.1em;
+      margin-top: 0;
       margin-right: 0.5em;
       margin-bottom: -0.3em;
 
@@ -217,7 +228,7 @@ body {
       }
 
       &.optional {
-        opacity: 0.6;
+        color: hsv(hsvhue(@accent), 0.4, 0.9);
         &:before { 
           content: '('; 
         }
@@ -256,13 +267,13 @@ body {
     li {
       display: inline-block;
       font-size: 0.75em;
-      line-height: 1.5em;
+      line-height: 1.7em;
       font-weight: 600;
       text-transform: uppercase;
-      background-color: hsv(hsvhue(@accent), 0.2, 0.5);
+      background-color: hsv(hsvhue(@accent), 0.2, 0.6);
       color: white;
-      border-radius: 0.2em;
-      padding: 0 0.4em;
+      border-radius: 0.4em;
+      padding: 0 0.5em;
       margin-right: 0.5em;
 
       &::before{
@@ -271,8 +282,9 @@ body {
 
       b {
         display: inline-block;
-        padding: 0 0.4em;
-        margin: 0 -0.4em;
+        font-weight: inherit;
+        padding: 0 0.5em;
+        margin: 0 -0.5em;
         margin-left: 0.3em;
         background-color: @accent;
         border-top-right-radius: inherit;
@@ -288,12 +300,13 @@ aside {
   flex-grow: 0;
   flex-shrink: 0;
   box-sizing: border-box;
-  width: 300px;
+  width: 200px;
 
   padding-top: 1em;
 
   h1, h2, h3 {
     font-size: 2em;
+    font-weight: 600;
   }
 
   & > h1 {
@@ -330,6 +343,7 @@ aside {
 
   &#list {
     background-color: hsv(hsvhue(@accent), 0.2, 0.5);
+    box-shadow: hsv(hsvhue(@accent), 0.2, 0.5) 
   }
 
   &#revs {
@@ -373,6 +387,9 @@ aside {
     display: block;
     padding: 0.1em;
     padding-left: 1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &.selected {
       background-color: hsv(hsvhue(@accent), 0.8, 0.8);
@@ -390,7 +407,7 @@ aside {
   min-height: 100vh;
 
   width: 100%;
-  padding: 1em 2em 1em 2.2em;
+  padding: 1em 2em 1em 2em;
 
   h1:first-child,
   h2:first-child {

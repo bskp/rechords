@@ -115,7 +115,7 @@ export default class Preview extends React.Component<P, {}> {
 
 
   public removeChord(md : string, node : Element) : string {
-    let pos = this.localize(node);
+    let pos = this.locate(node);
     // "pos" specifies where the chord to remove _begins_, expressed as "nth verse and mth letter".
 
     // Iterate over verses
@@ -141,7 +141,7 @@ export default class Preview extends React.Component<P, {}> {
 
 
   public prependChord(md : string, segment : Element, chord : string, offset = 0, skipWhitespace = true) : string {
-    let pos = this.localize(segment);
+    let pos = this.locate(segment);
 
     // Apply patch to markdown
     // Iterate over verses
@@ -173,9 +173,9 @@ export default class Preview extends React.Component<P, {}> {
   }
 
 
-  localize(segment : Element) {
+  locate(segment : Element) {
     if (segment.tagName != 'I') {
-      throw("Illegal argument: invoke localize() with a <i>-element");
+      throw("Illegal argument: invoke locate() with a <i>-element");
     }
 
     // Count letters between clicked syllable and preceding h3 (ie. verse label)
@@ -285,7 +285,6 @@ export default class Preview extends React.Component<P, {}> {
         ref="html">
 
         {vdom}
-
       </section>
     )
   }

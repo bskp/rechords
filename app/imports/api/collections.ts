@@ -18,6 +18,7 @@ var options = {
     h1: [],
     h2: [],
     h3: [],
+    h4: [],
     ul: ["class"],
     li: [],
     p: ["class"],
