@@ -6,7 +6,7 @@ import { CSSTransitionGroup } from 'react-transition-group'
 
 import Songs from '../api/collections.js';
 
-import List from './List.jsx';
+import List from './List.tsx';
 import Viewer from './Viewer.jsx';
 import Editor from './Editor.jsx';
 import Collapsed from './Collapsed.jsx';
@@ -67,14 +67,15 @@ class App extends Component {
         if (this.props.dataLoading) {
             return (
                 <div className="container">
-                    <DocumentTitle title="Hölibu 3000" />
+                    <DocumentTitle title="Hölibu" />
                     <aside id="list" />
                     {logo}
                 </div>
             )
         }
 
-        let list = (<List tree={this.getSongTree()} />);
+        //let list = (<List tree={this.getSongTree()} />);
+        let list = (<List songs={this.props.songs}/>);
 
         const getSong = (params) => {
             return Songs.findOne({
@@ -89,7 +90,7 @@ class App extends Component {
                 <Switch>
                     <Route exact path='/' render={(props) => (
                             <div className="container">
-                                <DocumentTitle title="Hölibu 3000" />
+                                <DocumentTitle title="Hölibu" />
                                 {list}
                                 {logo}
                             </div>

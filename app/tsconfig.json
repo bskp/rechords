@@ -23,6 +23,8 @@
 			"meteor-typings",
 			"core-js",
 			"requirejs"
-		]
+		],
+
+		"jsx": "react"
 	}
 }

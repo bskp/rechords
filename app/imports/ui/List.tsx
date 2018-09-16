@@ -1,8 +1,12 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 import { NavLink } from 'react-router-dom';
+import {Song} from '../api/collections';
 
-class ListItem extends Component {
+
+interface ListItemProps {
+    song: Song;
+}
+class ListItem extends React.Component<ListItemProps, {}> {
     constructor(props) {
         super(props);
     }
@@ -16,12 +20,13 @@ class ListItem extends Component {
     }
 }
 
-ListItem.propTypes = {
-    song: PropTypes.object.isRequired,
-};
 
 
-class ListGroup extends Component {
+interface ListGroupProps {
+  songs: Array<Song>;
+  label: String;
+}
+class ListGroup extends React.Component<ListGroupProps, {}> {
     constructor(props) {
         super(props);
     }
@@ -39,19 +44,29 @@ class ListGroup extends Component {
         )
     }
 }
-ListGroup.propTypes = {
-    songs: PropTypes.array.isRequired,
-    label: PropTypes.string.isRequired,
-};
 
-export default class List extends Component {
+
+
+interface ListProps {
+  songs: Array<Song>;
+}
+export default class List extends React.Component<ListProps, {}> {
     constructor(props) {
         super(props);
     }
 
     render() {
+        let tree = {};
+
+        this.props.songs.forEach((song) => {
+            if (tree[song.author] === undefined) {
+                tree[song.author] = [];
+            }
+            tree[song.author].push(song);
+        });
+
         let groups = [];
-        for (let key in this.props.tree) {
+        for (let key in tree) {
             groups.push(key);
         }
 
@@ -59,7 +74,7 @@ export default class List extends Component {
             <aside id="list">
                 <ul>
                     {groups.map((group) => 
-                        <ListGroup label={group} songs={this.props.tree[group]} key={group}/>
+                        <ListGroup label={group} songs={tree[group]} key={group}/>
                     )}
                     <li>
                         <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
@@ -68,8 +83,4 @@ export default class List extends Component {
             </aside>
         )
     }
-}
-
-List.propTypes = {
-    tree: PropTypes.object.isRequired
 }
