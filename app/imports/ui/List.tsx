@@ -2,7 +2,6 @@ import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import MetaContent from './MetaContent';
 import {Song} from '../api/collections';
-import Autosuggest = require('react-autosuggest');
 
 
 interface ListItemProps {
@@ -48,76 +47,72 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
 }
 
 
-const renderSuggestion = suggestion => (
-    <span className="tags"><li>{suggestion}</li></span>
-);
-
-
 interface ListProps {
   songs: Array<Song>;
 }
 interface ListState {
-    filter: String;
-    suggestions: Array<any>;
+    filter: string;
+    active: boolean;
 }
 export default class List extends React.Component<ListProps, ListState> {
     constructor(props) {
         super(props);
         this.state = {
             filter: '',
-            suggestions: []
+            active: false
         }
-
     }
 
-    onSuggestionsFetchRequested = ({ value, reason }) => {
-        let matches = new Set<string>();
-        /*
-        if (value.startsWith('#')) {
-            value = value.substr(1);
-        }
-        this.props.songs.forEach((song) => {
-            song.getTags().forEach((tag) => {
-                if (tag.startsWith(value)) matches.add(tag);
-            });
-        });
-        */
-
+    onChange = (event : React.ChangeEvent<HTMLInputElement>) => {
         this.setState({
-            suggestions: Array.from(matches)
-          });
-    }
-
-    onSuggestionsClearRequested = () => {
-        this.setState({
-            suggestions: []
+          filter: event.currentTarget.value
         });
-    }
-
-    onChange = (event, { newValue }) => {
-        this.setState({
-          filter: newValue
-        });
+        event.preventDefault();
       };
 
-    getSuggestionValue = (s : string) => {
-        return "#" + s + " ";
+    onFocus = () => {
+        this.setState({
+            active: true
+        });
     }
+
+    onBlur = () => {
+        this.setState({
+            active: false
+        });
+    }
+
+    onTagClick = (event : React.MouseEvent) => {
+        this.setState({
+            filter: this.state.filter + '#' + event.currentTarget.childNodes[0].textContent.toLowerCase() + ' '
+        });
+        event.preventDefault();
+    }
+
 
     render() {
         let tree = {};
 
+        let filters = this.state.filter.split(' ');
+
         this.props.songs.forEach((song) => {
-            if (!song.title.toLowerCase().includes(this.state.filter.toLowerCase()) &&
-                !song.text.toLowerCase().includes(this.state.filter.toLowerCase()) &&
-                !song.author_.toLowerCase().includes(this.state.filter.toLowerCase())) {
-                return;
+            for (let filter of filters) {
+                filter = filter.toLowerCase();
+
+                if (!song.title.toLowerCase().includes(filter) &&
+                    !song.text.toLowerCase().includes(filter) &&
+                    !song.author_.toLowerCase().includes(filter)) {
+                    return;
+                }
             }
 
             // Hack to hide all songs containing an 'archiv'-tag
             if (song.getTags().includes('archiv') && this.state.filter != '#archiv') {
                 return;
             }
+
+            // Hide meta songs.
+            if (song.author == 'Meta') return;
 
             if (tree[song.author] === undefined) {
                 tree[song.author] = [];
@@ -130,28 +125,37 @@ export default class List extends React.Component<ListProps, ListState> {
             groups.push(key);
         }
 
-        // Autosuggest will pass through all these props to the input.
-        const inputProps = {
-            placeholder: 'Filtern…',
-            value: this.state.filter,
-            onChange: this.onChange,
-            className: 'filter'
-        };
+        let active = this.state.active ? '' : 'hidden';
+        let filled = this.state.filter == '' ? '' : 'filled';
 
-        const as = <Autosuggest 
-                    suggestions={this.state.suggestions}
-                    onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-                    onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-                    getSuggestionValue={this.getSuggestionValue}
-                    renderSuggestion={renderSuggestion}
-                    inputProps={inputProps}
-        />;
+        const process = (node) => {
+            if (node.name == 'li') {
+                let b = node.children.length > 1 ? <b>…</b> : null;
+                return <li onMouseDown={this.onTagClick.bind(this)}>{node.children[0].data}{b}</li>
+            }
 
+            return node;
+        }
 
         return (
             <aside id="list">
-                {as}
-                <MetaContent className="filterMenu" title="Schlagwortverzeichnis" songs={this.props.songs}/>
+                <div className="filter">
+                    <input type="text" 
+                        placeholder="Filtern…" 
+                        value={this.state.filter} 
+                        onChange={this.onChange}
+                        onFocus={this.onFocus}
+                        onBlur={this.onBlur}
+                        />
+                    <span className={'reset ' + filled} onClick={(e)=>{this.setState({filter: ''})}}>&times;</span>
+                </div>
+
+                <MetaContent 
+                    replace={process}
+                    className={'filterMenu ' + active} 
+                    title="Schlagwortverzeichnis" 
+                    songs={this.props.songs}
+                    />
                 <ul>
                     {groups.map((group) => 
                         <ListGroup label={group} songs={tree[group]} key={group}/>

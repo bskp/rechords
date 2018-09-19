@@ -96,6 +96,38 @@ body {
   line-height: 0.8em;
 }
 
+
+.tags {
+  li {
+    display: inline-block;
+    font-size: 0.75em;
+    line-height: 1.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    background-color: hsv(hsvhue(@accent), 0.2, 0.6);
+    color: white;
+    border-radius: 0.4em;
+    padding: 0 0.5em;
+    margin-right: 0.5em;
+
+    &::before{
+      content: none;
+    }
+
+    b {
+      display: inline-block;
+      font-weight: inherit;
+      padding: 0 0.5em;
+      margin: 0 -0.5em;
+      margin-left: 0.3em;
+      background-color: @accent;
+      border-top-right-radius: inherit;
+      border-bottom-right-radius: inherit;
+    }
+  }
+}
+
+
 #chordsheet {
   .chordsheet;
 
@@ -263,46 +295,21 @@ body {
     }
   }
 
-  ul.tags {
-    li {
-      display: inline-block;
-      font-size: 0.75em;
-      line-height: 1.7em;
-      font-weight: 600;
-      text-transform: uppercase;
-      background-color: hsv(hsvhue(@accent), 0.2, 0.6);
-      color: white;
-      border-radius: 0.4em;
-      padding: 0 0.5em;
-      margin-right: 0.5em;
-
-      &::before{
-        content: none;
-      }
-
-      b {
-        display: inline-block;
-        font-weight: inherit;
-        padding: 0 0.5em;
-        margin: 0 -0.5em;
-        margin-left: 0.3em;
-        background-color: @accent;
-        border-top-right-radius: inherit;
-        border-bottom-right-radius: inherit;
-      }
-    }
-  }
 } // .chordsheet
 
 
 
 aside {
+  @width: 200px;
   flex-grow: 0;
   flex-shrink: 0;
   box-sizing: border-box;
-  width: 200px;
+  width: @width;
 
   padding-top: 1em;
+  padding-left: 0.5em;
+  padding-right: 0;
+  padding-bottom: 2em;
 
   h1, h2, h3 {
     font-size: 2em;
@@ -342,8 +349,117 @@ aside {
   }
 
   &#list {
-    background-color: hsv(hsvhue(@accent), 0.2, 0.5);
-    box-shadow: hsv(hsvhue(@accent), 0.2, 0.5) 
+    @bg: hsv(hsvhue(@accent), 0.2, 0.5);
+    background-color: @bg;
+
+    .filter {
+      display: flex;
+
+      .reset {
+        flex: 0 0 1.5em;
+        font-size: 1.4em;
+        margin-left: -1.5em;
+        cursor: pointer;
+        color: @accent;
+
+        display: none;
+        &.filled {
+          display: block;
+        }
+      }
+
+      input {
+        color: @accent;
+        margin-left: -0.5em;
+        padding-left: 0.5em;
+        height: 2em;
+        width: 100;
+
+        display: block;
+        flex: 1 1 auto;
+
+        .noFocusBorder;
+
+        transition: color, background-color 0.5s;
+
+        background-color: mix(white, @bg, 80%);
+        &::placeholder {
+          color: transparent;
+        }
+
+        &[value=""] {
+          background-color: transparent;
+          &::placeholder {
+            color: fade(white, 50%);
+          }
+        }
+
+        &:focus {
+          background-color: mix(white, @bg, 80%);
+          &::placeholder {
+            color: @accent;
+          }
+        }
+      }
+    }
+
+    .filterMenu {
+      position: absolute;
+      z-index: 1;
+      left: @width;
+      top: 0;
+
+      @bgMenu: mix(white, @bg, 70%);
+      background-color: @bgMenu;
+
+      display: flex;
+      flex-direction: row;
+
+      padding-top: 0.5em;
+      padding-left: 2em;
+      padding-bottom: 3em;
+
+      h1, h2{
+        display: none;
+      }
+
+      h4 {
+        color: black;
+        display: block;
+        width: 0;
+        transform-origin: top right;
+        font-weight: 600;
+        transform: rotate(-14deg);
+      }
+
+      ul {
+        margin-top: 3em;
+        flex: 0 0 7em;
+      }
+
+      li {
+        margin-bottom: 0.5em;
+        transform-origin: center;
+        transform: rotate(-14deg);
+        cursor: pointer;
+
+        &:hover {
+          background-color: black;
+        }
+
+        b {
+          width: 1em;
+        }
+      }
+
+      &.hidden{
+        opacity: 0;
+      }
+
+      opacity: 1;
+      transition: opacity, 0.5s;
+    }
+
   }
 
   &#revs {
@@ -371,7 +487,6 @@ aside {
   color: white;
 
   h2 {
-    padding-left: 0.9em;
     font-size: 1em;
     margin-bottom: 0;
     text-transform: uppercase;
@@ -382,11 +497,16 @@ aside {
     font-weight: inherit;
   }
 
+  ul {
+    list-style-type: none;
+  }
+
   li > a, li button {
     color: black;
     display: block;
     padding: 0.1em;
-    padding-left: 1em;
+    margin-left: -0.5em;
+    padding-left: 0.5em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -394,6 +514,8 @@ aside {
     &.selected {
       background-color: hsv(hsvhue(@accent), 0.8, 0.8);
     }
+    
+    .noFocusBorder;
   }
 
   ul {

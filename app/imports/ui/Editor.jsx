@@ -62,7 +62,7 @@ class Editor extends Component {
     let n = revs.count();
 
     let prompt = <Prompt
-            when={this.state.md != this.props.song.text}
+            when={this.state.md != this.props.song.text && revs > 0}
             message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
           />
 

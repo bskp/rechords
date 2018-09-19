@@ -50,19 +50,6 @@ class App extends Component {
         super(props);
     }
 
-    getSongTree() {
-        let filter = {};
-        let out = {};
-
-        this.props.songs.forEach((song) => {
-            if (out[song.author] === undefined) {
-                out[song.author] = [];
-            }
-            out[song.author].push(song);
-        });
-        return out;
-    }
-
     render() {
         if (this.props.dataLoading) {
             return (
@@ -74,7 +61,6 @@ class App extends Component {
             )
         }
 
-        //let list = (<List tree={this.getSongTree()} />);
         let list = (<List songs={this.props.songs}/>);
 
         const getSong = (params) => {
