@@ -154,13 +154,16 @@ body {
 
   h3 {
     margin: 0;
-    margin-top: -1em;
     font-size: 1em;
-    position: relative;
-    bottom: -2.37em;
-    left: -6em;
+    position: absolute;
     width: 5em;
+    margin-left: -6em;
     text-align: right;  
+  }
+
+  // Verse container
+  p {
+    margin: 1.4em 0;
   }
 
   h4 {
@@ -179,10 +182,11 @@ body {
   .ref {
     color: black;
     font-weight: bold;
-    margin-top: 2em;
     padding-left: 8px;
     margin-left: -12px;
     border-left: 4px solid @accent;
+    margin-top: 2em;
+    margin-bottom: 2em;
   }
 
   code {
@@ -248,6 +252,7 @@ body {
         font-size: 0.7em;
         letter-spacing: 0.02em;
         padding-left: 0.1em;
+        font-weight: 700;
       }
 
       &:focus {
@@ -260,7 +265,7 @@ body {
       }
 
       &.optional {
-        color: hsv(hsvhue(@accent), 0.4, 0.9);
+        color: hsv(hsvhue(@accent), 0.3, 0.7);
         &:before { 
           content: '('; 
         }
@@ -300,7 +305,8 @@ body {
 
 
 aside {
-  @width: 200px;
+  color: white;
+  @width: 220px;
   flex-grow: 0;
   flex-shrink: 0;
   box-sizing: border-box;
@@ -326,30 +332,30 @@ aside {
 
 
   &.collapsed {
-    @width: 30px;
+    @pad: 30px;
     overflow: hidden;
-    width: @width;
+    width: @pad;
     cursor: pointer;
     transition: width 0.3s;
     z-index: 100;
     box-sizing: border-box;
-    padding-left: @width;
+    padding-left: @pad;
 
     // Mitigates the rendering bug of the contained .label
     position: relative;
     
     &:hover {
-      width: 300px;
+      width: @width;
     }
 
     // Avoid linebreaks during slide-in/--out
     * {
-      width: 245px;
+      //width: 245px;
     }
   }
 
   &#list {
-    @bg: hsv(hsvhue(@accent), 0.2, 0.5);
+    @bg: hsv(hsvhue(@accent), 0.15, 0.6);
     background-color: @bg;
 
     .filter {
@@ -454,6 +460,7 @@ aside {
 
       &.hidden{
         opacity: 0;
+        visibility: hidden;
       }
 
       opacity: 1;
@@ -484,13 +491,6 @@ aside {
 
   }
 
-  color: white;
-
-  h2 {
-    font-size: 1em;
-    margin-bottom: 0;
-    text-transform: uppercase;
-  }
 
   a {
     color: inherit;
@@ -499,28 +499,88 @@ aside {
 
   ul {
     list-style-type: none;
-  }
-
-  li > a, li button {
-    color: black;
-    display: block;
-    padding: 0.1em;
-    margin-left: -0.5em;
-    padding-left: 0.5em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    &.selected {
-      background-color: hsv(hsvhue(@accent), 0.8, 0.8);
-    }
-    
-    .noFocusBorder;
-  }
-
-  ul {
     margin: 0;
   }
+
+  li {
+    display: block;
+    color: black;
+
+    white-space: nowrap;
+    overflow: hidden;
+
+    margin-left: -0.5em;
+    padding-left: 0.5em;
+
+    a, button {
+      display: flex;
+
+      padding: 0.1em;
+      padding-bottom: 0.2em;
+      .noFocusBorder;
+
+      margin-left: -0.5em;
+      padding-left: 0.5em;
+      margin-right: -0.5em;
+      padding-right: 1.0em;
+
+      //justify-content: space-between;
+
+      span {
+        display: inline-block;
+        box-sizing: border-box;
+        min-width: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .title {
+        flex: 0 0 initial;
+      }
+
+      .author {
+        display: none;
+        flex: 1 0 0;
+        color: white;
+        //background-color: fade(white, 50%);
+        background-color: hsv(hsvhue(@accent), 0.15, 0.6);
+        text-align: right;
+        direction: rtl;
+        overflow: hidden;
+      }
+
+      transition: flex 0.4s;
+      &:hover {
+        .title {
+          flex: 1 0 0;
+        }
+        .author {
+          display: inline-block;
+          flex: 0 0 auto;
+        }
+      }
+
+      &.selected {
+        background-color: hsv(hsvhue(@accent), 0.8, 0.8);
+        .author {
+          background-color: hsv(hsvhue(@accent), 0.8, 0.8);
+        }
+      }
+
+    }
+  }
+
+  h2 {
+    font-size: 1em;
+    margin-bottom: 0;
+    color: white;
+
+    &.huge {
+      margin-top: 0;
+      font-size: 2em;
+    }
+  }
+
 }
 
 .content {
