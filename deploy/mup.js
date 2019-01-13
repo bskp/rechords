@@ -7,7 +7,6 @@ module.exports = {
   },
 
   app: {
-    // TODO: change app name and path
     name: 'Rechords',
     path: '../app',
 
