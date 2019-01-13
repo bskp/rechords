@@ -14,8 +14,11 @@ class Editor extends Component {
     super();
     this.state = {
       md: props.song.text,
-      versionTab: false
+      versionTab: false,
+      dirty: false
     };
+
+    this.mdServer = props.song.text;
   }
 
   handleContextMenu = (event) => {
@@ -30,6 +33,10 @@ class Editor extends Component {
     Meteor.call('saveSong', this.props.song, (error, isValid) => {
       if (error !== undefined) {
         console.log(error);
+      } else {
+        this.setState({
+          dirty: false,
+        });
       }
 
       if (isValid) {
@@ -44,7 +51,8 @@ class Editor extends Component {
 
   update = (md_) => {
     this.setState({
-      md: md_
+      md: md_,
+      dirty: md_ != this.mdServer
     });
   }
 
@@ -62,7 +70,7 @@ class Editor extends Component {
     let n = revs.count();
 
     let prompt = <Prompt
-            when={this.state.md != this.props.song.text && revs > 0}
+            when={this.state.dirty && n > 0}
             message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
           />
 
@@ -75,6 +83,8 @@ class Editor extends Component {
         </Collapsed>
       );
 
+      let dirtyLabel = this.state.dirty ? <span id="dirty" title="Ungesicherte Änderungen"></span> : undefined;
+
       // Bearbeiten mit Echtzeit-Vorschau
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
@@ -84,6 +94,7 @@ class Editor extends Component {
             <p>Schneller: Rechtsklick!</p>
           </Collapsed>
 
+          {dirtyLabel}
           <Preview md={this.state.md} song={this.props.song} updateHandler={this.update}/>
           <Source md={this.state.md} updateHandler={this.update} className="source" />
 

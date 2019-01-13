@@ -63,6 +63,18 @@ body {
   width: 100%;
 }
 
+#dirty {
+  display: block;
+  position: absolute;
+  font-size: 1em;
+  width: 1em;
+  height: 1em;
+  border-radius: 1em;
+  background-color: @accent;
+  left: 5.9rem;
+  top: 3.7rem;
+}
+
 
 // Content role mixins
 .chordsheet {
@@ -358,6 +370,10 @@ aside {
     @bg: hsv(hsvhue(@accent), 0.15, 0.6);
     background-color: @bg;
 
+    li {
+      color: black;
+    }
+
     .filter {
       display: flex;
 
@@ -504,7 +520,6 @@ aside {
 
   li {
     display: block;
-    color: black;
 
     white-space: nowrap;
     overflow: hidden;
@@ -523,8 +538,6 @@ aside {
       padding-left: 0.5em;
       margin-right: -0.5em;
       padding-right: 1.0em;
-
-      //justify-content: space-between;
 
       span {
         display: inline-block;

@@ -16,7 +16,10 @@ class ListItem extends React.Component<ListItemProps, {}> {
     render() {
         return (
             <li><NavLink to={`/view/${this.props.song.author_}/${this.props.song.title_}`}
-                activeClassName="selected">{this.props.song.title}</NavLink></li>
+                activeClassName="selected" data-author={this.props.song.author}>
+                <span className="title">{this.props.song.title}</span>
+                <span className="author">{this.props.song.author}</span>
+                </NavLink></li>
         );
     }
 }
@@ -35,7 +38,7 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
     render() {
         return (
             <li key={this.props.label}>
-                <h2>{this.props.label}</h2>
+                <h2 className="huge">{this.props.label}</h2>
                 <ul>
                     {this.props.songs.map((song) => 
                         <ListItem song={song} key={song._id} />
@@ -92,6 +95,7 @@ export default class List extends React.Component<ListProps, ListState> {
 
     render() {
         let tree = {};
+        let groups = [];
 
         let filters = this.state.filter.split(' ');
 
@@ -107,23 +111,21 @@ export default class List extends React.Component<ListProps, ListState> {
             }
 
             // Hack to hide all songs containing an 'archiv'-tag
-            if (song.getTags().includes('archiv') && this.state.filter != '#archiv') {
+            if (song.getTags().includes('archiv') && !this.state.filter.includes('#archiv')) {
                 return;
             }
 
-            // Hide meta songs.
-            if (song.author == 'Meta') return;
+            let categories = [song.title[0]];
+            for (let cat of categories) {
+                if (tree[cat] === undefined) {
+                    tree[cat] = [];
+                    groups.push(cat);
+                }
 
-            if (tree[song.author] === undefined) {
-                tree[song.author] = [];
+                tree[cat].push(song);
             }
-            tree[song.author].push(song);
-        });
 
-        let groups = [];
-        for (let key in tree) {
-            groups.push(key);
-        }
+        });
 
         let active = this.state.active ? '' : 'hidden';
         let filled = this.state.filter == '' ? '' : 'filled';
