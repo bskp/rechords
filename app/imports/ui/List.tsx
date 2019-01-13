@@ -86,8 +86,18 @@ export default class List extends React.Component<ListProps, ListState> {
     }
 
     onTagClick = (event : React.MouseEvent) => {
-        this.setState({
-            filter: this.state.filter + '#' + event.currentTarget.childNodes[0].textContent.toLowerCase() + ' '
+        let tag = '#' + event.currentTarget.childNodes[0].textContent.toLowerCase();
+
+        this.setState( (state, props) => {
+            let newFilter;
+            if (state.filter.includes(tag)) {
+                newFilter = state.filter.replace(tag, '');
+            } else {
+                newFilter = state.filter + tag + ' '
+            }
+            return {
+                filter: newFilter.replace('  ', ' ')
+            }
         });
         event.preventDefault();
     }
