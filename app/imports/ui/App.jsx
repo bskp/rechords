@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { withTracker } from 'meteor/react-meteor-data';
 import { CSSTransitionGroup } from 'react-transition-group'
 
-import Songs from '../api/collections.js';
+import Songs, {Song} from '../api/collections.js';
 
 import List from './List.tsx';
 import Viewer from './Viewer.jsx';
@@ -106,8 +106,6 @@ class App extends Component {
                             return na404;
                         }
 
-                        song = Songs._transform(song);
-
                         return (
                             <>
                                 <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title + " (bearbeiten)"}/>
@@ -117,7 +115,8 @@ class App extends Component {
                     }} />
 
                     <Route path="/new" render={() => {
-                        var song = Songs._transform(empty_song);
+                        var song = new Song(empty_song);
+
                         return (
                             <>
                                 <DocumentTitle title="Hölibu | Neues Lied" />

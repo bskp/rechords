@@ -5,9 +5,9 @@ var slug = require('slug')
 
 Meteor.methods({
 
-    saveSong(song: Song) {
+    saveSong(remoteObject: Object) {
         //  Attach helpers
-        song = Songs._transform(song);
+        let song : Song = new Song(remoteObject);
 
         // Parse server-side
         song.parse(song.text);

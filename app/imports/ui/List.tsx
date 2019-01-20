@@ -52,6 +52,7 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
 
 interface ListProps {
   songs: Array<Song>;
+  filter: String;
 }
 interface ListState {
     filter: string;
@@ -61,7 +62,7 @@ export default class List extends React.Component<ListProps, ListState> {
     constructor(props) {
         super(props);
         this.state = {
-            filter: '',
+            filter: props.filter || '',
             active: false
         }
     }
@@ -121,11 +122,13 @@ export default class List extends React.Component<ListProps, ListState> {
             }
 
             // Hack to hide all songs containing an 'archiv'-tag
-            if (song.getTags().includes('archiv') && !this.state.filter.includes('#archiv')) {
+            if (song.getTags().includes('privat') && !this.state.filter.includes('#privat')) {
                 return;
             }
 
+
             let categories = [song.title[0]];
+
             for (let cat of categories) {
                 if (tree[cat] === undefined) {
                     tree[cat] = [];

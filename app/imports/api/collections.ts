@@ -1,4 +1,5 @@
 import { Mongo } from "meteor/mongo";
+import { _ } from "meteor/underscore";
 
 var DATACHORD = 'data-chord';
 var showdown = require("showdown");
@@ -25,7 +26,8 @@ var options = {
     br: [],
     strong: [],
     em: [],
-    code: []
+    code: [],
+    s: []
   }
 };
 
@@ -50,6 +52,10 @@ export class Song {
 
   title_: string;
   author_:string;
+
+  constructor (doc) {
+    _.extend(this, doc);
+  }
 
   getHtml() {
     if (!("html" in this)) {
@@ -142,9 +148,12 @@ export class Revision {
 
 
 let Revisions = new Mongo.Collection<Revision>('revisions');
-Revisions.setClass(Revision);
-let Songs = new Mongo.Collection<Song>('songs');
-Songs.setClass(Song);
+
+let Songs = new Mongo.Collection<Song>('songs', {
+  transform (doc) {
+    return new Song(doc);
+  }
+});
 
 
 export class RmdHelpers {

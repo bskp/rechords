@@ -8,7 +8,7 @@ h = new Hypher(english);
 var Parser = require("html-react-parser");
 
 // The almighty expression matching a verse. Stolen from showdown-rechords.js:48
-const verseRegex = /(.*?): *\n((?:[^\n:<>]*\n)+)/gi;
+const verseRegex = /(.*?): *\n((?:[^\n:<>]+\n\n?)+)/gi;
 
 interface P {
   md: string;
