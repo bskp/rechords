@@ -46,7 +46,7 @@ easier in this class.
 */
 
 var B = new Key("B", 11),
-  // H = new Key("H", 11),
+  H = new Key("H", 11),
   Bes = new Key("Bb", 10),
   Ais = new Key("A#", 10),
   A = new Key("A", 9),
@@ -80,9 +80,8 @@ var keys: Array<Key> = [
   A,
   Ais,
   Bes,
+  H,
   B,
-  // TODO: is h recognized or not?
-  // H
 ];
 
 const forwardMap: Map<string, number> = new Map();
@@ -232,6 +231,7 @@ class Chord {
     }
 
     let keydx = forwardMap.get(keystr);
+    if (keydx === undefined) return;  // The chord could not be parsed.
 
     let key = new Key(keystr, keydx);
 
