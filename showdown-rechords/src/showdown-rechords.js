@@ -9,6 +9,9 @@ module.exports = function showdownRechords() {
       if (text === '') {
         text = ' ';
       }
+      if (text.match(/^ ./)) {
+        text = '     ' + text.substring(1);
+      }
       return '<i data-chord="' + chord + '">' + text + '</i>';
     });
     return '<span class="line">' + line + '</span>\n';

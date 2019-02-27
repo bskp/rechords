@@ -254,17 +254,27 @@ export default class Preview extends React.Component<P, {}> {
                 onKeyDown={this.handleChordKey.bind(this)}
               >{node.attribs['data-chord']}</span>
         }
+        if (!('data' in node.children[0])) return node;
+        let lyrics = node.children[0].data.replace(/^ /, '');
         return <React.Fragment>
-                {node.children[0].data.split(' ').map((word, idx, array) => {
+                {lyrics.split(' ').filter(el => true).map((word, idx, array) => {
                     if (word == '') return ' ';
+
                     let isLast = idx == array.length - 1;
                     let nextNotEmpty = !isLast && array[idx + 1].length > 0;
-                    let hasChord = idx == 0 && 'data-chord' in node.attribs ? 'hasChord' : '';
+
+                    let classes = '';
+                    if (idx == 0) {
+                      if ('data-chord' in node.attribs) {
+                        classes += 'hasChord ';
+                      }
+                      classes += node.attribs.class || '';
+                    }
 
                     if (nextNotEmpty){
                       word += ' ';
                     } 
-                    return <i key={idx} className={hasChord}>{idx == 0 ? chord : undefined}{word}</i>
+                    return <i key={idx} className={classes}>{idx == 0 ? chord : undefined}{word}</i>
                   }
                 )}
                 </React.Fragment>

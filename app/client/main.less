@@ -42,7 +42,7 @@ body {
   display: flex;
   width: 100%;
 
-  font-family: 'Roboto';
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
   font-size: 18px;
   background-color: grey;
 }
@@ -564,7 +564,6 @@ aside {
         overflow: hidden;
       }
 
-      transition: flex 0.4s;
       &:hover {
         .title {
           flex: 1 0 0;
@@ -687,6 +686,11 @@ hr {
 
   .rc-slider-mark {
     top: -18px;
+  }
+
+  .rc-slider-mark-text {
+    width: 100%;
+    text-align: left;
   }
 
   .rc-slider-track {
