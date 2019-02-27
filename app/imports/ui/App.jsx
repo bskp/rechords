@@ -15,8 +15,8 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 
 const empty_song = {
-    title: "New Song",
-    text: "Titel\nInterpret\n========\n\n#Schlagwort\n\nText ohne vorangehenden Titel mit Doppelpunkt ist einfach Kommentar.\n\n1:\nDas ist die [A]erste Strophe\nHat zum Teil auch [em]Akkorde\n\nref:\nTra la lalala\nla la lala la la\n\n2:\nUnd noch eine weil's so schön ist",
+    title: "Neues Lied",
+    text: "Titel\nInterpret\n========\n\n#Schlagwort\n\n1:\nDas ist die [A]erste Strophe\nHat zum Teil auch [em]Akkorde\n\n\nNach zwei leeren Zeilen gilt jeglicher Text als Kommentar.\n\nRefrain:\nTra la lalala\nla la lala la la\n\n2:\nUnd noch eine weil's so schön ist",
     author: "Unknown"
 };
 
@@ -74,10 +74,11 @@ class App extends Component {
         return (
             <BrowserRouter>
                 <Switch>
+
                     <Route exact path='/' render={(props) => (
                             <div className="container">
                                 <DocumentTitle title="Hölibu" />
-                                {list}
+                                <List songs={this.props.songs}/>
                                 {logo}
                             </div>
                     )} />
@@ -93,7 +94,7 @@ class App extends Component {
                         return (
                             <div className="container">
                                 <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
-                                {list}
+                                <List songs={this.props.songs}/>
                                 <Viewer song={song} />
                             </div>
                         )
@@ -121,6 +122,16 @@ class App extends Component {
                             <>
                                 <DocumentTitle title="Hölibu | Neues Lied" />
                                 <Editor song={song} />
+                            </>
+                        )
+                    }} />
+
+                    <Route path="/:filter" render={(match) => {
+                        return (
+                            <>
+                                <DocumentTitle title="Hölibu" />
+                                <List songs={this.props.songs} filter={match.match.params.filter} />
+                                {logo}
                             </>
                         )
                     }} />
