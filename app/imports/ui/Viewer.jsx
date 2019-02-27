@@ -5,6 +5,7 @@ import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod.js";
 import { RmdHelpers } from "../api/collections.js";
 import Collapsed from './Collapsed.jsx';
+import ReactDOM from 'react-dom';
 
 var Parser = require("html-react-parser");
 
@@ -12,6 +13,13 @@ class Viewer extends Component {
   constructor() {
     super();
     this.state = { relTranspose: 0 };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.song != prevProps.song) {
+      const node = ReactDOM.findDOMNode(this);
+      node.children[0].scrollTop = 0;
+    }
   }
 
   handleContextMenu = event => {
