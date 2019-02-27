@@ -80,6 +80,16 @@ export default class List extends React.Component<ListProps, ListState> {
         });
     }
 
+    onKeyDown = (e : React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key == 'Escape') {
+            this.setState({
+                filter: '',
+            });
+            e.currentTarget.blur();
+            e.preventDefault();
+        }
+    }
+
     onBlur = () => {
         this.setState({
             active: false
@@ -160,6 +170,7 @@ export default class List extends React.Component<ListProps, ListState> {
                     <input type="text" 
                         placeholder="Filtern…" 
                         value={this.state.filter} 
+                        onKeyDown={this.onKeyDown}
                         onChange={this.onChange}
                         onFocus={this.onFocus}
                         onBlur={this.onBlur}

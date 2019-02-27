@@ -31,9 +31,14 @@ textarea {
 //@accent: rgb(0, 141, 235);
 
 // Layout
+html {
+  height: 100%;
+}
+
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
 
   .select(none);
 }
@@ -41,6 +46,7 @@ body {
 #body {
   display: flex;
   width: 100%;
+  height: 100%;
 
   font-family: 'Roboto', Helvetica, Arial, sans-serif;
   font-size: 18px;
@@ -143,6 +149,8 @@ body {
 #chordsheet {
   .chordsheet;
 
+  overflow: auto;  // enable scrollbars
+
   padding-top: 2em;
   padding-bottom: 4em;
   padding-left: 6em;
@@ -165,12 +173,16 @@ body {
   }
 
   h3 {
-    margin: 0;
     font-size: 1em;
-    position: absolute;
+    margin: 0;
+
+    height: 3em;
+    line-height: 2em;
+    margin-bottom: -4em;
+
+    text-align: right;
     width: 5em;
     margin-left: -6em;
-    text-align: right;  
   }
 
   // Verse container
@@ -324,6 +336,8 @@ aside {
   box-sizing: border-box;
   width: @width;
 
+  overflow: auto;
+
   padding-top: 1em;
   padding-left: 0.5em;
   padding-right: 0;
@@ -370,12 +384,21 @@ aside {
     @bg: hsv(hsvhue(@accent), 0.15, 0.6);
     background-color: @bg;
 
+    &:not(.collapsed) {
+      padding-top: 0;
+      padding-left: 0;
+    }
+
     li {
       color: black;
     }
 
     .filter {
+      position: absolute;
       display: flex;
+      width: @width;
+
+      background-color: @bg;
 
       .reset {
         flex: 0 0 1.5em;
@@ -383,8 +406,10 @@ aside {
         margin-left: -1.5em;
         cursor: pointer;
         color: @accent;
+        margin-top: 1rem;
 
         display: none;
+
         &.filled {
           display: block;
         }
@@ -392,10 +417,9 @@ aside {
 
       input {
         color: @accent;
-        margin-left: -0.5em;
+        margin-top: 1rem;
         padding-left: 0.5em;
         height: 2em;
-        width: 100;
 
         display: block;
         flex: 1 1 auto;
@@ -410,7 +434,7 @@ aside {
         }
 
         &[value=""] {
-          background-color: transparent;
+          background-color: @bg;
           &::placeholder {
             color: fade(white, 50%);
           }
@@ -483,6 +507,12 @@ aside {
 
       opacity: 1;
       transition: opacity, 0.5s;
+    }
+
+    // Die eigentliche Liste
+    > ul {
+      margin-top: 3em;
+      padding-left: 0.5em;
     }
 
   }
@@ -599,7 +629,7 @@ aside {
 
 .content {
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: auto;
   min-height: 100vh;
 
   width: 100%;
