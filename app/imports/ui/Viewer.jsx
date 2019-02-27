@@ -16,10 +16,12 @@ class Viewer extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.song != prevProps.song) {
-      const node = ReactDOM.findDOMNode(this);
-      node.children[0].scrollTop = 0;
-    }
+    if (this.props.song == prevProps.song) return;
+      
+    // Song has changed.
+    const node = ReactDOM.findDOMNode(this);
+    node.children[0].scrollTop = 0;
+    this.setState({ relTranspose: 0 });
   }
 
   handleContextMenu = event => {
@@ -28,7 +30,7 @@ class Viewer extends Component {
     event.preventDefault();
   };
 
-  handleTransposeSetter = pitch => {
+  transposeSetter = pitch => {
     this.setState({ relTranspose: pitch });
   };
 
@@ -96,8 +98,8 @@ class Viewer extends Component {
         >
           <section>
             <TranposeSetter
-              doshit={this.handleTransposeSetter}
-              intialTranspose={this.state.relTranspose}
+              transposeSetter={this.transposeSetter}
+              transpose={this.state.relTranspose}
               keym={key}
             />
           </section>
@@ -113,7 +115,7 @@ class Viewer extends Component {
     );
   }
 }
-// this probably would belong inside the class
+
 Viewer.propTypes = {
   song: PropTypes.object.isRequired
 };

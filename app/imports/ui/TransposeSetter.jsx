@@ -4,12 +4,8 @@ import PropTypes from "prop-types";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import "rc-tooltip/assets/bootstrap.css";
-const createSliderWithTooltip = Slider.createSliderWithTooltip;
 
-// Javascript style "static" import
-var abs = Math.abs,
-  sign = Math.sign;
-var intervalls = new Map([
+var intervals = new Map([
   [0, "Original"],
   [1, "Kl. Sekunde"],
   [2, "Gr. Sekunde"],
@@ -29,39 +25,22 @@ var intervalls = new Map([
   [16, "Gr. Dezime"],
   [17, "Kl. Undezime"]
 ]);
+
 export default class TranposeSetter extends Component {
   constructor(props) {
     super(props);
-    let initialTranspose = this.props.intialTranspose
-      ? this.props.intialTranspose
-      : 0;
-    this.state = { relTranspose: initialTranspose };
   }
 
-  doSomething = event => {
-    console.log(event);
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value
-    });
-    this.props.doshit(Number.parseInt(value));
-  };
-
   handleSlider = value => {
-    this.setState({
-      relTranspose: value
-    });
-    this.props.doshit(Number.parseInt(value));
+    this.props.transposeSetter(Number.parseInt(value));
   };
 
   static equivalentShift(pitch) {
     let pit = Number.parseInt(pitch);
     let int = pit / 12;
-    let add = Math.ceil(abs(int)) * 12;
-    let op = add - abs(pit); // because of the idiotic (unnecessary intervals >12)
-    let str = this.intFromPitch(op * sign(pit) * -1);
+    let add = Math.ceil(Math.abs(int)) * 12;
+    let op = add - Math.abs(pit); // because of the idiotic (unnecessary intervals >12)
+    let str = this.intFromPitch(op * Math.sign(pit) * -1);
     return str;
   }
 
@@ -98,7 +77,7 @@ export default class TranposeSetter extends Component {
             min={-7}
             max={7}
             name="relTranspose"
-            value={this.state.relTranspose}
+            value={this.props.transpose}
             onChange={this.handleSlider}
             marks = {marks}
             step={1}
@@ -106,12 +85,6 @@ export default class TranposeSetter extends Component {
             dots
             vertical={true}
           />
-        {/*<span>{TranposeSetter.intFromPitch(this.state.relTranspose)}</span> */}
-        {/* &#8644;
-        <span id="equiv">
-          {TranposeSetter.equivalentShift(this.state.relTranspose)}
-        </span> */}
-        {/*<span>{JSON.stringify(this.state)}</span>*/}
       </div>
     );
   }
@@ -121,13 +94,12 @@ export default class TranposeSetter extends Component {
    */
   static intFromPitch(i) {
     let vz = i < 0 ? "-" : "+";
-    return vz + Math.abs(i) + " Halbtöne = " + vz + intervalls.get(Math.abs(i));
+    return vz + Math.abs(i) + " Halbtöne = " + vz + intervals.get(Math.abs(i));
   }
 }
 
-// ToDO: convert to tsx
 TranposeSetter.propTypes = {
-  doshit: PropTypes.func,
-  initialTranspose: PropTypes.number,
+  transposeSetter: PropTypes.func,
+  transpose: PropTypes.number,
   key: PropTypes.string
 };
