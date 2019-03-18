@@ -16,7 +16,7 @@ class ListItem extends React.Component<ListItemProps, {}> {
     render() {
         return (
             <li><NavLink to={`/view/${this.props.song.author_}/${this.props.song.title_}`}
-                activeClassName="selected" data-author={this.props.song.author}>
+                activeClassName="selected">
                 <span className="title">{this.props.song.title}</span>
                 <span className="author">{this.props.song.author}</span>
                 </NavLink></li>
@@ -67,6 +67,27 @@ export default class List extends React.Component<ListProps, ListState> {
         }
     }
 
+
+    keyHandler = (e) => {
+        if (e.key == 'Escape') {
+            this.setState({
+                filter: '',
+            });
+            this.refs.filter.blur();
+            e.preventDefault();
+        } else {
+            this.refs.filter.focus();
+        }
+    }
+
+    componentDidMount() {
+        document.addEventListener("keydown", this.keyHandler);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.keyHandler);
+    }
+
     onChange = (event : React.ChangeEvent<HTMLInputElement>) => {
         this.setState({
           filter: event.currentTarget.value
@@ -78,16 +99,6 @@ export default class List extends React.Component<ListProps, ListState> {
         this.setState({
             active: true
         });
-    }
-
-    onKeyDown = (e : React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key == 'Escape') {
-            this.setState({
-                filter: '',
-            });
-            e.currentTarget.blur();
-            e.preventDefault();
-        }
     }
 
     onBlur = () => {
@@ -170,6 +181,7 @@ export default class List extends React.Component<ListProps, ListState> {
                     <input type="text" 
                         placeholder="Filtern…" 
                         value={this.state.filter} 
+                        ref="filter"
                         onKeyDown={this.onKeyDown}
                         onChange={this.onChange}
                         onFocus={this.onFocus}

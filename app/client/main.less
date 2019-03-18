@@ -30,6 +30,8 @@ textarea {
 @accent: rgb(221, 68, 7);
 //@accent: rgb(0, 141, 235);
 
+@secondary: hsv(hsvhue(@accent), 0.15, 0.6);
+
 // Layout
 html {
   height: 100%;
@@ -83,6 +85,13 @@ body {
 
 
 // Content role mixins
+
+.list {
+  color: white;
+  background-color: @secondary;
+  scrollbar-color: fade(white, 50%) transparent;
+}
+
 .chordsheet {
   h1 {
     color: @accent;
@@ -90,10 +99,12 @@ body {
 
   color: black;  // for aside only, is overridden in #chordsheet
   background-color: white;
+  scrollbar-color: fade(black, 15%) transparent;
 }
 
 .source {
   background-color: hsv(hsvhue(@accent), 0.7, 0.8);
+  scrollbar-color: fade(black, 15%) transparent;
 }
 
 .revision {
@@ -148,8 +159,6 @@ body {
 
 #chordsheet {
   .chordsheet;
-
-  overflow: auto;  // enable scrollbars
 
   padding-top: 2em;
   padding-bottom: 10em;
@@ -214,7 +223,7 @@ body {
   }
 
   code {
-    display: inline-blocK;
+    display: inline-block;
     font-family: 'Input Mono', Courier New, Courier, monospace;
     font-size: 0.8em;
     font-weight: 300;
@@ -336,7 +345,7 @@ aside {
   box-sizing: border-box;
   width: @width;
 
-  overflow: auto;
+  .scroll;
 
   padding-top: 1em;
   padding-left: 0.5em;
@@ -381,8 +390,7 @@ aside {
   }
 
   &#list {
-    @bg: hsv(hsvhue(@accent), 0.15, 0.6);
-    background-color: @bg;
+    .list;
 
     &:not(.collapsed) {
       padding-top: 0;
@@ -398,7 +406,7 @@ aside {
       display: flex;
       width: @width;
 
-      background-color: @bg;
+      background-color: @secondary;
 
       .reset {
         flex: 0 0 1.5em;
@@ -428,20 +436,20 @@ aside {
 
         transition: color, background-color 0.5s;
 
-        background-color: mix(white, @bg, 80%);
+        background-color: mix(white, @secondary, 80%);
         &::placeholder {
           color: transparent;
         }
 
         &[value=""] {
-          background-color: @bg;
+          background-color: @secondary;
           &::placeholder {
             color: fade(white, 50%);
           }
         }
 
         &:focus {
-          background-color: mix(white, @bg, 80%);
+          background-color: mix(white, @secondary, 80%);
           &::placeholder {
             color: @accent;
           }
@@ -455,7 +463,7 @@ aside {
       left: @width;
       top: 0;
 
-      @bgMenu: mix(white, @bg, 70%);
+      @bgMenu: mix(white, @secondary, 70%);
       background-color: @bgMenu;
 
       display: flex;
@@ -629,8 +637,9 @@ aside {
 
 .content {
   box-sizing: border-box;
-  overflow: auto;
   min-height: 100vh;
+
+  .scroll;
 
   width: 100%;
   padding: 1em 2em 1em 2em;
@@ -650,8 +659,6 @@ textarea {
   font-weight: 300;
   font-size: 0.9em;
   width: inherit;
-  overflow: hidden;
-  white-space: pre;
   cursor: text;
 
   .noFocusBorder;
@@ -758,4 +765,10 @@ hr {
         -ms-user-select: @mode; /* Internet Explorer/Edge */
             user-select: @mode; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
+}
+
+.scroll {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }

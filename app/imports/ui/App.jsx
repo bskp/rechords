@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { withTracker } from 'meteor/react-meteor-data';
-import { CSSTransitionGroup } from 'react-transition-group'
 
 import Songs, {Song} from '../api/collections.js';
 
@@ -11,7 +10,7 @@ import Viewer from './Viewer.jsx';
 import Editor from './Editor.jsx';
 import Collapsed from './Collapsed.jsx';
 
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 
 const empty_song = {
