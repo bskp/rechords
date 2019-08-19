@@ -32,6 +32,10 @@ textarea {
 
 @secondary: hsv(hsvhue(@accent), 0.15, 0.6);
 
+@light: hsv(hsvhue(@accent), 0.05, 0.9);
+@dull: hsv(hsvhue(@accent), 0.3, 0.7);
+@warm: hsv(hsvhue(@accent), 0.2, 0.6);
+
 // Layout
 html {
   height: 100%;
@@ -87,8 +91,8 @@ body {
 // Content role mixins
 
 .list {
-  color: white;
-  background-color: @secondary;
+  color: hsv(hsvhue(@accent), 0.2, 0.4);
+  background-color: @light;
   scrollbar-color: fade(white, 50%) transparent;
 }
 
@@ -133,7 +137,7 @@ body {
     line-height: 1.7em;
     font-weight: 600;
     text-transform: uppercase;
-    background-color: hsv(hsvhue(@accent), 0.2, 0.6);
+    background-color: @warm;
     color: white;
     border-radius: 0.4em;
     padding: 0 0.5em;
@@ -164,7 +168,7 @@ body {
   padding-bottom: 10em;
   padding-left: 6em;
 
-  color: hsv(hsvhue(@accent), 0.3, 0.7);
+  color: @dull;
 
   h2, h3, h4 {
     color: black;
@@ -397,23 +401,19 @@ aside {
       padding-left: 0;
     }
 
-    li {
-      color: black;
-    }
-
     .filter {
       position: absolute;
       display: flex;
       width: @width;
 
-      background-color: @secondary;
+      color: white;
+      background-color: @light;
 
       .reset {
         flex: 0 0 1.5em;
         font-size: 1.4em;
         margin-left: -1.5em;
         cursor: pointer;
-        color: @accent;
         margin-top: 1rem;
 
         display: none;
@@ -424,7 +424,6 @@ aside {
       }
 
       input {
-        color: @accent;
         margin-top: 1rem;
         padding-left: 0.5em;
         height: 2em;
@@ -436,22 +435,22 @@ aside {
 
         transition: color, background-color 0.5s;
 
-        background-color: mix(white, @secondary, 80%);
+        background-color: @warm;
         &::placeholder {
           color: transparent;
         }
 
         &[value=""] {
-          background-color: @secondary;
+          background-color: @light;
           &::placeholder {
-            color: fade(white, 50%);
+            color: hsv(hsvhue(@accent), 0.2, 0.4);
           }
         }
 
         &:focus {
-          background-color: mix(white, @secondary, 80%);
+          background-color: @warm;
           &::placeholder {
-            color: @accent;
+            color: fade(white, 50%);
           }
         }
       }
@@ -463,8 +462,13 @@ aside {
       left: @width;
       top: 0;
 
-      @bgMenu: mix(white, @secondary, 70%);
-      background-color: @bgMenu;
+      -webkit-backdrop-filter: blur(10px);
+      background-color: fade(@light, 50%);
+
+      @media all and (-webkit-min-device-pixel-ratio:0) and (min-resolution: .001dpcm) {
+        // non-webkit-browsers
+        background-color: mix(@light, white);
+      }
 
       display: flex;
       flex-direction: row;
@@ -594,9 +598,8 @@ aside {
       .author {
         display: none;
         flex: 1 0 0;
-        color: white;
-        //background-color: fade(white, 50%);
-        background-color: hsv(hsvhue(@accent), 0.15, 0.6);
+        color: hsv(hsvhue(@accent), 0.8, 0.8);
+        background-color: @light;
         text-align: right;
         direction: rtl;
         overflow: hidden;
@@ -609,13 +612,18 @@ aside {
         .author {
           display: inline-block;
           flex: 0 0 auto;
+          color: @accent;
         }
       }
 
       &.selected {
-        background-color: hsv(hsvhue(@accent), 0.8, 0.8);
+        color: white;
+        //background-color: hsv(hsvhue(@accent), 0.8, 0.8);
+        background-color: @warm;
         .author {
           background-color: hsv(hsvhue(@accent), 0.8, 0.8);
+          background-color: @warm;
+          color: white;
         }
       }
 
@@ -625,7 +633,7 @@ aside {
   h2 {
     font-size: 1em;
     margin-bottom: 0;
-    color: white;
+    color: mix(@accent, @warm, 80%);
 
     &.huge {
       margin-top: 0;
@@ -718,16 +726,17 @@ hr {
   float: right;
 
   .rc-slider {
-    width: 50px;
+    width: 0px;
   }
 
   .rc-slider-mark {
-    top: -18px;
+    top: 2px;
+    left: -60px;
   }
 
   .rc-slider-mark-text {
-    width: 100%;
-    text-align: left;
+    width: 50px;
+    text-align: right;
   }
 
   .rc-slider-track {
