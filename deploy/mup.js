@@ -19,29 +19,26 @@ module.exports = {
     },
 
     env: {
-      ROOT_URL: 'http://beta.hoelibu.ch',
+      ROOT_URL: 'http://hoelibu.ch',
       PORT: 3333,
       MONGO_URL: 'mongodb://localhost/meteor'
     },
 
-    // ssl: { // (optional)
-    //   // Enables let's encrypt (optional)
-    //   autogenerate: {
-    //     email: 'email.address@domain.com',
-    //     // comma separated list of domains
-    //     domains: 'website.com,www.website.com'
-    //   }
-    // },
-
     docker: {
       // change to 'abernix/meteord:base' if your app is using Meteor 1.4 - 1.5
-      image: 'abernix/meteord:node-8.4.0-base',
+      image: 'abernix/meteord:base',
     },
 
     // Show progress bar while uploading bundle to server
     // You might need to disable it on CI servers
     enableUploadProgressBar: true
   },
+
+  /* Collides with already-running nginx.
+  proxy: {
+    domains: 'hoelibu.ch,www.hoelibu.ch'
+  },
+  */
 
   mongo: {
     version: '3.4.1',
