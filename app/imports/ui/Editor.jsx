@@ -109,7 +109,7 @@ class Editor extends Component {
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
 
-          <Drawer className="chordsheet" onClick={this.toggleRevTab}>
+          <Drawer className="chordsheet-colors" onClick={this.toggleRevTab}>
             <h1>zurück</h1>
             <p>…und weiterbearbeiten!</p>
 

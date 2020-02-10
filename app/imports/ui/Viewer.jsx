@@ -93,7 +93,7 @@ class Viewer extends Component {
     return (
       <div className="container">
         <div
-          className="content chordsheet"
+          className="content chordsheet-colors"
           id="chordsheet"
           onContextMenu={this.handleContextMenu}
         >

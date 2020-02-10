@@ -90,13 +90,13 @@ body {
 
 // Content role mixins
 
-.list {
+.list-colors {
   color: hsv(hsvhue(@accent), 0.2, 0.4);
   background-color: @light;
   scrollbar-color: fade(white, 50%) transparent;
 }
 
-.chordsheet {
+.chordsheet-colors {
   h1 {
     color: @accent;
   }
@@ -106,17 +106,17 @@ body {
   scrollbar-color: fade(black, 15%) transparent;
 }
 
-.source {
+.source-colors {
   background-color: hsv(hsvhue(@accent), 0.7, 0.8);
   scrollbar-color: fade(black, 15%) transparent;
 }
 
-.revision {
+.revision-colors {
   color: hsv(hsvhue(@accent), 0.4, 0.8);
   background-color: hsv(hsvhue(@accent), 0.7, 0.4);
 }
 
-.revisions {
+.revisions-colors {
   color: hsv(hsvhue(@accent), 0.3, 0.7);
   background-color: hsv(hsvhue(@accent), 0.5, 0.2);
 }
@@ -162,7 +162,7 @@ body {
 
 
 #chordsheet {
-  .chordsheet;
+  .chordsheet-colors;
 
   padding-top: 2em;
   padding-bottom: 10em;
@@ -234,7 +234,7 @@ body {
     color: black;
     padding: 0 0.5em;
     border-radius: 0.4em;
-    .source;
+    .source-colors;
   }
 
   &.interactive i{
@@ -394,7 +394,7 @@ aside.drawer {
   }
 
   &#list {
-    .list;
+    .list-colors;
 
     &.open {
       padding-top: 0;
