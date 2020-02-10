@@ -3,6 +3,8 @@ import { NavLink } from 'react-router-dom';
 import MetaContent from './MetaContent';
 import {Song} from '../api/collections';
 
+import Drawer from '../ui/Drawer';
+
 
 interface ListItemProps {
     song: Song;
@@ -176,7 +178,7 @@ export default class List extends React.Component<ListProps, ListState> {
         }
 
         return (
-            <aside id="list">
+            <Drawer id="list" initialOpen="true">
                 <div className="filter">
                     <input type="text" 
                         placeholder="Filtern…" 
@@ -204,7 +206,7 @@ export default class List extends React.Component<ListProps, ListState> {
                         <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
                     </li>
                 </ul>
-            </aside>
+            </Drawer>
         )
     }
 }

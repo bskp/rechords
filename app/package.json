@@ -11,7 +11,7 @@
     "@babel/runtime": "^7.2.0",
     "@types/meteor": "^1.4.15",
     "@types/react-dom": "^16.0.5",
-    "html-react-parser": "^0.4.6",
+    "html-react-parser": "^0.4.7",
     "hyphenation.en-us": "^0.2.1",
     "hypher": "^0.2.5",
     "indexof": "0.0.1",

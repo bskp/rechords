@@ -77,10 +77,10 @@ class Editor extends Component {
     if (this.state.versionTab == false) {
 
       let versions = n == 0 ? undefined : (
-        <Collapsed id="revs" className="revision" onClick={this.toggleRevTab}>
+        <Drawer id="revs" className="revision" onClick={this.toggleRevTab}>
           <h1>Verlauf</h1>
           <p>Es existieren {n} vorherige Versionen. Klicke, um diese zu durchstöbern!</p>
-        </Collapsed>
+        </Drawer>
       );
 
       let dirtyLabel = this.state.dirty ? <span id="dirty" title="Ungesicherte Änderungen"></span> : undefined;
@@ -89,10 +89,10 @@ class Editor extends Component {
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
 
-          <Collapsed id="list" onClick={this.handleContextMenu}>
+          <Drawer id="list" onClick={this.handleContextMenu}>
             <h1>sichern<br />&amp; zurück</h1>
             <p>Schneller: Rechtsklick!</p>
-          </Collapsed>
+          </Drawer>
 
           {dirtyLabel}
           <Preview md={this.state.md} song={this.props.song} updateHandler={this.update}/>
@@ -108,11 +108,11 @@ class Editor extends Component {
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
 
-          <Collapsed className="chordsheet" onClick={this.toggleRevTab}>
+          <Drawer className="chordsheet" onClick={this.toggleRevTab}>
             <h1>zurück</h1>
             <p>…und weiterbearbeiten!</p>
 
-          </Collapsed>
+          </Drawer>
 
           <Source md={this.state.md} updateHandler={this.update} className="source">
             <span className="label">Version in Bearbeitung</span>

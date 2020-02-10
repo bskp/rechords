@@ -6,6 +6,7 @@ import ChrodLib from "../api/libchrod.js";
 import { RmdHelpers } from "../api/collections.js";
 import Collapsed from './Collapsed.jsx';
 import ReactDOM from 'react-dom';
+import Drawer from '../ui/Drawer';
 
 var Parser = require("html-react-parser");
 
@@ -107,10 +108,10 @@ class Viewer extends Component {
             {vdom}
           </section>
         </div>
-        <Collapsed className="source" onClick={this.handleContextMenu}>
+        <Drawer className="source" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
           <p>Schneller:&nbsp;Rechtsklick!</p>
-        </Collapsed>
+        </Drawer>
       </div>
     );
   }

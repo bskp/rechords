@@ -4,9 +4,10 @@ import Source from './Source.jsx';
 import Collapsed from './Collapsed.jsx';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import Drawer from '../ui/Drawer';
 import "moment/locale/de";
 
-export default class RevBrowser extends Component {
+export default class RevBrowser extends React.Component {
 
   constructor(props) {
     super();
@@ -34,14 +35,14 @@ export default class RevBrowser extends Component {
         <Source md={this.state.revision.text} readOnly={true} className="revision">
           {label}
         </Source>
-        <Collapsed id="revs" className="revisions">
+        <Drawer id="revs" className="revisions">
           <h1>Versionen</h1>
           <ol>
             {revs.map((rev, idx) =>
               <RevLink rev={rev} idx={n - idx} key={rev._id} callback={this.setRev} active={rev._id == this.state.revision._id} />
             )}
           </ol>
-        </Collapsed>
+        </Drawer>
       </>
     )
   }
