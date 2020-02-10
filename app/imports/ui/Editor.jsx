@@ -6,6 +6,7 @@ import Collapsed from './Collapsed.jsx';
 import Source from './Source.jsx';
 import RevBrowser from './RevBrowser.jsx';
 import Preview from './Preview.tsx';
+import Drawer from './Drawer.tsx';
 
 
 class Editor extends Component {
