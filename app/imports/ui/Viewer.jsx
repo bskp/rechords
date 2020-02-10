@@ -127,7 +127,7 @@ class Viewer extends Component {
             {vdom}
           </section>
         </div>
-        <Drawer className="source" onClick={this.handleContextMenu}>
+        <Drawer className="source-colors" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
           <p>Schneller:&nbsp;Rechtsklick!</p>
         </Drawer>

@@ -78,7 +78,7 @@ class Editor extends Component {
     if (this.state.versionTab == false) {
 
       let versions = n == 0 ? undefined : (
-        <Drawer id="revs" className="revision" onClick={this.toggleRevTab}>
+        <Drawer id="revs" className="revision-colors" onClick={this.toggleRevTab}>
           <h1>Verlauf</h1>
           <p>Es existieren {n} vorherige Versionen. Klicke, um diese zu durchstöbern!</p>
         </Drawer>
@@ -97,7 +97,7 @@ class Editor extends Component {
 
           {dirtyLabel}
           <Preview md={this.state.md} song={this.props.song} updateHandler={this.update}/>
-          <Source md={this.state.md} updateHandler={this.update} className="source" />
+          <Source md={this.state.md} updateHandler={this.update} className="source-colors" />
 
           {versions}
           {prompt}
@@ -115,7 +115,7 @@ class Editor extends Component {
 
           </Drawer>
 
-          <Source md={this.state.md} updateHandler={this.update} className="source">
+          <Source md={this.state.md} updateHandler={this.update} className="source-colors">
             <span className="label">Version in Bearbeitung</span>
           </Source>
           <RevBrowser song={this.props.song} />

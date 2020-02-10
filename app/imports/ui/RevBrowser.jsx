@@ -32,10 +32,10 @@ export default class RevBrowser extends React.Component {
 
     return (
       <>
-        <Source md={this.state.revision.text} readOnly={true} className="revision">
+        <Source md={this.state.revision.text} readOnly={true} className="revision-colors">
           {label}
         </Source>
-        <Drawer id="revs" className="revisions">
+        <Drawer id="revs" className="revisions-colors">
           <h1>Versionen</h1>
           <ol>
             {revs.map((rev, idx) =>
