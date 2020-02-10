@@ -7,12 +7,13 @@ import { RmdHelpers } from "../api/collections.js";
 import Collapsed from './Collapsed.jsx';
 import ReactDOM from 'react-dom';
 import Drawer from '../ui/Drawer';
+import {MobileMenu} from './MobileMenu.tsx'
 
 var Parser = require("html-react-parser");
 
 class Viewer extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = { relTranspose: 0 };
   }
 
@@ -22,7 +23,7 @@ class Viewer extends Component {
     // Song has changed.
     const node = ReactDOM.findDOMNode(this);
     node.children[0].scrollTop = 0;
-    this.setState({ relTranspose: 0 });
+    this.setState({ relTranspose: 0, menuOpen });
   }
 
   handleContextMenu = event => {
@@ -33,6 +34,18 @@ class Viewer extends Component {
 
   transposeSetter = pitch => {
     this.setState({ relTranspose: pitch });
+  };
+
+  increaseTranspose = () => {
+    this.setState( currentState => currentState.relTranspose++ );
+  };
+
+  decreaseTranspose = () => {
+    this.setState( currentState => currentState.relTranspose-- );
+  };
+
+  toggleMenu = () => {
+    this.setState( currentState => currentState.menuOpen = !currentState.menuOpen )
   };
 
   render() {
@@ -91,13 +104,19 @@ class Viewer extends Component {
 
 
     return (
+
       <div className="container">
+        <MobileMenu  
+        increaseTranspose={this.increaseTranspose} 
+        decreaseTranspose={this.decreaseTranspose}
+        toggleMenu={this.toggleMenu}
+        />
         <div
           className="content chordsheet-colors"
           id="chordsheet"
           onContextMenu={this.handleContextMenu}
         >
-          <section>
+          <section className="show-m">
             <TranposeSetter
               transposeSetter={this.transposeSetter}
               transpose={this.state.relTranspose}
