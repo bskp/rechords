@@ -1,5 +1,6 @@
 import { Song } from '../api/collections.js';
 import * as React from 'react';
+import { DetailedReactHTMLElement } from 'react'
 var Parser = require("html-react-parser");
 
 
@@ -23,7 +24,23 @@ export default class MetaContent extends React.Component<Props, {}> {
             this.content = <span>No match for {this.props.title}!</span>;
         } else {
             let html = matches[0].getHtml();
-            this.content = new Parser(html, {replace: this.props.replace});
+            let content = new Parser(html, {replace: this.props.replace});
+            this.content = []
+            let group: DetailedReactHTMLElement< any, HTMLDivElement > = null;
+            for( let element of content )
+            {
+                if(element.type == 'h4')
+                {
+                    group = React.createElement('div', {className: "taggroup"}, []) ;
+                    this.content.push( group ); 
+                }
+                if(group)
+                {
+                    group.props.children.push(element);
+                }
+
+            }
+
         }
     }
 

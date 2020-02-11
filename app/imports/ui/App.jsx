@@ -76,7 +76,7 @@ class App extends Component {
                     <Route exact path='/' render={(props) => (
                             <div className="container">
                                 <DocumentTitle title="Hölibu" />
-                                <List songs={this.props.songs}/>
+                                <List songs={this.props.songs} open={true}/>
                                 {logo}
                             </div>
                     )} />

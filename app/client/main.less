@@ -490,11 +490,11 @@ aside.drawer {
   &#list {
 
     .maxwidth(@width-m, {
-      // position: absolute;
+      position: absolute;
       width: 100%;
+      min-height: 100%;
       &.closed {
         display: none;
-
       }
 
     });
@@ -510,7 +510,13 @@ aside.drawer {
     .filter {
       position: absolute;
       left: 0;
-      top: 0;
+      .maxwidth(@width-m, {
+        top: 50px;
+      });
+      .minwidth(@width-m, {
+        top: 0;
+      });
+
       display: flex;
       width: @open;
 
@@ -566,10 +572,15 @@ aside.drawer {
     }
 
     div.filterMenu {
+      left: 0;
+      width: 100%;
+      .minwidth(@width-m, {
+        width: calc(~"100% - " @open);
+        left: @open;
+      });
       position: absolute;
       z-index: 1;
-      left: @open;
-      top: 0;
+      overflow: scroll;
 
       -webkit-backdrop-filter: blur(10px);
       background-color: fade(@light, 50%);
@@ -581,10 +592,22 @@ aside.drawer {
 
       display: flex;
       flex-direction: row;
+      .maxwidth(@width-m, {
+        top: 100px;
+      });
+
+      flex-wrap: wrap;
+      // justify-content: space-around;
+      align-content: flex-start;
 
       padding-top: 0.5em;
       padding-left: 2em;
       padding-bottom: 1.5em;
+
+      div.taggroup {
+        margin-right: 20px;
+        // flex-basis: 200px;
+      }
 
       h1, h2{
         display: none;
@@ -593,16 +616,19 @@ aside.drawer {
       h4 {
         color: black;
         display: block;
-        width: 0;
+        // width: 0;
         transform-origin: top right;
         font-weight: 600;
         transform: rotate(-14deg);
+
       }
 
       ul {
         margin-top: 3.5em;
         margin-left: 0.5em;
         flex: 0 0 7em;
+        display: flex;
+        flex-direction: column;
       }
 
       li {

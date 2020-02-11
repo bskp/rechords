@@ -175,11 +175,10 @@ export default class List extends React.Component<ListProps, ListState> {
                 return <li onMouseDown={this.onTagClick.bind(this)}>{node.children[0].data}{b}</li>
             }
 
-            return node;
         }
 
         return (
-            <Drawer id="list" initialOpen="true" open={this.props.open}>
+            <Drawer id="list" initialOpen="true" open={this.props.open} className="songlist">
                 <div className="filter">
                     <input type="text" 
                         placeholder="Filtern…" 
