@@ -1,10 +1,13 @@
 // Resets
-ul {
+ul, ol {
   padding-left: 0;
+  list-style-type: none;
 }
 
 a {
   text-decoration: none;
+  color: inherit;
+  font-weight: inherit;
 }
 
 button, input, select, textarea {
@@ -26,7 +29,7 @@ textarea {
   width: 100%;
 }
 
-// Globals
+// Global Color Definitions
 @accent: rgb(221, 68, 7);
 //@accent: rgb(0, 141, 235);
 
@@ -35,6 +38,68 @@ textarea {
 @light: hsv(hsvhue(@accent), 0.05, 0.9);
 @dull: hsv(hsvhue(@accent), 0.3, 0.7);
 @warm: hsv(hsvhue(@accent), 0.2, 0.6);
+
+
+// Screen sizes
+@width-xl: 1500px;
+@width-l : 1200px;
+@width-m : 900px;
+@width-s : 700px;
+
+.phone(@rules) {
+  @media only screen and (max-width: 700px) {
+      @rules();
+  }
+}
+
+.phone-tablet(@rules) {
+  @media only screen and (max-width: 1200px) {
+      @rules();
+  }
+}
+
+
+// Color Schemes
+
+.list-colors {
+  color: hsv(hsvhue(@accent), 0.2, 0.4);
+  background-color: @light;
+  scrollbar-color: fade(white, 50%) transparent;
+}
+
+.chordsheet-colors {
+  h1 {
+    color: @accent;
+  }
+
+  color: black;  // for aside only, is overridden in #chordsheet
+  background-color: white;
+  scrollbar-color: fade(black, 15%) transparent;
+}
+
+.source-colors {
+  h1 {
+    color: white;
+  }
+  color: fade(white, 70%);
+  background-color: hsv(hsvhue(@accent), 0.7, 0.8);
+  scrollbar-color: fade(black, 15%) transparent;
+
+  textarea {
+    color: black;
+  }
+}
+
+.revision-colors {  // ie. a particular revision
+  color: hsv(hsvhue(@accent), 0.4, 0.8);
+  background-color: hsv(hsvhue(@accent), 0.7, 0.4);
+}
+
+.revisions-colors {  // ie. the list of revisions
+  color: hsv(hsvhue(@accent), 0.3, 0.7);
+  background-color: hsv(hsvhue(@accent), 0.5, 0.2);
+}
+
 
 // Layout
 html {
@@ -59,22 +124,7 @@ body {
   background-color: grey;
 }
 
-.chordtable {
-  // padding: 20px;
-  text-align: center;
-  td {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-}
-
-#route {
-  display: flex;
-  width: 100%;
-}
-
+// dot. wohin?
 #dirty {
   display: block;
   position: absolute;
@@ -85,40 +135,6 @@ body {
   background-color: @accent;
   left: 5.9rem;
   top: 3.7rem;
-}
-
-
-// Content role mixins
-
-.list-colors {
-  color: hsv(hsvhue(@accent), 0.2, 0.4);
-  background-color: @light;
-  scrollbar-color: fade(white, 50%) transparent;
-}
-
-.chordsheet-colors {
-  h1 {
-    color: @accent;
-  }
-
-  color: black;  // for aside only, is overridden in #chordsheet
-  background-color: white;
-  scrollbar-color: fade(black, 15%) transparent;
-}
-
-.source-colors {
-  background-color: hsv(hsvhue(@accent), 0.7, 0.8);
-  scrollbar-color: fade(black, 15%) transparent;
-}
-
-.revision-colors {
-  color: hsv(hsvhue(@accent), 0.4, 0.8);
-  background-color: hsv(hsvhue(@accent), 0.7, 0.4);
-}
-
-.revisions-colors {
-  color: hsv(hsvhue(@accent), 0.3, 0.7);
-  background-color: hsv(hsvhue(@accent), 0.5, 0.2);
 }
 
 
@@ -340,21 +356,46 @@ body {
 } // .chordsheet
 
 
-
 aside.drawer {
-  color: white;
-  @width: 220px;
+  @open: 220px;
+  @closed: 30px;
+
   flex-grow: 0;
   flex-shrink: 0;
   box-sizing: border-box;
-  width: @width;
+  width: @open;
 
   .scroll;
 
   padding-top: 1em;
-  padding-left: 0.5em;
   padding-right: 0;
   padding-bottom: 2em;
+  padding-left: 0.5em;
+
+  &.closed {
+    overflow: hidden;
+    width: @closed;
+    padding-left: @closed;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 100;
+    box-sizing: border-box;
+
+    // Mitigates the rendering bug of the contained .label
+    position: relative;
+    
+    &:hover {
+      width: @open;
+      padding-left: 0.5em;
+    }
+  }
+
+  // Content-width blocker:
+  & > div {
+    width: @open - @closed; //ie. width - padding
+  }
+
+  // Drawer Contents:
 
   h1, h2, h3 {
     font-size: 2em;
@@ -365,46 +406,100 @@ aside.drawer {
     margin-top: 0;
   }
 
-  p { 
-    opacity: 0.7;
+  h2 {
+    font-size: 1em;
+    margin-bottom: 0;
+    color: mix(@accent, @warm, 80%);
+
+    &.huge {
+      margin-top: 0;
+      font-size: 2em;
+    }
   }
 
+  // Make list items fill the entire width
+  li {
 
-  &.closed {
-    @pad: 30px;
+    // Stick to one row per li
+    white-space: nowrap;
     overflow: hidden;
-    width: @pad;
-    cursor: pointer;
-    transition: width 0.3s;
-    z-index: 100;
-    box-sizing: border-box;
-    padding-left: @pad;
 
-    // Mitigates the rendering bug of the contained .label
-    position: relative;
-    
-    &:hover {
-      width: @width;
-    }
+    margin-left: -0.5em;
+    padding-left: 0.5em;
 
-    // Avoid linebreaks during slide-in/--out
-    * {
-      //width: 245px;
+    a {
+      display: flex;
+
+      .noFocusBorder;
+
+      padding-top: 0.1em;
+      padding-bottom: 0.2em;
+      padding-left: 0.5em;
+      padding-right: 1.0em;
+      margin-left: -0.5em;
+      margin-right: -0.5em;
+
+      span {
+        display: inline-block;
+        box-sizing: border-box;
+        min-width: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .title {
+      }
+
+      .author {
+        display: none;
+        flex: 1 0 0;
+        color: hsv(hsvhue(@accent), 0.8, 0.8);
+        background-color: @light;
+        text-align: right;
+        direction: rtl;
+        overflow: hidden;
+      }
+
+      &:hover {
+        .title {
+          flex: 1 0 0;
+        }
+
+        .author {
+          display: inline-block;
+          flex: 0 0 auto;
+          color: @accent;
+        }
+      }
+
+      &.selected {
+        color: white;
+        background-color: @warm;
+
+        .author {
+          color: white;
+          background-color: @warm;
+        }
+      }
+
     }
   }
 
   &#list {
     .list-colors;
 
-    &.open {
-      padding-top: 0;
-      padding-left: 0;
+    > div {
+      padding-top: 1em;
+      width: auto;
     }
+
 
     .filter {
       position: absolute;
+      left: 0;
+      top: 0;
       display: flex;
-      width: @width;
+      width: @open;
 
       color: white;
       background-color: @light;
@@ -426,6 +521,7 @@ aside.drawer {
       input {
         margin-top: 1rem;
         padding-left: 0.5em;
+        marginleft: -0.5em;
         height: 2em;
 
         display: block;
@@ -456,10 +552,10 @@ aside.drawer {
       }
     }
 
-    .filterMenu {
+    div.filterMenu {
       position: absolute;
       z-index: 1;
-      left: @width;
+      left: @open;
       top: 0;
 
       -webkit-backdrop-filter: blur(10px);
@@ -475,7 +571,7 @@ aside.drawer {
 
       padding-top: 0.5em;
       padding-left: 2em;
-      padding-bottom: 3em;
+      padding-bottom: 1.5em;
 
       h1, h2{
         display: none;
@@ -491,7 +587,8 @@ aside.drawer {
       }
 
       ul {
-        margin-top: 3em;
+        margin-top: 3.5em;
+        margin-left: 0.5em;
         flex: 0 0 7em;
       }
 
@@ -499,7 +596,7 @@ aside.drawer {
         color: white;
 
         margin-bottom: 0.5em;
-        transform-origin: center;
+        transform-origin: left;
         transform: rotate(-14deg);
         cursor: pointer;
 
@@ -520,128 +617,50 @@ aside.drawer {
       opacity: 1;
       transition: opacity, 0.5s;
     }
-
-    // Die eigentliche Liste
-    > ul {
-      margin-top: 3em;
-      padding-left: 0.5em;
-    }
-
   }
+} // drawer
 
-  &#revs {
+aside.drawer#revs {
 
-    ol {
-      list-style-type: lower-greek;
+  ol {
+    list-style-type: lower-greek;
 
-      li {
-        font-size: 0.8em;
-        padding: 0.3em;
-
-        &:hover {
-          background-color: hsva(0,0,0,0.3)
-        }
-
-        &.active {
-          background-color: hsva(0,0,0,0.5)
-        }
-
-      }
-    }
-
-  }
-
-
-  a {
-    color: inherit;
-    font-weight: inherit;
-  }
-
-  ul {
-    list-style-type: none;
-    margin: 0;
-  }
-
-  li {
-    display: block;
-
-    white-space: nowrap;
-    overflow: hidden;
-
-    margin-left: -0.5em;
-    padding-left: 0.5em;
-
-    a, button {
-      display: flex;
-
-      padding: 0.1em;
-      padding-bottom: 0.2em;
-      .noFocusBorder;
-
-      margin-left: -0.5em;
-      padding-left: 0.5em;
-      margin-right: -0.5em;
-      padding-right: 1.0em;
-
-      span {
-        display: inline-block;
-        box-sizing: border-box;
-        min-width: 0;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
-
-      .title {
-        flex: 0 0 initial;
-      }
-
-      .author {
-        display: none;
-        flex: 1 0 0;
-        color: hsv(hsvhue(@accent), 0.8, 0.8);
-        background-color: @light;
-        text-align: right;
-        direction: rtl;
-        overflow: hidden;
-      }
+    li {
+      font-size: 0.8em;
+      padding: 0.3em;
 
       &:hover {
-        .title {
-          flex: 1 0 0;
-        }
-        .author {
-          display: inline-block;
-          flex: 0 0 auto;
-          color: @accent;
-        }
+        background-color: hsva(0,0,0,0.3)
       }
 
-      &.selected {
-        color: white;
-        //background-color: hsv(hsvhue(@accent), 0.8, 0.8);
-        background-color: @warm;
-        .author {
-          background-color: hsv(hsvhue(@accent), 0.8, 0.8);
-          background-color: @warm;
-          color: white;
-        }
+      &.active {
+        background-color: hsva(0,0,0,0.5)
       }
 
-    }
-  }
-
-  h2 {
-    font-size: 1em;
-    margin-bottom: 0;
-    color: mix(@accent, @warm, 80%);
-
-    &.huge {
-      margin-top: 0;
-      font-size: 2em;
     }
   }
 
 }
+
+#mobileheader {
+  display: none;
+}
+
+.phone({
+  #mobileheader {
+    display: block;
+  }
+
+  aside.drawer {
+    &.open {
+      width: 100%;
+    }
+    &.closed {
+      display: none;
+    }
+  }
+
+});
 
 .content {
   box-sizing: border-box;
@@ -706,12 +725,9 @@ hr {
 }
 
 // CSS-wise transparent container to satisfy react.
+// TODO: remove all of them. 
 .container {
-  display: inherit;
-  width: inherit;
-  min-height: inherit;
-  padding: 0;
-  margin: 0;
+  display: contents;
 }
 
 // Editor.jsx

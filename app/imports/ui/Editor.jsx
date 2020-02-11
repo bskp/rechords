@@ -89,7 +89,7 @@ class Editor extends Component {
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
 
-          <Drawer id="list" onClick={this.handleContextMenu}>
+          <Drawer onClick={this.handleContextMenu} className="list-colors">
             <h1>sichern<br />&amp; zurück</h1>
             <p>Schneller: Rechtsklick!</p>
           </Drawer>

@@ -8,7 +8,6 @@ import Songs, {Song} from '../api/collections.js';
 import List from './List.tsx';
 import Viewer from './Viewer.jsx';
 import Editor from './Editor.jsx';
-import Collapsed from './Collapsed.jsx';
 
 import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import DocumentTitle from 'react-document-title';

@@ -22,7 +22,8 @@ class Viewer extends Component {
     // Song has changed.
     const node = ReactDOM.findDOMNode(this);
     node.children[0].scrollTop = 0;
-    this.setState({ relTranspose: 0, menuOpen });
+
+    this.setState({ relTranspose: 0, menuOpen: false });
   }
 
   handleContextMenu = event => {
@@ -106,13 +107,11 @@ class Viewer extends Component {
 
       <div className="container">
         <MobileMenu  
-        increaseTranspose={this.increaseTranspose} 
-        decreaseTranspose={this.decreaseTranspose}
-        toggleMenu={this.toggleMenu}
+          increaseTranspose={this.increaseTranspose} 
+          decreaseTranspose={this.decreaseTranspose}
+          toggleMenu={this.toggleMenu}
         />
-        <div
-          className="content chordsheet-colors"
-          id="chordsheet"
+        <div className="content" id="chordsheet"
           onContextMenu={this.handleContextMenu}
         >
           <section className="show-m">

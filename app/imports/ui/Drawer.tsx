@@ -31,7 +31,11 @@ class Drawer extends React.Component<DrawerProps, DrawerState> {
             className={"drawer " + this.props.className + (this.state.open ? " open" : " closed")}
             id={this.props.id}
             onClick={this.props.onClick}
-        >{this.props.children}&nbsp;</aside>
+        >
+            <div>
+                {this.props.children}&nbsp;
+            </div>
+        </aside>
     }
 }
 

@@ -32,7 +32,6 @@ export default class Source extends Component {
           {this.props.children}
         <textarea 
           ref="source" 
-          className="container"
           onChange={this.callUpdateHandler} 
           value={this.props.md} 
           style={style} 
