@@ -1,0 +1,104 @@
+@width-xl: 1500px;
+@width-l : 1200px;
+@width-m : 900px;
+@width-s : 700px;
+
+.maxwidth(@w; @rules) {
+
+    @media only screen and (max-width: @w)
+    // only screen and (max-width: (1.5*@w)) and (min-resolution: 1.5dppx),
+    // only screen and (max-width: (2.5*@w)) and (min-resolution: 3dppx)
+     {
+        @rules();
+    }
+}
+
+.minwidth(@w; @rules) {
+
+    @media only screen and (min-width: @w)
+    // only screen and (min-width: (1.5*@w)) and (min-resolution: 1.5dppx),
+    // only screen and (min-width: (2.5*@w)) and (min-resolution: 3dppx)
+     {
+        @rules();
+    }
+}
+
+.minmaxwidth(@wmin; @wmax; @rules) {
+    @media only screen and (min-width: @wmin) and (max-width: @wmax)
+    {
+        @rules();
+    }
+
+}
+
+// Responsive
+.show-s,
+.show-m,
+.show-l,
+.show-xl {
+  display:  none;
+}
+
+.hide-s,
+.hide-m,
+.hide-l,
+.hide-xl {
+  display: initial;
+}
+
+// Show up to x
+.minwidth(@width-s, {
+  .show-s {
+    display: initial
+  }
+});
+
+.minwidth(@width-m, {
+  .show-m {
+    display: initial
+  }
+});
+
+.minwidth(@width-l, {
+  .show-l {
+    display: initial
+  }
+});
+
+.minwidth(@width-xl, {
+  .show-xl {
+    display: initial
+  }
+});
+
+// Hide below x
+.maxwidth(@width-s, {
+  .hide-s {
+    display: none
+  }
+});
+
+.maxwidth(@width-m, {
+  .hide-m {
+    display: none
+  }
+});
+
+.maxwidth(@width-l, {
+  .hide-l {
+    display: none
+  }
+});
+
+.maxwidth(@width-xl, {
+  .hide-xl {
+    display: none
+  }
+});
+
+/* smartphones, touchscreens */
+.touchdevice(@rules) {
+    @media (hover: none) {// and (pointer: coarse) {
+        @rules();
+    }
+}

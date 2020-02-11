@@ -1,3 +1,5 @@
+@import './responsive.import.less';
+@import './variables.import.less';
 // Resets
 ul, ol {
   padding-left: 0;
@@ -486,6 +488,17 @@ aside.drawer {
   }
 
   &#list {
+
+    .maxwidth(@width-m, {
+      // position: absolute;
+      width: 100%;
+      &.closed {
+        display: none;
+
+      }
+
+    });
+
     .list-colors;
 
     > div {
@@ -738,6 +751,11 @@ hr {
 }
 
 #transposer {
+
+  .maxwidth(@width-m, {
+    display: none;
+  });
+
   height: 400px;
   float: right;
 
@@ -796,4 +814,13 @@ hr {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
+}
+
+#viewer-maincontainer {
+  width: 100%;
+}
+
+.flex-vertical {
+  display: flex;
+  flex-direction: column;
 }

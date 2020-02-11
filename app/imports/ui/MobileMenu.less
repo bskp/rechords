@@ -1,0 +1,46 @@
+@import '../../client/responsive.import.less';
+@import '../../client/variables.import.less';
+
+
+#mobilemenu {
+
+  span {
+    flex-basis: 100%;
+    flex-shrink: 1;
+    display: inline-flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    
+  }
+  >:nth-child(2n) {
+    background-color: @accent;
+
+    &:hover {
+      background-color: lighten(@accent, 7%);
+    }
+  }
+
+  >:nth-child(2n+1) {
+    background-color: @secondary;
+
+    &:hover {
+      background-color: lighten(@secondary, 7%);
+    }
+  }
+
+    
+    .maxwidth(@width-m, {
+          display: flex;
+          flex-direction: row;
+        //   position: absolute;
+          top: 0; 
+          height: 60px ;
+          width: 100%;
+      });
+
+      .minwidth(@width-m, {
+          display: none;
+      })
+    
+}

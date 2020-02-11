@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import './MobileMenu.less'
+
 interface MobileMenuProps extends React.HTMLProps<HTMLElement>
 {
     toggleMenu: Function
@@ -9,7 +11,7 @@ interface MobileMenuProps extends React.HTMLProps<HTMLElement>
 
 export const MobileMenu: React.FunctionComponent<MobileMenuProps> = props => {
     return (
-        <div className="show-s" id="mobileheader">
+        <div className="show-s" id="mobilemenu">
             <span onClick={ev => props.toggleMenu()}>Menu</span>
             <span onClick={ev => props.increaseTranspose()}>+</span>
             <span onClick={ev => props.decreaseTranspose()}>-</span>

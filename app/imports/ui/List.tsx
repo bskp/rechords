@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import MetaContent from './MetaContent';
 import {Song} from '../api/collections';
 
-import Drawer from '../ui/Drawer';
+import Drawer from './Drawer';
 
 
 interface ListItemProps {
@@ -55,6 +55,7 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
 interface ListProps {
   songs: Array<Song>;
   filter: String;
+  open: boolean;
 }
 interface ListState {
     filter: string;
@@ -178,7 +179,7 @@ export default class List extends React.Component<ListProps, ListState> {
         }
 
         return (
-            <Drawer id="list" initialOpen="true">
+            <Drawer id="list" initialOpen="true" open={this.props.open}>
                 <div className="filter">
                     <input type="text" 
                         placeholder="Filtern…" 

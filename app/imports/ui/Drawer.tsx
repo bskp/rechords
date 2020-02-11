@@ -1,6 +1,5 @@
 import { withRouter, RouteComponentProps } from "react-router-dom";
 import * as React from 'react';
-import PropTypes from "prop-types";
 
 
 interface DrawerState {
@@ -11,7 +10,7 @@ interface DrawerProps extends RouteComponentProps {
     id: string,
     onClick: React.MouseEventHandler<HTMLElement>
     className: string,
-    initialOpen: boolean,
+    open: boolean,
 }
 
 class Drawer extends React.Component<DrawerProps, DrawerState> {
@@ -21,14 +20,14 @@ class Drawer extends React.Component<DrawerProps, DrawerState> {
 
     constructor(props: Readonly<DrawerProps>) {
         super(props);
-        this.state = {
-            open: props.initialOpen
-        }
+        // this.state = {
+        //     open: props.initialOpen
+        // }
     }
 
     render() {
         return <aside
-            className={"drawer " + this.props.className + (this.state.open ? " open" : " closed")}
+            className={"drawer " + this.props.className + (this.props.open ? " open" : " closed")}
             id={this.props.id}
             onClick={this.props.onClick}
         >

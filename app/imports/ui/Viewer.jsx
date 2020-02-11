@@ -1,19 +1,21 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withRouter } from "react-router-dom";
+import { withRouter, NavLink } from "react-router-dom";
 import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod.js";
 import { RmdHelpers } from "../api/collections.js";
 import ReactDOM from 'react-dom';
 import Drawer from '../ui/Drawer';
 import {MobileMenu} from './MobileMenu.tsx'
+import List from './List.tsx'
+
 
 var Parser = require("html-react-parser");
 
 class Viewer extends Component {
   constructor(props) {
     super(props);
-    this.state = { relTranspose: 0 };
+    this.state = { relTranspose: 0, menuOpen: false, viewPortGtM: window.innerWidth > 900 };
   }
 
   componentDidUpdate(prevProps) {
@@ -24,6 +26,17 @@ class Viewer extends Component {
     node.children[0].scrollTop = 0;
 
     this.setState({ relTranspose: 0, menuOpen: false });
+  }
+
+  updateDimensions = () => {
+    this.setState({ viewPortGtM: window.innerWidth > 900 });
+  };
+
+  componentDidMount() {
+    window.addEventListener('resize', this.updateDimensions);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateDimensions);
   }
 
   handleContextMenu = event => {
@@ -101,17 +114,34 @@ class Viewer extends Component {
       chordtable = "";
     }
     */
+   const s = this.props.song;
 
+    let open;
+    if( this.state.viewPortGtM )
+    {
+      open = true;
+    }
+    else
+    {
+      open = this.state.menuOpen;
+    }
 
     return (
 
-      <div className="container">
-        <MobileMenu  
+      <>
+
+        <div className="flex-vertical" id="viewer-maincontainer">
+        <MobileMenu 
           increaseTranspose={this.increaseTranspose} 
           decreaseTranspose={this.decreaseTranspose}
           toggleMenu={this.toggleMenu}
         />
-        <div className="content" id="chordsheet"
+        <div id="body">
+        <List songs={this.props.songs} open={open} />
+      <div className="container">
+        <div
+          className="content"
+          id="chordsheet"
           onContextMenu={this.handleContextMenu}
         >
           <section className="show-m">
@@ -124,12 +154,16 @@ class Viewer extends Component {
           <section ref="html">
             {vdom}
           </section>
+        <div><NavLink to={`/edit/${s.author_}/${s.title_}`} >Edit</NavLink></div>
         </div>
-        <Drawer className="source-colors" onClick={this.handleContextMenu}>
+      </div>
+        <Drawer className="source-colors hide-m" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
           <p>Schneller:&nbsp;Rechtsklick!</p>
         </Drawer>
-      </div>
+        </div>
+        </div>
+      </>
     );
   }
 }
