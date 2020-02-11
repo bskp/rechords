@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Songs, { Revisions } from '../api/collections.js';
 import { withRouter, Prompt } from 'react-router-dom';
-import Collapsed from './Collapsed.jsx';
 import Source from './Source.jsx';
 import RevBrowser from './RevBrowser.jsx';
 import Preview from './Preview.tsx';

@@ -4,7 +4,6 @@ import { withRouter } from "react-router-dom";
 import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod.js";
 import { RmdHelpers } from "../api/collections.js";
-import Collapsed from './Collapsed.jsx';
 import ReactDOM from 'react-dom';
 import Drawer from '../ui/Drawer';
 import {MobileMenu} from './MobileMenu.tsx'
