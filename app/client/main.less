@@ -583,7 +583,8 @@ aside.drawer {
         padding-left: 0.5em;
       });
 
-      width: 100%;
+      width: calc(~"100% - " @closed " - " @open );
+
 
 
       z-index: 1;
