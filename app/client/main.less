@@ -510,15 +510,16 @@ aside.drawer {
     .filter {
       position: absolute;
       left: 0;
-      .maxwidth(@width-m, {
-        top: 50px;
-      });
-      .minwidth(@width-m, {
-        top: 0;
+      top: 0;
+      width: @open;
+
+      .phone({
+        position: static;
+        width: 100%;
+        margin-left: -0.5em;
       });
 
       display: flex;
-      width: @open;
 
       color: white;
       background-color: @light;
@@ -540,7 +541,6 @@ aside.drawer {
       input {
         margin-top: 1rem;
         padding-left: 0.5em;
-        marginleft: -0.5em;
         height: 2em;
 
         display: block;
@@ -572,18 +572,25 @@ aside.drawer {
     }
 
     div.filterMenu {
-      left: 0;
-      width: 100%;
-      .minwidth(@width-m, {
-        width: calc(~"100% - " @open);
-        left: @open;
-      });
       position: absolute;
+      left: @open;
+      top: 0;
+
+      .phone({
+        position: static;
+        width: 100%;
+        margin-left: -0.5em;
+        padding-left: 0.5em;
+      });
+
+      width: 100%;
+
+
       z-index: 1;
-      overflow: scroll;
+      overflow: hidden;
 
       -webkit-backdrop-filter: blur(10px);
-      background-color: fade(@light, 50%);
+      background-color: fade(@light, 60%);
 
       @media all and (-webkit-min-device-pixel-ratio:0) and (min-resolution: .001dpcm) {
         // non-webkit-browsers
@@ -592,9 +599,6 @@ aside.drawer {
 
       display: flex;
       flex-direction: row;
-      .maxwidth(@width-m, {
-        top: 100px;
-      });
 
       flex-wrap: wrap;
       // justify-content: space-around;
@@ -606,7 +610,6 @@ aside.drawer {
 
       div.taggroup {
         margin-right: 20px;
-        // flex-basis: 200px;
       }
 
       h1, h2{
@@ -616,15 +619,13 @@ aside.drawer {
       h4 {
         color: black;
         display: block;
-        // width: 0;
-        transform-origin: top right;
+        transform-origin: left;
         font-weight: 600;
         transform: rotate(-14deg);
 
       }
 
       ul {
-        margin-top: 3.5em;
         margin-left: 0.5em;
         flex: 0 0 7em;
         display: flex;
@@ -632,8 +633,8 @@ aside.drawer {
       }
 
       li {
+        display: inline-table;
         color: white;
-
         margin-bottom: 0.5em;
         transform-origin: left;
         transform: rotate(-14deg);
@@ -648,13 +649,24 @@ aside.drawer {
         }
       }
 
+      max-height: 800px;
+
       &.hidden{
         opacity: 0;
         visibility: hidden;
+
+        .phone({
+          opacity: inherit;
+          visibility: visible;
+          max-height: 0;
+          padding-top: 0;
+          padding-bottom: 0;
+        });
       }
 
+
       opacity: 1;
-      transition: opacity, 0.5s;
+      transition: all 0.5s;
     }
   }
 } // drawer
