@@ -3,6 +3,13 @@
 
 
 #mobilemenu {
+  display: none;
+  .phone({
+    display: flex;
+    flex-direction: row;
+    top: 0; 
+    width: 100%;
+  });
 
   span {
     flex-basis: 100%;
@@ -11,8 +18,26 @@
     align-items: center;
     text-align: center;
     justify-content: center;
-    
+
+    cursor: pointer;
+
+    height: 3em;
+    background-position: center;
+    background-size: 2em;
+    background-repeat: no-repeat;
   }
+
+  span#menu {
+    background-image: url('/icons/menu.svg');
+    color: transparent;
+  }
+
+  span#plus, span#minus {
+    font-size: 3em;
+    margin-top: -1.05em;
+    margin-bottom: -3em;
+  }
+
   >:nth-child(2n) {
     background-color: @accent;
 
@@ -29,18 +54,4 @@
     }
   }
 
-    
-    .maxwidth(@width-m, {
-          display: flex;
-          flex-direction: row;
-        //   position: absolute;
-          top: 0; 
-          height: 60px ;
-          width: 100%;
-      });
-
-      .minwidth(@width-m, {
-          display: none;
-      })
-    
-}
+} // #mobilemenu
