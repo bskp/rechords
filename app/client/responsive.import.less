@@ -1,8 +1,21 @@
+// Screen sizes
 @width-xl: 1500px;
 @width-l : 1200px;
 @width-m : 900px;
 @width-s : 700px;
 
+.phone(@rules) {
+  @media only screen and (max-width: @width-s) {
+      @rules();
+  }
+}
+
+// ev nur bis @width-m eher?
+.phone-tablet(@rules) {
+  @media only screen and (max-width: @width-l) {
+      @rules();
+  }
+}
 .maxwidth(@w; @rules) {
 
     @media only screen and (max-width: @w)

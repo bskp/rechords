@@ -31,35 +31,9 @@ textarea {
   width: 100%;
 }
 
-// Global Color Definitions
-@accent: rgb(221, 68, 7);
-//@accent: rgb(0, 141, 235);
+// Global Variables moved to variables.import.less
 
-@secondary: hsv(hsvhue(@accent), 0.15, 0.6);
-
-@light: hsv(hsvhue(@accent), 0.05, 0.9);
-@dull: hsv(hsvhue(@accent), 0.3, 0.7);
-@warm: hsv(hsvhue(@accent), 0.2, 0.6);
-
-
-// Screen sizes
-@width-xl: 1500px;
-@width-l : 1200px;
-@width-m : 900px;
-@width-s : 700px;
-
-.phone(@rules) {
-  @media only screen and (max-width: 700px) {
-      @rules();
-  }
-}
-
-.phone-tablet(@rules) {
-  @media only screen and (max-width: 1200px) {
-      @rules();
-  }
-}
-
+// sizes moved to responsive.import.less
 
 // Color Schemes
 
@@ -112,6 +86,8 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%;
+  overflow: hidden;
 
   .select(none);
 }
@@ -573,8 +549,14 @@ aside.drawer {
 
     div.filterMenu {
       position: absolute;
+      box-sizing: border-box;
+      width: calc(~"100% - " @open  );
       left: @open;
       top: 0;
+      margin: 0;
+      padding-top: 0.5em;
+      padding-left: 2em;
+      padding-bottom: 1.5em;
 
       .phone({
         position: static;
@@ -583,10 +565,11 @@ aside.drawer {
         padding-left: 0.5em;
       });
 
-      width: calc(~"100% - " @closed " - " @open );
-
-
-
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      // justify-content: space-around;
+      align-content: flex-start;
       z-index: 1;
       overflow: hidden;
 
@@ -598,16 +581,6 @@ aside.drawer {
         background-color: mix(@light, white);
       }
 
-      display: flex;
-      flex-direction: row;
-
-      flex-wrap: wrap;
-      // justify-content: space-around;
-      align-content: flex-start;
-
-      padding-top: 0.5em;
-      padding-left: 2em;
-      padding-bottom: 1.5em;
 
       div.taggroup {
         margin-right: 20px;
@@ -693,26 +666,6 @@ aside.drawer#revs {
   }
 
 }
-
-#mobileheader {
-  display: none;
-}
-
-.phone({
-  #mobileheader {
-    display: block;
-  }
-
-  aside.drawer {
-    &.open {
-      width: 100%;
-    }
-    &.closed {
-      display: none;
-    }
-  }
-
-});
 
 .content {
   box-sizing: border-box;
@@ -822,22 +775,6 @@ hr {
   }
 }
 
-@media print {
-  aside, #transposer, .tags { display: none; }
-
-  #body {
-    font-size: 12pt;
-    width: 210mm;
-  }
-
-  #chordsheet {
-    columns: 2;
-  }
-
-  #head, h1, h2 {
-    column-span: all;
-  }
-}
 
 .select(@mode: none;) {
   -webkit-touch-callout: @mode; /* iOS Safari */
