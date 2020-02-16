@@ -254,11 +254,16 @@ body {
     }
   }
 
+  @continuation_pad: .8em;
+
   .line {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: flex-end;  
     min-height: 1em;
+    padding-left: @continuation_pad;
+    white-space: pre-wrap;
   }
 
   .line i {
@@ -268,7 +273,17 @@ body {
 
     flex-direction:column;
     display:flex;
-    white-space: pre;
+
+    @media all and (-webkit-min-device-pixel-ratio:0) and (min-resolution: .001dpcm) {
+      // Only for non-webkit browser: Hanging indents for rows without chords.
+      // Does not work for webkit as negative first-line indent is handled differently for contained flex-elements.
+      text-indent: -@continuation_pad;
+      padding-left: @continuation_pad;
+    }
+
+    &:first-child {
+      margin-left: -@continuation_pad;
+    }
 
     /* currently not in use: Both Viewer and Preview have preprocessors.
     &::before {
