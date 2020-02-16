@@ -90,10 +90,10 @@ class App extends Component {
                         }
 
                         return (
-                            <div className="container">
+                            <>
                                 <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
                                 <Viewer song={song}  songs={this.props.songs}/>
-                            </div>
+                            </>
                         )
                     }} />
 

@@ -254,8 +254,7 @@ body {
 
     flex-direction:column;
     display:flex;
-    white-space:pre-wrap;
-
+    white-space: pre;
 
     /* currently not in use: Both Viewer and Preview have preprocessors.
     &::before {
@@ -351,7 +350,6 @@ aside.drawer {
   padding-left: 0.5em;
 
   &.closed {
-    overflow: hidden;
     width: @closed;
     padding-left: @closed;
     cursor: pointer;
@@ -392,6 +390,7 @@ aside.drawer {
     &.huge {
       margin-top: 0;
       font-size: 2em;
+      margin-left: -0.05em;
     }
   }
 
@@ -468,7 +467,6 @@ aside.drawer {
     padding-left: 0; // undo left padding, since this box contains no immediate content
 
     .phone({
-      position: absolute;
       width: 100%;
       min-height: 100%;
       &.closed {
@@ -555,14 +553,12 @@ aside.drawer {
     div.filterMenu {
       position: absolute;
       left: @open;
+      right: 0;
       top: 0;
       z-index: 1;
 
-      width: calc(~"100% - " @closed + @open );
       overflow: hidden;
 
-      box-sizing: border-box;
-      margin: 0;
       padding-top: 0.5em;
       padding-left: 2em;
       padding-bottom: 1.5em;
