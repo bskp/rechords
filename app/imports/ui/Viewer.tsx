@@ -1,31 +1,54 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { withRouter, NavLink } from "react-router-dom";
+import * as React from "react";
+import * as ReactDOM from 'react-dom';
+import { withRouter, NavLink, RouteComponentProps } from "react-router-dom";
 import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod.js";
-import { RmdHelpers } from "../api/collections.js";
-import ReactDOM from 'react-dom';
-import Drawer from '../ui/Drawer';
-import {MobileMenu} from './MobileMenu.tsx'
-import List from './List.tsx'
-
+import { Song } from '../api/collections';
+import Drawer from './Drawer';
+import { MobileMenu } from './MobileMenu'
+import List from './List'
 
 var Parser = require("html-react-parser");
 
-class Viewer extends Component {
+interface ViewerProps extends RouteComponentProps {
+  song: Song,
+  songs: Array<Song>
+}
+
+interface ViewerStates {
+  relTranspose: number,
+  menuOpen: boolean,
+  viewPortGtM: boolean
+}
+
+class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> {
   constructor(props) {
     super(props);
-    this.state = { relTranspose: 0, menuOpen: false, viewPortGtM: window.innerWidth > 900 };
+    this.state = { 
+      relTranspose: this.getInitialTranspose(),
+      menuOpen: false, 
+      viewPortGtM: window.innerWidth > 900 
+    };
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.song == prevProps.song) return;
       
     // Song has changed.
-    const node = ReactDOM.findDOMNode(this);
-    node.children[0].scrollTop = 0;
+    window.scrollTo(0, 0)
+    this.setState({ 
+      relTranspose: this.getInitialTranspose(),
+      menuOpen: false
+    });
+  }
 
-    this.setState({ relTranspose: 0, menuOpen: false });
+  getInitialTranspose() {
+    for (let tag of this.props.song.getTags()) {
+      if (!tag.startsWith('transponierung:')) continue;
+      let dT = parseInt(tag.split(':')[1], 10);
+      return isNaN(dT) ? 0 : dT;
+    }
+    return 0;
   }
 
   updateDimensions = () => {
@@ -50,15 +73,21 @@ class Viewer extends Component {
   };
 
   increaseTranspose = () => {
-    this.setState( currentState => currentState.relTranspose++ );
+    this.setState(function(state, props) {
+      return { relTranspose: state.relTranspose + 1 }
+    })
   };
 
   decreaseTranspose = () => {
-    this.setState( currentState => currentState.relTranspose-- );
+    this.setState(function(state, props) {
+      return { relTranspose: state.relTranspose - 1 }
+    })
   };
 
   toggleMenu = () => {
-    this.setState( currentState => currentState.menuOpen = !currentState.menuOpen )
+    this.setState(function(state, props) {
+      return { menuOpen: !state.menuOpen }
+    })
   };
 
   render() {
@@ -167,9 +196,5 @@ class Viewer extends Component {
     );
   }
 }
-
-Viewer.propTypes = {
-  song: PropTypes.object.isRequired
-};
 
 export default withRouter(Viewer); // injects history, location, match

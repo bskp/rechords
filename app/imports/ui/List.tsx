@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import MetaContent from './MetaContent';
-import {Song} from '../api/collections';
+import { Song } from '../api/collections';
 
 import Drawer from './Drawer';
 
@@ -54,7 +54,7 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
 
 interface ListProps {
   songs: Array<Song>;
-  filter: String;
+  filter?: String;
   open: boolean;
 }
 interface ListState {

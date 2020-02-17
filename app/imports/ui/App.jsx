@@ -6,7 +6,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import Songs, {Song} from '../api/collections.js';
 
 import List from './List.tsx';
-import Viewer from './Viewer.jsx';
+import Viewer from './Viewer.tsx';
 import Editor from './Editor.jsx';
 
 import { BrowserRouter, Route, Switch} from 'react-router-dom';

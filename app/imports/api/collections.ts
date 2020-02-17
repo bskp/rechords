@@ -27,7 +27,8 @@ var options = {
     strong: [],
     em: [],
     code: [],
-    s: []
+    s: [],
+    pre: []
   }
 };
 
@@ -160,14 +161,13 @@ export class RmdHelpers {
   static collectTags(dom) {
     let tags = [];
     let uls = dom.getElementsByTagName("ul");
-    for (let i = 0; i < uls.length; i++) {
-      let ul = uls[i];
+    for (let ul of uls) {
       if (ul.getAttribute("class") != "tags") continue;
 
-      let lis = ul.getElementsByTagName("li");
-      for (let j = 0; j < lis.length; j++) {
-        let li = lis[j];
-        tags.push(li.textContent);
+      let lis : Array<HTMLElement> = ul.getElementsByTagName("li");
+      for (let li of lis) {
+        let contents = Array.from(li.childNodes).map(child => child.textContent);
+        tags.push( contents.join(':') );
       }
     }
     return tags;
@@ -179,8 +179,7 @@ export class RmdHelpers {
     let chords = [];
 
     let uls = dom.getElementsByTagName("i");
-    for (let i = 0; i < uls.length; i++) {
-      let chord_dom = uls[i];
+    for (let chord_dom of uls) {
       if (chord_dom.hasAttribute(DATACHORD)) {
         var chord = chord_dom.getAttribute(DATACHORD);
         chords.push(chord);
