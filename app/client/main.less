@@ -237,12 +237,21 @@ body {
   code {
     display: inline-block;
     font-family: 'Input Mono', Courier New, Courier, monospace;
-    font-size: 0.8em;
+    font-size: 0.9em;
     font-weight: 300;
-    color: black;
     padding: 0 0.5em;
     border-radius: 0.4em;
-    .source-colors;
+    line-height: 1.5em;
+    color: white;
+    background-color: fade(@dull, 70%);
+  }
+
+  pre code {
+    // used for preformatted strumming patterns
+    font-size: 1em;
+    background-color: transparent;
+    color: inherit;
+    line-height: inherit;
   }
 
   &.interactive i{
@@ -770,6 +779,10 @@ hr {
 #editor {
   display: flex;
   width: 100%;
+
+  textarea {
+    white-space: pre;
+  }
 }
 
 #transposer {
