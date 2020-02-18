@@ -1,4 +1,4 @@
-import Songs, {Revisions} from '../imports/api/collections.js';
+import Songs, {Revisions} from '../imports/api/collections.ts';
 
 Meteor.publish('songs', function () {
     return Songs.find({});

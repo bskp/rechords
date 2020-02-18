@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from 'react-dom';
 import { withRouter, NavLink, RouteComponentProps } from "react-router-dom";
 import TranposeSetter from "./TransposeSetter.jsx";
-import ChrodLib from "../api/libchrod.js";
+import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
 import Drawer from './Drawer';
 import { MobileMenu } from './MobileMenu'
@@ -167,19 +167,17 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
         />
         <div id="body">
         <List songs={this.props.songs} open={open} />
-      <div className="container">
+        <div className="container">
         <div
           className="content"
           id="chordsheet"
           onContextMenu={this.handleContextMenu}
         >
-          <section className="show-m">
-            <TranposeSetter
-              transposeSetter={this.transposeSetter}
-              transpose={this.state.relTranspose}
-              keym={key}
-            />
-          </section>
+          <TranposeSetter
+            transposeSetter={this.transposeSetter}
+            transpose={this.state.relTranspose}
+            keym={key}
+          />
           <section ref="html">
             {vdom}
           </section>

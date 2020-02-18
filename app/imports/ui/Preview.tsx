@@ -1,4 +1,4 @@
-import Songs, {Song} from '../api/collections.js';
+import Songs, {Song} from '../api/collections';
 import * as React from 'react';
 
 var Hypher = require('hypher'),

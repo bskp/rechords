@@ -1,4 +1,4 @@
-import { Song } from '../api/collections.js';
+import { Song } from '../api/collections';
 import * as React from 'react';
 import { DetailedReactHTMLElement } from 'react'
 var Parser = require("html-react-parser");

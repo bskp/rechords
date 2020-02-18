@@ -79,6 +79,22 @@ export class Song {
     return this.tags;
   }
 
+  checkTag(needle : string) {
+      for (let tag of this.getTags()) {
+          if (!(tag.startsWith(needle))) continue;
+
+          let chunks = tag.split(':', 2);
+          if (chunks.length == 1) {
+            // legacy mode: the tag may not contain the colon yet.
+            // TODO: remove as soon each song has been edited once (and the tags have been re-parsed)
+            chunks = tag.split(needle);
+            if (chunks.length == 1) return true;
+          }
+          return chunks[1];
+      }
+      return null; // Tag not present
+  }
+
   getVirtualDom() {
     return Parser(this.html);
   }

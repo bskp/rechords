@@ -30,7 +30,7 @@ class ListItem extends React.Component<ListItemProps, {}> {
 
 interface ListGroupProps {
   songs: Array<Song>;
-  label: String;
+  label: string;
 }
 class ListGroup extends React.Component<ListGroupProps, {}> {
     constructor(props) {
