@@ -100,12 +100,17 @@ function Progress(props) {
                 accessor: (s) => mark(s.checkTag('wip')),
             },
             {
-                Header: 'fini',
+                Header: 'Fini',
                 id: 'fini',
                 accessor: (s) => mark(s.checkTag('fini')),
             },
             {
-                Header: 'check',
+                Header: 'Frage',
+                id: 'frage',
+                accessor: (s) => mark(s.checkTag('frage')),
+            },
+            {
+                Header: 'Check',
                 id: 'check',
                 accessor: (s) => mark(s.checkTag('check')),
             },
