@@ -2,8 +2,8 @@ import Songs, {Revisions} from '../api/collections.js';
 import React, { Component } from 'react';
 import Source from './Source.jsx';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import Drawer from '../ui/Drawer';
+import moment from 'moment';
 import "moment/locale/de";
 
 export default class RevBrowser extends React.Component {

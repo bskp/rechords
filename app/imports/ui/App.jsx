@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 
 import { withTracker } from 'meteor/react-meteor-data';
 
-import Songs, {Song} from '../api/collections.js';
+import Songs, {Song} from '../api/collections.ts';
 
 import List from './List.tsx';
 import Viewer from './Viewer.tsx';
 import Editor from './Editor.jsx';
+import Progress from './Progress.tsx';
+import Drawer from './Drawer.tsx';
 
 import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
@@ -21,7 +23,7 @@ const empty_song = {
 const nA404 = (
     <div className="container">
         <DocumentTitle title="Hölibu | 404" />
-        <aside id="list">&nbsp;</aside>
+        <aside id="list" className="drawer open"/>
         <div className="content chordsheet-colors">
             <span id="logo">
                 <h1>404</h1>
@@ -53,13 +55,11 @@ class App extends Component {
             return (
                 <div className="container">
                     <DocumentTitle title="Hölibu" />
-                    <aside id="list" />
+                    <aside id="list" className="drawer open"/>
                     {logo}
                 </div>
             )
         }
-
-        let list = (<List songs={this.props.songs}/>);
 
         const getSong = (params) => {
             return Songs.findOne({
@@ -68,6 +68,7 @@ class App extends Component {
             });
 
         }
+
 
         return (
             <BrowserRouter>
@@ -123,6 +124,15 @@ class App extends Component {
                         )
                     }} />
 
+                    <Route path="/progress" render={() => {
+                        return (
+                            <>
+                                <DocumentTitle title="Hölibu | Überblick" />
+                                <Progress songs={this.props.songs} />
+                            </>
+                        )
+                    }} />
+
                     <Route path="/:filter" render={(match) => {
                         return (
                             <>
@@ -156,7 +166,7 @@ export default withTracker(props => {
     const revHandle = Meteor.subscribe('revisions');
 
     return {
-        dataLoading: !songHandle.ready() && !revHandle.ready(),
+        dataLoading: !songHandle.ready() || !revHandle.ready(),
         songs: Songs.find({}, { sort: { title: 1 } }).fetch(),
     };
 })(App);

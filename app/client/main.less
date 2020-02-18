@@ -370,6 +370,33 @@ body {
 
 } // .chordsheet
 
+#progress {
+  .chordsheet-colors;
+
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  thead {
+    text-align: left;
+    
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: fade(@light, 30%);
+
+  }
+
+  td, th {
+    padding: 0.1em 0.5em 0.1em 0.5em;
+
+    max-width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
 
 aside.drawer {
   @open: 220px;
@@ -787,7 +814,7 @@ hr {
 
 #transposer {
 
-  .maxwidth(@width-m, {
+  .phone({
     display: none;
   });
 
