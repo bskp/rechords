@@ -18,25 +18,27 @@ interface ViewerProps extends RouteComponentProps {
 interface ViewerStates {
   relTranspose: number,
   menuOpen: boolean,
-  viewPortGtM: boolean
+  viewPortGtM: boolean,
+  inlineReferences: boolean
 }
 
 class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       relTranspose: this.getInitialTranspose(),
-      menuOpen: false, 
-      viewPortGtM: window.innerWidth > 900 
+      menuOpen: false,
+      viewPortGtM: window.innerWidth > 900,
+      inlineReferences: true
     };
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.song == prevProps.song) return;
-      
+
     // Song has changed.
     window.scrollTo(0, 0)
-    this.setState({ 
+    this.setState({
       relTranspose: this.getInitialTranspose(),
       menuOpen: false
     });
@@ -73,21 +75,25 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
   };
 
   increaseTranspose = () => {
-    this.setState(function(state, props) {
+    this.setState(function (state, props) {
       return { relTranspose: state.relTranspose + 1 }
     })
   };
 
   decreaseTranspose = () => {
-    this.setState(function(state, props) {
+    this.setState(function (state, props) {
       return { relTranspose: state.relTranspose - 1 }
     })
   };
 
   toggleMenu = () => {
-    this.setState(function(state, props) {
+    this.setState(function (state, props) {
       return { menuOpen: !state.menuOpen }
     })
+  };
+
+  toggleInlineReferences = () => {
+    this.setState(state => ({ inlineReferences: !state.inlineReferences }))
   };
 
   render() {
@@ -103,7 +109,7 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
 
     // Parse HTML to react-vdom and replace chord values.
     let vdom = Parser(rmd_html, {
-      replace: function(domNode) {
+      replace: function (domNode) {
         if (domNode.name && domNode.name == 'i' && 'data-chord' in domNode.attribs) {
           let chord = domNode.attribs['data-chord'];
           let t = chrodlib.transpose(chord, key, dT);
@@ -115,6 +121,14 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
           }
           return <i>{chord_}{domNode.children[0].data}</i>;
         }
+
+        // if(domNode.attribs && 'class' in domNode.attribs) {
+        //    let clazz = domNode.attribs['class']
+        //    if(clazz == 'ref')
+        //    {
+
+        //    }
+        // }
       }
     });
 
@@ -143,17 +157,17 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
       chordtable = "";
     }
     */
-   const s = this.props.song;
+    const s = this.props.song;
 
     let open;
-    if( this.state.viewPortGtM )
-    {
+    if (this.state.viewPortGtM) {
       open = true;
     }
-    else
-    {
+    else {
       open = this.state.menuOpen;
     }
+
+    this.enrichReferences(vdom);
 
     return (
 
@@ -192,6 +206,34 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
         </div>
       </>
     );
+  }
+
+  private enrichReferences(vdom: any) {
+    let referencee = new Map<String, Symbol>();
+    for (let elem of vdom) {
+      if (elem.props) {
+        let id = elem.props.id;
+        if (id && id.startsWith('sd-ref')) {
+          referencee.set(id, elem);
+        }
+      }
+    }
+    for (let i = 0; i < vdom.length; i++) {
+      let elem = vdom[i];
+      if (elem.props) {
+        let className = elem.props.className;
+        if (className == 'ref') {
+          elem = vdom[i] = React.cloneElement(elem,
+            {
+              'onClick': this.toggleInlineReferences,
+            });
+          let visible = this.state.inlineReferences ? ' shown' : ' hidden'
+          let ref = 'sd-ref-' + elem.props.children;
+          vdom.splice(i + 1, 0, React.cloneElement(referencee.get(ref),
+            { id: null, className: 'inlineReference' + visible }));
+        }
+      }
+    }
   }
 }
 

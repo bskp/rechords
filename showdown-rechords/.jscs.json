@@ -12,7 +12,7 @@
   "requireOperatorBeforeLineBreak": true,
   "requireCamelCaseOrUpperCaseIdentifiers": true,
   "validateQuoteMarks": "'",
-  "disallowMultipleLineStrings": true,
+  "disallowMultipleLineStrings": false,
   "disallowMixedSpacesAndTabs": true,
   "disallowTrailingWhitespace": true,
   "disallowSpaceAfterPrefixUnaryOperators": true,

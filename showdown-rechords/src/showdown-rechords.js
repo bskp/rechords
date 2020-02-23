@@ -60,7 +60,7 @@ module.exports = function showdownRechords() {
         content = content.replace(/\n{3,}/g, '\n\n'); // remove excessive line breaks
         content = content.replace(/(.*?)\n/g, parseLine);
 
-        var verse = h3 + '<p>\n' + content + '</p>';
+        var verse = h3 + '<p id="sd-ref-' + id + '">\n' + content + '</p>';
 
         return verse;
       }

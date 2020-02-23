@@ -22,7 +22,7 @@ var options = {
     h4: [],
     ul: ["class"],
     li: [],
-    p: ["class"],
+    p: ["class", "id"],
     br: [],
     strong: [],
     em: [],

@@ -232,6 +232,27 @@ body {
     border-left: 4px solid @accent;
     margin-top: 2em;
     margin-bottom: 2em;
+    cursor: pointer;
+  }
+
+  .inlineReference {
+    &.shown{
+      animation-name: slide-down;
+      animation-duration:1s;
+      animation-direction: normal;
+      animation-timing-function: ease-in-out;
+    }
+
+    &.hidden {
+      display: none;
+    }
+    
+  }
+
+  @keyframes slide-down {
+
+    0% {  opacity: 0; transform: translateY(-100%); }   
+    100% {  opacity: 1; transform: translateY(0); }   
   }
 
   code {
