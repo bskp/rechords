@@ -5,8 +5,6 @@ import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
 import Drawer from './Drawer';
-import { MobileMenu } from './MobileMenu'
-import List from './List'
 
 var Parser = require("html-react-parser");
 
@@ -172,16 +170,6 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
     return (
 
       <>
-
-        <div className="flex-vertical" id="viewer-maincontainer">
-        <MobileMenu 
-          increaseTranspose={this.increaseTranspose} 
-          decreaseTranspose={this.decreaseTranspose}
-          toggleMenu={this.toggleMenu}
-        />
-        <div id="body">
-        <List songs={this.props.songs} open={open} />
-        <div className="container">
         <div
           className="content"
           id="chordsheet"
@@ -197,13 +185,10 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
           </section>
         <div><NavLink to={`/edit/${s.author_}/${s.title_}`} >Edit</NavLink></div>
         </div>
-      </div>
         <Drawer className="source-colors hide-m" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
           <p>Schneller:&nbsp;Rechtsklick!</p>
         </Drawer>
-        </div>
-        </div>
       </>
     );
   }

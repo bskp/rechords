@@ -13,6 +13,8 @@ import Drawer from './Drawer.tsx';
 
 import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
+import { MobileMenu } from './MobileMenu.tsx'
+import { useState, useCallback } from 'react';
 
 const empty_song = {
     title: "Neues Lied",
@@ -48,8 +50,12 @@ class App extends Component {
 
     constructor(props) {
         super(props);
+        this.state = { drawerOpen: true }
     }
 
+    onClickDrawer = () => {
+        this.setState((state, props) => ({drawerOpen: !state.drawerOpen}) )
+    }
     render() {
         if (this.props.dataLoading) {
             return (
@@ -70,14 +76,23 @@ class App extends Component {
         }
 
 
+
         return (
             <BrowserRouter>
+                <div className="flex-vertical" id="viewer-maincontainer">
+                <MobileMenu 
+                increaseTranspose={this.increaseTranspose} 
+                decreaseTranspose={this.decreaseTranspose}
+                toggleMenu={this.onClickDrawer}
+                />
+                <div id="body">
+                <List songs={this.props.songs} open={this.state.drawerOpen} />
+                <div className="container">
                 <Switch>
 
                     <Route exact path='/' render={(props) => (
                             <div className="container">
                                 <DocumentTitle title="Hölibu" />
-                                <List songs={this.props.songs} open={true}/>
                                 {logo}
                             </div>
                     )} />
@@ -145,6 +160,9 @@ class App extends Component {
 
                     <Route component={NoMatch} />
                 </Switch>
+                </div>
+            </div>
+            </div>
             </BrowserRouter>
         );
     }
