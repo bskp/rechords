@@ -194,7 +194,7 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
   }
 
   private enrichReferences(vdom: any) {
-    let referencee = new Map<String, Symbol>();
+    let referencee = new Map<String, any>();
     for (let elem of vdom) {
       if (elem.props) {
         let id = elem.props.id;
@@ -213,9 +213,16 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
               'onClick': this.toggleInlineReferences,
             });
           let visible = this.state.inlineReferences ? ' shown' : ' hidden'
-          let ref = 'sd-ref-' + elem.props.children;
-          vdom.splice(i + 1, 0, React.cloneElement(referencee.get(ref),
-            { id: null, className: 'inlineReference' + visible }));
+          const refName = elem.props.children;
+          let ref = 'sd-ref-' + refName.trim();
+          let defintion = referencee.get(ref)
+          if( !defintion ) {
+              defintion = <p>Referenz <em>{refName}</em> existiert nicht</p>
+          }
+          vdom.splice(i + 1, 0,
+            React.cloneElement(defintion,
+              { id: null, className: 'inlineReference' + visible })
+          );
         }
       }
     }

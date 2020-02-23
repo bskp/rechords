@@ -79,7 +79,8 @@ export default class List extends React.Component<ListProps, ListState> {
             this.refs.filter.blur();
             e.preventDefault();
         } else {
-            this.refs.filter.focus();
+            // diese logik geht nicht mehr, weil jetzt irgendwie jede tasteneingabe abgefangen wird
+            // this.refs.filter.focus();
         }
     }
 
