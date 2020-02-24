@@ -39,6 +39,8 @@ showdown.setOption("smoothLivePreview", true);
 showdown.setOption("simplifiedAutoLink", true);
 showdown.setOption("openLinksInNewWindow", true);
 
+
+export const rmd_version = 0;
 export class Song {
   _id?: string;
 
@@ -50,33 +52,48 @@ export class Song {
   tags?: Array<string>;
   chords?: Array<string>;
   html?: string;
+  parsed_rmd_version?: number;
 
   title_: string;
   author_:string;
+
 
   constructor (doc) {
     _.extend(this, doc);
   }
 
   getHtml() {
-    if (!("html" in this)) {
-      this.parse(this.text);
-    }
+    this.validateField("html");
     return this.html;
   }
 
   getChords() {
-    if (!("chords" in this)) {
-      this.parse(this.text);
-    }
+    this.validateField("chords");
     return this.chords;
   }
 
   getTags() {
-    if (!("tags" in this)) {
-      this.parse(this.text);
-    }
+    this.validateField("tags");
     return this.tags;
+  }
+
+  validateField(field : string) {
+    if (
+      field in this && 
+      "parsed_rmd_version" in this && 
+      this.parsed_rmd_version == rmd_version
+    ) return;
+
+    // Field missing or bad parser version. Re-parse and store!
+    this.parse(this.text);
+
+    Meteor.call('saveSong', this, (error, isValid) => {
+      if (error !== undefined) {
+        console.log(error);
+      }
+    });
+
+
   }
 
   checkTag(needle : string) {
@@ -140,6 +157,7 @@ export class Song {
 
     this.tags = RmdHelpers.collectTags(dom);
     this.chords = RmdHelpers.collectChords(dom);
+    this.parsed_rmd_version = rmd_version;
   }
 
   getRevisions() {

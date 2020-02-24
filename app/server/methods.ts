@@ -1,4 +1,4 @@
-import Songs, {Song, Revisions} from '../imports/api/collections';
+import Songs, {Song, Revisions, rmd_version} from '../imports/api/collections';
 import { check } from 'meteor/check'
 var slug = require('slug')
 
@@ -20,7 +20,10 @@ Meteor.methods({
 
         // Check for modifications
         let storedSong = Songs.findOne(song._id);
-        if (storedSong != undefined && storedSong.text == song.text) return true;
+        if (storedSong != undefined && 
+            storedSong.text == song.text &&
+            'parsed_rmd_version' in storedSong &&
+            storedSong.parsed_rmd_version == rmd_version) return true;
 
         // Save Song
         if ('_id' in song) {
