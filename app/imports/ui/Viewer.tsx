@@ -214,6 +214,9 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
             });
           let visible = this.state.inlineReferences ? ' shown' : ' hidden'
           const refName = elem.props.children;
+          if( typeof refName != 'string')
+            continue
+
           let ref = 'sd-ref-' + refName.trim();
           let defintion = referencee.get(ref)
           if( !defintion ) {
