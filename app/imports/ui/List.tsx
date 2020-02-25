@@ -71,7 +71,7 @@ class List extends React.Component<ListProps, ListState> {
         }
     }
 
-    private unique_match : Song;
+    private last_matched_song : Song;
 
     keyHandler = (e : KeyboardEvent) => {
         if (e.key == 'Escape') {
@@ -104,8 +104,8 @@ class List extends React.Component<ListProps, ListState> {
       };
 
     onKeyDown = (event : React.KeyboardEvent) => {
-        if (event.key == 'Enter' && this.unique_match) {
-            let s = this.unique_match;
+        if (event.key == 'Enter' && this.last_matched_song) {
+            let s = this.last_matched_song;
             this.props.history.push('/view/' + s.author_ + '/' + s.title_);
             this.setState({
                 filter: '',
@@ -150,8 +150,6 @@ class List extends React.Component<ListProps, ListState> {
 
         let filters = this.state.filter.split(' ');
 
-        let count = 0;
-
         this.props.songs.forEach((song) => {
             for (let filter of filters) {
                 filter = filter.toLowerCase();
@@ -180,15 +178,10 @@ class List extends React.Component<ListProps, ListState> {
                 }
 
                 tree[cat].push(song);
-                this.unique_match = song;
-                count += 1;
+                this.last_matched_song = song;
             }
 
         });
-
-        if (count != 1) {
-            this.unique_match = null;
-        }
 
         let active = this.state.active ? '' : 'hidden';
         let filled = this.state.filter == '' ? '' : 'filled';
