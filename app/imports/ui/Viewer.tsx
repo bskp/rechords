@@ -183,7 +183,7 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
           <section ref="html">
             {vdom}
           </section>
-        <div><NavLink to={`/edit/${s.author_}/${s.title_}`} >Edit</NavLink></div>
+        <div className="content-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} >Edit</NavLink></div>
         </div>
         <Drawer className="source-colors hide-m" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
