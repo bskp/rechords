@@ -21,6 +21,7 @@ var options = {
     h3: [],
     h4: [],
     ul: ["class"],
+    ol: [],
     li: [],
     p: ["class", "id"],
     br: [],
@@ -98,7 +99,7 @@ export class Song {
 
   checkTag(needle : string) {
       for (let tag of this.getTags()) {
-          if (!(tag.startsWith(needle))) continue;
+          if (!(tag.toLowerCase().startsWith(needle.toLowerCase()))) continue;
 
           let chunks = tag.split(':', 2);
           if (chunks.length == 1) {
