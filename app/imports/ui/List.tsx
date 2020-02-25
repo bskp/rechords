@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavLink } from 'react-router-dom';
+import { withRouter, NavLink } from 'react-router-dom';
 import MetaContent from './MetaContent';
 import { Song } from '../api/collections';
 
@@ -61,7 +61,8 @@ interface ListState {
     filter: string;
     active: boolean;
 }
-export default class List extends React.Component<ListProps, ListState> {
+
+class List extends React.Component<ListProps, ListState> {
     constructor(props) {
         super(props);
         this.state = {
@@ -70,8 +71,9 @@ export default class List extends React.Component<ListProps, ListState> {
         }
     }
 
+    private unique_match : Song;
 
-    keyHandler = (e) => {
+    keyHandler = (e : KeyboardEvent) => {
         if (e.key == 'Escape') {
             this.setState({
                 filter: '',
@@ -79,8 +81,10 @@ export default class List extends React.Component<ListProps, ListState> {
             this.refs.filter.blur();
             e.preventDefault();
         } else {
-            // diese logik geht nicht mehr, weil jetzt irgendwie jede tasteneingabe abgefangen wird
-            // this.refs.filter.focus();
+            // Check if the pressed key has a printable representation
+            if (e.key && e.key.length === 1) {
+                this.refs.filter.focus();
+            }
         }
     }
 
@@ -98,6 +102,17 @@ export default class List extends React.Component<ListProps, ListState> {
         });
         event.preventDefault();
       };
+
+    onKeyDown = (event : React.KeyboardEvent) => {
+        if (event.key == 'Enter' && this.unique_match) {
+            let s = this.unique_match;
+            this.props.history.push('/view/' + s.author_ + '/' + s.title_);
+            this.setState({
+                filter: '',
+            });
+            this.refs.filter.blur();
+        }
+    }
 
     onFocus = () => {
         this.setState({
@@ -135,6 +150,8 @@ export default class List extends React.Component<ListProps, ListState> {
 
         let filters = this.state.filter.split(' ');
 
+        let count = 0;
+
         this.props.songs.forEach((song) => {
             for (let filter of filters) {
                 filter = filter.toLowerCase();
@@ -146,7 +163,7 @@ export default class List extends React.Component<ListProps, ListState> {
                 }
             }
 
-            // Hack to hide all songs containing an 'archiv'-tag
+            // Hack to hide all songs containing an 'privat'-tag
             if (!this.state.filter.includes('#privat')) {
                 for (let tag of song.getTags()) {
                     if (tag.startsWith('privat')) return;
@@ -163,14 +180,20 @@ export default class List extends React.Component<ListProps, ListState> {
                 }
 
                 tree[cat].push(song);
+                this.unique_match = song;
+                count += 1;
             }
 
         });
 
+        if (count != 1) {
+            this.unique_match = null;
+        }
+
         let active = this.state.active ? '' : 'hidden';
         let filled = this.state.filter == '' ? '' : 'filled';
 
-        const process = (node) => {
+        const process_filtermenu = (node) => {
             if (node.name == 'li') {
                 let b = node.children.length > 1 ? <b>…</b> : null;
                 return <li onMouseDown={this.onTagClick.bind(this)}>{node.children[0].data}{b}</li>
@@ -185,16 +208,16 @@ export default class List extends React.Component<ListProps, ListState> {
                         placeholder="Filtern…" 
                         value={this.state.filter} 
                         ref="filter"
-                        onKeyDown={this.onKeyDown}
                         onChange={this.onChange}
                         onFocus={this.onFocus}
                         onBlur={this.onBlur}
+                        onKeyDown={this.onKeyDown}
                         />
                     <span className={'reset ' + filled} onClick={(e)=>{this.setState({filter: ''})}}>&times;</span>
                 </div>
 
                 <MetaContent 
-                    replace={process}
+                    replace={process_filtermenu}
                     className={'filterMenu ' + active} 
                     title="Schlagwortverzeichnis" 
                     songs={this.props.songs}
@@ -211,3 +234,5 @@ export default class List extends React.Component<ListProps, ListState> {
         )
     }
 }
+
+export default withRouter(List);  // injects history, location, match
