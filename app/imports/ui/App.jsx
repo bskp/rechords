@@ -10,6 +10,7 @@ import Viewer from './Viewer.tsx';
 import Editor from './Editor.jsx';
 import Progress from './Progress.tsx';
 import Drawer from './Drawer.tsx';
+import HideSongList from './HideSongList';
 
 import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
@@ -50,18 +51,27 @@ class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { drawerOpen: true }
+        this.state = { songListHidden: false }
     }
 
-    onClickDrawer = () => {
-        this.setState((state, props) => ({drawerOpen: !state.drawerOpen}) )
+    hideSongList = (hide) => {
+        this.setState({
+            songListHidden: hide
+        });
     }
+
+    toggleSongList = () => {
+        this.setState((state) => {
+            return {songListHidden: !state.songListHidden}
+        });
+    }
+
     render() {
         if (this.props.dataLoading) {
             return (
-                <div className="container">
+                <div id="body">
                     <DocumentTitle title="Hölibu" />
-                    <aside id="list" className="drawer open"/>
+                    <aside className="drawer open list-colors">Lade Lieder…</aside>
                     {logo}
                 </div>
             )
@@ -79,17 +89,15 @@ class App extends Component {
 
         return (
             <BrowserRouter>
-                <div className="flex-vertical" id="viewer-maincontainer">
+            <>
                 <MobileMenu 
-                increaseTranspose={this.increaseTranspose} 
-                decreaseTranspose={this.decreaseTranspose}
-                toggleMenu={this.onClickDrawer}
+                    increaseTranspose={this.increaseTranspose} 
+                    decreaseTranspose={this.decreaseTranspose}
+                    toggleMenu={this.toggleSongList}
                 />
                 <div id="body">
-                <List songs={this.props.songs} open={this.state.drawerOpen} />
-                <div className="container">
+                <List songs={this.props.songs} hidden={this.state.songListHidden} open={true}/>
                 <Switch>
-
                     <Route exact path='/' render={(props) => (
                             <div className="container">
                                 <DocumentTitle title="Hölibu" />
@@ -123,6 +131,7 @@ class App extends Component {
                         return (
                             <>
                                 <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title + " (bearbeiten)"}/>
+                                <HideSongList handle={this.hideSongList}/>
                                 <Editor song={song} />
                             </>
                         )
@@ -148,21 +157,10 @@ class App extends Component {
                         )
                     }} />
 
-                    <Route path="/:filter" render={(match) => {
-                        return (
-                            <>
-                                <DocumentTitle title="Hölibu" />
-                                <List songs={this.props.songs} filter={match.match.params.filter} />
-                                {logo}
-                            </>
-                        )
-                    }} />
-
                     <Route component={NoMatch} />
                 </Switch>
                 </div>
-            </div>
-            </div>
+            </>
             </BrowserRouter>
         );
     }

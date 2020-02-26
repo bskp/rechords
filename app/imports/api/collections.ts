@@ -29,7 +29,8 @@ var options = {
     em: [],
     code: [],
     s: [],
-    pre: []
+    pre: [],
+    img: ["src", "alt"]
   }
 };
 

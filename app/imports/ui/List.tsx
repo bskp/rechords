@@ -56,6 +56,7 @@ interface ListProps {
   songs: Array<Song>;
   filter?: String;
   open: boolean;
+  hidden: boolean;
 }
 interface ListState {
     filter: string;
@@ -74,6 +75,9 @@ class List extends React.Component<ListProps, ListState> {
     private last_matched_song : Song;
 
     keyHandler = (e : KeyboardEvent) => {
+        // Focus grabber
+        if (this.props.hidden) return;
+
         if (e.key == 'Escape') {
             this.setState({
                 filter: '',
@@ -195,7 +199,7 @@ class List extends React.Component<ListProps, ListState> {
         }
 
         return (
-            <Drawer id="list" initialOpen="true" open={this.props.open} className="songlist">
+            <Drawer id="list" open={this.props.open} className={"songlist " + (this.props.hidden ? 'hidden' : '')}>
                 <div className="filter">
                     <input type="text" 
                         placeholder="Filtern…" 
