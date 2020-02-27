@@ -15,7 +15,6 @@ import HideSongList from './HideSongList';
 import { BrowserRouter, Route, Switch, useHistory} from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import { MobileMenu } from './MobileMenu.tsx'
-import { useState, useCallback } from 'react';
 
 const empty_song = {
     title: "Neues Lied",
