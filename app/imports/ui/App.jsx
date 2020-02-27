@@ -12,7 +12,7 @@ import Progress from './Progress.tsx';
 import Drawer from './Drawer.tsx';
 import HideSongList from './HideSongList';
 
-import { BrowserRouter, Route, Switch} from 'react-router-dom';
+import { BrowserRouter, Route, Switch, useHistory} from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import { MobileMenu } from './MobileMenu.tsx'
 import { useState, useCallback } from 'react';
@@ -52,7 +52,18 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = { songListHidden: false }
+        this.viewerRef = React.createRef()
     }
+    increaseTranspose = () => {
+        if( this.viewerRef.current )
+          this.viewerRef.current.increaseTranspose();
+    };
+  
+    decreaseTranspose = () => {
+        if( this.viewerRef.current )
+          this.viewerRef.current.decreaseTranspose();
+    };
+
 
     hideSongList = (hide) => {
         this.setState({
@@ -106,8 +117,8 @@ class App extends Component {
                     )} />
 
 
-                    <Route path='/view/:author/:title' render={(match) => {
-                        let song = getSong(match.match.params);
+                    <Route path='/view/:author/:title' render={(routerProps) => {
+                        let song = getSong(routerProps.match.params);
 
                         if (song === undefined) {
                             return nA404; 
@@ -116,7 +127,8 @@ class App extends Component {
                         return (
                             <>
                                 <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
-                                <Viewer song={song}  songs={this.props.songs}/>
+                                <Viewer song={song}  songs={this.props.songs} ref={this.viewerRef} 
+                                {...routerProps} />
                             </>
                         )
                     }} />

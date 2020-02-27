@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from 'react-dom';
-import { withRouter, NavLink, RouteComponentProps } from "react-router-dom";
+import { useParams, useLocation, useHistory, useRouteMatch } from 'react-router-dom';
+import {  NavLink, RouteComponentProps } from "react-router-dom";
 import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
@@ -20,7 +21,7 @@ interface ViewerStates {
   inlineReferences: boolean
 }
 
-class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> {
+export default class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> {
   constructor(props) {
     super(props);
     this.state = {
@@ -232,4 +233,3 @@ class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerSt
   }
 }
 
-export default withRouter(Viewer); // injects history, location, match
