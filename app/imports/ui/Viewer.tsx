@@ -21,7 +21,14 @@ interface ViewerStates {
   inlineReferences: boolean
 }
 
-export default class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> {
+// Only expose necessary handler for transpose setting, not complete component
+export interface ITransposeHandler {
+  increaseTranspose: Function
+  decreaseTranspose: Function 
+}
+
+export default class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> implements
+ITransposeHandler {
   constructor(props) {
     super(props);
     this.state = {

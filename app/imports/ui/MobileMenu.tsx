@@ -1,20 +1,38 @@
 import * as React from 'react';
 
 import './MobileMenu.less'
+import { ITransposeHandler} from './Viewer'
 
 interface MobileMenuProps extends React.HTMLProps<HTMLElement>
 {
     toggleMenu: Function
-    increaseTranspose: Function
-    decreaseTranspose: Function
+    transposeHandler: {current: ITransposeHandler}
 }
 
-export const MobileMenu: React.FunctionComponent<MobileMenuProps> = props => {
+
+export class MobileMenu extends React.Component<MobileMenuProps>  {
+
+    constructor(props) {
+        super(props);
+    }
+
+    increaseTranspose = () => {
+        if( this.props.transposeHandler.current )
+          this.props.transposeHandler.current.increaseTranspose();
+    };
+  
+    decreaseTranspose = () => {
+        if( this.props.transposeHandler.current )
+          this.props.transposeHandler.current.increaseTranspose();
+    };
+
+    render() {
     return (
         <div className="show-s" id="mobilemenu">
-            <span onClick={ev => props.toggleMenu()} id="menu">Menu</span>
-            <span onClick={ev => props.increaseTranspose()} id="plus">+</span>
-            <span onClick={ev => props.decreaseTranspose()} id="minus">-</span>
+            <span onClick={ev => this.props.toggleMenu()} id="menu">Menu</span>
+            <span onClick={ev => this.increaseTranspose()} id="plus">+</span>
+            <span onClick={ev => this.decreaseTranspose()} id="minus">-</span>
         </div>
     )
+    }
 }

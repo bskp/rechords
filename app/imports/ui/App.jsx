@@ -53,15 +53,6 @@ class App extends Component {
         this.state = { songListHidden: false }
         this.viewerRef = React.createRef()
     }
-    increaseTranspose = () => {
-        if( this.viewerRef.current )
-          this.viewerRef.current.increaseTranspose();
-    };
-  
-    decreaseTranspose = () => {
-        if( this.viewerRef.current )
-          this.viewerRef.current.decreaseTranspose();
-    };
 
 
     hideSongList = (hide) => {
@@ -101,8 +92,7 @@ class App extends Component {
             <BrowserRouter>
             <>
                 <MobileMenu 
-                    increaseTranspose={this.increaseTranspose} 
-                    decreaseTranspose={this.decreaseTranspose}
+                    transposeHandler = {this.viewerRef}
                     toggleMenu={this.toggleSongList}
                 />
                 <div id="body">
