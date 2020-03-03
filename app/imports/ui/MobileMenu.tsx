@@ -28,7 +28,7 @@ export class MobileMenu extends React.Component<MobileMenuProps>  {
 
     render() {
     return (
-        <div className="show-s" id="mobilemenu">
+        <div id="mobilemenu">
             <span onClick={ev => this.props.toggleMenu()} id="menu">Menu</span>
             <span onClick={ev => this.increaseTranspose()} id="plus">+</span>
             <span onClick={ev => this.decreaseTranspose()} id="minus">-</span>

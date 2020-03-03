@@ -193,7 +193,7 @@ ITransposeHandler {
           </section>
         <div className="content-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} >Edit</NavLink></div>
         </div>
-        <Drawer className="source-colors hide-m" onClick={this.handleContextMenu}>
+        <Drawer className="source-colors" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
           <p>Schneller:&nbsp;Rechtsklick!</p>
         </Drawer>
