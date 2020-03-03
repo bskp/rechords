@@ -34,22 +34,21 @@ export class DefaultSettingsStorage implements ISettingsStorage {
         
     }
 
-    getValue(groupKey: any, documentKey: any, defaultValue: any) {
-        this.isString(defaultValue)
+    getValue(groupKey: any, documentKey: any, defaultValue: any): string | number | boolean {
 
         const documentValue = localStorage.getItem( this.getStorageKey( groupKey, documentKey ) )
         if( documentValue != null )
-            return documentValue
+            return this.convert(documentValue, defaultValue)
         
         const groupValue = localStorage.getItem( this.getGroupKey( groupKey ) )
         if( groupValue != null )
-            return groupValue
+            return this.convert(groupValue, defaultValue)
 
         return defaultValue; 
     } 
 
-    setValue(groupKey: string, documentKey: string, value: string) {
-        localStorage.setItem( this.getStorageKey( groupKey, documentKey ), value )
+    setValue(groupKey: string, documentKey: string, value: string | number | boolean ) {
+        localStorage.setItem( this.getStorageKey( groupKey, documentKey ), String(value) )
     }
     setGroupDefault(groupKey: string, defaultValue: string) {
         localStorage.setItem( this.getGroupKey( groupKey ), defaultValue )
@@ -58,6 +57,21 @@ export class DefaultSettingsStorage implements ISettingsStorage {
         throw new Error("Method not implemented.");
     }
     
+
+
+    private convert( value: string, valueType: string|boolean|number)
+    {
+        if (typeof valueType == 'boolean')
+            return value == 'true'
+
+        if (typeof valueType == 'number')
+            return Number.parseFloat( value );
+
+        if( typeof valueType == 'string' )
+            return value
+
+        throw new Error("Illegal Default VAlue")
+    }
 
     private getStorageKey( groupKey: string, documentKey: string ): string
     {
@@ -72,10 +86,6 @@ export class DefaultSettingsStorage implements ISettingsStorage {
         return `${this.scope}::${groupKey}`
     }
 
-    private isString( value: String ) : void {
-        if( typeof name != 'string' )
-            throw new Error("Name must be a string");
-    }
     private checkVariableName( name: String ) : void {
         if (name == '')
             return;
@@ -83,5 +93,7 @@ export class DefaultSettingsStorage implements ISettingsStorage {
         if( match == null || match.length == 0 )
             throw new Error("Invalid Variable Name");
     }
+
+
 
 }
