@@ -250,37 +250,49 @@ ITransposeHandler {
   }
 
   private enrichReferences(vdom: any) {
-    let referencee = new Map<String, any>();
-    for (let elem of vdom) {
-      if (elem.props) {
-        let id = elem.props.id;
-        if (id && id.startsWith('sd-ref')) {
-          referencee.set(id, elem);
-        }
-      }
-    }
+    let sections_dict = new Map<String, any>();
     for (let i = 0; i < vdom.length; i++) {
       let elem = vdom[i];
       if (elem.props) {
-        let className = elem.props.className;
-        if (className == 'ref') {
-          elem = vdom[i] = React.cloneElement(elem,
+        let id = elem.props.id;
+        if (id && id.startsWith('sd-ref')) {
+          sections_dict.set(id, elem);  // add section to dictionary
+          /*
+          vdom[i] = React.cloneElement(elem, {  // attach toggle handler
+              'onClick': this.toggleInlineReferences,
+          });
+          */
+        }
+      }
+    }
+
+    for (let i = 0; i < vdom.length; i++) {
+      let elem = vdom[i];
+      if (elem.props) {
+        if (elem.props.className == 'ref') {
+          let visible = this.state.inlineReferences ? ' shown' : ' hidden'
+
+          vdom[i] = React.cloneElement(elem,
             {
               'onClick': this.toggleInlineReferences,
+              className: 'ref' + (this.state.inlineReferences ? ' open' : ' collapsed')
             });
-          let visible = this.state.inlineReferences ? ' shown' : ' hidden'
           const refName = elem.props.children;
           if( typeof refName != 'string')
             continue
 
           let ref = 'sd-ref-' + refName.trim();
-          let defintion = referencee.get(ref)
-          if( !defintion ) {
-              defintion = <p>Referenz <em>{refName}</em> existiert nicht</p>
+          let definition = sections_dict.get(ref)
+          if( !definition ) {
+              definition = <p>Referenz <em>{refName}</em> existiert nicht</p>
           }
+
           vdom.splice(i + 1, 0,
-            React.cloneElement(defintion,
-              { id: null, className: 'inlineReference' + visible })
+            React.cloneElement(definition, { 
+              id: null, 
+              key: definition.key + '-clone-' + i,
+              className: 'inlineReference' + visible 
+            })
           );
         }
       }

@@ -295,6 +295,18 @@ div.mobile-footer {
     margin-left: -0.1em;
   }
 
+  .ref {
+    color: black;
+    font-weight: bold;
+    padding-left: 8px;
+    margin-left: -12px;
+    border-left: 4px solid @accent;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    cursor: pointer;
+  }
+
+  .ref.open,
   h3 {
     font-size: 1em;
     margin: 0;
@@ -307,6 +319,9 @@ div.mobile-footer {
     width: 5em;
     margin-left: -6em;
 
+    border: none; // concerns .refs only
+    padding-left: 0;
+
     .phone({
       margin: 2em 0 0; 
       width: auto; 
@@ -315,6 +330,7 @@ div.mobile-footer {
       text-align: left;
     });
   }
+
 
   // Verse container
   p {
@@ -338,23 +354,14 @@ div.mobile-footer {
     width: 100%;
   }
 
-  .ref {
-    color: black;
-    font-weight: bold;
-    padding-left: 8px;
-    margin-left: -12px;
-    border-left: 4px solid @accent;
-    margin-top: 2em;
-    margin-bottom: 2em;
-    cursor: pointer;
-  }
-
   .inlineReference {
     &.shown {
+      /*
       animation-name: slide-down;
       animation-duration: 1s;
       animation-direction: normal;
       animation-timing-function: ease-in-out;
+      */
     }
 
     &.hidden {
