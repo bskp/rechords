@@ -27,14 +27,20 @@ var options = {
     br: [],
     strong: [],
     em: [],
-    code: [],
+    code: ["class"],
     s: [],
     pre: [],
+    blockquote: [],
     img: ["src", "alt"]
   }
 };
 
-const converter = new showdown.Converter({ extensions: [rmd] });
+const converter = new showdown.Converter({ 
+  extensions: [rmd],
+  striketrough: true,
+  ghCodeBlocks: true,
+  smoothLivePreview: true
+});
 
 showdown.setOption("simpleLineBreaks", true);
 showdown.setOption("smoothLivePreview", true);

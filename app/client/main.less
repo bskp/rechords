@@ -272,7 +272,7 @@ div.mobile-footer {
   padding-bottom: 10em;
   padding-left: 6em;
 
-  color: @dull;
+  color: @warm;
 
   .phone({
     font-size: 0.9em; 
@@ -373,6 +373,7 @@ div.mobile-footer {
   }
 
   code {
+    // inline code elements
     display: inline-block;
     font-family: "Input Mono", Courier New, Courier, monospace;
     font-size: 0.9em;
@@ -390,6 +391,36 @@ div.mobile-footer {
     background-color: transparent;
     color: inherit;
     line-height: inherit;
+  }
+
+  .abc-notation {
+    margin-right: 6em;
+
+    svg {
+      .abcjs-lyric,
+      .abcjs-staff,
+      .abcjs-staff-extra {
+        fill: @warm;
+      }
+
+      path.abcjs-ending {
+        stroke: mix(@warm, black, 66%);
+      }
+      
+      text.abcjs-ending, 
+      .abcjs-bar {
+        fill: mix(@warm, black, 66%);
+      }
+
+      .abcjs-note_selected {
+        fill: @accent;
+      }
+
+      .abcjs-chord {
+        fill: @accent;
+      }
+    }
+
   }
 
   &.interactive i {
@@ -863,6 +894,12 @@ hr {
   .rc-slider-mark-text {
     width: 50px;
     text-align: right;
+    line-height: 2.5em;
+    margin-bottom: -1em !important;
+
+    &:hover {
+      color: black;
+    }
   }
 
   .rc-slider-track {

@@ -1,5 +1,6 @@
 import Songs, {Song} from '../api/collections';
 import * as React from 'react';
+import * as Abcjs from 'react-abcjs';
 
 var Hypher = require('hypher'),
 english = require('hyphenation.en-us'),
@@ -283,6 +284,36 @@ export default class Preview extends React.Component<P, {}> {
         // Fakey syllable to allow appended chords
         node.children.push(<i>      </i>);
 
+      }
+      else if (node.name == 'pre') {
+        if (node.children.length != 1) return node;
+        let code = node.children[0];
+        if (!('class' in code.attribs)) return node;
+        let classes = code.attribs['class'];
+        if (!(classes.includes('language-abc'))) return node;
+        if (code.children.length != 1) return node;
+        let abc = code.children[0].data;
+
+        return <div className="abc-notation">
+          <Abcjs
+            abcNotation={abc}
+            parserParams={{
+                paddingtop: 0,
+                paddingbottom: 0,
+                paddingright: 0,
+                paddingleft: 0,
+                scale: 1,
+                add_classes: true,
+                format: {
+                  gchordfont: "Roboto 12 bold",
+                  annotationfont: "Roboto 12 bold",
+                  vocalfont: "Roboto 12",
+                }
+              }}
+            engraverParams={{ responsive: 'resize' }}
+            renderParams={{ viewportHorizontal: true }}
+          />
+        </div>
       }
       return node;
     }});

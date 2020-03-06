@@ -6,6 +6,7 @@ import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
 import Drawer from './Drawer';
+import * as Abcjs from 'react-abcjs';
 
 var Parser = require("html-react-parser");
 
@@ -115,9 +116,9 @@ ITransposeHandler {
 
     // Parse HTML to react-vdom and replace chord values.
     let vdom = Parser(rmd_html, {
-      replace: function (domNode) {
-        if (domNode.name && domNode.name == 'i' && 'data-chord' in domNode.attribs) {
-          let chord = domNode.attribs['data-chord'];
+      replace: function (node) {
+        if (node.name && node.name == 'i' && 'data-chord' in node.attribs) {
+          let chord = node.attribs['data-chord'];
           let t = chrodlib.transpose(chord, key, dT);
           let chord_;
           if (t == null) {
@@ -125,7 +126,54 @@ ITransposeHandler {
           } else {
             chord_ = <span className={"before " + t.className}>{t.base}<sup>{t.suff}</sup></span>;
           }
-          return <i>{chord_}{domNode.children[0].data}</i>;
+          return <i>{chord_}{node.children[0].data}</i>;
+        }
+        else if (node.name == 'pre') {
+          if (node.children.length != 1) return node;
+          let code = node.children[0];
+          if (!('class' in code.attribs)) return node;
+          let classes = code.attribs['class'];
+          if (!(classes.includes('language-abc'))) return node;
+          if (code.children.length != 1) return node;
+          let abc = code.children[0].data;
+          let regular = "Roboto 12";
+          let bold = regular + " bold";
+          return <div className="abc-notation">
+            <Abcjs
+              abcNotation={abc}
+              parserParams={{
+                  paddingtop: 0,
+                  paddingbottom: 0,
+                  paddingright: 0,
+                  paddingleft: 0,
+                  scale: 1,
+                  add_classes: true,
+                  visualTranspose: dT,
+                  format: {
+                    gchordfont: bold,
+                    annotationfont: bold,
+                    vocalfont: regular,
+                    composerfont: regular,
+                    footerfont: regular,
+                    headerfont: regular,
+                    historyfont: regular,
+                    infofont: regular,
+                    measurefont: regular,
+                    partsfont: regular,
+                    repeatfont: regular,
+                    subtitlefont: regular,
+                    tempofont: regular,
+                    textfont: regular,
+                    titlefont: regular,
+                    voicefont: regular,
+                    wordsfont: regular,
+                  }
+                }}
+              engraverParams={{}}
+              renderParams={{ viewportHorizontal: true }}
+              style={{width: '80%'}}
+            />
+          </div>
         }
 
         // if(domNode.attribs && 'class' in domNode.attribs) {
