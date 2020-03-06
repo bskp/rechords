@@ -119,7 +119,7 @@ body {
   box-sizing: border-box;
   min-height: 100vh;
 
-  .scroll;
+  .scroll-vertical;
 
   width: 100%;
   padding: 1em 2em 1em 2em;
@@ -144,7 +144,8 @@ aside.drawer {
   box-sizing: border-box;
   width: @drawer-open;
 
-  .scroll;
+  .scroll-vertical;
+  overflow-x: hidden;
 
   padding-top: 1em;
   padding-right: 0;
@@ -418,6 +419,8 @@ div.mobile-footer {
 
       .abcjs-chord {
         fill: @accent;
+        font-size: 18px;
+        font-weight: 600;
       }
     }
 
@@ -921,8 +924,16 @@ hr {
             user-select: @mode; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
-.scroll {
-  overflow: auto;
+.scroll-vertical {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.scroll-horizontal {
+  overflow-y: hidden;
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
 }
