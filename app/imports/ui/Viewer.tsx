@@ -239,7 +239,7 @@ ITransposeHandler {
           <section ref="html">
             {vdom}
           </section>
-        <div className="content-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} >Edit</NavLink></div>
+        <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} >Edit</NavLink></div>
         </div>
         <Drawer className="source-colors" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>

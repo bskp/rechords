@@ -144,6 +144,7 @@ class App extends Component {
                         return (
                             <>
                                 <DocumentTitle title="Hölibu | Neues Lied" />
+                                <HideSongList handle={this.hideSongList}/>
                                 <Editor song={song} />
                             </>
                         )

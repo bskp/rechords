@@ -134,12 +134,9 @@ function Progress(props) {
 
     return (
         <>
-            <div id="body">
-                <List songs={props.songs} open={open} />
-                <div className="content" id="progress">
-                    <h1>Lieder-Fortschritt</h1>
-                    <Table columns={columns} data={data} />
-                </div>
+            <div className="content" id="progress">
+                <h1>Lieder-Fortschritt</h1>
+                <Table columns={columns} data={data} />
             </div>
         </>
     );
