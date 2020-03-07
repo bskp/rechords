@@ -23,7 +23,7 @@ export class MobileMenu extends React.Component<MobileMenuProps>  {
   
     decreaseTranspose = () => {
         if( this.props.transposeHandler.current )
-          this.props.transposeHandler.current.increaseTranspose();
+          this.props.transposeHandler.current.decreaseTranspose();
     };
 
     render() {
