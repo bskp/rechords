@@ -56,6 +56,8 @@ class App extends Component {
 
 
     hideSongList = (hide) => {
+        if (window.innerWidth > 900) return;
+        // ie. mobile-mode
         this.setState({
             songListHidden: hide
         });
@@ -96,7 +98,7 @@ class App extends Component {
                     toggleMenu={this.toggleSongList}
                 />
                 <div id="body">
-                <List songs={this.props.songs} hidden={this.state.songListHidden} open={true}/>
+                <List songs={this.props.songs} hidden={this.state.songListHidden} hider={this.hideSongList}/>
                 <Switch>
                     <Route exact path='/' render={(props) => (
                             <div className="container">

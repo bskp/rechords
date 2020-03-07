@@ -55,8 +55,8 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
 interface ListProps {
   songs: Array<Song>;
   filter?: String;
-  open: boolean;
   hidden: boolean;
+  hider: Function;
 }
 interface ListState {
     filter: string;
@@ -199,7 +199,7 @@ class List extends React.Component<ListProps, ListState> {
         }
 
         return (
-            <Drawer id="list" open={this.props.open} className={"songlist " + (this.props.hidden ? 'hidden' : '')}>
+            <Drawer id="list" open={true} onClick={this.props.hider} className={"songlist " + (this.props.hidden ? 'hidden' : '')}>
                 <div className="filter">
                     <input type="text" 
                         placeholder="Filtern…" 
