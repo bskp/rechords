@@ -8,6 +8,7 @@ import Drawer from './Drawer';
 
 interface ListItemProps {
     song: Song;
+    onClickHandler: Function;
 }
 class ListItem extends React.Component<ListItemProps, {}> {
     constructor(props) {
@@ -17,7 +18,7 @@ class ListItem extends React.Component<ListItemProps, {}> {
 
     render() {
         return (
-            <li><NavLink to={`/view/${this.props.song.author_}/${this.props.song.title_}`}
+            <li><NavLink onClick={this.props.onClickHandler} to={`/view/${this.props.song.author_}/${this.props.song.title_}`}
                 activeClassName="selected">
                 <span className="title">{this.props.song.title}</span>
                 <span className="author">{this.props.song.author}</span>
@@ -31,6 +32,7 @@ class ListItem extends React.Component<ListItemProps, {}> {
 interface ListGroupProps {
   songs: Array<Song>;
   label: string;
+  onClickHandler: Function;
 }
 class ListGroup extends React.Component<ListGroupProps, {}> {
     constructor(props) {
@@ -43,7 +45,7 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
                 <h2 className="huge">{this.props.label}</h2>
                 <ul>
                     {this.props.songs.map((song) => 
-                        <ListItem song={song} key={song._id} />
+                        <ListItem song={song} key={song._id} onClickHandler={this.props.onClickHandler}/>
                     )}
                 </ul>
             </li>
@@ -56,7 +58,7 @@ interface ListProps {
   songs: Array<Song>;
   filter?: String;
   hidden: boolean;
-  hider: Function;
+  hideOnMobile: Function;
 }
 interface ListState {
     filter: string;
@@ -86,7 +88,7 @@ class List extends React.Component<ListProps, ListState> {
             e.preventDefault();
         } else {
             // Check if the pressed key has a printable representation
-            if (e.key && e.key.length === 1) {
+            if (e.key && e.key.length === 1 && !e.metaKey) {
                 this.refs.filter.focus();
             }
         }
@@ -199,7 +201,7 @@ class List extends React.Component<ListProps, ListState> {
         }
 
         return (
-            <Drawer id="list" open={true} onClick={this.props.hider} className={"songlist " + (this.props.hidden ? 'hidden' : '')}>
+            <Drawer id="list" open={true} className={"songlist " + (this.props.hidden ? 'hidden' : '')}>
                 <div className="filter">
                     <input type="text" 
                         placeholder="Filtern…" 
@@ -221,7 +223,7 @@ class List extends React.Component<ListProps, ListState> {
                     />
                 <ul>
                     {groups.map((group) => 
-                        <ListGroup label={group} songs={tree[group]} key={group}/>
+                        <ListGroup label={group} songs={tree[group]} key={group} onClickHandler={this.props.hideOnMobile}/>
                     )}
                     <li>
                         <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>

@@ -54,10 +54,14 @@ class App extends Component {
         this.viewerRef = React.createRef()
     }
 
+    hideSongListOnMobile = () => {
+        if (window.innerWidth > 900) return;
+        this.setState({
+            songListHidden: true
+        });
+    }
 
     hideSongList = (hide) => {
-        if (window.innerWidth > 900) return;
-        // ie. mobile-mode
         this.setState({
             songListHidden: hide
         });
@@ -98,7 +102,7 @@ class App extends Component {
                     toggleMenu={this.toggleSongList}
                 />
                 <div id="body">
-                <List songs={this.props.songs} hidden={this.state.songListHidden} hider={this.hideSongList}/>
+                <List songs={this.props.songs} hidden={this.state.songListHidden} hideOnMobile={this.hideSongListOnMobile}/>
                 <Switch>
                     <Route exact path='/' render={(props) => (
                             <div className="container">

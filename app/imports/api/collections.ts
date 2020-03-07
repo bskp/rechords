@@ -30,7 +30,6 @@ var options = {
     code: ["class"],
     s: [],
     pre: [],
-    blockquote: [],
     img: ["src", "alt"]
   }
 };
@@ -48,7 +47,7 @@ showdown.setOption("simplifiedAutoLink", true);
 showdown.setOption("openLinksInNewWindow", true);
 
 
-export const rmd_version = 0;
+export const rmd_version = 1;
 export class Song {
   _id?: string;
 
