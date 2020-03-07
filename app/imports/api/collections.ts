@@ -47,7 +47,7 @@ showdown.setOption("simplifiedAutoLink", true);
 showdown.setOption("openLinksInNewWindow", true);
 
 
-export const rmd_version = 1;
+export const rmd_version = 2;
 export class Song {
   _id?: string;
 

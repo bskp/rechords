@@ -31,6 +31,7 @@
     "grunt-update-json": "^0.2.1",
     "load-grunt-tasks": "^3.2.0",
     "mocha": "^2.2.5",
+    "nyc": "^15.0.0",
     "should": "^6.0.3",
     "source-map-support": "^0.3.0"
   },
