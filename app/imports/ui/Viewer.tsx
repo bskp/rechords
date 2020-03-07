@@ -36,7 +36,7 @@ ITransposeHandler {
       relTranspose: this.getInitialTranspose(),
       menuOpen: false,
       viewPortGtM: window.innerWidth > 900,
-      inlineReferences: true
+      inlineReferences: false
     };
   }
 
@@ -113,6 +113,7 @@ ITransposeHandler {
     // TODO: if key undef, write something there
 
     let dT = this.state.relTranspose;
+    let responsive = this.state.viewPortGtM ? undefined : 'resize';
 
     // Parse HTML to react-vdom and replace chord values.
     let vdom = Parser(rmd_html, {
@@ -135,9 +136,12 @@ ITransposeHandler {
           let classes = code.attribs['class'];
           if (!(classes.includes('language-abc'))) return node;
           if (code.children.length != 1) return node;
+
           let abc = code.children[0].data;
+
           let regular = "Roboto 12";
           let bold = regular + " bold";
+
           return <div className="abc-notation">
             <Abcjs
               abcNotation={abc}
@@ -169,8 +173,10 @@ ITransposeHandler {
                     wordsfont: regular,
                   }
                 }}
-              engraverParams={{}}
-              renderParams={{ viewportHorizontal: true }}
+              engraverParams={{'responsive': responsive}}
+              renderParams={{
+                  viewportHorizontal: true,
+                }}
               style={{width: '80%'}}
             />
           </div>
@@ -239,7 +245,7 @@ ITransposeHandler {
           <section ref="html">
             {vdom}
           </section>
-        <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} >Edit</NavLink></div>
+        <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} id="edit">Bearbeiten…</NavLink></div>
         </div>
         <Drawer className="source-colors" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
@@ -257,11 +263,6 @@ ITransposeHandler {
         let id = elem.props.id;
         if (id && id.startsWith('sd-ref')) {
           sections_dict.set(id, elem);  // add section to dictionary
-          /*
-          vdom[i] = React.cloneElement(elem, {  // attach toggle handler
-              'onClick': this.toggleInlineReferences,
-          });
-          */
         }
       }
     }
