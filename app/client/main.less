@@ -307,6 +307,9 @@ div.mobile-footer {
     cursor: pointer;
   }
 
+  .ref.open {
+    color: darken(@warm, 15%)
+  }
   .ref.open,
   h3 {
     font-size: 1em;
@@ -358,12 +361,9 @@ div.mobile-footer {
 
   .inlineReference {
     &.shown {
-      /*
-      animation-name: slide-down;
-      animation-duration: 1s;
-      animation-direction: normal;
-      animation-timing-function: ease-in-out;
-      */
+      h3 {
+        display: none;
+      }
     }
 
     &.hidden {
