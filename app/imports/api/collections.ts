@@ -28,7 +28,7 @@ var options = {
     br: [],
     strong: [],
     em: [],
-    code: [],
+    code: ["class"],
     s: [],
     pre: [],
     img: ["src", "alt"]
