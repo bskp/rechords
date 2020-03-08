@@ -20,6 +20,7 @@ var options = {
     h2: [],
     h3: [],
     h4: [],
+    section: ["class", "id"],
     ul: ["class"],
     ol: [],
     li: [],
@@ -27,7 +28,7 @@ var options = {
     br: [],
     strong: [],
     em: [],
-    code: ["class"],
+    code: [],
     s: [],
     pre: [],
     img: ["src", "alt"]
@@ -47,7 +48,7 @@ showdown.setOption("simplifiedAutoLink", true);
 showdown.setOption("openLinksInNewWindow", true);
 
 
-export const rmd_version = 2;
+export const rmd_version = 3;
 export class Song {
   _id?: string;
 

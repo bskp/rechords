@@ -4,6 +4,8 @@ module.exports = function showdownRechords() {
   require('source-map-support').install(); // For mocha.
 
   function parseLine(match, content) {
+    if( content.match(/^\s*$/g) )
+      return "</p>\n</div>\n<div>\n<p>";
     var line = content.replace(/^([^\[]+)/, '<i>$1</i>');
     line = line.replace(/\[([^\]]*)\]([^\[]*)/gi, function(match, chord, text) {
       if (text === '') {
@@ -23,7 +25,7 @@ module.exports = function showdownRechords() {
       type: 'lang',
       regex: /([^\n]+)\n([^\n]+)\n=+\s*\n/,
       replace: function (match, song, artist) {
-        return '<h1>' + song + '</h1>\n<h2>' + artist + '</h2>\n\n';
+        return '<div class="sd-header">\n<h1>' + song + '</h1>\n<h2>' + artist + '</h2>\n</div>\n\n';
       }
     },
 
@@ -60,7 +62,8 @@ module.exports = function showdownRechords() {
         content = content.replace(/\n{3,}/g, '\n\n'); // remove excessive line breaks
         content = content.replace(/(.*?)\n/g, parseLine);
 
-        var verse = h3 + '<p id="sd-ref-' + id + '">\n' + content + '</p>';
+        var verse = '<section id="sd-ref-' + id + '">\n<div>\n' + 
+        h3 + '<p>\n' + content + '</p>' + '\n</div>\n</section>';
 
         return verse;
       }
