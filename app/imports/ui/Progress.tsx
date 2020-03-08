@@ -117,7 +117,14 @@ function Progress(props) {
             {
                 Header: 'Zul. geändert',
                 id: 'change',
-                accessor: (s: Song) => s.getRevision(0) && s.getRevision(0).timestamp.getTime(),
+                accessor: (s: Song) => {
+                    let ago = 0;
+                    // Skip "ghost versions" triggered by parser version updates.
+                    while (s.text == s.getRevision(ago).text && s.getRevision(ago + 1)) {
+                        ago++;
+                    }
+                    return s.getRevision(ago) && s.getRevision(ago).timestamp;
+                },
                 Cell: ({ cell: { value } }) => String(value && moment(value).format('L')),
             },
             {
