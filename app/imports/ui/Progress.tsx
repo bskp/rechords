@@ -123,7 +123,7 @@ function Progress(props) {
                     while (s.text == s.getRevision(ago).text && s.getRevision(ago + 1)) {
                         ago++;
                     }
-                    return s.getRevision(ago) && s.getRevision(ago).timestamp;
+                    return s.getRevision(ago) && s.getRevision(ago).timestamp.getTime();
                 },
                 Cell: ({ cell: { value } }) => String(value && moment(value).format('L')),
             },
