@@ -242,7 +242,7 @@ class List extends React.Component<ListProps, ListState> {
                         onBlur={this.onBlur}
                         onKeyDown={this.onKeyDown}
                         />
-                    <span className={'reset ' + filled} onClick={(e)=>{this.setState({filter: ''})}}>&times;</span>
+                    <span className={'reset ' + filled} onClick={(e)=>{this.setFilter('')}}>&times;</span>
                 </div>
 
                 <MetaContent 
