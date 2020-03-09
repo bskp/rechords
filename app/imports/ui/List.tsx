@@ -257,7 +257,6 @@ class List extends React.Component<ListProps, ListState> {
                     />
                 <ul>
                     {Array.from(groups, ([group, songs]) => {
-                            console.log(songs);
                             return <ListGroup label={group} songs={songs} key={group} onClickHandler={this.props.hideOnMobile}/>
                         }
                     )}

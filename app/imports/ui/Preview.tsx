@@ -8,8 +8,8 @@ h = new Hypher(english);
 
 var Parser = require("html-react-parser");
 
-// The almighty expression matching a verse. Stolen from showdown-rechords.js:48
-const verseRegex = /(.*?): *\n((?:[^\n:<>]+\n\n?)+)/gi;
+// The almighty expression matching a verse. Stolen from showdown-rechords.js:53
+const verseRegex = /(.*?): *\n((?:[^\n<>]*[^\n:<>]+\n\n?)+)/gi;
 
 interface P {
   md: string;
@@ -181,7 +181,7 @@ export default class Preview extends React.Component<P, {}> {
 
     // Count letters between clicked syllable and preceding h3 (ie. verse label)
     let letter : number = 0;
-    let h3;
+    let section : HTMLElement;
 
     while(true) {
 
@@ -196,13 +196,13 @@ export default class Preview extends React.Component<P, {}> {
           line = line.previousElementSibling as HTMLElement;
         } else {
           // this was the last line of the paragraph. 
-          // The element preceding it may either be another paragraph or a h3 / title
-          let par_or_h3 = line.parentElement.previousElementSibling;
-          if (par_or_h3 instanceof HTMLParagraphElement) {
-            line = par_or_h3.lastElementChild as HTMLElement;
-          } else {
-            h3 = par_or_h3;
-            break;
+          let wrapping_div = line.parentElement.parentElement as HTMLElement;
+          if (wrapping_div.previousElementSibling == null) {
+            section = wrapping_div.parentElement;
+            break;  // done with letter counting. 
+          }
+          else {
+            line = wrapping_div.previousElementSibling.lastElementChild.lastElementChild as HTMLElement;
           }
         }
         if (line.childElementCount == 0) {
@@ -224,11 +224,11 @@ export default class Preview extends React.Component<P, {}> {
         }
       }
     }
-    // Count h3-occurences up to the current paragraph
+    // Count sections up to the current paragraph
     let verse : number = 0;
-    while (h3 != null) {
-      h3 = h3.previousSibling as Element;
-      if (h3 instanceof HTMLHeadingElement && h3.tagName == 'H3') {
+    while (section.previousElementSibling != null) {
+      section = section.previousElementSibling as HTMLElement;
+      if (section.id.startsWith('sd-ref-')) {
         verse++;
       }
     }
@@ -310,7 +310,6 @@ export default class Preview extends React.Component<P, {}> {
               }
             }}
           engraverParams={{ responsive: 'resize' }}
-          renderParams={{ viewportHorizontal: true }}
         />
       }
       return node;
