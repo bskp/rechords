@@ -83,9 +83,7 @@ class List extends React.Component<ListProps, ListState> {
         if (this.props.hidden) return;
 
         if (e.key == 'Escape') {
-            this.setState({
-                filter: '',
-            });
+            this.setFilter('');
             this.refs.filter.blur();
             e.preventDefault();
         } 
@@ -109,13 +107,16 @@ class List extends React.Component<ListProps, ListState> {
     }
 
     onChange = (event : React.ChangeEvent<HTMLInputElement>) => {
-        let filters = event.currentTarget.value;
+        this.setFilter(event.currentTarget.value);
+    }
+
+    setFilter = (new_filter) => {
         let fuzzy = Array<Song>();
         let exact = Array<Song>();
 
         nextSong:
         for (let song of this.props.songs) {
-            for (let filter of filters.split(' ')) {
+            for (let filter of new_filter.split(' ')) {
                 filter = filter.toLowerCase();
 
                 if (!song.title.toLowerCase().includes(filter) &&
@@ -125,23 +126,16 @@ class List extends React.Component<ListProps, ListState> {
                 }
             }
 
-            // Hack to hide all songs containing an 'privat'-tag
-            if (!this.state.filter.includes('#privat')) {
-                for (let tag of song.getTags()) {
-                    if (tag.startsWith('privat')) continue;
-                }
-            }
-
             // It's a match!
             fuzzy.push(song);
 
-            if (song.title.toLowerCase().includes(filters.toLowerCase())) {
+            if (song.title.toLowerCase().includes(new_filter.toLowerCase())) {
                 exact.push(song);
             }
         }
 
         this.setState({
-          'filter': filters,
+          'filter': new_filter,
           fuzzy_matches: fuzzy,
           exact_matches: exact
         });
@@ -184,17 +178,14 @@ class List extends React.Component<ListProps, ListState> {
     onTagClick = (event : React.MouseEvent) => {
         let tag = '#' + event.currentTarget.childNodes[0].textContent.toLowerCase();
 
-        this.setState( (state) => {
-            let newFilter;
-            if (state.filter.includes(tag)) {
-                newFilter = state.filter.replace(tag, '');
-            } else {
-                newFilter = state.filter + tag + ' '
-            }
-            return {
-                filter: newFilter.replace('  ', ' ').trim()
-            }
-        });
+        let newFilter;
+        if (this.state.filter.includes(tag)) {
+            newFilter = this.state.filter.replace(tag, '');
+        } else {
+            newFilter = this.state.filter + tag + ' '
+        }
+        this.setFilter(newFilter.replace('  ', ' ').trim());
+
         event.preventDefault();
     }
 
@@ -215,6 +206,11 @@ class List extends React.Component<ListProps, ListState> {
 
         // Add and group fuzzy matches
         for (let song of this.state.fuzzy_matches) {
+            // Hack to hide all songs containing an 'privat'-tag
+            if (!this.state.filter.includes('#privat')) {
+                if (song.checkTag('privat')) continue;
+            }
+
             let cat_label = grouper(song);
 
             if (!groups.has(cat_label)) {
