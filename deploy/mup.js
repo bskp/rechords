@@ -25,7 +25,7 @@ module.exports = {
     },
 
     docker: {
-      image: 'abernix/meteord:node-8-base',
+      image: 'abernix/meteord:node-12-base',
     },
 
     // Show progress bar while uploading bundle to server
