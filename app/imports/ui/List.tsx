@@ -63,6 +63,8 @@ interface ListProps {
 interface ListState {
     filter: string;
     active: boolean;
+    fuzzy_matches: Array<Song>;
+    exact_matches: Array<Song>;
 }
 
 class List extends React.Component<ListProps, ListState> {
@@ -70,11 +72,11 @@ class List extends React.Component<ListProps, ListState> {
         super(props);
         this.state = {
             filter: props.filter || '',
-            active: false
+            active: false,
+            fuzzy_matches: this.props.songs,
+            exact_matches: []
         }
     }
-
-    private last_matched_song : Song;
 
     keyHandler = (e : KeyboardEvent) => {
         // Focus grabber
@@ -86,7 +88,11 @@ class List extends React.Component<ListProps, ListState> {
             });
             this.refs.filter.blur();
             e.preventDefault();
-        } else {
+        } 
+        else if (e.key == 'KeyDown') {
+
+        }
+        else {
             // Check if the pressed key has a printable representation
             if (e.key && e.key.length === 1 && !e.metaKey) {
                 this.refs.filter.focus();
@@ -103,20 +109,63 @@ class List extends React.Component<ListProps, ListState> {
     }
 
     onChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+        let filters = event.currentTarget.value;
+        let fuzzy = Array<Song>();
+        let exact = Array<Song>();
+
+        nextSong:
+        for (let song of this.props.songs) {
+            for (let filter of filters.split(' ')) {
+                filter = filter.toLowerCase();
+
+                if (!song.title.toLowerCase().includes(filter) &&
+                    !song.text.toLowerCase().includes(filter) &&
+                    !song.author.toLowerCase().includes(filter)) {
+                    continue nextSong;
+                }
+            }
+
+            // Hack to hide all songs containing an 'privat'-tag
+            if (!this.state.filter.includes('#privat')) {
+                for (let tag of song.getTags()) {
+                    if (tag.startsWith('privat')) continue;
+                }
+            }
+
+            // It's a match!
+            fuzzy.push(song);
+
+            if (song.title.toLowerCase().includes(filters.toLowerCase())) {
+                exact.push(song);
+            }
+        }
+
         this.setState({
-          filter: event.currentTarget.value
+          'filter': filters,
+          fuzzy_matches: fuzzy,
+          exact_matches: exact
         });
+
         event.preventDefault();
       };
 
     onKeyDown = (event : React.KeyboardEvent) => {
-        if (event.key == 'Enter' && this.last_matched_song) {
-            let s = this.last_matched_song;
+        if (this.state.fuzzy_matches.length == 0) return;
+
+        let navigate = (s : Song) => {
             this.props.history.push('/view/' + s.author_ + '/' + s.title_);
             this.setState({
                 filter: '',
+                fuzzy_matches: this.props.songs,
+                exact_matches: []
             });
             this.refs.filter.blur();
+        }
+
+        if (event.key == 'Enter') {
+            let list = this.state.exact_matches.length ? this.state.exact_matches : this.state.fuzzy_matches;
+            if (list.length == 0) return;
+            navigate(list[0]);
         }
     }
 
@@ -135,7 +184,7 @@ class List extends React.Component<ListProps, ListState> {
     onTagClick = (event : React.MouseEvent) => {
         let tag = '#' + event.currentTarget.childNodes[0].textContent.toLowerCase();
 
-        this.setState( (state, props) => {
+        this.setState( (state) => {
             let newFilter;
             if (state.filter.includes(tag)) {
                 newFilter = state.filter.replace(tag, '');
@@ -151,43 +200,28 @@ class List extends React.Component<ListProps, ListState> {
 
 
     render() {
-        let tree = {};
-        let groups = [];
+        // Split list of filtered songs into groups.
+        let grouper = (s : Song) => s.title[0];
 
-        let filters = this.state.filter.split(' ');
+        let groups = new Map<string, Array<Song>>();
 
-        this.props.songs.forEach((song) => {
-            for (let filter of filters) {
-                filter = filter.toLowerCase();
+        // Add exact matches
+        if (this.state.filter.length && 
+            this.state.exact_matches.length && 
+            this.state.fuzzy_matches.length > 1
+            ) {
+            groups.set("Im Titel", this.state.exact_matches);
+        }
 
-                if (!song.title.toLowerCase().includes(filter) &&
-                    !song.text.toLowerCase().includes(filter) &&
-                    !song.author_.toLowerCase().includes(filter)) {
-                    return;
-                }
+        // Add and group fuzzy matches
+        for (let song of this.state.fuzzy_matches) {
+            let cat_label = grouper(song);
+
+            if (!groups.has(cat_label)) {
+                groups.set(cat_label, new Array<Song>());
             }
-
-            // Hack to hide all songs containing an 'privat'-tag
-            if (!this.state.filter.includes('#privat')) {
-                for (let tag of song.getTags()) {
-                    if (tag.startsWith('privat')) return;
-                }
-            }
-
-
-            let categories = [song.title[0]];
-
-            for (let cat of categories) {
-                if (tree[cat] === undefined) {
-                    tree[cat] = [];
-                    groups.push(cat);
-                }
-
-                tree[cat].push(song);
-                this.last_matched_song = song;
-            }
-
-        });
+            groups.get(cat_label).push(song);
+        }
 
         let active = this.state.active ? '' : 'hidden';
         let filled = this.state.filter == '' ? '' : 'filled';
@@ -222,8 +256,10 @@ class List extends React.Component<ListProps, ListState> {
                     songs={this.props.songs}
                     />
                 <ul>
-                    {groups.map((group) => 
-                        <ListGroup label={group} songs={tree[group]} key={group} onClickHandler={this.props.hideOnMobile}/>
+                    {Array.from(groups, ([group, songs]) => {
+                            console.log(songs);
+                            return <ListGroup label={group} songs={songs} key={group} onClickHandler={this.props.hideOnMobile}/>
+                        }
                     )}
                     <li>
                         <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
