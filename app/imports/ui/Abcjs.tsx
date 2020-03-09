@@ -46,7 +46,7 @@ export class Abcjs extends PureComponent<AbcjsProps> {
 
     render() {
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{ width: '100%' }} className="abc-notation">
                 <div id={'abcjs-result-' + this.uniqueNumber} style={{ width: '100%' }} />
             </div>
         )
