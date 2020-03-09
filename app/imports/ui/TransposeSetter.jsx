@@ -71,7 +71,7 @@ export default class TranposeSetter extends Component {
       marks = keys;
     }
     return (
-      <div id="transposer">
+      <div onDoubleClick={this.props.onDoubleClick} id={this.props.id}>
           <Slider
             id="typeinp"
             min={-7}

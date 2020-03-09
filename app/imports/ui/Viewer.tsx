@@ -17,9 +17,9 @@ interface ViewerProps extends RouteComponentProps {
 
 interface ViewerStates {
   relTranspose: number,
-  menuOpen: boolean,
   viewPortGtM: boolean,
-  inlineReferences: boolean
+  inlineReferences: boolean,
+  showChords: boolean
 }
 
 // Only expose necessary handler for transpose setting, not complete component
@@ -36,9 +36,10 @@ ITransposeHandler {
 
     this.state = {
       relTranspose: this.getInitialTranspose(),
-      menuOpen: false,
       viewPortGtM: window.innerWidth > 900,
-      inlineReferences: false
+      inlineReferences: false,
+      showChords: true
+
     };
   }
 
@@ -49,7 +50,6 @@ ITransposeHandler {
     window.scrollTo(0, 0)
     this.setState({
       relTranspose: this.getInitialTranspose(),
-      menuOpen: false
     });
   }
 
@@ -67,6 +67,7 @@ ITransposeHandler {
   };
 
   componentDidMount() {
+    // TODO: use media query
     window.addEventListener('resize', this.updateDimensions);
   }
   componentWillUnmount() {
@@ -95,10 +96,8 @@ ITransposeHandler {
     })
   };
 
-  toggleMenu = () => {
-    this.setState(function (state, props) {
-      return { menuOpen: !state.menuOpen }
-    })
+  toggleChords = () => {
+    this.setState( state => ({ showChords: !state.showChords }));
   };
 
   toggleInlineReferences = () => {
@@ -121,8 +120,10 @@ ITransposeHandler {
 
     // Parse HTML to react-vdom and replace chord values.
     let vdom = Parser(rmd_html, {
-      replace: function (node) {
+      replace:  (node) => {
         if (node.name && node.name == 'i' && 'data-chord' in node.attribs) {
+          if(!this.state.showChords)
+            return;
           let chord = node.attribs['data-chord'];
           let t = chrodlib.transpose(chord, key, dT);
           let chord_;
@@ -220,14 +221,6 @@ ITransposeHandler {
     */
     const s = this.props.song;
 
-    let open;
-    if (this.state.viewPortGtM) {
-      open = true;
-    }
-    else {
-      open = this.state.menuOpen;
-    }
-
     this.enrichReferences(vdom);
 
     return (
@@ -238,11 +231,14 @@ ITransposeHandler {
           id="chordsheet"
           onContextMenu={this.handleContextMenu}
         >
-          <TranposeSetter
+          {this.state.showChords? <TranposeSetter
+            onDoubleClick={this.toggleChords}
             transposeSetter={this.transposeSetter}
             transpose={this.state.relTranspose}
-            keym={key}
+            keym={key} id="transposer"
           />
+          :
+          <div onClick={this.toggleChords} style={{cursor: 'pointer', transform: 'rotate(-90deg)', transformOrigin: 'top right'}} id="transposer">Chords</div> }
           <section ref="html">
             {vdom}
           </section>
