@@ -1,6 +1,6 @@
 import Songs, {Song} from '../api/collections';
 import * as React from 'react';
-import * as Abcjs from 'react-abcjs';
+import { Abcjs } from './Abcjs';
 
 var Hypher = require('hypher'),
 english = require('hyphenation.en-us'),

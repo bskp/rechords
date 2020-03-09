@@ -6,7 +6,7 @@ import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
 import Drawer from './Drawer';
-import * as Abcjs from 'react-abcjs';
+import { Abcjs } from './Abcjs'
 
 var Parser = require("html-react-parser");
 
@@ -32,6 +32,8 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
 ITransposeHandler {
   constructor(props) {
     super(props);
+
+
     this.state = {
       relTranspose: this.getInitialTranspose(),
       menuOpen: false,
