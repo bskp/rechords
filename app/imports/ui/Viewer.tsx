@@ -279,7 +279,7 @@ ITransposeHandler {
               'onClick': this.toggleInlineReferences,
               className: 'ref' + (this.state.inlineReferences ? ' open' : ' collapsed')
             });
-          const refName = elem.props.children;
+          let refName = React.Children.toArray(elem.props.children)[0].props.children;
           if( typeof refName != 'string')
             continue
 

@@ -73,9 +73,10 @@ module.exports = function showdownRechords() {
     // References
     {
       type: 'lang',
-      regex: /-> *(.*)\n/gm,
-      replace: function(match, ref) {
-        return '<div class="ref">' + ref + '</div>';
+      regex: /-> *(.*?)(?:: *(.*))?\n/gm,
+      replace: function(match, ref, annotation) {
+        annotation = annotation ? annotation : '';
+        return '<div class="ref"><strong>' + ref + '</strong>' + annotation + '</div>';
       }
     },
   ];

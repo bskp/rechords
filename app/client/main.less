@@ -298,26 +298,35 @@ div.mobile-footer {
 
   .ref {
     color: black;
-    font-weight: bold;
     padding-left: 8px;
     margin-left: -12px;
     border-left: 4px solid @accent;
     margin-top: 2em;
     margin-bottom: 2em;
     cursor: pointer;
+
+    strong {
+      margin-right: 0.5em;
+    }
   }
 
   .ref.open {
-    color: darken(@warm, 15%)
+    color: darken(@warm, 15%);
+
+    strong {
+      display: block;
+      margin-right: 0;
+    }
   }
+
   .ref.open,
   h3 {
     font-size: 1em;
     margin: 0;
 
     height: 3em;
-    line-height: 2em;
-    margin-bottom: -4em;
+    line-height: 1.1em;
+    margin-bottom: -4.5em;
 
     text-align: right;
     width: 5em;
