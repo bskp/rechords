@@ -110,9 +110,11 @@ ITransposeHandler {
     let chrodlib = new ChrodLib();
     let rmd_html = this.props.song.getHtml();
 
-    let key = ChrodLib.guessKey(chords);
-
-    // TODO: if key undef, write something there
+    let key_tag = this.props.song.checkTag("tonart");
+    let key = key_tag && ChrodLib.parseTag(key_tag);
+    if (key == null) {
+      key = ChrodLib.guessKey(chords);
+    }
 
     let dT = this.state.relTranspose;
     let responsive = this.state.viewPortGtM ? undefined : 'resize';
