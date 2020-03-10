@@ -912,11 +912,14 @@ hr {
 .rightSettingsButton
 {
     
-    height: max-content;
-    text-align: right;
+  // transform happens after layout
+  // therefore we need to cheat
+    height: 100px;
+    text-align: left;
+
 
   > *{
-    
+    width: 100px;
     display: inline-block;
     cursor: pointer;
     transform: rotate(-90deg);
@@ -925,13 +928,13 @@ hr {
 }
 
 #rightSettings {
-  flex: 0 0 50px;
+  flex: 0 0 100px;
   display: flex;
   height: 100%;
   flex-flow: column wrap;
   // align-items: flex-start;
   // TODO: make the body background white and not gray?
-  background-color:lighten(@warm, 40%);
+  background-color: white;
 }
 #transposer {
   flex:  0 0 auto;
