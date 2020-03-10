@@ -266,11 +266,18 @@ div.mobile-footer {
 
 // Content elements
 
+  #rightSettings {
+    flex: 0 0 90px;
+  }
 #chordsheet {
+
+
+
+
   .chordsheet-colors;
 
   padding-top: 2em;
-  padding-bottom: 10em;
+  padding-bottom: 2em;
   padding-left: 6em;
 
   color: @warm;
@@ -902,13 +909,46 @@ hr {
   }
 }
 
+.rightSettingsButton
+{
+    
+    height: max-content;
+    text-align: right;
+
+  > *{
+    
+    display: inline-block;
+    cursor: pointer;
+    transform: rotate(-90deg);
+    transform-origin: left 0px bottom 0px;
+  }
+}
+
+#rightSettings {
+  flex: 0 0 50px;
+  display: flex;
+  height: 100%;
+  flex-flow: column wrap;
+  // align-items: flex-start;
+  // TODO: make the body background white and not gray?
+  background-color:lighten(@warm, 40%);
+}
 #transposer {
+  flex:  0 0 auto;
   .phone({
     display: none;
   });
+  padding: 2em;
 
   height: 400px;
-  float: right;
+  width: 50px;
+  >* {
+  // TODO: The inside of the slider should have
+  // a better non collapsing centered box
+  // this is only a workaround
+    position: relative;
+    right: -40px;
+  }
 
   .rc-slider {
     width: 0px;

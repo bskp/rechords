@@ -223,6 +223,20 @@ ITransposeHandler {
 
     this.enrichReferences(vdom);
 
+    const settings = <aside id="rightSettings">
+          {this.state.showChords? <TranposeSetter
+            onDoubleClick={this.toggleChords}
+            transposeSetter={this.transposeSetter}
+            transpose={this.state.relTranspose}
+            keym={key} id="transposer"
+          />
+          :
+          <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div> }
+          {/* Example button
+          <div  className="rightSettingsButton" ><span>Cols</span></div>  
+          */}
+          </aside>
+
     return (
 
       <>
@@ -231,19 +245,12 @@ ITransposeHandler {
           id="chordsheet"
           onContextMenu={this.handleContextMenu}
         >
-          {this.state.showChords? <TranposeSetter
-            onDoubleClick={this.toggleChords}
-            transposeSetter={this.transposeSetter}
-            transpose={this.state.relTranspose}
-            keym={key} id="transposer"
-          />
-          :
-          <div onClick={this.toggleChords} style={{cursor: 'pointer', transform: 'rotate(-90deg)', transformOrigin: 'top right'}} id="transposer">Chords</div> }
-          <section ref="html">
+          <section ref="html" id="chordsheetContent">
             {vdom}
           </section>
         <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} id="edit">Bearbeiten…</NavLink></div>
         </div>
+        {settings}
         <Drawer className="source-colors" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
           <p>Schneller:&nbsp;Rechtsklick!</p>
