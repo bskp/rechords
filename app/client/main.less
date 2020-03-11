@@ -228,6 +228,11 @@ aside.drawer {
 }
 
 .tags {
+
+  &:last-of-type {
+    margin-bottom: 3rem;
+  }
+
   li {
     display: inline-block;
     font-size: 0.75em;
@@ -272,21 +277,25 @@ div.mobile-footer {
   margin: 0;
   box-sizing: border-box;
 
+  .chordsheet-colors;
+  color: @warm;
+
   #chordsheetContent {
     padding-top: 2em;
     padding-bottom: 2em;
     padding-left: 6em;
     box-sizing: border-box;
-    
   }
 
   &.multicolumns {
     height: 100%;
     .scroll-horizontal;
+
     #chordsheetContent {
       height: 100%;
       width: unset;
     }
+
     * {
       overflow: visible;
     }
@@ -306,17 +315,8 @@ div.mobile-footer {
         border-radius: 0%; 
         cursor: pointer;
       }
-
-      
-      
     }
   }
-
-
-  .chordsheet-colors;
-
-
-  color: @warm;
 
   .phone({
     font-size: 0.9em; 
@@ -328,8 +328,12 @@ div.mobile-footer {
     color: black;
   }
 
+  .sd-header {
+    margin-bottom: 2rem;
+  }
+
   h1, h2 {
-    margin-bottom: 1rem;
+    margin-bottom: 0;
     font-size: 2.4em;
     display: inline-block;
   }
@@ -420,17 +424,6 @@ div.mobile-footer {
 
     &.hidden {
       display: none;
-    }
-  }
-
-  @keyframes slide-down {
-    0% {
-      opacity: 0;
-      transform: translateY(-100%);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
     }
   }
 
@@ -944,6 +937,16 @@ hr {
   }
 }
 
+#rightSettings {
+  height: 100%;
+  position: fixed;
+  right: @drawer-closed;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  justify-content: space-between;
+}
+
 .rightSettingsButton
 {
   text-align: center;
@@ -967,19 +970,7 @@ hr {
   }
 }
 
-#rightSettings {
-  flex: 0 0 100px;
-  display: flex;
-  height: 100%;
-  flex-flow: column wrap;
-  align-items: flex-end;
-
-  // align-items: flex-start;
-  // TODO: make the body background white and not gray?
-  background-color: white;
-}
 #transposer {
-  flex:  0 0 auto;
   .phone({
     display: none;
   });

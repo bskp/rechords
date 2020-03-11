@@ -19,7 +19,7 @@
     "indexof": "0.0.1",
     "meteor-node-stubs": "^0.3.2",
     "moment": "^2.22.1",
-    "rc-slider": "^8.6.1",
+    "rc-slider": "^9.2.2",
     "react": "^16.13.0",
     "react-autosuggest": "^9.4.1",
     "react-document-title": "^2.0.3",
