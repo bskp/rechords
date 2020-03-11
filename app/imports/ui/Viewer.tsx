@@ -7,6 +7,7 @@ import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
 import Drawer from './Drawer';
 import { Abcjs } from './Abcjs'
+import { ColumnExpander } from "./ColumnGrid.js";
 
 var Parser = require("html-react-parser");
 
@@ -19,7 +20,8 @@ interface ViewerStates {
   relTranspose: number,
   viewPortGtM: boolean,
   inlineReferences: boolean,
-  showChords: boolean
+  showChords: boolean,
+  columns: boolean
 }
 
 // Only expose necessary handler for transpose setting, not complete component
@@ -38,7 +40,8 @@ ITransposeHandler {
       relTranspose: this.getInitialTranspose(),
       viewPortGtM: window.innerWidth > 900,
       inlineReferences: false,
-      showChords: true
+      showChords: true,
+      columns: false
 
     };
   }
@@ -98,6 +101,10 @@ ITransposeHandler {
 
   toggleChords = () => {
     this.setState( state => ({ showChords: !state.showChords }));
+  };
+
+  toggleColumns = () => {
+    this.setState( state => ({ columns: !state.columns }));
   };
 
   toggleInlineReferences = () => {
@@ -232,21 +239,33 @@ ITransposeHandler {
           />
           :
           <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div> }
-          {/* Example button
-          <div  className="rightSettingsButton" ><span>Cols</span></div>  
-          */}
+          <div onClick={this.toggleColumns} className={'rightSettingsButton'+(this.state.columns?' active':'')} ><span>Columns <sub>&beta;</sub></span></div>  
+         
           </aside>
+    
+    let chordsheedcontent;
+
+    if(this.state.columns) {
+      const [sheetHeader, sheetContent]: React.ReactNode[] = this.splitSongVdom(vdom);
+
+      chordsheedcontent =
+          <ColumnExpander song_id={this.props.song?._id} header={sheetHeader}>
+            {sheetContent}
+          </ColumnExpander>
+    } else {
+      chordsheedcontent = vdom
+    }
 
     return (
 
       <>
         <div
-          className="content"
+          className={'content' + (this.state.columns ? ' multicolumns':'')}
           id="chordsheet"
           onContextMenu={this.handleContextMenu}
         >
-          <section ref="html" id="chordsheetContent">
-            {vdom}
+          <section id="chordsheetContent">
+            {chordsheedcontent}
           </section>
         <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} id="edit">Bearbeiten…</NavLink></div>
         </div>
@@ -303,6 +322,20 @@ ITransposeHandler {
       }
     }
   }
+  private splitSongVdom(vdom: React.ReactElement[]): React.ReactElement[] {
+    const sheetHeader = vdom.filter(el => el.props?.className == 'sd-header')
+      .map(el => React.cloneElement(el))
+
+    const sheetContent = vdom.filter(el => el.props?.className != 'sd-header')
+      .filter(el => typeof el == 'object')
+      .map(el => React.cloneElement(el))
+
+    // @ts-ignore
+    return [sheetHeader, sheetContent];
+
+  }
+
+
 }
 
 

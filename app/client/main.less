@@ -266,19 +266,55 @@ div.mobile-footer {
 
 // Content elements
 
-  #rightSettings {
-    flex: 0 0 90px;
-  }
 #chordsheet {
 
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 
+  #chordsheetContent {
+    padding-top: 2em;
+    padding-bottom: 2em;
+    padding-left: 6em;
+    box-sizing: border-box;
+    
+  }
+
+  &.multicolumns {
+    height: 100%;
+    .scroll-horizontal;
+    #chordsheetContent {
+      height: 100%;
+      width: unset;
+    }
+    * {
+      overflow: visible;
+    }
+
+    input[type="range"] {
+      background: @warm;
+      -webkit-appearance: none;
+      height: 5px;
+
+      &::-webkit-slider-thumb, &::-moz-range-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 1rem;
+        height: 1rem;
+        background-color: @accent;
+        background: @accent;
+        border-radius: 0%; 
+        cursor: pointer;
+      }
+
+      
+      
+    }
+  }
 
 
   .chordsheet-colors;
 
-  padding-top: 2em;
-  padding-bottom: 2em;
-  padding-left: 6em;
 
   color: @warm;
 
@@ -911,19 +947,24 @@ hr {
 
 .rightSettingsButton
 {
-    
-  // transform happens after layout
-  // therefore we need to cheat
-    height: 100px;
-    text-align: left;
+  text-align: center;
+  padding: 1em 0.3em;
+  margin: 2px 0;
+  width: 40px;
+  background-color: @warm;
+  border-radius: 5% 0 0 5%;
+  color: white;
 
+  &.active {
+    .source-colors;
+  }
+  
 
   > *{
-    width: 100px;
     display: inline-block;
     cursor: pointer;
-    transform: rotate(-90deg);
-    transform-origin: left 0px bottom 0px;
+    writing-mode:vertical-rl;
+    transform: rotate(180deg);
   }
 }
 
@@ -932,6 +973,8 @@ hr {
   display: flex;
   height: 100%;
   flex-flow: column wrap;
+  align-items: flex-end;
+
   // align-items: flex-start;
   // TODO: make the body background white and not gray?
   background-color: white;

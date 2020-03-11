@@ -1,5 +1,8 @@
+type SNB = string | number | boolean
 export interface ISettingsStorage {
+    
 
+    
     /**
      * 
      * Retrieves a setting for a certain document
@@ -13,7 +16,7 @@ export interface ISettingsStorage {
      * @param documentKey 
      * @param defaultValue
      */
-    getValue( groupKey: string, documentKey: string, defaultValue: string )
+    getValue<T extends SNB>( groupKey: string, documentKey: string, defaultValue: T ) : T
 
     setValue( groupKey: string, documentKey: string, value: string )
 
@@ -34,8 +37,8 @@ export class DefaultSettingsStorage implements ISettingsStorage {
         
     }
 
-    getValue(groupKey: any, documentKey: any, defaultValue: any): string | number | boolean {
-
+    getValue<T extends SNB>( groupKey: string, documentKey: string, defaultValue: T ) : T
+    {
         const documentValue = localStorage.getItem( this.getStorageKey( groupKey, documentKey ) )
         if( documentValue != null )
             return this.convert(documentValue, defaultValue)
@@ -59,15 +62,20 @@ export class DefaultSettingsStorage implements ISettingsStorage {
     
 
 
-    private convert( value: string, valueType: string|boolean|number)
+    private convert<T extends SNB>( value: string, valueType: T ): T
     {
+
+        // This is safe but typescript doesn't realize
         if (typeof valueType == 'boolean')
+            // @ts-ignore
             return value == 'true'
 
         if (typeof valueType == 'number')
-            return Number.parseFloat( value );
+            // @ts-ignore
+            return Number.parseFloat(value);
 
-        if( typeof valueType == 'string' )
+        if (typeof valueType == 'string')
+            // @ts-ignore
             return value
 
         throw new Error("Illegal Default VAlue")
@@ -87,8 +95,9 @@ export class DefaultSettingsStorage implements ISettingsStorage {
     }
 
     private checkVariableName( name: String ) : void {
-        if (name == '')
+        if (name == '' || typeof name == 'undefined' )
             return;
+
         const match = name.match(validVariableName)
         if( match == null || match.length == 0 )
             throw new Error("Invalid Variable Name");

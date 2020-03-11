@@ -1,0 +1,47 @@
+// Naming the file the same as the tsx seems to confuse 
+// the import logic
+.ce-column-grid {
+    --columnWidth: 20rem;
+    --headerHight: 5rem;
+    --spanHeader: 1;
+    min-width: 100%;
+    height: 100%;
+
+    box-sizing: border-box;
+  
+  
+    // overflow-x: visible;
+    // overflow-y: hidden;
+  
+  
+    display: grid;
+    grid-template-columns: repeat(20, var(--columnWidth, 20rem));
+    grid-template-rows: var(--headerHight, 5rem) calc(100%~"-" --headerHight);
+    grid-auto-flow: column dense;
+  
+  div {
+    grid-auto-rows: minmax(auto, 100vh);
+  }
+
+  .ce-halfColumn {
+    grid-row: 2 ~"/" 3;
+  }
+
+  .ce-fullColumn {
+    grid-row:  1 ~"/" 3;
+  }
+
+  .ce-grid-header {
+    grid-column: 1 ~"/" span var(--spanHeader, 1);
+    grid-row: 1 ~"/" 1;
+  }
+
+
+
+}
+  #columnWidthSettings {
+    position: fixed;
+    bottom: 5px;
+
+  }
+  
