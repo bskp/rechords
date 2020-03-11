@@ -303,14 +303,16 @@ export default class Preview extends React.Component<P, {}> {
     }});
 
     return (
-      <section
-        className="content interactive"
-        id="chordsheet"
-        onClick={this.handleClick.bind(this)}
-        ref="html">
+      <div className="content" id="chordsheet">
+        <section
+          className="content interactive"
+          id="chordsheetContent"
+          onClick={this.handleClick.bind(this)}
+          ref="html">
 
-        {vdom}
-      </section>
+          {vdom}
+        </section>
+      </div>
     )
   }
 }
