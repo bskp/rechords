@@ -14,13 +14,41 @@ interface AbcjsProps {
     renderParams: object,
 }
 
+const  regular = "Roboto 12";
+const  bold = regular + " bold";
+
 export class Abcjs extends PureComponent<AbcjsProps> {
     uniqueNumber = Date.now() + Math.random()
 
     static defaultProps = {
         abcNotation: '',
-        parserParams: {},
-        engraverParams: { responsive: 'resize' },
+        parserParams: {
+            paddingtop: 0,
+            paddingbottom: 0,
+            paddingright: 0,
+            paddingleft: 0,
+            add_classes: true,
+            format: {
+                gchordfont: bold,
+                annotationfont: bold,
+                vocalfont: regular,
+                composerfont: regular,
+                footerfont: regular,
+                headerfont: regular,
+                historyfont: regular,
+                infofont: regular,
+                measurefont: regular,
+                partsfont: regular,
+                repeatfont: regular,
+                subtitlefont: regular,
+                tempofont: regular,
+                textfont: regular,
+                titlefont: regular,
+                voicefont: regular,
+                wordsfont: regular,
+            }
+        },
+        engraverParams: {},
         renderParams: { viewportHorizontal: true },
     }
 
@@ -28,9 +56,9 @@ export class Abcjs extends PureComponent<AbcjsProps> {
         const res = abcjs.renderAbc(
             'abcjs-result-' + this.uniqueNumber,
             abcNotation,
-            parserParams,
+            {...Abcjs.defaultProps.parserParams, ...parserParams},
             engraverParams,
-            renderParams
+            {...Abcjs.defaultProps.renderParams, ...renderParams}
         )
     }
 
@@ -46,7 +74,7 @@ export class Abcjs extends PureComponent<AbcjsProps> {
 
     render() {
         return (
-            <div style={{ width: '100%' }} className="abc-notation">
+            <div className="abc-notation">
                 <div id={'abcjs-result-' + this.uniqueNumber} style={{ width: '100%' }} />
             </div>
         )

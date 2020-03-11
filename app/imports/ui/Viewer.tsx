@@ -151,42 +151,10 @@ ITransposeHandler {
 
           let abc = code.children[0].data;
 
-          let regular = "Roboto 12";
-          let bold = regular + " bold";
-
           return <Abcjs
             abcNotation={abc}
             parserParams={{
-                paddingtop: 0,
-                paddingbottom: 0,
-                paddingright: 0,
-                paddingleft: 0,
-                scale: 1,
-                add_classes: true,
                 visualTranspose: dT,
-                format: {
-                  gchordfont: bold,
-                  annotationfont: bold,
-                  vocalfont: regular,
-                  composerfont: regular,
-                  footerfont: regular,
-                  headerfont: regular,
-                  historyfont: regular,
-                  infofont: regular,
-                  measurefont: regular,
-                  partsfont: regular,
-                  repeatfont: regular,
-                  subtitlefont: regular,
-                  tempofont: regular,
-                  textfont: regular,
-                  titlefont: regular,
-                  voicefont: regular,
-                  wordsfont: regular,
-                }
-              }}
-            engraverParams={{'responsive': responsive}}
-            renderParams={{
-                viewportHorizontal: true,
               }}
           />
         }

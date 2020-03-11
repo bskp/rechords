@@ -296,19 +296,6 @@ export default class Preview extends React.Component<P, {}> {
 
         return <Abcjs
           abcNotation={abc}
-          parserParams={{
-              paddingtop: 0,
-              paddingbottom: 0,
-              paddingright: 0,
-              paddingleft: 0,
-              scale: 1,
-              add_classes: true,
-              format: {
-                gchordfont: "Roboto 12 bold",
-                annotationfont: "Roboto 12 bold",
-                vocalfont: "Roboto 12",
-              }
-            }}
           engraverParams={{ responsive: 'resize' }}
         />
       }
