@@ -41,7 +41,7 @@ async function layout(c1: HTMLElement, c2, maxIterations) {
 
     for (let i = 0; isVerticalOverflow(c1) && i < maxIterations; i++) {
         // c2.scrollIntoView()
-        await Sleep(150);
+        // await Sleep(150);
         const lastChild = c1.lastChild;
 
         if (lastChild.hasChildNodes()) {
@@ -69,8 +69,13 @@ export function increaseHeaderSpan(element: HTMLElement, maxSpan = 3): number {
     // TODO: fuzzy guessing 
 
     let i = fitHeaderSpan();
+    const firstChild = element.firstElementChild;
+    const style = getComputedStyle(firstChild);
+    // margin is not included. sigh.
+    // outherhight form jquery...
+    const height = `calc( ${firstChild.scrollHeight}px + ${style.marginTop} + ${style.marginBottom})`;
 
-    element.parentElement.style.setProperty('--headerHight', element.firstChild.scrollHeight + 'px')
+    element.parentElement.style.setProperty('--headerHight', height)
 
     // fit again in case multiline makes less span necessary
     i = fitHeaderSpan();

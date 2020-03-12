@@ -285,11 +285,25 @@ div.mobile-footer {
     padding-bottom: 2em;
     padding-left: 6em;
     box-sizing: border-box;
+
+    .phone({
+      font-size: 0.9em; 
+      padding-left: 1em;
+      padding-right: 1em;
+    });
   }
 
   &.multicolumns {
     height: 100%;
     .scroll-horizontal;
+
+    h3 {
+      writing-mode: vertical-lr;
+      transform: rotate(180deg);
+      margin-bottom: -6em;
+      margin-top: 7em;
+      // border-left: solid;
+    }
 
     #chordsheetContent {
       height: 100%;
@@ -318,11 +332,6 @@ div.mobile-footer {
     }
   }
 
-  .phone({
-    font-size: 0.9em; 
-    padding-left: 1em;
-    padding-right: 1em;
-  });
 
   h2, h3, h4 {
     color: black;
@@ -938,6 +947,7 @@ hr {
 }
 
 #rightSettings {
+  .phone-tablet({display: none;});
   height: 100%;
   position: fixed;
   right: @drawer-closed;

@@ -213,7 +213,7 @@ ITransposeHandler {
     
     let chordsheedcontent;
 
-    if(this.state.columns) {
+    if(this.showMultiColumns()) {
       const [sheetHeader, sheetContent]: React.ReactNode[] = this.splitSongVdom(vdom);
 
       chordsheedcontent =
@@ -228,7 +228,7 @@ ITransposeHandler {
 
       <>
         <div
-          className={'content' + (this.state.columns ? ' multicolumns':'')}
+          className={'content' + (this.showMultiColumns() ? ' multicolumns':'')}
           id="chordsheet"
           onContextMenu={this.handleContextMenu}
         >
@@ -244,6 +244,10 @@ ITransposeHandler {
         </Drawer>
       </>
     );
+  }
+
+  private showMultiColumns() {
+    return this.state.columns && this.state.viewPortGtM;
   }
 
   private enrichReferences(vdom: any) {
