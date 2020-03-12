@@ -25,7 +25,6 @@ const empty_song = {
 const nA404 = (
     <div className="container">
         <DocumentTitle title="Hölibu | 404" />
-        <aside id="list" className="drawer open"/>
         <div className="content chordsheet-colors">
             <span id="logo">
                 <h1>404</h1>
@@ -91,7 +90,6 @@ class App extends Component {
             });
 
         }
-
 
 
         return (
