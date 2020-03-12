@@ -4,9 +4,11 @@ import { increaseHeaderSpan, expandColumns } from '../api/expandColumns';
 import './ColumnGridStyle.less'
 import { DefaultSettingsStorage } from '../api/localStorageDefs';
 
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
+
 const debugColumns = false;
-type ColumnExpanderProps = { header: React.ReactNode, scope?: string, song_id: string }
-type ColumnExpanderState = { columnWidth: number }
+type ColumnExpanderProps = React.PropsWithChildren<{ header: React.ReactNode, scope?: string, song_id: string }>
+type ColumnExpanderState = { columnWidth: number, height: number }
 
 export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnExpanderState>
 {
@@ -14,11 +16,14 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
     public static defaultProps = {
         scope: "Expander"
     }
+    childupdate: number;
 
     constructor(props: Readonly<ColumnExpanderProps>) {
         super(props);
+        this.childupdate = 0;
         this.state = {
             columnWidth: this.settingsStorage.getValue('columnWidth', this.props.song_id, 20),
+            height: window.innerHeight
         }
     }
     colRef: React.RefObject<HTMLDivElement> = React.createRef()
@@ -39,7 +44,41 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
         this.setStateFromStorage(songId);
    }
 
-    componentDidMount() { this.effect(this.props, this.state) };
+   debounced = AwesomeDebouncePromise( () => window.innerHeight, 100) 
+
+
+   bull =  async (ev: UIEvent) => {
+       const h = await this.debounced();
+       console.log(h)
+       this.childupdate++;
+       this.setState({height: window.innerHeight}) 
+     }
+        
+
+
+    componentDidMount() { 
+        this.effect(this.props, this.state)
+        window.addEventListener('resize', this.bull)
+        
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.bull);
+    }
+        
+
+     
+
+    shouldComponentUpdate(nextProps: ColumnExpanderProps) {
+        // React.Children.forEach( nextProps.children, (child, idx);
+        if (this.props.children != nextProps.children && this.colRef.current )
+        {
+            // this.colRef.current.parentElement.innerHTML = '';
+            this.childupdate++;
+        }
+        return true;
+    }
+
     componentDidUpdate(prevProps: ColumnExpanderProps, prevState: ColumnExpanderState) { this.effect(prevProps, prevState) }
 
     // TODO: read column width from 
@@ -88,13 +127,13 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
             // using column width means transposing still shouldn't 
             // lead to complete rerender
             <>
-                {slider}
-                <div key={this.props.song_id + this.state.columnWidth} style={style} className="ce-column-grid">
+                {slider} 
+                <div key={this.props.song_id + this.state.columnWidth + this.childupdate} style={style} className="ce-column-grid">
                     {debugStyle}
                     <div className={className} ref={this.headerRef}  >
                         {this.props.header}
                     </div>
-                    <div key='vdom' ref={this.colRef}>
+                    <div  ref={this.colRef}>
                         {this.props.children}
                     </div>
                 </div>

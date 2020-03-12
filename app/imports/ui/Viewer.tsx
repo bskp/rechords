@@ -66,7 +66,9 @@ ITransposeHandler {
   }
 
   updateDimensions = () => {
-    this.setState({ viewPortGtM: window.innerWidth > 900 });
+    const gtM = window.innerWidth > 900;
+    if( gtM != this.state.viewPortGtM)
+    this.setState({ viewPortGtM: gtM });
   };
 
   componentDidMount() {
@@ -211,18 +213,6 @@ ITransposeHandler {
          
           </aside>
     
-    let chordsheedcontent;
-
-    if(this.showMultiColumns()) {
-      const [sheetHeader, sheetContent]: React.ReactNode[] = this.splitSongVdom(vdom);
-
-      chordsheedcontent =
-          <ColumnExpander song_id={this.props.song?._id} header={sheetHeader}>
-            {sheetContent}
-          </ColumnExpander>
-    } else {
-      chordsheedcontent = vdom
-    }
 
     return (
 
@@ -233,7 +223,9 @@ ITransposeHandler {
           onContextMenu={this.handleContextMenu}
         >
           <section id="chordsheetContent">
-            {chordsheedcontent}
+            <ChordSheet showMultiColumns={this.showMultiColumns()} song={this.props.song} >
+              {vdom}
+            </ChordSheet>
           </section>
         <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} id="edit">Bearbeiten…</NavLink></div>
         </div>
@@ -266,12 +258,14 @@ ITransposeHandler {
       let elem = vdom[i];
       if (elem.props) {
         if (elem.props.className == 'ref') {
-          let visible = this.state.inlineReferences ? ' shown' : ' hidden'
+          const key = 'ref_'+i;
+          const visible = this.state.inlineReferences ? ' shown' : ' hidden'
 
           vdom[i] = React.cloneElement(elem,
             {
               'onClick': this.toggleInlineReferences,
-              className: 'ref' + (this.state.inlineReferences ? ' open' : ' collapsed')
+              className: 'ref' + (this.state.inlineReferences ? ' open' : ' collapsed'),
+              key: key
             });
           let refName = React.Children.toArray(elem.props.children)[0].props.children;
           if( typeof refName != 'string')
@@ -294,20 +288,33 @@ ITransposeHandler {
       }
     }
   }
-  private splitSongVdom(vdom: React.ReactElement[]): React.ReactElement[] {
-    const sheetHeader = vdom.filter(el => el.props?.className == 'sd-header')
-      .map(el => React.cloneElement(el))
-
-    const sheetContent = vdom.filter(el => el.props?.className != 'sd-header')
-      .filter(el => typeof el == 'object')
-      .map(el => React.cloneElement(el))
-
-    // @ts-ignore
-    return [sheetHeader, sheetContent];
-
-  }
 
 
 }
+function splitSongVdom(vdom: React.ReactElement[]): React.ReactElement[] {
+  const sheetHeader = vdom.filter(el => el.props?.className == 'sd-header')
+    .map(el => React.cloneElement(el))
 
+  const sheetContent = vdom.filter(el => el.props?.className != 'sd-header')
+    .filter(el => typeof el == 'object')
+    .map(el => React.cloneElement(el))
+
+  // @ts-ignore
+  return [sheetHeader, sheetContent];
+
+}
+const ChordSheet = (props: React.PropsWithChildren<{showMultiColumns: boolean, song: Song}> ) => {
+
+  const vdom = props.children;
+  if (props.showMultiColumns) {
+    const [sheetHeader, sheetContent]: React.ReactNode[] = splitSongVdom(vdom);
+
+    return <ColumnExpander song_id={props.song?._id} header={sheetHeader}>
+      {sheetContent}
+    </ColumnExpander>
+  } else {
+    return vdom;
+  }
+
+}
 

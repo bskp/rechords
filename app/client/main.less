@@ -298,11 +298,11 @@ div.mobile-footer {
     .scroll-horizontal;
 
     h3 {
-      writing-mode: vertical-lr;
-      transform: rotate(180deg);
-      margin-bottom: -6em;
-      margin-top: 7em;
-      // border-left: solid;
+      margin: 2em 0 0; 
+      width: auto; 
+      height: auto; 
+      line-height: 1em; 
+      text-align: left;
     }
 
     #chordsheetContent {
@@ -737,6 +737,7 @@ aside.drawer#list {
 
     .phone({position: static; width: 100%; padding-left: 0.5em;});
 
+    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     background-color: fade(@light, 60%);
 
@@ -981,6 +982,7 @@ hr {
 }
 
 #transposer {
+
   .phone({
     display: none;
   });
