@@ -5,9 +5,10 @@ import './ColumnGridStyle.less'
 import { DefaultSettingsStorage } from '../api/localStorageDefs';
 
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { now } from 'moment';
-// import DebouncePromise from 'debounce-promise';
-const deb= require('debounce-promise')
+
+
+const defaultColumnWidth = 320 // px
+
 
 const debugColumns = false;
 type ColumnExpanderProps = React.PropsWithChildren<{ header: React.ReactNode, scope?: string, song_id: string }>
@@ -20,24 +21,25 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
         scope: "Expander"
     }
 
-    dragginColumn: number = null;
-
+    dragStartPositionAndColumnWidth: number = null;
+    hoveringColumn: boolean = false;
     childupdate: number;
-    filterDrag = (event: MouseEvent) => {
+
+    handleColumnDrag = (event: MouseEvent) => {
         if(event.type == 'mousedown')
         {
             if( this.hoveringColumn )
-            this.dragginColumn = event.pageX - this.state.columnWidth;
+            this.dragStartPositionAndColumnWidth = event.pageX - this.state.columnWidth;
         }
         if(event.type == 'mouseup')
         {
-            this.dragginColumn = null;
+            this.dragStartPositionAndColumnWidth = null;
             this.setState({});
         }
         if (event.type == 'mousemove') {
-            if (this.dragginColumn) {
-                const newWidth = event.pageX-this.dragginColumn;
-                console.log( newWidth)
+            if (this.dragStartPositionAndColumnWidth) {
+                const newWidth = event.pageX-this.dragStartPositionAndColumnWidth;
+                // console.log( newWidth)
                 if (newWidth > 300 ) {
                     this.setState(s => ({ columnWidth: newWidth }))
                 }
@@ -45,7 +47,7 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
                 const target = event.target
                 const leftRel = event.clientX - event.target.offsetLeft;
                 const isColumn = target.classList.contains('ce-column');
-                console.log(target, leftRel)
+                // console.log(target, leftRel)
                 let prevHovering = this.hoveringColumn
                 if (isColumn) {
                     this.hoveringColumn = leftRel < 20 || leftRel > this.state.columnWidth - 20
@@ -57,14 +59,12 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
             }
         }
     };
-    timeStampLastDrag: number = 0;
-    hoveringColumn: boolean = false;
 
     constructor(props: Readonly<ColumnExpanderProps>) {
         super(props);
         this.childupdate = 0;
         this.state = {
-            columnWidth: this.settingsStorage.getValue('columnWidth', this.props.song_id, 320),
+            columnWidth: this.settingsStorage.getValue('columnWidth', this.props.song_id, defaultColumnWidth),
             height: window.innerHeight
         }
     }
@@ -88,25 +88,18 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
         this.setStateFromStorage(songId);
    }
 
-   debounced = AwesomeDebouncePromise( () => window.innerHeight, 100) 
-
-
-   bull =  async (ev: UIEvent) => {
-       const h = await this.debounced();
-       console.log(h)
+   debouncedHandleWindowResize = AwesomeDebouncePromise( (ev) => {
+       console.log('called?');
        this.childupdate++;
-       this.setState({height: window.innerHeight}) 
-     }
-        
+       this.setState({height: window.innerHeight})   }, 100) 
 
     componentDidMount() { 
         this.effect(this.props, this.state)
-        window.addEventListener('resize', this.bull )
-        
+        window.addEventListener('resize', this.debouncedHandleWindowResize )
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this.bull);
+        window.removeEventListener('resize', this.debouncedHandleWindowResize);
     }
         
 
@@ -126,7 +119,7 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
 
     // TODO: read column width from 
     private setStateFromStorage(songId: any) {
-        const columnWidth = this.settingsStorage.getValue('columnWidth', songId, 20);
+        const columnWidth = this.settingsStorage.getValue('columnWidth', songId, defaultColumnWidth);
         this.setState({ columnWidth: columnWidth });
     }
     changeColumnWidth = (ev: { target: { value: any; }; }) => {
@@ -165,7 +158,7 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
             </div>
 
             let gridClasses = "ce-column-grid"
-            if( this.dragginColumn ) 
+            if( this.dragStartPositionAndColumnWidth ) 
                 gridClasses += ' dragging'
             else if( this.hoveringColumn )
                 gridClasses += ' hovering'
@@ -179,8 +172,8 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
                 {/* {slider}  */}
                 <div key={this.props.song_id + this.state.columnWidth + this.childupdate} 
                     style={style} className={gridClasses} 
-                    onMouseDown={this.filterDrag} onMouseUp={this.filterDrag}
-                    onMouseMove={this.filterDrag} >
+                    onMouseDown={this.handleColumnDrag} onMouseUp={this.handleColumnDrag}
+                    onMouseMove={this.handleColumnDrag} >
 
                     {/* <div className="gapline"></div> */}
                     {debugStyle}
