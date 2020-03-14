@@ -297,12 +297,16 @@ div.mobile-footer {
     height: 100%;
     .scroll-horizontal;
 
-    h3 {
+    h3, .ref.open {
       margin: 2em 0 0; 
       width: auto; 
       height: auto; 
       line-height: 1em; 
       text-align: left;
+    }
+
+    p {
+      margin: 0 0 2em
     }
 
     #chordsheetContent {
@@ -527,8 +531,10 @@ div.mobile-footer {
     @media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
       // Only for non-webkit browser: Hanging indents for rows without chords.
       // Does not work for webkit as negative first-line indent is handled differently for contained flex-elements.
-      text-indent: -@continuation_pad;
-      padding-left: @continuation_pad;
+      // This Caused Gaps between syllables in chrome based browsers
+      // Doesn't seem to be necessary for hanging indents, removing upon further notice
+      // text-indent: -@continuation_pad;
+      // padding-left: @continuation_pad;
     }
 
     &:first-child {
