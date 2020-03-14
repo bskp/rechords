@@ -37,9 +37,9 @@ export async function expandColumns(element: Node, maxIterations = 20,
 
 };
 
-async function layout(c1: HTMLElement, c2, maxIterations) {
+async function layout( c1: HTMLElement, c2, maxIterations ) {
 
-    for (let i = 0; isVerticalOverflow(c1) && i < maxIterations; i++) {
+    for ( let i = 0; isVerticalOverflow(c1) && i < maxIterations; i++ ) {
         // c2.scrollIntoView()
         // await Sleep(150);
         const lastChild = c1.lastChild;

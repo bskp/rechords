@@ -5,6 +5,9 @@ import './ColumnGridStyle.less'
 import { DefaultSettingsStorage } from '../api/localStorageDefs';
 
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
+import { now } from 'moment';
+// import DebouncePromise from 'debounce-promise';
+const deb= require('debounce-promise')
 
 const debugColumns = false;
 type ColumnExpanderProps = React.PropsWithChildren<{ header: React.ReactNode, scope?: string, song_id: string }>
@@ -16,13 +19,52 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
     public static defaultProps = {
         scope: "Expander"
     }
+
+    dragginColumn: number = null;
+
     childupdate: number;
+    filterDrag = (event: MouseEvent) => {
+        if(event.type == 'mousedown')
+        {
+            if( this.hoveringColumn )
+            this.dragginColumn = event.pageX - this.state.columnWidth;
+        }
+        if(event.type == 'mouseup')
+        {
+            this.dragginColumn = null;
+            this.setState({});
+        }
+        if (event.type == 'mousemove') {
+            if (this.dragginColumn) {
+                const newWidth = event.pageX-this.dragginColumn;
+                console.log( newWidth)
+                if (newWidth > 300 ) {
+                    this.setState(s => ({ columnWidth: newWidth }))
+                }
+            } else {
+                const target = event.target
+                const leftRel = event.clientX - event.target.offsetLeft;
+                const isColumn = target.classList.contains('ce-column');
+                console.log(target, leftRel)
+                let prevHovering = this.hoveringColumn
+                if (isColumn) {
+                    this.hoveringColumn = leftRel < 20 || leftRel > this.state.columnWidth - 20
+                } else {
+                    this.hoveringColumn = false;
+                }
+                if (this.hoveringColumn != prevHovering)
+                    this.setState({});
+            }
+        }
+    };
+    timeStampLastDrag: number = 0;
+    hoveringColumn: boolean = false;
 
     constructor(props: Readonly<ColumnExpanderProps>) {
         super(props);
         this.childupdate = 0;
         this.state = {
-            columnWidth: this.settingsStorage.getValue('columnWidth', this.props.song_id, 20),
+            columnWidth: this.settingsStorage.getValue('columnWidth', this.props.song_id, 320),
             height: window.innerHeight
         }
     }
@@ -33,8 +75,10 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
 
     private effect(prevProps: ColumnExpanderProps, prevState: ColumnExpanderState) {
 
-        if (this.colRef.current) {
+        if ( this.colRef.current ) {
+            // TODO: do this properly in react (now it's native js and react loses track of its elements )
             const spanCount = increaseHeaderSpan(this.headerRef.current)
+            
             expandColumns(this.colRef.current, 10, idx => idx >= spanCount ? 'ce-fullColumn' : 'ce-halfColumn')
         }
         const songId = this.props.song_id;
@@ -55,10 +99,9 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
      }
         
 
-
     componentDidMount() { 
         this.effect(this.props, this.state)
-        window.addEventListener('resize', this.bull)
+        window.addEventListener('resize', this.bull )
         
     }
 
@@ -88,14 +131,14 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
     }
     changeColumnWidth = (ev: { target: { value: any; }; }) => {
         const value = ev.target.value;
-        this.setState({ columnWidth: value })
+        this.setState({ columnWidth: parseFloat(value) })
         this.settingsStorage.setValue('columnWidth', this.props.song_id, value)
     }
 
 
     render() {
         const style = {
-            "--columnWidth": this.state.columnWidth + 'rem',
+            "--columnWidth": this.state.columnWidth + 'px',
         }
 
         const debugStyle = debugColumns?
@@ -115,28 +158,40 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
                 `
                  }}></style>:'';
         
-        const className = `ce-grid-header`
         const slider = <div id="columnWidthSettings">
             <input type="range" value={this.state.columnWidth} onChange={this.changeColumnWidth} 
-            min="5" max="50"  style={{zIndex: 90}}
+            min="250" max="1000"  style={{zIndex: 90}}
             />
             </div>
+
+            let gridClasses = "ce-column-grid"
+            if( this.dragginColumn ) 
+                gridClasses += ' dragging'
+            else if( this.hoveringColumn )
+                gridClasses += ' hovering'
+
         return (
             // Setting key to song_id forces complete rerender 
             // otherwise react fails since we add more columns after rendering
             // using column width means transposing still shouldn't 
             // lead to complete rerender
             <>
-                {slider} 
-                <div key={this.props.song_id + this.state.columnWidth + this.childupdate} style={style} className="ce-column-grid">
+                {/* {slider}  */}
+                <div key={this.props.song_id + this.state.columnWidth + this.childupdate} 
+                    style={style} className={gridClasses} 
+                    onMouseDown={this.filterDrag} onMouseUp={this.filterDrag}
+                    onMouseMove={this.filterDrag} >
+
+                    {/* <div className="gapline"></div> */}
                     {debugStyle}
-                    <div className={className} ref={this.headerRef}  >
+                    <div className='ce-grid-header' ref={this.headerRef}  >
                         {this.props.header}
                     </div>
-                    <div  ref={this.colRef}>
+                    <div className={'ce-column'} ref={this.colRef}>
                         {this.props.children}
                     </div>
                 </div>
+                
             </>
         );
     }

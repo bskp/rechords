@@ -242,6 +242,7 @@ ITransposeHandler {
     return this.state.columns && this.state.viewPortGtM;
   }
 
+  // TODO: Outsource to helper class/ function
   private enrichReferences(vdom: any) {
     let sections_dict = new Map<String, any>();
     for (let i = 0; i < vdom.length; i++) {
@@ -265,12 +266,14 @@ ITransposeHandler {
             {
               'onClick': this.toggleInlineReferences,
               className: 'ref' + (this.state.inlineReferences ? ' open' : ' collapsed'),
-              key: key
+              key: key,
+              id: key
             });
           let refName = React.Children.toArray(elem.props.children)[0].props.children;
           if( typeof refName != 'string')
             continue
 
+          // TODO: merge reference an content into one section so they don't break apart in column view
           let ref = 'sd-ref-' + refName.trim();
           let definition = sections_dict.get(ref)
           if( !definition ) {
