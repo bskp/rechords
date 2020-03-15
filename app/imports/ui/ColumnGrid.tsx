@@ -26,6 +26,8 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
     childupdate: number;
 
     handleColumnDrag = (event: MouseEvent) => {
+        const target = event.target
+
         if(event.type == 'mousedown')
         {
             if( this.hoveringColumn )
@@ -44,9 +46,8 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
                     this.setState(s => ({ columnWidth: newWidth }))
                 }
             } else {
-                const target = event.target
-                const leftRel = event.clientX - event.target.offsetLeft;
-                const isColumn = target.classList.contains('ce-column');
+                const isColumn = target.classList.contains('ce-column') && target.id != 'ce-firstcolumn';
+                const leftRel = event.clientX - target.offsetLeft;
                 // console.log(target, leftRel)
                 let prevHovering = this.hoveringColumn
                 if (isColumn) {
@@ -180,7 +181,7 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
                     <div className='ce-grid-header' ref={this.headerRef}  >
                         {this.props.header}
                     </div>
-                    <div className={'ce-column'} ref={this.colRef}>
+                    <div className={'ce-column'} ref={this.colRef} id="ce-firstcolumn">
                         {this.props.children}
                     </div>
                 </div>
