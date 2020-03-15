@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40" viewBox="0 0 80 40">
+  <defs>
+    <style>
+      #pfeil { fill: #dd4407; }
+      #text { fill: #999; }
+    </style>
+  </defs>
+  <g id="text">
+    <rect x="19.2" y="14.62" width="23.55" height="3.75"/>
+    <rect x="19.2" y="6.97" width="25.65" height="3.75"/>
+    <rect x="19.2" y="29.92" width="26.7" height="3.75"/>
+    <rect x="19.2" y="22.27" width="29.55" height="3.75"/>
+  </g>
+  <g id="pfeil">
+    <g>
+      <rect x="61.72" y="10.09" width="3.45" height="18.48" transform="translate(-0.08 0.26) rotate(-0.23)"/>
+      <polygon points="63.43 32.51 54.41 24.11 56.77 21.58 63.44 27.8 70.2 21.57 72.54 24.11 63.43 32.51"/>
+    </g>
+  </g>
+</svg>

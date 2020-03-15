@@ -1,3 +1,5 @@
+@import "../../client/variables.import.less";
+
 // Naming the file the same as the tsx seems to confuse 
 // the import logic
 .ce-column-grid {
@@ -8,11 +10,6 @@
     height: 100%;
 
     box-sizing: border-box;
-  
-  
-    // overflow-x: visible;
-    // overflow-y: hidden;
-  
   
     display: grid;
     grid-template-columns: repeat(20, var(--columnWidth, 20rem));
@@ -33,16 +30,15 @@
   }
 
   &.dragging :not(#ce-firstcolumn).ce-column {
-    border-left: 3px dashed brown;
+    border-left: 4px solid fade(@warm, 20%);
     cursor: col-resize;
-    // background-color: lightgreen;
   }
   &.hovering :not(#ce-firstcolumn).ce-column {
-    border-left: 3px dashed gray;
+    border-left: 4px solid fade(@warm, 40%);
     cursor: col-resize;
   }
   .ce-column {
-    border-left: 3px solid white;
+    border-left: 4px solid transparent;
     transition: color 2s ;
     padding-left: 1em;
     margin-left: -1em; // In order to Align with the left edge of the header

@@ -209,8 +209,9 @@ ITransposeHandler {
           />
           :
           <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div> }
-          <div onClick={this.toggleColumns} className={'rightSettingsButton'+(this.state.columns?' active':'')} ><span>Columns <sub>&beta;</sub></span></div>  
-         
+          <div onClick={this.toggleColumns} className={'icon-toggler'} >
+            <img src={"/icons/layout_" + (this.state.columns ? 'horizontal' : 'vertical') + ".svg"} />
+          </div>
           </aside>
     
 
