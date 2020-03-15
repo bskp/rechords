@@ -528,13 +528,11 @@ div.mobile-footer {
     flex-direction: column;
     display: flex;
 
-    @media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
-      // Only for non-webkit browser: Hanging indents for rows without chords.
-      // Does not work for webkit as negative first-line indent is handled differently for contained flex-elements.
-      // This Caused Gaps between syllables in chrome based browsers
-      // Doesn't seem to be necessary for hanging indents, removing upon further notice
-      // text-indent: -@continuation_pad;
-      // padding-left: @continuation_pad;
+    @supports ( -moz-appearance:none ){
+      // Only for FF: Hanging indents for rows without chords.
+      // Does not work for webkit, as negative first-line indent is handled differently for contained flex-elements.
+      text-indent: -@continuation_pad;
+      padding-left: @continuation_pad;
     }
 
     &:first-child {
@@ -955,6 +953,7 @@ hr {
 
 #rightSettings {
   .phone-tablet({display: none;});
+
   height: 100%;
   position: fixed;
   right: @drawer-closed;
@@ -992,6 +991,7 @@ hr {
   .phone({
     display: none;
   });
+
   padding: 2em;
 
   height: 400px;
