@@ -7,3 +7,85 @@
 @light: hsv(hsvhue(@accent), 0.05, 0.9);
 @dull : hsv(hsvhue(@accent), 0.3, 0.7);
 @warm : hsv(hsvhue(@accent), 0.2, 0.6);
+
+// Color Schemes
+
+.list-colors {
+  color: hsv(hsvhue(@accent), 0.2, 0.4);
+  background-color: @light;
+  scrollbar-color: fade(white, 50%) transparent;
+}
+
+.chordsheet-colors {
+  h1 {
+    color: @accent;
+  }
+
+  color: black; // for aside only, is overridden in #chordsheet
+  background-color: white;
+  scrollbar-color: fade(black, 15%) transparent;
+}
+
+.source-colors {
+  h1 {
+    color: white;
+  }
+  color: fade(white, 70%);
+  background-color: hsv(hsvhue(@accent), 0.7, 0.8);
+  scrollbar-color: fade(black, 15%) transparent;
+
+  textarea {
+    color: black;
+  }
+}
+
+.revision-colors {
+  // ie. a particular revision
+  color: hsv(hsvhue(@accent), 0.4, 0.8);
+  background-color: hsv(hsvhue(@accent), 0.7, 0.4);
+}
+
+.revisions-colors {
+  // ie. the list of revisions
+  color: hsv(hsvhue(@accent), 0.3, 0.7);
+  background-color: hsv(hsvhue(@accent), 0.5, 0.2);
+}
+
+.select(@mode: none;) {
+  -webkit-touch-callout: @mode; /* iOS Safari */
+    -webkit-user-select: @mode; /* Safari */
+     -khtml-user-select: @mode; /* Konqueror HTML */
+       -moz-user-select: @mode; /* Firefox */
+        -ms-user-select: @mode; /* Internet Explorer/Edge */
+            user-select: @mode; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+.scroll-vertical {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.scroll-horizontal {
+  overflow-y: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.noFocusBorder {
+  &:focus {
+    outline: none;
+  }
+
+  &::selection {
+    color: hsv(hsvhue(@accent), 0.4, 0.8);
+    background-color: hsva(hsvhue(@accent), 0.3, 0.3, 1);
+  }
+
+  &::-moz-selection {
+    color: hsv(hsvhue(@accent), 0.8, 0.3);
+    background-color: hsv(hsvhue(@accent), 0.5, 0.9);
+  }
+}

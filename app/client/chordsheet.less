@@ -1,0 +1,344 @@
+@import (reference) "./responsive.import.less";
+@import (reference) "./variables.import.less";
+
+#chordsheet {
+
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+
+  .chordsheet-colors;
+  color: @warm;
+
+  #chordsheetContent {
+    padding-top: 2em;
+    padding-bottom: 2em;
+    padding-left: 6em;
+    box-sizing: border-box;
+
+    .phone({
+      font-size: 0.9em; 
+      padding-left: 1em;
+      padding-right: 1em;
+    });
+  }
+
+  &.multicolumns {
+    height: 100%;
+    .scroll-horizontal;
+
+    h3, .ref.open {
+      margin: 2em 0 0; 
+      width: auto; 
+      height: auto; 
+      line-height: 1em; 
+      text-align: left;
+    }
+
+    p {
+      margin: 0 0 2em
+    }
+
+    #chordsheetContent {
+      height: 100%;
+      width: unset;
+    }
+
+    * {
+      overflow: visible;
+    }
+
+    input[type="range"] {
+      background: @warm;
+      -webkit-appearance: none;
+      height: 5px;
+
+      &::-webkit-slider-thumb, &::-moz-range-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 1rem;
+        height: 1rem;
+        background-color: @accent;
+        background: @accent;
+        border-radius: 0%; 
+        cursor: pointer;
+      }
+    }
+  }
+
+
+  h2, h3, h4 {
+    color: black;
+  }
+
+  .sd-header {
+    margin-bottom: 2rem;
+  }
+
+  h1, h2 {
+    margin-bottom: 0;
+    font-size: 2.4em;
+    display: inline-block;
+  }
+
+  h1 {
+    margin-right: 0.5em;
+    margin-left: -0.1em;
+  }
+
+  .ref {
+    color: black;
+    padding-left: 8px;
+    margin-left: -12px;
+    border-left: 4px solid @accent;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    cursor: pointer;
+
+    strong {
+      margin-right: 0.5em;
+    }
+  }
+
+  .ref.open {
+    color: darken(@warm, 15%);
+
+    strong {
+      display: block;
+      margin-right: 0;
+    }
+  }
+
+  .ref.open,
+  h3 {
+    font-size: 1em;
+    margin: 0;
+
+    height: 3em;
+    line-height: 1.1em;
+    margin-bottom: -4.5em;
+
+    text-align: right;
+    width: 5em;
+    margin-left: -6em;
+
+    border: none; // concerns .refs only
+    padding-left: 0;
+
+    .phone({
+      margin: 2em 0 0; 
+      width: auto; 
+      height: auto; 
+      line-height: 1em; 
+      text-align: left;
+    });
+  }
+
+
+  // Verse container
+  p {
+    margin: 1.4em 0;
+    max-width: 40em;
+  }
+
+  h4 {
+    margin-top: 2em;
+    margin-bottom: -0.5em;
+  }
+
+  a {
+    color: @accent;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  img {
+    width: 100%;
+  }
+
+  .inlineReference {
+    &.shown {
+      h3 {
+        display: none;
+      }
+    }
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  code {
+    // inline code elements
+    display: inline-block;
+    font-family: "Input Mono", Courier New, Courier, monospace;
+    font-size: 0.9em;
+    font-weight: 300;
+    padding: 0 0.5em;
+    border-radius: 0.4em;
+    line-height: 1.5em;
+    color: white;
+    background-color: fade(@dull, 70%);
+  }
+
+  pre code {
+    // used for preformatted strumming patterns
+    font-size: 1em;
+    background-color: transparent;
+    color: inherit;
+    line-height: inherit;
+  }
+
+  .abc-notation {
+
+    .phone({
+      margin-right: 0;
+    });
+
+    svg {
+      .abcjs-lyric,
+      .abcjs-staff,
+      .abcjs-staff-extra {
+        fill: @warm;
+      }
+
+      path.abcjs-ending {
+        stroke: mix(@warm, black, 66%);
+      }
+      
+      text.abcjs-ending, 
+      .abcjs-bar {
+        fill: mix(@warm, black, 66%);
+      }
+
+      .abcjs-note_selected {
+        fill: @accent;
+      }
+
+      .abcjs-chord {
+        fill: @accent;
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+
+  }
+
+  &.interactive i {
+    cursor: pointer;
+
+    &:not(.hasChord):hover {
+      border-top: 2px solid @accent;
+      margin-top: -2px;
+    }
+
+    text-indent: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  @continuation_pad: 0.8em; // indent for wrapping rows
+
+  .line {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    min-height: 1em;
+    padding-left: @continuation_pad;
+    white-space: pre-wrap;
+  }
+
+  .line i {
+    font-style: normal;
+    font-weight: 400;
+    color: black;
+
+    flex-direction: column;
+    display: flex;
+
+    @supports ( -moz-appearance:none ){
+      // Only for FF: Hanging indents for rows without chords.
+      // Does not work for webkit, as negative first-line indent is handled differently for contained flex-elements.
+      text-indent: -@continuation_pad;
+      padding-left: @continuation_pad;
+    }
+
+    &:first-child {
+      margin-left: -@continuation_pad;
+    }
+
+    /* currently not in use: Both Viewer and Preview have preprocessors.
+    &::before {
+      content: attr(data-chord);
+      .before();
+    }
+    */
+
+    .before {
+      // aka. Chords.
+
+      color: @accent;
+      font-weight: 600;
+      font-style: normal;
+
+      .select(none);
+      .noFocusBorder;
+
+      margin-top: 0;
+      margin-right: 0.5em;
+      margin-bottom: -0.3em;
+
+      sup {
+        vertical-align: 0.4em;
+        font-size: 0.7em;
+        letter-spacing: 0.02em;
+        padding-left: 0.1em;
+        font-weight: 700;
+      }
+
+      &:focus {
+        background-color: hsv(hsvhue(@accent), 0.1, 0.95);
+        min-width: 1.5em;
+
+        &:empty:before {
+          content: "\feff"; // Patches height rendering of empty contenteditables
+        }
+      }
+
+      &.optional {
+        color: hsv(hsvhue(@accent), 0.3, 0.7);
+        &:before {
+          content: "(";
+        }
+        &:after {
+          content: ")";
+        }
+        &:after,
+        &:before {
+          font-weight: 200;
+          vertical-align: 0.05em;
+        }
+      }
+    } // before aka. chords
+  } // i
+
+  &.interactive .line i .before {
+    // Re-allow chord text selection when editing.
+    .select(text);
+  }
+
+  li {
+    line-height: 1.6em;
+    list-style-type: none;
+
+    &::before {
+      content: "–";
+      display: inline-block;
+      position: relative;
+      width: 0;
+      left: -1.2em;
+    }
+  }
+} // .chordsheet
