@@ -16,7 +16,7 @@ type ColumnExpanderState = { columnWidth: number, height: number }
 
 export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnExpanderState>
 {
-    settingsStorage = new DefaultSettingsStorage("columnExpander")
+    settingsStorage = new DefaultSettingsStorage("columnExpanderV2")
     public static defaultProps = {
         scope: "Expander"
     }
@@ -36,6 +36,7 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
         if(event.type == 'mouseup')
         {
             this.dragStartPositionAndColumnWidth = null;
+            this.settingsStorage.setValue( 'columnWidth', this.props.song_id, this.state.columnWidth )
             this.setState({});
         }
         if (event.type == 'mousemove') {
@@ -152,12 +153,6 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
                 `
                  }}></style>:'';
         
-        const slider = <div id="columnWidthSettings">
-            <input type="range" value={this.state.columnWidth} onChange={this.changeColumnWidth} 
-            min="250" max="1000"  style={{zIndex: 90}}
-            />
-            </div>
-
             let gridClasses = "ce-column-grid"
             if( this.dragStartPositionAndColumnWidth ) 
                 gridClasses += ' dragging'
@@ -170,7 +165,6 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
             // using column width means transposing still shouldn't 
             // lead to complete rerender
             <>
-                {/* {slider}  */}
                 <div key={this.props.song_id + this.state.columnWidth + this.childupdate} 
                     style={style} className={gridClasses} 
                     onMouseDown={this.handleColumnDrag} onMouseUp={this.handleColumnDrag}
