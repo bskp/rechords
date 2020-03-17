@@ -1,0 +1,137 @@
+@import (reference) "./responsive.import.less";
+@import (reference) "./variables.import.less";
+
+#transposer {
+
+  .phone({
+    display: none;
+  });
+
+  padding: 2em;
+
+  height: 400px;
+  width: 50px;
+  >* {
+  // TODO: The inside of the slider should have
+  // a better non collapsing centered box
+  // this is only a workaround
+    position: relative;
+    right: -40px;
+  }
+
+  .rc-slider {
+    width: 0px;
+  }
+
+  .rc-slider-mark {
+    top: 2px;
+    left: -75px;
+  }
+
+  .rc-slider-mark-text {
+    width: 65px;
+    text-align: right;
+    line-height: 2.5em;
+    margin-bottom: -1em !important;
+
+    &:hover {
+      color: black;
+    }
+  }
+
+  .rc-slider-track {
+    background-color: @accent;
+  }
+
+  .rc-slider-handle,
+  .rc-slider-dot-active {
+    border-color: @accent;
+  }
+}
+#transposer {
+
+  .phone({
+    display: none;
+  });
+
+  padding: 2em;
+
+  height: 400px;
+  width: 50px;
+  >* {
+  // TODO: The inside of the slider should have
+  // a better non collapsing centered box
+  // this is only a workaround
+    position: relative;
+    right: -40px;
+  }
+
+  .rc-slider {
+    width: 0px;
+  }
+
+  .rc-slider-mark {
+    top: 2px;
+    left: -75px;
+  }
+
+  .rc-slider-mark-text {
+    width: 65px;
+    text-align: right;
+    line-height: 2.5em;
+    margin-bottom: -1em !important;
+
+    &:hover {
+      color: black;
+    }
+  }
+
+  .rc-slider-track {
+    background-color: @accent;
+  }
+
+  .rc-slider-handle,
+  .rc-slider-dot-active {
+    border-color: @accent;
+  }
+}
+
+#rightSettings {
+  .phone-tablet({display: none;});
+
+  height: 100%;
+  position: fixed;
+  right: @drawer-closed;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  .icon-toggler {
+    padding-right: 0.5em;
+    cursor: pointer;
+  }
+}
+
+.rightSettingsButton
+{
+  text-align: center;
+  padding: 1em 0.3em;
+  margin: 2px 0;
+  width: 40px;
+  background-color: @warm;
+  border-radius: 5% 0 0 5%;
+  color: white;
+
+  &.active {
+    .source-colors;
+  }
+  
+
+  > *{
+    display: inline-block;
+    cursor: pointer;
+    writing-mode:vertical-rl;
+    transform: rotate(180deg);
+  }
+}
