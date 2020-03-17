@@ -10,3 +10,34 @@
     white-space: pre;
   }
 }
+
+aside.drawer#revs {
+  ol {
+    list-style-type: lower-greek;
+
+    li {
+      font-size: 0.8em;
+      padding: 0.3em;
+
+      &:hover {
+        background-color: hsva(0, 0, 0, 0.3);
+      }
+
+      &.active {
+        background-color: hsva(0, 0, 0, 0.5);
+      }
+    }
+  }
+}
+// dot. wohin?
+#dirty {
+  display: block;
+  position: absolute;
+  font-size: 1em;
+  width: 1em;
+  height: 1em;
+  border-radius: 1em;
+  background-color: @accent;
+  left: 5.9rem;
+  top: 3.7rem;
+}
