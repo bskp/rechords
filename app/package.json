@@ -14,6 +14,7 @@
     "@types/react-table": "^7.0.6",
     "abcjs": "^5.12.0",
     "awesome-debounce-promise": "^2.1.0",
+    "chordy-svg": "^1.1.0",
     "html-react-parser": "^0.4.7",
     "hyphenation.en-us": "^0.2.1",
     "hypher": "^0.2.5",
