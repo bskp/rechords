@@ -12,7 +12,11 @@
 
   #chordsheetContent {
     padding-top: 2em;
-    padding-bottom: 2em;
+
+    // Security Margin: some mobile browser probably count the bottom and top bar to the viewport height
+    // Maybe we have a bug in using vh wrong. Anyways, this helps and doesn't hurt
+    // Except for very short songs that have no scroll unnecesarily  ¯\_(ツ)_/¯
+    padding-bottom: 10em; 
     padding-left: 6em;
     box-sizing: border-box;
 

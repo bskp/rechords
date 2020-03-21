@@ -67,9 +67,7 @@ class App extends Component {
     }
 
     toggleSongList = () => {
-        this.setState((state) => {
-            return {songListHidden: !state.songListHidden}
-        });
+        this.setState((state) => ({songListHidden: !state.songListHidden })); // ({}) can be used instead of {return {}}
     }
 
     render() {
