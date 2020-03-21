@@ -35,7 +35,6 @@ ITransposeHandler {
   constructor(props) {
     super(props);
 
-
     this.state = {
       relTranspose: this.getInitialTranspose(),
       viewPortGtM: window.innerWidth > 900,
@@ -46,11 +45,13 @@ ITransposeHandler {
     };
   }
 
+  refChordsheet = React.createRef<HTMLDivElement>()
+
   componentDidUpdate(prevProps) {
     if (this.props.song == prevProps.song) return;
 
     // Song has changed.
-    window.scrollTo(0, 0)
+    this.refChordsheet.current?.scrollTo(0, 0)
     this.setState({
       relTranspose: this.getInitialTranspose(),
     });
@@ -228,7 +229,7 @@ ITransposeHandler {
       <>
         <div
           className={'content' + (this.showMultiColumns() ? ' multicolumns':'')}
-          id="chordsheet"
+          id="chordsheet" ref={this.refChordsheet}
           onContextMenu={this.handleContextMenu}
         >
           <section id="chordsheetContent">
