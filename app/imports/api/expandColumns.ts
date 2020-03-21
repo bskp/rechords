@@ -73,7 +73,7 @@ export function increaseHeaderSpan(element: HTMLElement, maxSpan = 3): number {
     const style = getComputedStyle(firstChild);
     // margin is not included. sigh.
     // outherhight form jquery...
-    const height = `calc( ${firstChild.scrollHeight}px + ${style.marginTop} + ${style.marginBottom})`;
+    const height = `calc( ${firstChild.clientHeight}px + ${style.marginTop} + ${style.marginBottom})`;
 
     element.parentElement.style.setProperty('--headerHight', height)
 
