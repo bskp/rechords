@@ -144,21 +144,29 @@ ITransposeHandler {
           return <i>{chord_}{node.children[0].data}</i>;
         }
         else if (node.name == 'pre') {
-          if (node.children.length != 1) return node;
+          if (node.children.length != 1) 
+            return node;
           let code = node.children[0];
-          if (!('class' in code.attribs)) return node;
+          if (!('class' in code.attribs))
+            return node;
           let classes = code.attribs['class'];
-          if (!(classes.includes('language-abc'))) return node;
-          if (code.children.length != 1) return node;
+          if (!(classes.includes('language-abc')))
+            return node;
+          if (code.children.length != 1) 
+            return node;
 
-          let abc = code.children[0].data;
+          if (this.state.showChords) {
+            let abc = code.children[0].data;
 
-          return <Abcjs
-            abcNotation={abc}
-            parserParams={{
-                visualTranspose: dT,
-              }}
-          />
+            return <Abcjs
+              abcNotation={abc}
+              parserParams={{
+                  visualTranspose: dT,
+                }}
+            />
+          } else {
+            return <></>
+          }
         }
 
         // if(domNode.attribs && 'class' in domNode.attribs) {
