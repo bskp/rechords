@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withRouter, NavLink } from 'react-router-dom';
+import { withRouter, NavLink, Link } from 'react-router-dom';
 import MetaContent from './MetaContent';
 import { Song } from '../api/collections';
 
@@ -260,6 +260,7 @@ class List extends React.Component<ListProps, ListState> {
                         <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
                     </li>
                 </ul>
+                <Link to="/user" id="user">{Meteor.user().profile.name}</Link>
             </Drawer>
         )
     }

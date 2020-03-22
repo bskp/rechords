@@ -1,0 +1,66 @@
+@import (reference) "./responsive.import.less";
+@import (reference) "./variables.import.less";
+
+
+#users, #user {
+    form.row {
+        display: flex;
+    }
+
+    input, select {
+        border-bottom: 2px solid @secondary;
+        color: @accent;
+
+        margin-right: 1em;
+        flex-grow: 1;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    label {
+        width: 10em;
+        display: inline-block;
+        line-height: 2.5em;
+    }
+
+    label + input[type="text"] {
+        width: 20em;
+        display: inline-block;
+    }
+
+    a.btn, 
+    input[type="submit"] {
+        border: none;
+        background-color: @secondary;
+        color: white;
+        cursor: pointer;
+        padding: 0 0.7em;
+        flex-grow: 0.5;
+        border: none;
+        border-radius: 1em;
+        font-size: 0.8em;
+        text-transform: uppercase;
+        font-weight: 600;
+        display: inline-block;
+        line-height: 1.8em;
+
+        &:hover {
+            background-color: @accent;
+        }
+    }
+
+    h2 em {
+        font-weight: 400;
+        font-style: italic;
+
+        &:before {
+            content: ' – '
+        }
+
+        &:empty {
+            display: none;
+        }
+    }
+}

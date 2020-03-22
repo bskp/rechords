@@ -48,6 +48,10 @@ showdown.setOption("simplifiedAutoLink", true);
 showdown.setOption("openLinksInNewWindow", true);
 
 
+function isDefined<T>(a: T | null | undefined): a is T {
+	return a !== null && a !== undefined;
+}
+
 export const rmd_version = 4.1;
 export class Song {
   _id?: string;
@@ -64,6 +68,10 @@ export class Song {
 
   title_: string;
   author_:string;
+
+  last_editor?: string;
+
+  revision_cache?: Array<Revision>;
 
 
   constructor (doc) {
@@ -168,16 +176,19 @@ export class Song {
     this.parsed_rmd_version = rmd_version;
   }
 
+
   getRevisions() {
-    return Revisions.find({
-      of: this._id
-    }, { 
-      sort: {timestamp: -1} 
-    });
+    if (!isDefined(this.revision_cache)) {
+      this.revision_cache = Revisions.find(
+        { of: this._id }, 
+        { sort: {timestamp: -1} 
+      }).fetch();
+    }
+    return this.revision_cache;
   }
 
   getRevision(steps: number) {
-    return this.getRevisions().fetch()[steps]
+    return this.getRevisions()[steps]
   }
 }
 
@@ -187,6 +198,7 @@ export class Revision {
 
   ip: string;
   timestamp: Date;
+  editor?: string;
 }
 
 

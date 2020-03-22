@@ -31,7 +31,7 @@ export default class MetaContent extends React.Component<Props, {}> {
             {
                 if(element.type == 'h4')
                 {
-                    group = React.createElement('div', {className: "taggroup"}, []) ;
+                    group = React.createElement('div', {className: "taggroup", key: element.key }, []) ;
                     this.content.push( group ); 
                 }
                 if(group)

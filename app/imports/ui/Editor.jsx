@@ -67,21 +67,20 @@ class Editor extends Component {
   render() {
 
     let revs = this.props.song.getRevisions();
-    let n = revs.count();
 
     let prompt = <Prompt
-            when={this.state.dirty && n > 0}
+            when={this.state.dirty && revs > 0}
             message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
           />
 
     if (this.state.versionTab == false) {
 
-      let versions = n == 0 ? undefined : (
+      let versions = revs ? (
         <Drawer id="revs" className="revision-colors" onClick={this.toggleRevTab}>
           <h1>Verlauf</h1>
-          <p>Es existieren {n} vorherige Versionen. Klicke, um diese zu durchstöbern!</p>
+          <p>Es existieren {revs.length} vorherige Versionen. Klicke, um diese zu durchstöbern!</p>
         </Drawer>
-      );
+      ) : undefined;
 
       let dirtyLabel = this.state.dirty ? <span id="dirty" title="Ungesicherte Änderungen"></span> : undefined;
 
@@ -111,7 +110,6 @@ class Editor extends Component {
           <Drawer className="chordsheet-colors" onClick={this.toggleRevTab}>
             <h1>zurück</h1>
             <p>…und weiterbearbeiten!</p>
-
           </Drawer>
 
           <Source md={this.state.md} updateHandler={this.update} className="source-colors">

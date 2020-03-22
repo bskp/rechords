@@ -229,4 +229,28 @@ aside.drawer#list {
       }
     }
   }
+
+  #user {
+    position: absolute;
+    bottom: 0;
+    width: @drawer-open;
+    box-sizing: border-box;
+    padding: 0.5em;
+
+    background-color: @light;
+    display: flex;
+
+    cursor: pointer;
+    color: @secondary;
+
+    &:hover {
+      color: @accent;
+    }
+
+    text-transform: uppercase;
+    font-weight: 900;
+    font-size: 0.9em;
+    text-align: right;
+  }
+
 } // .drawer#list

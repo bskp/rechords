@@ -1,73 +1,11 @@
 import * as React from 'react';
 import { Song } from '../api/collections';
-import { useTable, useSortBy } from 'react-table'
-import { NavLink } from "react-router-dom";
+import Table from './Table';
 
-import List from './List';
+import { NavLink } from "react-router-dom";
 
 import * as moment from 'moment';
 import "moment/locale/de";
-
-function Table({ columns, data }) {
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        rows,
-        prepareRow,
-    } = useTable(
-        {
-            columns,
-            data,
-        },
-        useSortBy
-    )
-
-    return (
-        <>
-            <table {...getTableProps()}>
-                <thead>
-                    {headerGroups.map(headerGroup => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
-                            {headerGroup.headers.map(column => (
-                                // Add the sorting props to control sorting. For this example
-                                // we can add them into the header props
-                                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                                    {column.render('Header')}
-                                    {/* Add a sort direction indicator */}
-                                    <span>
-                                        {column.isSorted
-                                            ? column.isSortedDesc
-                                                ? ' ^'
-                                                : ' v'
-                                            : ''}
-                                    </span>
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody {...getTableBodyProps()}>
-                    {rows.map(
-                        (row, i) => {
-                            prepareRow(row);
-                            return (
-                                <tr {...row.getRowProps()}>
-                                    {row.cells.map(cell => {
-                                        return (
-                                            <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                        )
-                                    })}
-                                </tr>
-                            )
-                        }
-                    )}
-                </tbody>
-            </table>
-            <br />
-        </>
-    )
-}
 
 function Progress(props) {
 
@@ -130,19 +68,27 @@ function Progress(props) {
             {
                 Header: 'Versionen',
                 id: 'revisions',
-                accessor: (s) => s.getRevisions().count(),
+                accessor: (s : Song) => s.getRevisions().length,
             },
         ],
         []
     )
 
-    let songs = props.songs.filter((s: Song) => !s.checkTag('privat') && !s.title.startsWith('!'))
+    let songs : Array<Song> = props.songs.filter((s: Song) => !s.checkTag('privat') && !s.title.startsWith('!'))
+
+    for (let song of songs) {
+        // fills each instance's revisions-cache. This is required, as each DB access from within 
+        // the Table component has to be memoized.
+        song.getRevisions();  
+    }
+
     const data = React.useMemo(() => songs, [])
 
     return (
         <>
             <div className="content" id="progress">
-                <h1>Lieder-Fortschritt</h1>
+                <h1>Fortschritt</h1>
+                <h2>Lieder</h2>
                 <Table columns={columns} data={data} />
             </div>
         </>

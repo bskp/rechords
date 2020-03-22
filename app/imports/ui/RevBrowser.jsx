@@ -11,7 +11,7 @@ export default class RevBrowser extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      revision: props.song.getRevision(0)
+      revision: undefined,
     }
   }
 
@@ -23,22 +23,22 @@ export default class RevBrowser extends React.Component {
 
   render() {
     let revs = this.props.song.getRevisions();
-    let n = revs.count();
+    let n = revs.length;
 
-    let ts = this.state.revision.timestamp;
+    let ts = this.state.revision?.timestamp;
     let label = ts ? <span className="label">Version vom {moment(ts).format('LLLL')}</span> 
                    : <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>
 
     return (
       <>
-        <Source md={this.state.revision.text} readOnly={true} className="revision-colors">
+        <Source md={this.state.revision?.text || ''} readOnly={true} className="revision-colors">
           {label}
         </Source>
         <Drawer id="revs" className="revisions-colors">
           <h1>Versionen</h1>
           <ol>
             {revs.map((rev, idx) =>
-              <RevLink rev={rev} idx={n - idx} key={rev._id} callback={this.setRev} active={rev._id == this.state.revision._id} />
+              <RevLink rev={rev} idx={n - idx} key={rev._id} callback={this.setRev} active={rev._id == this.state.revision?._id} />
             )}
           </ol>
         </Drawer>
@@ -57,13 +57,15 @@ class RevLink extends Component {
   }
 
   render() {
-    let r = this.props.rev;
+    const r = this.props.rev;
+    const who = (Meteor.users.findOne(r.editor)?.profile.name || '???') + ' ';
+
     return (
       <li value={this.props.idx} 
         onClick={() => {this.props.callback(r)}}
         className={this.props.active ? 'active' : undefined}
         >
-          {moment(r.timestamp).fromNow()}
+          {who}{moment(r.timestamp).fromNow()}
       </li>
     );
   }

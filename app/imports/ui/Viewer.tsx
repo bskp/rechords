@@ -13,7 +13,6 @@ var Parser = require("html-react-parser");
 
 interface ViewerProps extends RouteComponentProps {
   song: Song,
-  songs: Array<Song>
 }
 
 interface ViewerStates {
@@ -81,8 +80,10 @@ ITransposeHandler {
   }
 
   handleContextMenu = event => {
-    let m = this.props.match.params;
-    this.props.history.push("/edit/" + m.author + "/" + m.title);
+    if (Meteor.user().profile.role == 'admin') {
+      let m = this.props.match.params;
+      this.props.history.push("/edit/" + m.author + "/" + m.title);
+    }
     event.preventDefault();
   };
 
@@ -224,6 +225,13 @@ ITransposeHandler {
           </aside>
     
 
+    const drawer = Meteor.user().profile.role == 'admin' ? (
+        <Drawer className="source-colors" onClick={this.handleContextMenu}>
+          <h1>bearbeiten</h1>
+          <p>Schneller:&nbsp;Rechtsklick!</p>
+        </Drawer>
+    ) : undefined;
+
     return (
 
       <>
@@ -240,10 +248,7 @@ ITransposeHandler {
         <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} id="edit">Bearbeiten…</NavLink></div>
         </div>
         {settings}
-        <Drawer className="source-colors" onClick={this.handleContextMenu}>
-          <h1>bearbeiten</h1>
-          <p>Schneller:&nbsp;Rechtsklick!</p>
-        </Drawer>
+        {drawer}
       </>
     );
   }

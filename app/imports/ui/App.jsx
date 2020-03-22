@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-
 import { withTracker } from 'meteor/react-meteor-data';
 
 import Songs, {Song} from '../api/collections.ts';
@@ -9,8 +7,10 @@ import List from './List.tsx';
 import Viewer from './Viewer.tsx';
 import Editor from './Editor.jsx';
 import Progress from './Progress.tsx';
-import Drawer from './Drawer.tsx';
+import Users from './Users.tsx';
+import User from './User.tsx';
 import HideSongList from './HideSongList';
+import Login from './Login.tsx';
 
 import { BrowserRouter, Route, Switch, useHistory} from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
@@ -44,6 +44,16 @@ const logo = (
 )
 
 
+AdminRoute = ({ render: render, ...rest }) => (
+    <Route {...rest} render={(props) => (
+
+        Meteor.user().profile.role == 'admin'
+            ? render(props) : nA404
+    )} />
+)
+
+
+
 // App component - represents the whole app
 class App extends Component {
 
@@ -71,12 +81,22 @@ class App extends Component {
     }
 
     render() {
-        if (this.props.dataLoading) {
+        if (!this.props.user) {
+            return (
+                <div id="body">
+                    <DocumentTitle title="Hölibu" />
+                    <aside className="drawer open list-colors"> </aside>
+                    <Login />
+                </div>
+            )
+        }
+
+        if (this.props.songsLoading) {
             return (
                 <div id="body">
                     <DocumentTitle title="Hölibu" />
                     <aside className="drawer open list-colors">Lade Lieder…</aside>
-                    {logo}
+                    <div className="content chordsheet-colors"> </div>
                 </div>
             )
         }
@@ -89,7 +109,6 @@ class App extends Component {
 
         }
 
-
         return (
             <BrowserRouter>
             <>
@@ -100,6 +119,7 @@ class App extends Component {
                 <div id="body">
                 <List songs={this.props.songs} hidden={this.state.songListHidden} hideOnMobile={this.hideSongListOnMobile}/>
                 <Switch>
+
                     <Route exact path='/' render={(props) => (
                             <div className="container">
                                 <DocumentTitle title="Hölibu" />
@@ -118,24 +138,28 @@ class App extends Component {
                         return (
                             <>
                                 <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
-                                <Viewer song={song}  songs={this.props.songs} ref={this.viewerRef} 
+                                <Viewer song={song}  ref={this.viewerRef} 
                                 {...routerProps} />
                             </>
                         )
                     }} />
 
-                    <Route path='/edit/:author/:title' render={(match) => {
+                    <AdminRoute path='/edit/:author/:title' render={(match) => {
                         let song = getSong(match.match.params);
 
                         if (song === undefined) {
                             return na404;
                         }
 
+                        // In any case, the editor is rendered. However, a re-render is triggered after the song's
+                        // revisions have been loaded.
+                        let editor = this.props.revisionsLoading ? <Editor song={song} /> : <Editor song={song} />;
+
                         return (
                             <>
                                 <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title + " (bearbeiten)"}/>
                                 <HideSongList handle={this.hideSongList}/>
-                                <Editor song={song} />
+                                {editor}
                             </>
                         )
                     }} />
@@ -153,10 +177,35 @@ class App extends Component {
                     }} />
 
                     <Route path="/progress" render={() => {
+                        const content = this.props.revisionsLoading ? (
+                            <div className="content chordsheet-colors">Lade Lieder-Fortschritt…</div>
+                            ) : <Progress songs={this.props.songs} />;
+
                         return (
                             <>
-                                <DocumentTitle title="Hölibu | Überblick" />
-                                <Progress songs={this.props.songs} />
+                                <DocumentTitle title="Hölibu | Lieder-Fortschritt" />
+                                {content}
+                            </>
+                        )
+                    }} />
+
+                    <Route path="/users" render={() => {
+                        const users = Meteor.users.find().fetch();
+                        return (
+                            <>
+                                <DocumentTitle title="Hölibu | Alle Benutzer" />
+                                <HideSongList handle={this.hideSongList}/>
+                                <Users users={users}/>
+                            </>
+                        )
+                    }} />
+
+                    <Route path="/user" render={() => {
+                        const user = Meteor.user();
+                        return (
+                            <>
+                                <DocumentTitle title={"Hölibu | " + user.profile.name} />
+                                <User user={user} key={user._id} revisionsLoading={this.props.revisionsLoading}/>
                             </>
                         )
                     }} />
@@ -176,17 +225,14 @@ const NoMatch = ({ location }) => (
     </div>
 )
 
-App.propTypes = {
-    dataLoading: PropTypes.bool.isRequired,
-    songs: PropTypes.array.isRequired,
-};
-
 export default withTracker(props => {
     const songHandle = Meteor.subscribe('songs');
     const revHandle = Meteor.subscribe('revisions');
 
     return {
-        dataLoading: !songHandle.ready() || !revHandle.ready(),
+        songsLoading: !songHandle.ready(),
+        revisionsLoading: !revHandle.ready(),
         songs: Songs.find({}, { sort: { title: 1 } }).fetch(),
+        user: Meteor.user()
     };
 })(App);
