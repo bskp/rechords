@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import Songs, { Revisions } from '../api/collections.js';
 
 import "moment/locale/de";
@@ -64,12 +64,22 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
             stats = <p>Fleissig! Du hast <strong>{songs.size} Lieder</strong> insgesamt <strong>{user_revs.length} mal bearbeitet</strong>.</p>
         }
 
-        let u = this.props.user;
+        const u = this.props.user;
+        const admin = this.props.user.profile.role == 'admin';
 
         return (
             <div className="content" id="user">
                 <h1>Benutzer</h1>
                 <h2>{u.profile.name}<em>{this.state.msg}</em></h2>
+
+
+                <p>
+                <a onClick={ e => Accounts.logout()} className="btn">Abmelden</a>
+                <Link to="progress" className="btn">Lieder-Übersicht</Link>
+                { admin ? <Link to="users" className="btn">Benutzerverwaltung</Link> : undefined}
+                </p>
+                <br />
+
                 {stats}
 
                 <form onSubmit={this.handleSubmit}>
@@ -79,7 +89,6 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
                     <label></label><input type="submit" value="Sichern" />
                 </form>
 
-                <a onClick={ e => Accounts.logout()} className="btn">Abmelden</a>
             </div>
         );
     }

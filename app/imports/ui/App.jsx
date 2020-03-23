@@ -194,7 +194,6 @@ class App extends Component {
                         return (
                             <>
                                 <DocumentTitle title="Hölibu | Alle Benutzer" />
-                                <HideSongList handle={this.hideSongList}/>
                                 <Users users={users}/>
                             </>
                         )
