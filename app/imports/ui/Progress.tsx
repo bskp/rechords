@@ -62,6 +62,7 @@ function Progress(props) {
                 Header: 'Zul. geändert',
                 id: 'change',
                 accessor: (s: Song) => {
+                    if (s.getRevision(0) == undefined) return undefined;
                     let ago = 0;
                     // Skip "ghost versions" triggered by parser version updates.
                     while (s.text == s.getRevision(ago).text && s.getRevision(ago + 1)) {

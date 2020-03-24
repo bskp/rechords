@@ -5,11 +5,6 @@ import Songs, { Revisions, Song } from '../api/collections.js';
 
 import "moment/locale/de";
 
-Accounts.onResetPasswordLink((token, done) => {
-    Accounts.resetPassword(token, )
-
-});
-
 class User extends React.Component<{ user : Meteor.User, revisionsLoading : boolean}, { user : Meteor.User, msg : string}> {
 
     constructor(props) {
@@ -73,7 +68,7 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
 
         const song_links = song_ids.map( ( id ) => {
             let s = Songs.findOne(id);
-            return <li key={'sl' + s._id}><Link to={'/view/' + s.author_ + '/' + s.title_}>{s.title}</Link></li>
+            return s ? <li key={'sl' + s._id}><Link to={'/view/' + s.author_ + '/' + s.title_}>{s.title}</Link></li> : undefined;
         });
 
         return (
