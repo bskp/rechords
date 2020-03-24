@@ -1,4 +1,4 @@
-import Songs, {Revisions} from '../imports/api/collections.ts';
+import Songs, {Revisions} from '../imports/api/collections';
 
 Meteor.publish('songs', function () {
     return Songs.find({});
@@ -6,6 +6,17 @@ Meteor.publish('songs', function () {
 
 Meteor.publish('revisions', function () {
     return Revisions.find({});
+});
+
+Meteor.startup(()=>{
+  if (Meteor.users.find().count() === 0) {
+    Accounts.createUser({
+      username: 'le', 
+      email:'bitte_noch_anpassen@chabis.ruebli', 
+      password: 'coq-est-mort', 
+      profile: {name: 'Housi', role:'admin'}
+    });
+  }
 });
 
 Meteor.publish(null, function () {

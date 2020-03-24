@@ -30,6 +30,22 @@
         display: inline-block;
     }
 
+    ul {
+        padding-left: 1.5em;
+    }
+
+    li:before {
+        content: "–";
+        display: inline-block;
+        position: relative;
+        width: 0;
+        left: -1.2em;
+    }
+
+    li a:hover{
+        color: @accent;
+    }
+
     a.btn, 
     input[type="submit"] {
         border: none;

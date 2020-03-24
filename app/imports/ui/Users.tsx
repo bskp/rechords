@@ -191,19 +191,13 @@ class Users extends React.Component<{ users : Array<Meteor.User>}, { user : Mete
 
 
         return (
-            <>
-                <Drawer className="list-colors" onClick={() => this.props.history.push('/')}>
-                    <h1>zurück</h1>
-                    <p>zur Startseite!</p>
-                </Drawer>
-                <div className="content" id="users">
-                    <h1>Alle</h1>
-                    <h2>Benutzer</h2>
-                    <Table columns={this.columns} data={this.props.users} />
-                    <a onClick={this.newUser} className="btn">Hinzufügen</a>
-                    <EditUser user={this.state.user} key={id} />
-                </div>
-            </>
+            <div className="content" id="users">
+                <h1>Alle</h1>
+                <h2>Benutzer</h2>
+                <Table columns={this.columns} data={this.props.users} />
+                <a onClick={this.newUser} className="btn">Hinzufügen</a>
+                <EditUser user={this.state.user} key={id} />
+            </div>
         );
     }
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { withRouter, Link } from 'react-router-dom';
-import Songs, { Revisions } from '../api/collections.js';
+import Songs, { Revisions, Song } from '../api/collections.js';
 
 import "moment/locale/de";
 
@@ -57,15 +57,24 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
 
     render() {
         let stats = <p>Lade…</p>;
-        if (!this.props.revisionsLoading) {
-            let user_revs = Revisions.find({editor: this.props.user._id}).fetch();
-            let songs = new Set(user_revs.map( rev => rev.of ));
-
-            stats = <p>Fleissig! Du hast <strong>{songs.size} Lieder</strong> insgesamt <strong>{user_revs.length} mal bearbeitet</strong>.</p>
-        }
+        let song_ids = [];
 
         const u = this.state.user;
         const admin = this.props.user.profile.role == 'admin';
+
+        if (!admin) {
+            stats = <p>Du darfst Lieder <strong>ankucken</strong>, aber <strong>nicht bearbeiten</strong>.</p>
+        }
+        else if (!this.props.revisionsLoading) {
+            let user_revs = Revisions.find({editor: this.props.user._id}).fetch();
+            song_ids = Array.from(new Set(user_revs.map( rev => rev.of )));
+            stats = <p>Fleissig! Du hast <strong>{song_ids.length} Lieder</strong> insgesamt <strong>{user_revs.length} mal bearbeitet</strong>.</p>
+        }
+
+        const song_links = song_ids.map( ( id ) => {
+            let s = Songs.findOne(id);
+            return <li key={'sl' + s._id}><Link to={'/view/' + s.author_ + '/' + s.title_}>{s.title}</Link></li>
+        });
 
         return (
             <div className="content" id="user">
@@ -81,6 +90,10 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
                 <br />
 
                 {stats}
+
+                <ul>
+                    {song_links}
+                </ul>
 
                 <form onSubmit={this.handleSubmit}>
                     <label>Name</label><input type="text" value={u.profile.name} onChange={this.updateName} placeholder="Name"/><br />
