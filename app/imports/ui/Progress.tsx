@@ -14,6 +14,12 @@ function Progress(props) {
         return checkOutput;
     }
 
+    const users = new Map();
+
+    Meteor.users.find().forEach( (u: Meteor.User) => {
+        users.set(u._id, u.profile.name);
+    });
+
     const columns = React.useMemo(
         () => [
             {
@@ -64,6 +70,16 @@ function Progress(props) {
                     return s.getRevision(ago) && s.getRevision(ago).timestamp.getTime();
                 },
                 Cell: ({ cell: { value } }) => String(value && moment(value).format('L')),
+            },
+            {
+                Header: '…von',
+                id: 'editor',
+                accessor: (s: Song) => {
+                    if (s.last_editor) {
+                        return users.get(s.last_editor);
+                    }
+                    return '';
+                }
             },
             {
                 Header: 'Versionen',
