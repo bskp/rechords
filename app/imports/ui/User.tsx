@@ -64,7 +64,7 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
             stats = <p>Fleissig! Du hast <strong>{songs.size} Lieder</strong> insgesamt <strong>{user_revs.length} mal bearbeitet</strong>.</p>
         }
 
-        const u = this.props.user;
+        const u = this.state.user;
         const admin = this.props.user.profile.role == 'admin';
 
         return (

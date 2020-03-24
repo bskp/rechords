@@ -15,7 +15,6 @@ class ListItem extends React.Component<ListItemProps, {}> {
         super(props);
     }
 
-
     render() {
         return (
             <li><NavLink onClick={this.props.onClickHandler} to={`/view/${this.props.song.author_}/${this.props.song.title_}`}
@@ -79,27 +78,29 @@ class List extends React.Component<ListProps, ListState> {
     }
 
     keyHandler = (e : KeyboardEvent) => {
-        // Focus grabber
         if (this.props.hidden) return;
 
         if (e.key == 'Escape') {
             this.setFilter('');
             this.refs.filter.blur();
             e.preventDefault();
+            return
         } 
-        else if (e.key == 'KeyDown') {
 
-        }
-        else {
-            // Check if the pressed key has a printable representation
-            if (e.key && e.key.length === 1 && !e.metaKey) {
-                this.refs.filter.focus();
-            }
+        // Do not steal focus if on <input>
+        if( e.target?.tagName == 'INPUT' ) return;
+
+        // Ignore special keys
+        if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
+
+        // Check if the pressed key has a printable representation
+        if (e.key && e.key.length === 1) {
+            this.refs.filter.focus();
         }
     }
 
     componentDidMount() {
-        document.addEventListener("keydown", this.keyHandler);
+        document.addEventListener("keydown", this.keyHandler, {});
     }
 
     componentWillUnmount() {
