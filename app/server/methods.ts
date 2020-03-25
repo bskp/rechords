@@ -59,24 +59,27 @@ Meteor.methods({
 
         // Check for modifications
         let storedSong = Songs.findOne(song._id);
-        if (storedSong != undefined && 
-            storedSong.text == song.text &&
-            'parsed_rmd_version' in storedSong &&
-            storedSong.parsed_rmd_version == rmd_version) return true;
+        if (storedSong != undefined && storedSong.text == song.text) {
+            // Content has not changed. 
+            if (storedSong?.parsed_rmd_version != rmd_version) {
+                Songs.update(song._id, song);
+            }
+            return true; // early return, don't create revision
+        } 
 
         // Save Song
         if ('_id' in song) {
             if (song.text.match(/^\s*$/) != null) {
                 Songs.remove(song._id);
 
-                // early return, don't create revision
-                return false;
-
-            } else {
+                return false; // early return, don't create revision
+            } 
+            else {
                 Songs.update(song._id, song);
             }
-        } else {
-            Songs.insert(song);
+        } 
+        else {
+            song._id = Songs.insert(song);
         }
 
 
@@ -88,8 +91,6 @@ Meteor.methods({
             text: song.text,
             editor: user_id
         }
-
-        console.log('rev: ', rev);
 
         Revisions.insert(rev);
         return true;

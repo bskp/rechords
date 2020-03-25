@@ -109,6 +109,10 @@ class App extends Component {
 
         }
 
+        // If any song's title changes, the key for the <List /> changes and flushes all states.
+        // This is required to update all internal "caching states" (matches etc.)
+        const list_key = this.props.songs.map( s => s.title).join('-');
+
         return (
             <BrowserRouter>
             <>
@@ -117,7 +121,7 @@ class App extends Component {
                     toggleMenu={this.toggleSongList}
                 />
                 <div id="body">
-                <List songs={this.props.songs} hidden={this.state.songListHidden} hideOnMobile={this.hideSongListOnMobile}/>
+                <List songs={this.props.songs} key={list_key} hidden={this.state.songListHidden} hideOnMobile={this.hideSongListOnMobile}/>
                 <Switch>
 
                     <Route exact path='/' render={(props) => (
@@ -148,7 +152,7 @@ class App extends Component {
                         let song = getSong(match.match.params);
 
                         if (song === undefined) {
-                            return na404;
+                            return nA404;
                         }
 
                         // In any case, the editor is rendered. However, a re-render is triggered after the song's

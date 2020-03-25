@@ -78,7 +78,7 @@ class Editor extends Component {
       let versions = revs ? (
         <Drawer id="revs" className="revision-colors" onClick={this.toggleRevTab}>
           <h1>Verlauf</h1>
-          <p>Es existieren {revs.length} vorherige Versionen. Klicke, um diese zu durchstöbern!</p>
+          <p>Es existieren {revs.length} Versionen. Klicke, um diese zu durchstöbern!</p>
         </Drawer>
       ) : undefined;
 

@@ -94,13 +94,9 @@ export class Song {
   }
 
   validateField(field : string) {
-    if (
-      field in this && 
-      "parsed_rmd_version" in this && 
-      this.parsed_rmd_version == rmd_version
-    ) return;
+    if (field in this && this?.parsed_rmd_version == rmd_version) return;
 
-    // Field missing or bad parser version. Re-parse and store!
+    // A field is missing or bad parser version. Re-parse and store!
     this.parse(this.text);
 
     Meteor.call('saveSong', this, (error, isValid) => {
@@ -132,6 +128,10 @@ export class Song {
     return Parser(this.html);
   }
 
+  isEmpty() {
+    return this.text.match(/^\s*$/) != null;
+  }
+
   parse(md) {
     this.text = md;
 
@@ -152,12 +152,10 @@ export class Song {
     // this._id may be present or not, but is, most importantly: unaffected!
 
     // Set Metadata
-    let dom = new DOMParser().parseFromString(this.html, "text/html");
 
-    if (dom === undefined) {
-      // Delete song
-      return;
-    }
+    if (this.isEmpty()) return;  // delete song upon next save.
+
+    const dom = new DOMParser().parseFromString(this.html, "text/html");
 
     let h1 = dom.getElementsByTagName("h1");
     if (h1.length > 0) {
