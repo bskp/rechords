@@ -69,7 +69,7 @@ Meteor.methods({
 
         // Save Song
         if ('_id' in song) {
-            if (song.text.match(/^\s*$/) != null) {
+            if (song.isEmpty()) {
                 Songs.remove(song._id);
 
                 return false; // early return, don't create revision
