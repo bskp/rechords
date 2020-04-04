@@ -9,27 +9,70 @@ import Drawer from './Drawer';
 interface ListItemProps {
     song: Song;
     onClickHandler: Function;
+    user: Meteor.User;
 }
 class ListItem extends React.Component<ListItemProps, {}> {
     constructor(props) {
         super(props);
     }
 
+    toggleDarling = e => {
+        const u = this.props.user;
+        const id = this.props.song._id;
+
+        if (u.profile.darlings.includes(id)) {
+            u.profile.darlings = u.profile.darlings.filter( i => i != id );
+        } 
+        else {
+            u.profile.darlings.push(id);
+        }
+
+        Meteor.call('saveUser', u, (error) => {
+            console.log(error);
+        });
+    }
+
     render() {
+        const u = this.props.user;
+
+        if (!('darlings' in u.profile) || !(u.profile.darlings instanceof Array)) {
+            u.profile.darlings = [];
+            Meteor.call('saveUser', u, (error) => {
+                console.log(error);
+            });
+            
+        } 
+
+        const darlings = u.profile.darlings;
+
+        const is_darling = darlings.includes(this.props.song._id) ? 'is_darling' : '';
+        //const is_darling = (this.props.song.title.length % 3 == 0) ? 'is_darling' : '';
+
+        const darling_or_not = <a onClick={this.toggleDarling} className={"darling " + is_darling}>{darling_icon}</a>
+        
         return (
             <li><NavLink onClick={this.props.onClickHandler} to={`/view/${this.props.song.author_}/${this.props.song.title_}`}
                 activeClassName="selected">
-                <span className="title">{this.props.song.title}</span>
-                <span className="author">{this.props.song.author}</span>
-                </NavLink></li>
+                    <span className="title">{this.props.song.title}</span>
+                    <span className="author">{this.props.song.author}</span>
+                    {darling_or_not}
+                </NavLink>
+            </li>
         );
     }
 }
+
+const darling_icon = (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/>
+    </svg>
+)
 
 
 
 interface ListGroupProps {
   songs: Array<Song>;
+  user: Meteor.User;
   label: string;
   onClickHandler: Function;
 }
@@ -44,7 +87,7 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
                 <h2 className="huge">{this.props.label}</h2>
                 <ul>
                     {this.props.songs.map((song) => 
-                        <ListItem song={song} key={song._id} onClickHandler={this.props.onClickHandler}/>
+                        <ListItem song={song} user={this.props.user} key={song._id} onClickHandler={this.props.onClickHandler}/>
                     )}
                 </ul>
             </li>
@@ -55,6 +98,7 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
 
 interface ListProps {
   songs: Array<Song>;
+  user: Meteor.User;
   filter?: String;
   hidden: boolean;
   hideOnMobile: Function;
@@ -254,7 +298,7 @@ class List extends React.Component<ListProps, ListState> {
                     />
                 <ul>
                     {Array.from(groups, ([group, songs]) => {
-                            return <ListGroup label={group} songs={songs} key={group} onClickHandler={this.props.hideOnMobile}/>
+                            return <ListGroup user={this.props.user} label={group} songs={songs} key={group} onClickHandler={this.props.hideOnMobile}/>
                         }
                     )}
                     <li>

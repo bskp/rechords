@@ -77,6 +77,9 @@
 
   }
 
+  h1, h2, h3, h4 {
+    .select(text);
+  }
 
   h2, h3, h4 {
     color: black;
@@ -152,9 +155,11 @@
 
   a {
     color: @accent;
+    display: inline-block;
 
     &:hover {
-      text-decoration: underline;
+      border-bottom: 0.3em solid fade(@secondary, 40%);
+      line-height: 0.75em;
     }
   }
 
@@ -261,6 +266,8 @@
 
     flex-direction: column;
     display: flex;
+
+    .select(text);
 
     @supports ( -moz-appearance:none ){
       // Only for FF: Hanging indents for rows without chords.

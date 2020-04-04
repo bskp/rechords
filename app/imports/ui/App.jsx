@@ -121,7 +121,13 @@ class App extends Component {
                     toggleMenu={this.toggleSongList}
                 />
                 <div id="body">
-                <List songs={this.props.songs} key={list_key} hidden={this.state.songListHidden} hideOnMobile={this.hideSongListOnMobile}/>
+                <List 
+                    songs={this.props.songs}
+                    key={list_key}
+                    hidden={this.state.songListHidden}
+                    hideOnMobile={this.hideSongListOnMobile}
+                    user={this.props.user}
+                />
                 <Switch>
 
                     <Route exact path='/' render={(props) => (

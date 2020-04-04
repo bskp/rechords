@@ -24,7 +24,7 @@ Meteor.methods({
             }
         }
 
-        if (new_secret == '') return;
+        if (new_secret === undefined || new_secret == '') return;
         // Set a new 4-word-secret:
 
         // fetches the (possibly) newly generated user id.

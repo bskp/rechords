@@ -66,6 +66,18 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
             stats = <p>Fleissig! Du hast <strong>{song_ids.length} Lieder</strong> insgesamt <strong>{user_revs.length} mal bearbeitet</strong>.</p>
         }
 
+        let darlings = u.profile.darlings?.map ( id => {
+            let s = Songs.findOne(id);
+            return s ? <li key={'sl' + s._id}><Link to={'/view/' + s.author_ + '/' + s.title_}>{s.title}</Link></li> : undefined;
+        });
+
+        if (darlings === undefined || darlings.length == 0) {
+            darlings = <>
+                <li>Du hast noch keine Lieblingslieder!</li>
+                <li>Klick in der Liederliste links beim ausgewählten Lied auf den <strong>roten Punkt</strong>, um dir dieses zu merken.</li>
+            </>
+        }
+
         const song_links = song_ids.map( ( id ) => {
             let s = Songs.findOne(id);
             return s ? <li key={'sl' + s._id}><Link to={'/view/' + s.author_ + '/' + s.title_}>{s.title}</Link></li> : undefined;
@@ -84,11 +96,20 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
                 </p>
                 <br />
 
+                <h2>Lieblingslieder</h2>
+                <ul>
+                    {darlings}
+                </ul>
+                <p>Der "Liebling-Punkt" kann nur bei dem Lied vergeben oder weggenommen werden, dass gerade ausgewählt ist.</p>
+
+                <h2>Bearbeitete Lieder</h2>
                 {stats}
 
                 <ul>
                     {song_links}
                 </ul>
+
+                <h2>Einstellungen</h2>
 
                 <form onSubmit={this.handleSubmit}>
                     <label>Name</label><input type="text" value={u.profile.name} onChange={this.updateName} placeholder="Name"/><br />

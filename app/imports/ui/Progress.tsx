@@ -77,7 +77,7 @@ function Progress(props) {
                 id: 'editor',
                 accessor: (s: Song) => {
                     if (s.last_editor) {
-                        return users.get(s.last_editor);
+                        return users.get(s.last_editor) || '???';
                     }
                     return '';
                 }

@@ -178,6 +178,7 @@ aside.drawer#list {
 
     a {
       display: flex;
+      justify-content: space-between;
 
       .noFocusBorder;
 
@@ -206,6 +207,55 @@ aside.drawer#list {
         overflow: hidden;
       }
 
+      a.darling {
+        margin: 0;
+        padding: 0;
+
+        display: none;
+        width: 1.2em;
+        margin-right: 0.1em;
+        text-align: right;
+
+        svg {
+          width: 0.7em;
+          height: auto;
+          stroke-width: 3px;
+          fill: transparent;
+        }
+
+      }
+
+      &.selected a.darling {
+        display: inline-block;
+
+        svg {
+          stroke: white;
+        }
+
+        &:hover svg {
+          fill: @accent;
+        }
+      }
+
+      a.darling.is_darling {
+        display: inline-block;
+
+        svg {
+          fill: @accent;
+          stroke: transparent;
+        }
+
+        &:hover svg {
+          fill: @accent;
+        }
+      }
+
+      /*
+      &.selected a.darling.is_darling:hover svg {
+        stroke: white;
+      }
+      */
+
       &:hover {
         .title {
           flex: 1 0 0;
@@ -223,10 +273,10 @@ aside.drawer#list {
         background-color: @warm;
 
         .author {
-          color: white;
-          background-color: @warm;
+          display: none;
         }
       }
+
     }
   }
 
