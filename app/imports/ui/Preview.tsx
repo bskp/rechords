@@ -127,9 +127,9 @@ export default class Preview extends React.Component<P, {}> {
 
         // Iterate over letters
         var countedLetters = 0;
-        v = v.replace(/(\[[^\]]*\])|([^\[]*)/g, (match) => {
+        v = v.replace(/(\[[^\]]*\])|([^\[]*)/gm, (match, chord, lyrics) => {
           let adding = this.textLen(match);
-          if (countedLetters == pos.letter) match = '';
+          if (countedLetters == pos.letter) match = lyrics || '';  // retains line breaks.
           countedLetters += adding;
           return match;
         });
