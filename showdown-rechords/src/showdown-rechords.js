@@ -79,5 +79,21 @@ module.exports = function showdownRechords() {
         return '<div class="ref"><strong>' + ref + '</strong>' + annotation + '</div>';
       }
     },
+
+
+    // Chord frets
+    {
+      type: 'lang',
+      regex: /\n\[([^\]]*)\]: ([0-9a-dx-]{6})\n( *[0-4-x ]{6}\n)?/gm,
+      replace: function(match, label, frets, fingers) {
+        df = ''
+        if (fingers) {
+          df = '" data-fingers="' + fingers.trim();
+        }
+        fingers = (fingers || '').trim();
+        return '<abbr class="chord" title="' + frets + df + '">' + label + '</abbr>';
+      }
+
+    }
   ];
 };

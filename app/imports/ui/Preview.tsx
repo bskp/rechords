@@ -1,6 +1,7 @@
 import Songs, {Song} from '../api/collections';
 import * as React from 'react';
 import { Abcjs } from './Abcjs';
+import Kord from './Kord';
 
 var Hypher = require('hypher'),
 english = require('hyphenation.en-us'),
@@ -298,6 +299,12 @@ export default class Preview extends React.Component<P, {}> {
           abcNotation={abc}
           engraverParams={{ responsive: 'resize' }}
         />
+      }
+      else if (node.name == 'abbr') {
+        return <span className='chord-container'>
+            <strong>{node.children[0].data}</strong>
+            <Kord frets={node.attribs.title} fingers={node.attribs['data-fingers']} />
+          </span>
       }
       return node;
     }});

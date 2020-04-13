@@ -1,0 +1,55 @@
+@import (reference) "./variables.import.less";
+
+svg.chord-diag {
+
+    text {
+        text-anchor: middle;
+        font-size: 0.5rem;
+        stroke-width: 0;
+    }
+
+    .fret {
+        stroke-width: 0.7;
+        stroke: @warm;
+
+        rect {
+            fill: @warm;
+        }
+
+        .basefret {
+            font-size: 0.8rem;
+            fill: @warm;
+        }
+    }
+
+    .barre {
+        fill: @accent;
+
+        .capo {
+            fill: @secondary;
+            fill-opacity: 0.3;
+        }
+
+        text {
+            fill: white;
+            font-weight: 500;
+        }
+    }
+
+    .dot {
+        fill: @accent;
+        stroke-width: 1;
+        stroke: transparent;
+
+        text {
+            fill: white;
+            font-weight: 500;
+        }
+ 
+        &.open circle, &.muted line {
+            fill: transparent;
+            stroke: @accent;
+        }
+    }
+
+}

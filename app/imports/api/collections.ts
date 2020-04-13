@@ -31,7 +31,8 @@ var options = {
     code: ["class"],
     s: [],
     pre: [],
-    img: ["src", "alt"]
+    img: ["src", "alt"],
+    abbr: ["class", "title", "data-fingers"]
   }
 };
 

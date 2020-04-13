@@ -146,6 +146,7 @@
   p {
     margin: 1.4em 0;
     max-width: 40em;
+    clear: both; // for the floated chord-diagrams
   }
 
   h4 {
@@ -235,6 +236,41 @@
 
   }
 
+  .chord-container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    float: left;
+
+    margin-right: 2em;
+    margin-bottom: 2em;
+    margin-left: -1em;
+
+    .kord {
+      display: inline-block;
+
+      .chord-diag {
+        width: 90px;
+      }
+    }
+
+    strong {
+      font-weight: 600;
+    }
+  }
+
+  .chord-container strong, 
+  .line i .before {
+    sup {
+      vertical-align: 0.4em;
+      font-size: 0.7em;
+      letter-spacing: 0.02em;
+      padding-left: 0.1em;
+      font-weight: 700;
+    }
+  }
+
   .interactive i {
     cursor: pointer;
 
@@ -301,13 +337,7 @@
       margin-right: 0.5em;
       margin-bottom: -0.3em;
 
-      sup {
-        vertical-align: 0.4em;
-        font-size: 0.7em;
-        letter-spacing: 0.02em;
-        padding-left: 0.1em;
-        font-weight: 700;
-      }
+      // sup is formatted above.
 
       &:focus {
         background-color: hsv(hsvhue(@accent), 0.1, 0.95);

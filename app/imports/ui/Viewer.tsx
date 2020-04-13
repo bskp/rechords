@@ -8,6 +8,7 @@ import { Song } from '../api/collections';
 import Drawer from './Drawer';
 import { Abcjs } from './Abcjs'
 import { ColumnExpander } from "./ColumnGrid.js";
+import Kord from "./Kord.js";
 
 var Parser = require("html-react-parser");
 
@@ -132,6 +133,7 @@ ITransposeHandler {
     // Parse HTML to react-vdom and replace chord values.
     let vdom = Parser(rmd_html, {
       replace:  (node) => {
+
         if (node.name && node.name == 'i' && 'data-chord' in node.attribs) {
           if(!this.state.showChords)
             return;
@@ -145,6 +147,7 @@ ITransposeHandler {
           }
           return <i>{chord_}{node.children[0].data}</i>;
         }
+
         else if (node.name == 'pre') {
           if (node.children.length != 1) 
             return node;
@@ -169,6 +172,16 @@ ITransposeHandler {
           } else {
             return <></>
           }
+        }
+        else if (node.name == 'abbr') {
+          const chord = node.children[0].data;
+          const c = chrodlib.transpose(chord, key, 0);
+          const style = dT != 0 ? {opacity: 0.5} : undefined;
+
+          return <span className='chord-container' style={style}>
+              <strong>{c.base}<sup>{c.suff}</sup></strong>
+              <Kord frets={node.attribs.title} fingers={node.attribs['data-fingers']} />
+            </span>
         }
 
         // if(domNode.attribs && 'class' in domNode.attribs) {
