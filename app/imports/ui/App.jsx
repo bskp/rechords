@@ -82,10 +82,12 @@ class App extends Component {
 
     render() {
         if (!this.props.user) {
+
+            const aside = window.innerWidth > 900 ? <aside className="drawer open list-colors"> </aside> : undefined;
             return (
                 <div id="body">
                     <DocumentTitle title="Hölibu" />
-                    <aside className="drawer open list-colors"> </aside>
+                    {aside}
                     <Login />
                 </div>
             )
