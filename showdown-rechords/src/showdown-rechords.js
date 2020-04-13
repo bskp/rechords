@@ -84,7 +84,7 @@ module.exports = function showdownRechords() {
     // Chord frets
     {
       type: 'lang',
-      regex: /\n\[([^\]]*)\]: ([0-9a-dx-]{6})\n( *[0-4-x ]{6}\n)?/gm,
+      regex: /\n\[([^\]]*)\]: +([0-9a-dx-]{6})\n( *[0-4-x ]{6}\n)?/gm,
       replace: function(match, label, frets, fingers) {
         df = ''
         if (fingers) {
