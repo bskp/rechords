@@ -18,7 +18,6 @@ interface ViewerProps extends RouteComponentProps {
 
 interface ViewerStates {
   relTranspose: number,
-  viewPortGtM: boolean,
   inlineReferences: boolean,
   showChords: boolean,
   columns: boolean
@@ -37,7 +36,6 @@ ITransposeHandler {
 
     this.state = {
       relTranspose: this.getInitialTranspose(),
-      viewPortGtM: window.innerWidth > 900,
       inlineReferences: false,
       showChords: true,
       columns: false
@@ -64,20 +62,6 @@ ITransposeHandler {
       return isNaN(dT) ? 0 : dT;
     }
     return 0;
-  }
-
-  updateDimensions = () => {
-    const gtM = window.innerWidth > 900;
-    if( gtM != this.state.viewPortGtM)
-    this.setState({ viewPortGtM: gtM });
-  };
-
-  componentDidMount() {
-    // TODO: use media query
-    window.addEventListener('resize', this.updateDimensions);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateDimensions);
   }
 
   handleContextMenu = event => {
@@ -128,7 +112,6 @@ ITransposeHandler {
     }
 
     let dT = this.state.relTranspose;
-    let responsive = this.state.viewPortGtM ? undefined : 'resize';
 
     // Parse HTML to react-vdom and replace chord values.
     let vdom = Parser(rmd_html, {
@@ -176,7 +159,7 @@ ITransposeHandler {
         else if (node.name == 'abbr') {
           const chord = node.children[0].data;
           const c = chrodlib.transpose(chord, key, 0);
-          const style = dT != 0 ? {opacity: 0.5} : undefined;
+          const style = dT != this.getInitialTranspose() ? {opacity: 0.5} : undefined;
 
           return <span className='chord-container' style={style}>
               <strong>{c.base}<sup>{c.suff}</sup></strong>
@@ -267,7 +250,7 @@ ITransposeHandler {
   }
 
   private showMultiColumns() {
-    return this.state.columns && this.state.viewPortGtM;
+    return this.state.columns;
   }
 
   // TODO: Outsource to helper class/ function
