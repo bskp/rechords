@@ -48,6 +48,24 @@ export default class Preview extends React.Component<P, {}> {
 
   }
 
+  private chordProgressions(md : string) {
+    let chords = new Array<Array<string>>();
+    let verseNames = new Array<string>();
+    md.replace(verseRegex, (match:string, title:string, v:string) => {
+      let progression = new Array<string>();
+
+      v.replace(/\[([^\]]*)\]/g, (match, chord) => {
+        progression.push(chord);
+        return '';
+      });
+
+      chords.push(progression);
+      verseNames.push(title);
+      return '';
+    });
+    return {verseNames, chords};
+  }
+
   public handleClick(event: React.MouseEvent<HTMLElement>) {
     let node: Element = event.target as Element;
     if (!(node instanceof HTMLElement) || node.tagName != 'I') return;
@@ -65,7 +83,34 @@ export default class Preview extends React.Component<P, {}> {
       skipWhitespace = false;
     }
 
-    let md = this.prependChord(this.props.md, node, '|', offset, skipWhitespace);
+
+    let {verse, letter, chord} = this.locate(node);
+    let {verseNames, chords} = this.chordProgressions(this.props.md);
+    let current_verse = verseNames[verse];
+
+    let guessedChord;
+
+    // Is there a previous verse with the same name? (eg. "chorus")
+    let first_index = verseNames.indexOf(current_verse);
+    if (first_index < verse) {
+      guessedChord = chords[first_index][chord];
+
+    } else {
+      // Is this verse numbered and we have a predecessor?
+      let current_nr = parseInt(current_verse, 10);
+
+      if (!isNaN(current_nr)) {
+        let pred = (current_nr - 1).toString();
+        let pred_idx = verseNames.indexOf(pred);
+        if (pred_idx != -1) {
+          guessedChord = chords[pred_idx][chord];
+        }
+      }
+    }
+
+    if (guessedChord === undefined) guessedChord = '';
+
+    let md = this.prependChord(this.props.md, node, guessedChord + '|', offset, skipWhitespace);
     this.props.updateHandler(md);
   }
 
@@ -84,6 +129,17 @@ export default class Preview extends React.Component<P, {}> {
       md_ = this.prependChord(md_, i, chord, 0, skipWhitespace);
     }
     this.props.updateHandler(md_);
+
+    // Remove any selections.
+    if (window.getSelection) {
+      if (window.getSelection().empty) {  // Chrome
+        window.getSelection().empty();
+      } else if (window.getSelection().removeAllRanges) {  // Firefox
+        window.getSelection().removeAllRanges();
+      }
+    } else if (document.selection) {  // IE?
+      document.selection.empty();
+    }
   }
 
   public handleChordKey(event : React.KeyboardEvent<HTMLElement>) {
@@ -182,6 +238,7 @@ export default class Preview extends React.Component<P, {}> {
 
     // Count letters between clicked syllable and preceding h3 (ie. verse label)
     let letter : number = 0;
+    let chord : number = 0;
     let section : HTMLElement;
 
     while(true) {
@@ -221,6 +278,7 @@ export default class Preview extends React.Component<P, {}> {
         if (node.nodeName == 'SPAN' && node.className == 'before') {
           letter += 2;
           letter += this.textLen(node.textContent);
+          chord += 1;
           continue;
         }
       }
@@ -236,7 +294,8 @@ export default class Preview extends React.Component<P, {}> {
 
     return {
       letter: letter,
-      verse: verse
+      verse: verse,
+      chord: chord
     };
   }
 
