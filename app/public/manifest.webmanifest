@@ -4,5 +4,16 @@
     "start_url": "https://hölibu.ch",
     "display": "fullscreen",
     "background_color": "#fff",
-    "description": "Liederbüechli"
+    "description": "Liederbüechli",
+    "icons": [
+      {
+        "src": "icons/logo-256.png",
+        "sizes": "256x256",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/logo-512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }]
 }
