@@ -109,8 +109,9 @@ aside.drawer#list {
       background-color: mix(@light, white);
     }
 
-    div.taggroup {
-      margin-right: 20px;
+
+    div.filterMenu > h4 {
+      display: none !important;
     }
 
     h1,
@@ -124,10 +125,12 @@ aside.drawer#list {
       transform-origin: left;
       font-weight: 600;
       transform: rotate(-14deg);
+      margin-left: -0.5em;
     }
 
     ul {
       margin-left: 0.5em;
+      margin-right: 0.5em;
       flex: 0 0 7em;
       display: flex;
       flex-direction: column;
@@ -164,7 +167,8 @@ aside.drawer#list {
 
     opacity: 1;
     transition: all 0.5s;
-  }
+
+  } //filtermenu
 
   // Make list items fill the entire width
 

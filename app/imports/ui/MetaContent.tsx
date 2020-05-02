@@ -8,7 +8,7 @@ interface Props {
   title: string;
   className?: string;
   songs: Array<Song>;
-  replace: Function;
+  replace?: Function;
 }
 
 export default class MetaContent extends React.Component<Props, {}> {
@@ -22,25 +22,11 @@ export default class MetaContent extends React.Component<Props, {}> {
         })
         if (matches.length == 0) {
             this.content = <span>No match for {this.props.title}!</span>;
+
         } else {
             let html = matches[0].getHtml();
-            let content = new Parser(html, {replace: this.props.replace});
-            this.content = []
-            let group: DetailedReactHTMLElement< any, HTMLDivElement > = null;
-            for( let element of content )
-            {
-                if(element.type == 'h4')
-                {
-                    group = React.createElement('div', {className: "taggroup", key: element.key }, []) ;
-                    this.content.push( group ); 
-                }
-                if(group)
-                {
-                    group.props.children.push(element);
-                }
 
-            }
-
+            this.content = new Parser(html, {replace: this.props.replace});
         }
     }
 

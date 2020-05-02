@@ -13,7 +13,7 @@ var options = {
   whiteList: {
     a: ["href", "title"],
     span: ["class"],
-    div: ["class"],
+    div: ["class", "id"],
     i: ["class", "data-chord"],
     b: [],
     h1: [],

@@ -46,7 +46,6 @@ class ListItem extends React.Component<ListItemProps, {}> {
         const darlings = u.profile.darlings;
 
         const is_darling = darlings.includes(this.props.song._id) ? 'is_darling' : '';
-        //const is_darling = (this.props.song.title.length % 3 == 0) ? 'is_darling' : '';
 
         const darling_or_not = <a onClick={this.toggleDarling} className={"darling " + is_darling}>{darling_icon}</a>
         
@@ -267,13 +266,27 @@ class List extends React.Component<ListProps, ListState> {
         let active = this.state.active ? '' : 'hidden';
         let filled = this.state.filter == '' ? '' : 'filled';
 
-        const process_filtermenu = (node) => {
-            if (node.name == 'li') {
-                let b = node.children.length > 1 ? <b>…</b> : null;
-                return <li onMouseDown={this.onTagClick.bind(this)}>{node.children[0].data}{b}</li>
-            }
+        const process_filtermenu = () => {
+            let bucket;
 
+            return (node) => {
+                if (node.name == 'li') {
+                    let b = node.children.length > 1 ? <b>…</b> : null;
+                    return <li onMouseDown={this.onTagClick.bind(this)}>{node.children[0].data}{b}</li>
+                }
+
+                if (node.name == 'h4') {
+                    bucket = node;
+                    return node;
+                }
+
+                if (node.name == 'ul') {
+                    node.children.unshift(bucket);
+                    return node;
+                }
+            }
         }
+
 
         return (
             <Drawer id="list" open={true} className={"songlist " + (this.props.hidden ? 'hidden' : '')}>
@@ -291,7 +304,7 @@ class List extends React.Component<ListProps, ListState> {
                 </div>
 
                 <MetaContent 
-                    replace={process_filtermenu}
+                    replace={process_filtermenu()}
                     className={'filterMenu ' + active} 
                     title="Schlagwortverzeichnis" 
                     songs={this.props.songs}
