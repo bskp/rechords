@@ -79,22 +79,20 @@ export default class Login extends React.Component<{}, { one: string, two: strin
         if (Meteor.loggingIn()) status = 'melde an…';
 
         return (
-            <div id="body">
-                <DocumentTitle title="Hölibu" />
+            <section className="content" id="home">
+                <img src="/icons/header.svg" />
 
-                <div id="login"> 
-
-                    <section className="content">
-                        <p>Melde dich an mit…</p>
-                        <input id="one" ref={this.one} type="text" onKeyDown={this.handleKey} onChange={this.handleChange} placeholder="deinen"/>
-                        <input id="two" ref={this.two} type="text" onKeyDown={this.handleKey} onChange={this.handleChange} placeholder="vier"/>
-                        <input id="three" ref={this.three} type="text" onKeyDown={this.handleKey} onChange={this.handleChange} placeholder="geheimen"/>
-                        <input id="four" ref={this.four} type="text" onKeyDown={this.handleKey} onChange={this.handleChange} placeholder="Wörtern"/>
-                        <p>{status}&#8203;</p>
-                        </section>
-
+                <p>Exakt wie Wikipedia. Einfach für Lieder. Mit Akkorden.</p>
+                <p>Und, ähem, natürlich nicht öffentlich – sonst dürften wir das ja gar nicht. Nur für Jublanerinnen und Jublaner. Logge dich darum besser erst mal ein mit…</p>
+                <div className="fourWords">
+                    <input id="one" ref={this.one} type="text" onKeyDown={this.handleKey} onChange={this.handleChange} placeholder="deinen"/>
+                    <input id="two" ref={this.two} type="text" onKeyDown={this.handleKey} onChange={this.handleChange} placeholder="vier"/>
+                    <input id="three" ref={this.three} type="text" onKeyDown={this.handleKey} onChange={this.handleChange} placeholder="geheimen"/>
+                    <input id="four" ref={this.four} type="text" onKeyDown={this.handleKey} onChange={this.handleChange} placeholder="Wörtern"/>
                 </div>
-            </div>
-        )
+                <p>Du hast keinen Zugang? Frage deine Scharleitung oder schreibe eine Mail an <a href="mailto:hoelibu@posteo.ch">hoelibu@posteo.ch</a> und du kriegst einen.</p>
+                <p>{status}&#8203;</p>
+            </section>
+        )   
     }
 }

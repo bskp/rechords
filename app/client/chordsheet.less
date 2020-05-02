@@ -2,29 +2,12 @@
 @import (reference) "./variables.import.less";
 
 #chordsheet {
-
-  padding: 0;
-  margin: 0;
   box-sizing: border-box;
-
   .chordsheet-colors;
   color: @warm;
 
   #chordsheetContent {
-    padding-top: 2em;
-    padding-bottom: 2em;
-    padding-left: 6em;
-    box-sizing: border-box;
-
-    .phone({
-      font-size: 0.9em; 
-      padding-left: 1em;
-      padding-right: 1em;
-      // Security Margin: some mobile browser probably count the bottom and top bar to the viewport height
-      // Maybe we have a bug in using vh wrong. Anyways, this helps and doesn't hurt
-      // Except for very short songs that have no scroll unnecesarily  ¯\_(ツ)_/¯
-      padding-bottom: 10em; 
-    });
+    margin-bottom: 10em;
   }
 
   &.multicolumns {
@@ -36,11 +19,11 @@
     }
 
     // comments are not (yet?) wrapped in a div...
-    >p {
+    > p {
       margin-bottom: 1.5em;
     }
 
-    section>div {
+    section > div {
       margin-bottom: .5em;
 
       &:last-child { // section is "display:contents" therefore we must add margin here...
@@ -73,12 +56,6 @@
     .abc-notation {
       display: none;
     }
-
-
-  }
-
-  h1, h2, h3, h4 {
-    .select(text);
   }
 
   h2, h3, h4 {
@@ -149,24 +126,6 @@
     clear: both; // for the floated chord-diagrams
   }
 
-  h4 {
-    margin-top: 2em;
-    margin-bottom: -0.5em;
-  }
-
-  a {
-    color: @accent;
-    display: inline-block;
-
-    &:hover {
-      border-bottom: 0.3em solid fade(@secondary, 40%);
-      line-height: 0.75em;
-    }
-  }
-
-  img {
-    width: 100%;
-  }
 
   .inlineReference {
     &.shown {
@@ -303,7 +262,6 @@
     flex-direction: column;
     display: flex;
 
-    .select(text);
 
     @supports ( -moz-appearance:none ){
       // Only for FF: Hanging indents for rows without chords.

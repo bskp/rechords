@@ -11,6 +11,7 @@ import Users from './Users.tsx';
 import User from './User.tsx';
 import HideSongList from './HideSongList';
 import Login from './Login.tsx';
+import MetaContent from './MetaContent';
 
 import { BrowserRouter, Route, Switch, useHistory} from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
@@ -23,26 +24,14 @@ const empty_song = {
 };
 
 const nA404 = (
-    <div className="container">
-        <DocumentTitle title="Hölibu | 404" />
-        <div className="content chordsheet-colors">
-            <span id="logo">
-                <h1>404</h1>
-                <h2>n/A</h2>
-            </span>
-        </div>
-    </div>
-)
-
-const logo = (
     <div className="content chordsheet-colors">
+        <DocumentTitle title="Hölibu | 404" />
         <span id="logo">
-            <h2>Hölibu</h2>
-            <h1>3000</h1>
+            <h1>404</h1>
+            <h2>n/A</h2>
         </span>
     </div>
 )
-
 
 AdminRoute = ({ render: render, ...rest }) => (
     <Route {...rest} render={(props) => (
@@ -133,10 +122,12 @@ class App extends Component {
                 <Switch>
 
                     <Route exact path='/' render={(props) => (
-                            <div className="container">
-                                <DocumentTitle title="Hölibu" />
-                                {logo}
-                            </div>
+                                    <section className="content" id="home">
+                                        <DocumentTitle title="Hölibu" />
+                                        <img src="/icons/header.svg" />
+
+                                        <p>Exakt wie Wikipedia. Einfach für Lieder. Mit Akkorden.</p>
+                                    </section>
                     )} />
 
 
@@ -230,11 +221,7 @@ class App extends Component {
     }
 }
 
-const NoMatch = ({ location }) => (
-    <div>
-        <h3>No match for <code>{location.pathname}</code></h3>
-    </div>
-)
+const NoMatch = ({ location }) => nA404;
 
 export default withTracker(props => {
     const songHandle = Meteor.subscribe('songs');

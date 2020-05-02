@@ -58,10 +58,11 @@ body {
   //position: fixed; halb-gut auf safari, andere mobile browser?
 
   .select(none);
+  -webkit-tap-highlight-color: transparent;
 
   font-family: "Roboto", Helvetica, Arial, sans-serif;
   font-size: 18px;
-  background-color: grey;
+  background-color: white;
 }
 
 #app {
@@ -74,6 +75,7 @@ body {
   height: 100%;
 }
 
+// Generic content pages
 .content {
   box-sizing: border-box;
   min-height: 100vh;
@@ -81,7 +83,14 @@ body {
   .scroll-vertical;
 
   width: 100%;
-  padding: 1em 2em 1em 2em;
+  padding: 1.5em 2em;
+
+  padding-left: 6em;
+
+  .phone({
+    font-size: 0.9em; 
+    padding: 2em 1em !important;
+  });
 
   h1:first-child,
   h2:first-child {
@@ -102,6 +111,58 @@ body {
   h1:first-child {
     margin-right: 0.5em;
     margin-left: -0.1em;
+  }
+
+  a {
+    color: @accent;
+    display: inline-block;
+
+    &:hover {
+      border-bottom: 0.2em solid fade(@secondary, 40%);
+      line-height: 1em;
+    }
+  }
+
+  h4 {
+    margin-top: 2em;
+    margin-bottom: -0.5em;
+  }
+
+  img {
+    width: 100%;
+  }
+
+  // Table formats
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+
+    a {
+      cursor: pointer;
+
+      img {
+        height: 1em;
+      }
+    }
+  }
+
+  thead {
+    text-align: left;
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: fade(@light, 30%);
+  }
+
+  td,
+  th {
+    padding: 0.1em 0.5em 0.1em 0.5em;
+
+    max-width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
@@ -177,11 +238,6 @@ aside.drawer {
 
 
 // Special content
-#logo * {
-  font-size: 15em;
-  margin: 0;
-  line-height: 0.8em;
-}
 
 .tags {
 
@@ -225,44 +281,13 @@ div.mobile-footer {
 }
 
 
+#progress {
+  .chordsheet-colors;
+  padding-left: 1em;
+}
+
 // Content elements
 
-
-#progress, #users, #user {
-  .chordsheet-colors;
-
-  table {
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 100%;
-
-    a {
-      cursor: pointer;
-
-      img {
-        height: 1em;
-      }
-    }
-  }
-
-  thead {
-    text-align: left;
-  }
-
-  tbody tr:nth-child(odd) {
-    background-color: fade(@light, 30%);
-  }
-
-  td,
-  th {
-    padding: 0.1em 0.5em 0.1em 0.5em;
-
-    max-width: 8em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
 
 textarea {
   font-family: "Input Mono", Courier New, Courier, monospace;
@@ -289,11 +314,5 @@ hr {
   padding: 0.2em;
   position: fixed;
   bottom: 1em;
-}
-
-// CSS-wise transparent container to satisfy react.
-// TODO: remove all of them.
-.container {
-  display: contents;
 }
 

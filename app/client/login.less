@@ -1,50 +1,54 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
 
-#login {
-    width: 100%;
-    background-color: white;
-    position: relative;
-    display: block;
+#home {
 
-    text-align: center;
+    .chordsheet-colors;
 
-    section {
-        display: block;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        min-height: auto;
-        margin-top: -3em;
-    }
+    padding-right: 6em;
+    padding-top: 4em;
+    max-width: 55em;
+
+    margin-right: auto;
+    margin-left: auto;
 
     p {
-        text-transform: uppercase;
-        font-weight: 600;
         color: @secondary;
         font-size: 1.1em;
+        margin: 2em 0;
     }
 
-    input {
-        display: inline-block;
-        width: 5em;
-        margin: 0em 0.5em 0.5em;
+    .fourWords {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-right: -2rem;
+        
+        input {
+            display: inline-block;
 
-        color: @accent;
-        border-bottom: 2px solid @secondary;
+            width: 4em;
+            flex-grow: 1;
 
-        &::placeholder {
-            color: @secondary;
-            opacity: 1;
+            margin-right: 2rem;
+            margin-bottom: 1rem;
+
+            color: @accent;
+            border-bottom: 2px solid @secondary;
+
+            &::placeholder {
+                color: @secondary;
+                opacity: 1;
+            }
+
+            &:focus {
+                outline: none;
+            }
+
+            text-align: center;
+            font-size: 2em;
+            font-weight: 100;
+
         }
-
-        &:focus {
-            outline: none;
-        }
-
-        text-align: center;
-        font-size: 2em;
-        font-weight: 100;
     }
 }
