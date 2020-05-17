@@ -2,6 +2,13 @@
 @drawer-closed: 30px;
 
 
+.cooperate {
+  font-family: 'Cooper';
+  font-weight: normal;
+  letter-spacing: -0.05em;
+}
+
+
 div.dark, div.light {
   display: contents;
 }
@@ -46,6 +53,22 @@ div.dark {
 
   --bg-filter-translucent: fade(@void, 60%);
   --bg-filter-opaque: mix(@void, @dirt);
+
+
+  // Theme variations
+  aside.drawer#list li a.selected {
+    background-color: inherit;
+    color: var(--text);
+
+    a.darling svg {
+      stroke: var(--text);
+    }
+
+    a.darling.is_darling svg {
+      stroke: var(--accent);
+    }
+  }
+
 }
 
 // Light color scheme
