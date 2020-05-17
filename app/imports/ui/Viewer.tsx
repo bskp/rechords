@@ -10,10 +10,14 @@ import { Abcjs } from './Abcjs'
 import { ColumnExpander } from "./ColumnGrid.js";
 import Kord from "./Kord.js";
 
+import { LayoutH, LayoutV, Day, Night } from './Icons.jsx';
+
 var Parser = require("html-react-parser");
 
 interface ViewerProps extends RouteComponentProps {
   song: Song,
+  toggleTheme: Function,
+  themeDark: boolean
 }
 
 interface ViewerStates {
@@ -215,8 +219,11 @@ ITransposeHandler {
           />
           :
           <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div> }
-          <div onClick={this.toggleColumns} className={'icon-toggler'} >
-            <img src={"/icons/layout_" + (this.state.columns ? 'horizontal' : 'vertical') + ".svg"} />
+          <div onClick={this.props.toggleTheme} id={'theme-toggler'} >
+            {this.props.themeDark ? <Day /> : <Night />}
+          </div>
+          <div onClick={this.toggleColumns} id={'layout-toggler'} >
+            {this.state.columns ? <LayoutH /> : <LayoutV />}
           </div>
           </aside>
     

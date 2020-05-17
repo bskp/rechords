@@ -10,45 +10,45 @@ svg.chord-diag {
 
     .fret {
         stroke-width: 0.7;
-        stroke: @warm;
+        stroke: var(--gray);
 
         rect {
-            fill: @warm;
+            fill: var(--gray);
         }
 
         .basefret {
             font-size: 0.8rem;
-            fill: @warm;
+            fill: var(--gray);
         }
     }
 
     .barre {
-        fill: @accent;
+        fill: var(--accent);
 
         .capo {
-            fill: @secondary;
+            fill: var(--gray);
             fill-opacity: 0.3;
         }
 
         text {
-            fill: white;
+            fill: var(--text-inverted);
             font-weight: 500;
         }
     }
 
     .dot {
-        fill: @accent;
+        fill: var(--accent);
         stroke-width: 1;
         stroke: transparent;
 
         text {
-            fill: white;
+            fill: var(--text-inverted);
             font-weight: 500;
         }
  
         &.open circle, &.muted line {
             fill: transparent;
-            stroke: @accent;
+            stroke: var(--accent);
         }
     }
 

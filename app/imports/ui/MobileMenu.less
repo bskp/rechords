@@ -39,18 +39,18 @@
   }
 
   >:nth-child(2n) {
-    background-color: @accent;
+    background-color: var(--accent);
 
     &:hover {
-      background-color: lighten(@accent, 7%);
+      background-color: var(--accent-flat);
     }
   }
 
   >:nth-child(2n+1) {
-    background-color: @secondary;
+    background-color: var(--gray);
 
     &:hover {
-      background-color: lighten(@secondary, 7%);
+      background-color: var(--gray-light);
     }
   }
 

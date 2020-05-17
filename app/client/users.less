@@ -10,8 +10,8 @@
     }
 
     input, select {
-        border-bottom: 2px solid @secondary;
-        color: @accent;
+        border-bottom: 2px solid var(--gray);
+        color: var(--accent);
 
         margin-right: 1em;
         flex-grow: 1;
@@ -45,14 +45,14 @@
     }
 
     li a:hover{
-        color: @accent;
+        color: var(--accent);
     }
 
     a.btn, 
     input[type="submit"] {
         border: none;
-        background-color: @secondary;
-        color: white;
+        background-color: var(--gray);
+        color: var(--text-inverted);
         cursor: pointer;
         padding: 0 0.7em;
         flex-grow: 0.5;
@@ -67,7 +67,7 @@
         margin-left: -0.2em;
 
         &:hover {
-            background-color: @accent;
+            background-color: var(--accent);
         }
     }
 

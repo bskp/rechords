@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as DocumentTitle from 'react-document-title';
 
+import { Header } from './Icons.jsx';
+
 
 export default class Login extends React.Component<{}, { one: string, two: string, three: string, four: string, msg: string }> {
     private one = React.createRef<HTMLInputElement>();
@@ -80,7 +82,7 @@ export default class Login extends React.Component<{}, { one: string, two: strin
 
         return (
             <section className="content" id="home">
-                <img src="/icons/header.svg" />
+                <Header />
 
                 <p>Exakt wie Wikipedia. Einfach für Lieder. Mit Akkorden.</p>
                 <p>Und, ähem, natürlich nicht öffentlich – sonst dürften wir das ja gar nicht. Nur für Jublanerinnen und Jublaner. Logge dich darum besser erst mal ein mit…</p>

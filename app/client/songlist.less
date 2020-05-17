@@ -29,8 +29,8 @@ aside.drawer#list {
 
     display: flex;
 
-    color: white;
-    background-color: @light;
+    color: var(--text-inverted);
+    background-color: var(--bg-list);
 
     .reset {
       flex: 0 0 1.5em;
@@ -58,22 +58,23 @@ aside.drawer#list {
 
       transition: color, background-color 0.5s;
 
-      background-color: @warm;
+      background-color: var(--gray);
       &::placeholder {
         color: transparent;
       }
 
       &[value=""] {
-        background-color: @light;
+        background-color: var(--bg-list);
         &::placeholder {
-          color: hsv(hsvhue(@accent), 0.2, 0.4);
+          color: var(--text-sidebar);
         }
       }
 
       &:focus {
-        background-color: @warm;
+        background-color: var(--gray);
         &::placeholder {
-          color: fade(white, 50%);
+          //color: fade(@text-inverted, 50%);
+          color: var(--text-inverted);
         }
       }
     }
@@ -102,11 +103,11 @@ aside.drawer#list {
 
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    background-color: fade(@light, 60%);
+    background-color: var(--bg-filter-translucent);
 
     @media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
       // non-webkit-browsers
-      background-color: mix(@light, white);
+      background-color: var(--bg-filter-opaque);
     }
 
 
@@ -120,7 +121,7 @@ aside.drawer#list {
     }
 
     h4 {
-      color: black;
+      color: var(--text);
       display: block;
       transform-origin: left;
       font-weight: 600;
@@ -138,14 +139,14 @@ aside.drawer#list {
 
     li {
       display: inline-table;
-      color: white;
+      color: var(--text-inverted);
       margin-bottom: 0.5em;
       transform-origin: left;
       transform: rotate(-14deg);
       cursor: pointer;
 
       &:hover {
-        background-color: black;
+        background-color: var(--text);
       }
 
       b {
@@ -204,8 +205,8 @@ aside.drawer#list {
       .author {
         display: none;
         flex: 1 0 0;
-        color: hsv(hsvhue(@accent), 0.8, 0.8);
-        background-color: @light;
+        color: var(--accent);
+        background-color: var(--bg-list);
         text-align: right;
         direction: rtl;
         overflow: hidden;
@@ -233,11 +234,11 @@ aside.drawer#list {
         display: inline-block;
 
         svg {
-          stroke: white;
+          stroke: var(--text-inverted);
         }
 
         &:hover svg {
-          fill: @accent;
+          fill: var(--accent);
         }
       }
 
@@ -245,20 +246,14 @@ aside.drawer#list {
         display: inline-block;
 
         svg {
-          fill: @accent;
+          fill: var(--accent);
           stroke: transparent;
         }
 
         &:hover svg {
-          fill: @accent;
+          fill: var(--accent);
         }
       }
-
-      /*
-      &.selected a.darling.is_darling:hover svg {
-        stroke: white;
-      }
-      */
 
       &:hover {
         .title {
@@ -268,13 +263,13 @@ aside.drawer#list {
         .author {
           display: inline-block;
           flex: 0 0 auto;
-          color: @accent;
+          color: var(--accent);
         }
       }
 
       &.selected {
-        color: white;
-        background-color: @warm;
+        color: var(--text-inverted);
+        background-color: var(--gray);
 
         .author {
           display: none;
@@ -291,14 +286,14 @@ aside.drawer#list {
     box-sizing: border-box;
     padding: 0.5em;
 
-    background-color: @light;
+    background-color: var(--bg-list);
     display: flex;
 
     cursor: pointer;
-    color: @secondary;
+    color: var(--gray);
 
     &:hover {
-      color: @accent;
+      color: var(--accent);
     }
 
     text-transform: uppercase;

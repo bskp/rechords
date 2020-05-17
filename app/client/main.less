@@ -40,10 +40,10 @@ textarea {
   width: 100%;
 }
 
-// Global Variables + Colors moved to variables.import.less
 
-// sizes moved to responsive.import.less
-
+* {
+  //transition: background-color 2s, color 2s, fill 2s, stroke 2s, border-color 2s;
+}
 
 // Base Layout
 
@@ -64,7 +64,7 @@ body {
 
   font-family: "Roboto", Helvetica, Arial, sans-serif;
   font-size: 18px;
-  background-color: white;
+  background-color: var(--bg-sheet);
 }
 
 #app {
@@ -116,11 +116,11 @@ body {
   }
 
   a {
-    color: @accent;
+    color: var(--accent);
     display: inline-block;
 
     &:hover {
-      border-bottom: 0.2em solid fade(@secondary, 40%);
+      border-bottom: 0.2em solid var(--gray-light);
       line-height: 1em;
     }
   }
@@ -154,7 +154,7 @@ body {
   }
 
   tbody tr:nth-child(odd) {
-    background-color: fade(@light, 30%);
+    background-color: var(--dirt);
   }
 
   td,
@@ -227,7 +227,7 @@ aside.drawer {
   h2 {
     font-size: 1em;
     margin-bottom: 0;
-    color: mix(@accent, @warm, 80%);
+    color: var(--accent);
   }
 
   h2.huge {
@@ -253,8 +253,8 @@ aside.drawer {
     line-height: 1.7em;
     font-weight: 600;
     text-transform: uppercase;
-    background-color: @warm;
-    color: white;
+    background-color: var(--gray);
+    color: var(--text-inverted);
     border-radius: 0.4em;
     padding: 0 0.5em;
     margin-right: 0.5em;
@@ -269,7 +269,7 @@ aside.drawer {
       padding: 0 0.5em;
       margin: 0 -0.5em;
       margin-left: 0.3em;
-      background-color: @accent;
+      background-color: var(--accent);
       border-top-right-radius: inherit;
       border-bottom-right-radius: inherit;
     }

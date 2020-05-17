@@ -1,38 +1,169 @@
 // Global Color Definitions
-@accent: rgb(221, 68, 7);
 //@accent: rgb(0, 141, 235);
 
+
+
+@drawer-open: 220px;
+@drawer-closed: 30px;
+
+/*
 @secondary: hsv(hsvhue(@accent), 0.15, 0.6);
 
 @light: hsv(hsvhue(@accent), 0.05, 0.9);
 @dull : hsv(hsvhue(@accent), 0.3, 0.7);
 @warm : hsv(hsvhue(@accent), 0.2, 0.6);
+*/
+
+
+// Klassisches Schema
+/*
+@accent: rgb(221, 68, 7);
+@h: hsvhue(@accent);
+
+@gray: hsv(@h, 0.2, 0.6);
+@beige: hsv(@h, 0.05, 0.9);
+
+@bg-list: @beige;
+@bg-sheet: white;
+@bg-accent: hsv(@h, 0.7, 0.8);
+
+@text: black;
+@text-on-beige: hsv(@h, 0.2, 0.4);
+@text-inverted: white;
+*/
+
+
+
+// Dark color scheme
+#body.dark {
+
+  // Color swatches
+
+  @accent: #ffcb00;                   // for text.
+  @h: hsvhue(@accent);
+  @accent-flat: hsv(@h - 5, 0.8, 0.85); // duller and lighter variant of @accent for big areas
+
+  @ink: white;                        // for text.
+  @void: black;                       // for big areas.
+  @dirt: hsv(@h, 0, 0.1);               // a shaded @void, for areas
+  @gray: hsv(@h - 10, 0.2, 0.6);        // perceptively neutral gray
+
+
+  // Derived color variables
+
+  --bg-list: @void;
+  --bg-sheet: @dirt;
+
+  --accent: @accent;
+  --accent-flat: @accent-flat;
+
+  --ink: @ink;
+  --gray: @gray;
+  --gray-dark: mix(@gray, @ink, 66%);
+  --gray-light: fade(@gray, 40%);
+
+  --text: @ink;
+  --text-inverted: @void;
+  --text-sidebar: hsv(@h, 0.2, 0.4);
+
+  --bg-rev: hsv(hsvhue(@accent-flat), 0.7, 0.4);
+  --text-rev: mix(@accent-flat, white);
+
+  --text-revs: mix(@accent-flat, white);
+  --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
+
+  --bg-filter-translucent: fade(@void, 60%);
+  --bg-filter-opaque: mix(@void, @dirt);
+}
+
+// Light color scheme
+#body {
+
+  // Color swatches
+
+  @accent: rgb(221, 68, 7);          // for text.
+  @h: hsvhue(@accent);
+  @accent-flat: hsv(@h, 0.7, 0.8); // duller and lighter variant of @accent for big areas
+
+  @ink: black;                        // for text.
+  @void: white;                       // for big areas.
+  @dirt: hsv(@h, 0.05, 0.9);               // a shaded @void, for areas
+  @gray: hsv(@h, 0.2, 0.6);        // perceptively neutral gray
+
+
+  // Derived color variables
+
+  --bg-list: @dirt;
+  --bg-sheet: @void;
+
+  --accent: @accent;
+  --accent-flat: @accent-flat;
+
+  --ink: @ink;
+  --gray: @gray;
+  --gray-dark: mix(@gray, @ink, 66%);
+  --gray-light: fade(@gray, 40%);
+
+  --text: @ink;
+  --text-inverted: @void;
+  --text-sidebar: hsv(@h, 0.2, 0.4);
+
+  --bg-rev: hsv(hsvhue(@accent-flat), 0.7, 0.4);
+  --text-rev: mix(@accent-flat, white);
+
+  --text-revs: mix(@accent-flat, white);
+  --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
+
+  --bg-filter-translucent: fade(@void, 60%);
+  --bg-filter-opaque: mix(@void, @dirt);
+}
+
+//////////////////
+
+/*
+--accent: rgb(221, 68, 7);
+--dirt: hsv(--h, 0.05, 0.9);
+--ink: black;
+--void: white;
+--gray: hsv(--h, 0.2, 0.6);
+--accent-flat: hsv(--h, 0.7, 0.8);
+
+--bg-list: --dirt;
+--bg-sheet: --void;
+*/
+
+//////////////////
+
+:root {
+}
+
+
 
 // Color Schemes
 
 .list-colors {
-  color: hsv(hsvhue(@accent), 0.2, 0.4);
-  background-color: @light;
+  color: var(--text-sidebar);
+  background-color: var(--bg-list);
   scrollbar-color: fade(white, 50%) transparent;
 }
 
 .chordsheet-colors {
   h1 {
-    color: @accent;
+    color: var(--accent);
   }
 
-  color: black; // for aside only, is overridden in #chordsheet
-  background-color: white;
-  scrollbar-color: fade(black, 15%) transparent;
+  color: var(--text); // for aside only, is overridden in #chordsheet
+  background-color: var(--bg-sheet);
+  scrollbar-color: var(--text, 15%);
 }
 
 .source-colors {
   h1 {
-    color: white;
+    color: var(--text-inverted);
   }
-  color: fade(white, 70%);
-  background-color: hsv(hsvhue(@accent), 0.7, 0.8);
-  scrollbar-color: fade(black, 15%) transparent;
+  color: var(--text-inverted);  // fade probably?
+  background-color: var(--accent-flat);
+  scrollbar-color: var(--text);
 
   textarea {
     color: black;
@@ -41,14 +172,14 @@
 
 .revision-colors {
   // ie. a particular revision
-  color: hsv(hsvhue(@accent), 0.4, 0.8);
-  background-color: hsv(hsvhue(@accent), 0.7, 0.4);
+  color: var(--text-rev);
+  background-color: var(--bg-rev);
 }
 
 .revisions-colors {
   // ie. the list of revisions
-  color: hsv(hsvhue(@accent), 0.3, 0.7);
-  background-color: hsv(hsvhue(@accent), 0.5, 0.2);
+  color: var(--text-revs);
+  background-color: var(--bg-revs);
 }
 
 .select(@mode: none;) {
@@ -79,17 +210,9 @@
     outline: none;
   }
 
-  &::selection {
-    color: hsv(hsvhue(@accent), 0.4, 0.8);
-    background-color: hsva(hsvhue(@accent), 0.3, 0.3, 1);
-  }
-
+  &::selection,
   &::-moz-selection {
-    color: hsv(hsvhue(@accent), 0.8, 0.3);
-    background-color: hsv(hsvhue(@accent), 0.5, 0.9);
+    //color: hsv(hsvhue(@accent), 0.4, 0.8);
+    //background-color: hsva(hsvhue(@accent), 0.3, 0.3, 1);
   }
 }
-
-
-@drawer-open: 220px;
-@drawer-closed: 30px;

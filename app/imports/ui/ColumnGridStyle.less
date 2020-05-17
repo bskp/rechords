@@ -30,11 +30,11 @@
   }
 
   &.dragging :not(#ce-firstcolumn).ce-column {
-    border-left: 4px solid fade(@warm, 20%);
+    border-left: 4px solid var(--gray);
     cursor: col-resize;
   }
   &.hovering :not(#ce-firstcolumn).ce-column {
-    border-left: 4px solid fade(@warm, 40%);
+    border-left: 4px solid var(--gray);
     cursor: col-resize;
   }
   .ce-column {
@@ -61,7 +61,7 @@
   position: fixed;
   margin-left: var(--columnWidth);
   height: 100%;
-  background-color: gray;
+  background-color: var(--gray);
   width: 4px;
 }
 #columnWidthSettings {

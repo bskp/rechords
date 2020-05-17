@@ -9,7 +9,6 @@
 
   padding: 2em;
 
-  height: 400px;
   width: 50px;
   >* {
   // TODO: The inside of the slider should have
@@ -21,6 +20,7 @@
 
   .rc-slider {
     width: 0px;
+    height: 400px;
   }
 
   .rc-slider-mark {
@@ -40,15 +40,18 @@
   }
 
   .rc-slider-track {
-    background-color: @accent;
+    background-color: var(--accent);
   }
 
   .rc-slider-handle,
   .rc-slider-dot-active {
-    border-color: @accent;
+    border-color: var(--accent);
+    background-color: var(--accent);
   }
 }
+
 #transposer {
+    flex-grow: 1;
 
   .phone({
     display: none;
@@ -87,12 +90,12 @@
   }
 
   .rc-slider-track {
-    background-color: @accent;
+    background-color: var(--accent);
   }
 
   .rc-slider-handle,
   .rc-slider-dot-active {
-    border-color: @accent;
+    border-color: var(--accent);
   }
 }
 
@@ -107,9 +110,21 @@
   align-items: flex-end;
   justify-content: space-between;
 
-  .icon-toggler {
+  #layout-toggler {
     padding-right: 0.5em;
     cursor: pointer;
+    flex-grow: 0;
+  }
+
+  #theme-toggler {
+    padding-right: 0.5em;
+    margin-bottom: 1em;
+    cursor: pointer;
+    flex-grow: 0;
+
+    svg {
+      width: 4em;
+    }
   }
 }
 
@@ -119,9 +134,9 @@
   padding: 1em 0.3em;
   margin: 2px 0;
   width: 40px;
-  background-color: @warm;
+  background-color: var(--gray);
   border-radius: 5% 0 0 5%;
-  color: white;
+  color: var(--text-inverted);
 
   &.active {
     .source-colors;

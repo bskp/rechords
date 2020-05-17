@@ -1,0 +1,16 @@
+{
+    "plugins": [
+        [
+            "inline-react-svg",
+            {
+              "svgo": {
+                "plugins": [
+                  {
+                    "cleanupIDs": false
+                  }
+                ]
+              }
+            }
+        ]
+    ]
+}

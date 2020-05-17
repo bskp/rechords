@@ -4,7 +4,7 @@
 #chordsheet {
   box-sizing: border-box;
   .chordsheet-colors;
-  color: @warm;
+  color: var(--gray);
 
   #chordsheetContent {
     margin-bottom: 10em;
@@ -58,8 +58,12 @@
     }
   }
 
-  h2, h3, h4 {
-    color: black;
+  h2 {
+    color: var(--gray);
+  }
+
+  h4, h3 {
+    color: var(--text);
   }
 
   .sd-header {
@@ -71,10 +75,10 @@
   }
 
   .ref {
-    color: black;
+    color: var(--text);
     padding-left: 8px;
     margin-left: -12px;
-    border-left: 4px solid @accent;
+    border-left: 4px solid var(--accent);
     margin-top: 2em;
     margin-bottom: 2em;
     cursor: pointer;
@@ -85,7 +89,7 @@
   }
 
   .ref.open {
-    color: darken(@warm, 15%);
+    color: var(--gray);
 
     strong {
       display: block;
@@ -148,8 +152,8 @@
     padding: 0 0.5em;
     border-radius: 0.4em;
     line-height: 1.5em;
-    color: white;
-    background-color: fade(@dull, 70%);
+    color: var(--text);
+    background-color: var(--dirt);
   }
 
   pre code {
@@ -167,27 +171,34 @@
     });
 
     svg {
+      .abcjs-note,
+      .abcjs-slur,
+      .abcjs-beam-elem {
+        fill: var(--text);
+
+      }
+
       .abcjs-lyric,
       .abcjs-staff,
       .abcjs-staff-extra {
-        fill: @warm;
+        fill: var(--gray);
       }
 
       path.abcjs-ending {
-        stroke: mix(@warm, black, 66%);
+        stroke: var(--gray-dark);
       }
       
       text.abcjs-ending, 
       .abcjs-bar {
-        fill: mix(@warm, black, 66%);
+        fill: var(--gray-dark);
       }
 
       .abcjs-note_selected {
-        fill: @accent;
+        fill: var(--accent);
       }
 
       .abcjs-chord {
-        fill: @accent;
+        fill: var(--accent);
         font-size: 18px;
         font-weight: 600;
       }
@@ -234,7 +245,7 @@
     cursor: pointer;
 
     &:not(.hasChord):hover {
-      border-top: 2px solid @accent;
+      border-top: 2px solid var(--accent);
       margin-top: -2px;
     }
 
@@ -257,7 +268,7 @@
   .line i {
     font-style: normal;
     font-weight: 400;
-    color: black;
+    color: var(--text);
 
     flex-direction: column;
     display: flex;
@@ -284,7 +295,7 @@
     .before {
       // aka. Chords.
 
-      color: @accent;
+      color: var(--accent);
       font-weight: 600;
       font-style: normal;
 
@@ -298,7 +309,7 @@
       // sup is formatted above.
 
       &:focus {
-        background-color: hsv(hsvhue(@accent), 0.1, 0.95);
+        background-color: var(--bg-filter-opaque);
         min-width: 1.5em;
 
         &:empty:before {
@@ -307,7 +318,7 @@
       }
 
       &.optional {
-        color: hsv(hsvhue(@accent), 0.3, 0.7);
+        color: var(--gray);
         &:before {
           content: "(";
         }

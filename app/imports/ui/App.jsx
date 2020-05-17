@@ -13,6 +13,8 @@ import HideSongList from './HideSongList';
 import Login from './Login.tsx';
 import MetaContent from './MetaContent';
 
+import { Header } from './Icons.jsx';
+
 import { BrowserRouter, Route, Switch, useHistory} from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import { MobileMenu } from './MobileMenu.tsx'
@@ -48,7 +50,10 @@ class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { songListHidden: false }
+        this.state = { 
+            songListHidden: false,
+            darkTheme: false
+        }
         this.viewerRef = React.createRef()
     }
 
@@ -66,7 +71,11 @@ class App extends Component {
     }
 
     toggleSongList = () => {
-        this.setState((state) => ({songListHidden: !state.songListHidden })); // ({}) can be used instead of {return {}}
+        this.setState((state) => ({songListHidden: !state.songListHidden }));
+    }
+
+    toggleTheme = () => {
+        this.setState((state) => ({darkTheme: !this.state.darkTheme}));
     }
 
     render() {
@@ -100,6 +109,8 @@ class App extends Component {
 
         }
 
+        const theme = this.state.darkTheme ? 'dark' : 'light'
+
         // If any song's title changes, the key for the <List /> changes and flushes all states.
         // This is required to update all internal "caching states" (matches etc.)
         const list_key = this.props.songs.map( s => s.title).join('-');
@@ -111,7 +122,7 @@ class App extends Component {
                     transposeHandler = {this.viewerRef}
                     toggleMenu={this.toggleSongList}
                 />
-                <div id="body">
+                <div id="body" className={theme}>
                 <List 
                     songs={this.props.songs}
                     key={list_key}
@@ -124,7 +135,7 @@ class App extends Component {
                     <Route exact path='/' render={(props) => (
                                     <section className="content" id="home">
                                         <DocumentTitle title="Hölibu" />
-                                        <img src="/icons/header.svg" />
+                                        <Header />
 
                                         <p>Exakt wie Wikipedia. Einfach für Lieder. Mit Akkorden.</p>
                                     </section>
@@ -141,7 +152,7 @@ class App extends Component {
                         return (
                             <>
                                 <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
-                                <Viewer song={song}  ref={this.viewerRef} 
+                                <Viewer song={song}  ref={this.viewerRef} toggleTheme={this.toggleTheme} themeDark={this.state.darkTheme}
                                 {...routerProps} />
                             </>
                         )

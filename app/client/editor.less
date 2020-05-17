@@ -31,11 +31,11 @@ aside.drawer#revs {
       padding: 0.3em;
 
       &:hover {
-        background-color: hsva(0, 0, 0, 0.3);
+        background-color: white; //fade(@text, 30%);
       }
 
       &.active {
-        background-color: hsva(0, 0, 0, 0.5);
+        background-color: white //fade(@text, 50%);
       }
     }
   }
@@ -48,7 +48,7 @@ aside.drawer#revs {
   width: 1em;
   height: 1em;
   border-radius: 1em;
-  background-color: @accent;
+  background-color: var(--accent);
   left: 5.9rem;
   top: 3.7rem;
 }
