@@ -52,7 +52,8 @@ class App extends Component {
         super(props);
         this.state = { 
             songListHidden: false,
-            darkTheme: false
+            darkTheme: false,
+            themeTransition: false
         }
         this.viewerRef = React.createRef()
     }
@@ -75,7 +76,13 @@ class App extends Component {
     }
 
     toggleTheme = () => {
-        this.setState((state) => ({darkTheme: !this.state.darkTheme}));
+        this.setState((state) => ({
+            darkTheme: !this.state.darkTheme,
+            themeTransition: true
+        }));
+        Meteor.setTimeout(() => {
+            this.setState(() => ({themeTransition: false}));
+        }, 2000);
     }
 
     render() {
@@ -109,7 +116,7 @@ class App extends Component {
 
         }
 
-        const theme = this.state.darkTheme ? 'dark' : 'light'
+        const theme = (this.state.darkTheme ? 'dark' : 'light') + (this.state.themeTransition ? ' transition' : '');
 
         // If any song's title changes, the key for the <List /> changes and flushes all states.
         // This is required to update all internal "caching states" (matches etc.)
