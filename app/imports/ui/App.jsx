@@ -90,7 +90,7 @@ class App extends Component {
 
             const aside = window.innerWidth > 900 ? <aside className="drawer open list-colors"> </aside> : undefined;
             return (
-                <div id="body">
+                <div id="body" className="light">
                     <DocumentTitle title="Hölibu" />
                     {aside}
                     <Login />
@@ -100,7 +100,7 @@ class App extends Component {
 
         if (this.props.songsLoading) {
             return (
-                <div id="body">
+                <div id="body" className="light">
                     <DocumentTitle title="Hölibu" />
                     <aside className="drawer open list-colors">Lade Lieder…</aside>
                     <div className="content chordsheet-colors"> </div>
@@ -124,12 +124,12 @@ class App extends Component {
 
         return (
             <BrowserRouter>
-            <>
+            <div className={theme}>
                 <MobileMenu 
                     transposeHandler = {this.viewerRef}
                     toggleMenu={this.toggleSongList}
                 />
-                <div id="body" className={theme}>
+                <div id="body">
                 <List 
                     songs={this.props.songs}
                     key={list_key}
@@ -233,7 +233,7 @@ class App extends Component {
                     <Route component={NoMatch} />
                 </Switch>
                 </div>
-            </>
+            </div>
             </BrowserRouter>
         );
     }

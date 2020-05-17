@@ -1,41 +1,13 @@
-// Global Color Definitions
-//@accent: rgb(0, 141, 235);
-
-
-
 @drawer-open: 220px;
 @drawer-closed: 30px;
 
-/*
-@secondary: hsv(hsvhue(@accent), 0.15, 0.6);
 
-@light: hsv(hsvhue(@accent), 0.05, 0.9);
-@dull : hsv(hsvhue(@accent), 0.3, 0.7);
-@warm : hsv(hsvhue(@accent), 0.2, 0.6);
-*/
-
-
-// Klassisches Schema
-/*
-@accent: rgb(221, 68, 7);
-@h: hsvhue(@accent);
-
-@gray: hsv(@h, 0.2, 0.6);
-@beige: hsv(@h, 0.05, 0.9);
-
-@bg-list: @beige;
-@bg-sheet: white;
-@bg-accent: hsv(@h, 0.7, 0.8);
-
-@text: black;
-@text-on-beige: hsv(@h, 0.2, 0.4);
-@text-inverted: white;
-*/
-
-
+div.dark, div.light {
+  display: contents;
+}
 
 // Dark color scheme
-#body.dark {
+div.dark {
 
   // Color swatches
 
@@ -77,7 +49,7 @@
 }
 
 // Light color scheme
-#body {
+div.light {
 
   // Color swatches
 
@@ -116,25 +88,6 @@
 
   --bg-filter-translucent: fade(@void, 60%);
   --bg-filter-opaque: mix(@void, @dirt);
-}
-
-//////////////////
-
-/*
---accent: rgb(221, 68, 7);
---dirt: hsv(--h, 0.05, 0.9);
---ink: black;
---void: white;
---gray: hsv(--h, 0.2, 0.6);
---accent-flat: hsv(--h, 0.7, 0.8);
-
---bg-list: --dirt;
---bg-sheet: --void;
-*/
-
-//////////////////
-
-:root {
 }
 
 
