@@ -160,6 +160,7 @@ ITransposeHandler {
             return <></>
           }
         }
+        // Insert fret diagrams
         else if (node.name == 'abbr') {
           const chord = node.children[0].data;
           const c = chrodlib.transpose(chord, key, 0);
@@ -170,14 +171,15 @@ ITransposeHandler {
               <Kord frets={node.attribs.title} fingers={node.attribs['data-fingers']} />
             </span>
         }
-
-        // if(domNode.attribs && 'class' in domNode.attribs) {
-        //    let clazz = domNode.attribs['class']
-        //    if(clazz == 'ref')
-        //    {
-
-        //    }
-        // }
+        // Remove process tags for read-only-users
+        else if (node.name == 'ul' && node.attribs?.['class'] == 'tags' 
+                 && Meteor.user().profile.role != 'admin') {
+          const hide = ['fini', '+', 'check', 'wip'];
+          node.children = node.children.filter((child) => {
+            if (child?.name == 'li' && hide.includes(child?.children[0].data)) return false;
+            return true;
+          });
+        }
       }
     });
 
