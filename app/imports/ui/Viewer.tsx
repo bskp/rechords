@@ -280,13 +280,6 @@ ITransposeHandler {
           const key = 'ref_'+i;
           const visible = this.state.inlineReferences ? ' shown' : ' hidden'
 
-          vdom[i] = React.cloneElement(elem,
-            {
-              'onClick': this.toggleInlineReferences,
-              className: 'ref' + (this.state.inlineReferences ? ' open' : ' collapsed'),
-              key: key,
-              id: key
-            });
           let refName = React.Children.toArray(elem.props.children)[0].props.children;
           if( typeof refName != 'string')
             continue
@@ -295,16 +288,30 @@ ITransposeHandler {
           let ref = 'sd-ref-' + refName.trim();
           let definition = sections_dict.get(ref)
           if( !definition ) {
-              definition = <p>Referenz <em>{refName}</em> existiert nicht</p>
-          }
+            vdom[i] = React.cloneElement(elem,
+              {
+                'onClick': this.toggleInlineReferences,
+                className: 'ref collapsed',
+                key: key,
+                id: key
+              });
+          } else {
+            vdom[i] = React.cloneElement(elem,
+              {
+                'onClick': this.toggleInlineReferences,
+                className: 'ref' + (this.state.inlineReferences ? ' open' : ' collapsed'),
+                key: key,
+                id: key
+              });
 
-          vdom.splice(i + 1, 0,
-            React.cloneElement(definition, { 
-              id: null, 
-              key: definition.key + '-clone-' + i,
-              className: 'inlineReference' + visible 
-            })
-          );
+            vdom.splice(i + 1, 0,
+              React.cloneElement(definition, { 
+                id: null, 
+                key: definition.key + '-clone-' + i,
+                className: 'inlineReference' + visible 
+              })
+            );
+          }
         }
       }
     }
