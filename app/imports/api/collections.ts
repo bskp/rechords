@@ -53,7 +53,7 @@ function isDefined<T>(a: T | null | undefined): a is T {
 	return a !== null && a !== undefined;
 }
 
-export const rmd_version = 4.1;
+export const rmd_version = 5;
 export class Song {
   _id?: string;
 
@@ -161,14 +161,18 @@ export class Song {
     let h1 = dom.getElementsByTagName("h1");
     if (h1.length > 0) {
       this.title = h1[0].textContent;
-      this.title_ = slug(this.title);
+    } else {
+      this.title = '(Ohne Titel)';
     }
+    this.title_ = slug(this.title);
 
     let h2 = dom.getElementsByTagName("h2");
     if (h2.length > 0) {
       this.author = h2[0].textContent;
-      this.author_ = slug(this.author);
+    } else {
+      this.author = '-';
     }
+    this.author_ = slug(this.author);
 
     this.tags = RmdHelpers.collectTags(dom);
     this.chords = RmdHelpers.collectChords(dom);

@@ -52,7 +52,7 @@ class App extends Component {
         super(props);
         this.state = { 
             songListHidden: false,
-            darkTheme: false,
+            darkTheme: window.matchMedia("(prefers-color-scheme: dark)").matches,
             themeTransition: false
         }
         this.viewerRef = React.createRef()
@@ -82,7 +82,7 @@ class App extends Component {
         }));
         Meteor.setTimeout(() => {
             this.setState(() => ({themeTransition: false}));
-        }, 2000);
+        }, 1000);
     }
 
     render() {
@@ -109,6 +109,11 @@ class App extends Component {
         }
 
         const getSong = (params) => {
+            if (params.author == '-') {
+                return Songs.findOne({
+                    title_: params.title
+                });
+            }
             return Songs.findOne({
                 author_: params.author,
                 title_: params.title

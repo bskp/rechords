@@ -54,9 +54,6 @@ Meteor.methods({
 
         delete song.revision_cache;  // aka. transient field!
 
-        const user_id = Meteor.userId();
-        song.last_editor = user_id;
-
         // Check for modifications
         let storedSong = Songs.findOne(song._id);
         if (storedSong != undefined && storedSong.text == song.text) {
@@ -66,6 +63,9 @@ Meteor.methods({
             }
             return true; // early return, don't create revision
         } 
+
+        const user_id = Meteor.userId();
+        song.last_editor = user_id;
 
         // Save Song
         if ('_id' in song) {

@@ -245,7 +245,7 @@ class List extends React.Component<ListProps, ListState> {
             this.state.exact_matches.length && 
             this.state.fuzzy_matches.length > 1
             ) {
-            groups.set("Im Titel", this.state.exact_matches);
+            groups.set("Titel", this.state.exact_matches);
         }
 
         // Add and group fuzzy matches

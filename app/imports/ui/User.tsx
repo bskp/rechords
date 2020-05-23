@@ -58,7 +58,9 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
         const admin = this.props.user.profile.role == 'admin';
 
         if (!admin) {
-            stats = <p>Du darfst Lieder <strong>ankucken</strong>, aber <strong>nicht bearbeiten</strong>.</p>
+            stats = <p>Du darfst Lieder <strong>ankucken</strong>, aber <strong>nicht bearbeiten</strong>
+            . Schreibe eine Mail an <a href="mailto:hoelibu@posteo.ch">hoelibu@posteo.ch</a>
+            , wenn du Lieder eintragen oder verbessern willst, und wir erstellen dir einen Mitarbeits-Account!</p>
         }
         else if (!this.props.revisionsLoading) {
             let user_revs = Revisions.find({editor: this.props.user._id}).fetch();
@@ -77,6 +79,37 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
                 <li>Klick in der Liederliste links beim ausgewählten Lied auf den <strong>roten Punkt</strong>, um dir dieses zu merken.</li>
             </>
         }
+
+        // Statistiken
+        let stats_text = <p>Zähle nach…</p>
+        if (!this.props.revisionsLoading) {
+
+            let count = 0;
+            let fini = 0;
+            let checked = 0;
+            let revs = 0;
+            let words = 0;
+            let authors = new Set();
+
+            Songs.find().forEach( (song : Song) => {
+                if (song.checkTag('privat')) return;
+                authors.add(song.author);
+                count += 1;
+                revs += song.getRevisions().length;
+                words += song.text.split(' ').length;
+
+                if (song.checkTag('fini')) fini += 1;
+                if (song.checkTag('check')) checked += 1;
+            });
+
+            stats_text = <p>
+                Das Hölibu umfasst <strong>{count} Lieder</strong> von <strong>{authors.size} Autoren
+                </strong>. Klingt nach wenig? Nun, das sind immerhin <strong>{words} Wörter</strong>
+                , und wir haben <strong>{revs}-Mal bearbeitet</strong>, um dahin zu kommen!
+                Es gibt noch bitz Arbeit: <strong>{fini} Lieder</strong> sind zur Zeit als "fertig" markiert
+                , und <strong>{checked}</strong> davon sind korrigiert worden.</p>
+        }
+
 
         const song_links = song_ids.map( ( id ) => {
             let s = Songs.findOne(id);
@@ -108,6 +141,10 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
                 <ul>
                     {song_links}
                 </ul>
+
+                <h2>Statistik</h2>
+                {stats_text}
+
 
                 <h2>Einstellungen</h2>
 

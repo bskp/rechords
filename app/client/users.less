@@ -10,7 +10,7 @@
     }
 
     input, select {
-        border-bottom: 2px solid var(--gray);
+        border-bottom: 3px solid var(--gray-light);
         color: var(--accent);
 
         margin-right: 1em;
@@ -50,13 +50,12 @@
 
     a.btn, 
     input[type="submit"] {
-        border: none;
-        background-color: var(--accent-flat);
-        color: var(--text-inverted);
+        border: 3px solid var(--gray);
+        background-color: transparent;
+        color: var(--gray);
         cursor: pointer;
         padding: 0 0.7em;
         flex-grow: 0.5;
-        border: none;
         border-radius: 1em;
         font-size: 0.8em;
         text-transform: uppercase;
@@ -65,10 +64,10 @@
         line-height: 1.8em;
         margin-right: 1em;
         margin-left: -0.2em;
-        box-shadow: 0 0.2em var(--ink);
 
         &:hover {
-            background-color: var(--accent);
+            color: var(--accent);
+            border-color: var(--accent);
         }
     }
 
