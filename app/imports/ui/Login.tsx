@@ -78,14 +78,13 @@ export default class Login extends React.Component<{}, { one: string, two: strin
     render() {
 
         let status = this.state.msg;
-        if (Meteor.loggingIn()) status = 'melde an…';
+        if (Meteor.loggingIn()) status = 'Melde an…';
 
         return (
             <section className="content" id="home">
                 <Header />
 
-                <p>Exakt wie Wikipedia. Einfach für Lieder. Mit Akkorden.</p>
-                <p>Und, ähem, natürlich nicht öffentlich – sonst dürften wir das ja gar nicht. Nur für Jublanerinnen und Jublaner. Logge dich darum besser erst mal ein mit…</p>
+                <p>Das Lieder-Wiki für Jublanerinnen und Jublaner. Logge dich erst mal ein mit…</p>
                 <div className="fourWords">
                     <input id="one" ref={this.one} type="text" onKeyDown={this.handleKey} onChange={this.handleChange} placeholder="deinen"/>
                     <input id="two" ref={this.two} type="text" onKeyDown={this.handleKey} onChange={this.handleChange} placeholder="vier"/>

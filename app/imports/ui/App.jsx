@@ -148,8 +148,6 @@ class App extends Component {
                                     <section className="content" id="home">
                                         <DocumentTitle title="Hölibu" />
                                         <Header />
-
-                                        <p>Exakt wie Wikipedia. Einfach für Lieder. Mit Akkorden.</p>
                                     </section>
                     )} />
 
