@@ -375,7 +375,7 @@ export default class ChrodLib {
     let transposed_pitch = (current_pitch + 48 + shift) % 12;
     let bornot = current_scale.bmap.get(transposed_pitch);
 
-    let pitchmap = bornot == ToBorSharp.Flat ? bMap : shMap;
+    let pitchmap = bornot == ToBorSharp.Sharp ? shMap : bMap;
 
     let ch = Chord.parseChordString(chord);
     if (ch === undefined) return null;
