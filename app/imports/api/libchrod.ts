@@ -126,7 +126,7 @@ class Scale {
       .some(p_shift => p_shift == pitch);
   }
 }
-var Scales:{major: Scale, harmonic: Scale} = {
+const Scales:{major: Scale, harmonic: Scale} = {
   // Arg, the harmonic depends on which cord is being played
   major: new Scale(
     "major",
@@ -370,15 +370,18 @@ export default class ChrodLib {
 
   transpose(chord: string, meta: {scale: string; key: string}, shift: number) {
     let current_pitch = forwardMap.get(meta.key);
-    let current_scale = Scales[meta.scale];
+    let current_scale: Scale = Scales[meta.scale];
 
     let transposed_pitch = (current_pitch + 48 + shift) % 12;
-    let bornot = current_scale.bmap.get(transposed_pitch);
-
-    let pitchmap = bornot == ToBorSharp.Sharp ? shMap : bMap;
-
     let ch = Chord.parseChordString(chord);
     if (ch === undefined) return null;
+
+    let bornot = ch.key.beOrNot
+    if( bornot == ToBorSharp.None || current_scale.pitches.indexOf(ch.idx) > -1 ) {
+      bornot = current_scale.bmap.get(transposed_pitch);
+    } 
+    let pitchmap = bornot == ToBorSharp.Sharp ? shMap : bMap;
+
 
     let base = pitchmap.get((ch.idx + 48 + shift) % 12)
     // Create pitchmap class to 
