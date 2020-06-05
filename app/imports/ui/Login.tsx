@@ -31,12 +31,20 @@ export default class Login extends React.Component<{}, { one: string, two: strin
     }
 
     handleSubmit = () => {
-        Meteor.loginWithPassword(this.state.one, this.state.two + '-' + this.state.three + '-' + this.state.four, (err) => {
-            if (!err) {
-                this.setState({msg: 'eingeloggt!'});
+        Meteor.loginWithPassword( this.state.one.toLowerCase(), 
+            this.state.two.toLowerCase() + '-' + this.state.three.toLowerCase() + '-' + this.state.four.toLowerCase(),
+            (err) => {
+                if (!err) {
+                    this.setState({msg: 'eingeloggt!'});
+                }
+                else {
+                    let msg = err.msg;
+                    if (err.reason == 'Incorrect password') {msg = 'Mindestens ein geheimes Wort ist falsch!'}
+                    if (err.reason == 'User not found') {msg = 'Das erste geheime Wort ist falsch!'}
+                    this.setState({ msg: msg });
+                }
             }
-            else this.setState({msg: err.message});
-        });
+        );
 
     }
 
