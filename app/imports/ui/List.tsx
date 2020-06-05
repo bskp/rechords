@@ -115,7 +115,7 @@ class List extends React.Component<ListProps, ListState> {
         this.state = {
             filter: props.filter || '',
             active: false,
-            fuzzy_matches: this.props.songs,
+            fuzzy_matches: [],
             exact_matches: []
         }
     }
@@ -144,6 +144,7 @@ class List extends React.Component<ListProps, ListState> {
 
     componentDidMount() {
         document.addEventListener("keydown", this.keyHandler, {});
+        this.setFilter('');
     }
 
     componentWillUnmount() {
@@ -160,6 +161,13 @@ class List extends React.Component<ListProps, ListState> {
 
         nextSong:
         for (let song of this.props.songs) {
+            if (this.props.user.profile.role == 'user' && 
+                (!song.checkTag('fini')) ) {
+                    // Display only songs which contain the tag "fini"
+                    continue nextSong;
+                }
+
+            // Check filter words
             for (let filter of new_filter.split(' ')) {
                 filter = filter.toLowerCase();
 
@@ -192,11 +200,7 @@ class List extends React.Component<ListProps, ListState> {
 
         let navigate = (s : Song) => {
             this.props.history.push('/view/' + s.author_ + '/' + s.title_);
-            this.setState({
-                filter: '',
-                fuzzy_matches: this.props.songs,
-                exact_matches: []
-            });
+            this.setFilter('');
             this.refs.filter.blur();
         }
 
