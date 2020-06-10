@@ -30,6 +30,8 @@ class ListItem extends React.Component<ListItemProps, {}> {
         Meteor.call('saveUser', u, (error) => {
             console.log(error);
         });
+
+        e.preventDefault();
     }
 
     render() {
@@ -47,7 +49,7 @@ class ListItem extends React.Component<ListItemProps, {}> {
 
         const is_darling = darlings.includes(this.props.song._id) ? 'is_darling' : '';
 
-        const darling_or_not = <a onClick={this.toggleDarling} className={"darling " + is_darling}>{darling_icon}</a>
+        const darling_or_not = <span onClick={this.toggleDarling} className={"darling " + is_darling}>{darling_icon}</span>
         
         return (
             <li><NavLink onClick={this.props.onClickHandler} to={`/view/${this.props.song.author_}/${this.props.song.title_}`}
@@ -322,7 +324,7 @@ class List extends React.Component<ListProps, ListState> {
                         <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
                     </li>
                 </ul>
-                <Link to="/user" id="user">{Meteor.user().profile.name}</Link>
+                <Link to="/user" className="username">{Meteor.user().profile.name}</Link>
             </Drawer>
         )
     }

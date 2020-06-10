@@ -19,13 +19,20 @@ aside.drawer#list {
     }
   }
 
+  .phone({
+    font-size: 1.2em;
+  });
+
   .filter {
     position: absolute;
     left: 0;
     top: 0;
     width: @drawer-open;
 
-    .phone({position: static; width: 100%;});
+    .phone({
+      position: static; 
+      width: 100%;
+    });
 
     display: flex;
 
@@ -99,7 +106,11 @@ aside.drawer#list {
     align-content: flex-start;
     z-index: 1;
 
-    .phone({position: static; width: 100%; padding-left: 0.5em;});
+    .phone({
+      position: static; 
+      width: 100%; 
+      padding-left: 0.5em;
+    });
 
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -160,10 +171,13 @@ aside.drawer#list {
       opacity: 0;
       visibility: hidden;
 
-      .phone(
-        {opacity: inherit; visibility: visible; max-height: 0; padding-top: 0; padding-bottom:
-          0;}
-      );
+      .phone({
+        opacity: inherit;
+        visibility: visible;
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+      });
     }
 
     opacity: 1;
@@ -212,7 +226,7 @@ aside.drawer#list {
         overflow: hidden;
       }
 
-      a.darling {
+      .darling {
         margin: 0;
         padding: 0;
 
@@ -230,7 +244,7 @@ aside.drawer#list {
 
       }
 
-      &.selected a.darling {
+      &.selected .darling {
         display: inline-block;
 
         svg {
@@ -242,7 +256,7 @@ aside.drawer#list {
         }
       }
 
-      a.darling.is_darling {
+      .darling.is_darling {
         display: inline-block;
 
         svg {
@@ -279,7 +293,7 @@ aside.drawer#list {
     }
   }
 
-  #user {
+  .username {
     position: absolute;
     bottom: 0;
     width: @drawer-open;
@@ -300,6 +314,10 @@ aside.drawer#list {
     font-weight: 900;
     font-size: 0.9em;
     text-align: right;
+
+    .phone({
+      display: none;
+    })
   }
 
 } // .drawer#list

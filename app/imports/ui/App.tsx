@@ -1,23 +1,23 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import Songs, {Song} from '../api/collections.ts';
+import Songs, {Song} from '../api/collections';
 
-import List from './List.tsx';
-import Viewer from './Viewer.tsx';
-import Editor from './Editor.jsx';
-import Progress from './Progress.tsx';
-import Users from './Users.tsx';
-import User from './User.tsx';
+import List from './List';
+import Viewer from './Viewer';
+import Editor from './Editor';
+import Progress from './Progress';
+import Users from './Users';
+import User from './User';
 import HideSongList from './HideSongList';
-import Login from './Login.tsx';
+import Login from './Login';
 import MetaContent from './MetaContent';
 
-import { Header } from './Icons.jsx';
+import { Header } from './Icons';
 
-import { BrowserRouter, Route, Switch, useHistory} from 'react-router-dom';
-import DocumentTitle from 'react-document-title';
-import { MobileMenu } from './MobileMenu.tsx'
+import { BrowserRouter, Route, Switch, RouteComponentProps} from 'react-router-dom';
+import * as DocumentTitle from 'react-document-title';
+import { MobileMenu } from './MobileMenu'
 
 const empty_song = {
     title: "Neues Lied",
@@ -35,7 +35,7 @@ const nA404 = (
     </div>
 )
 
-AdminRoute = ({ render: render, ...rest }) => (
+const AdminRoute = ({ render: render, ...rest }) => (
     <Route {...rest} render={(props) => (
 
         Meteor.user().profile.role == 'admin'
@@ -43,23 +43,38 @@ AdminRoute = ({ render: render, ...rest }) => (
     )} />
 )
 
+interface AppStates {
+    songListHidden: boolean,
+    themeDark: boolean,
+    themeTransition: boolean
+}
+
+interface AppProps extends RouteComponentProps {
+    songsLoading: boolean,
+    revisionsLoading: boolean,
+
+    songs: Array<Song>,
+    user: Meteor.User,
+
+    toggleSongList: Function,
+    toggleTheme: Function,
+}
 
 
 // App component - represents the whole app
-class App extends Component {
+class App extends React.Component<AppProps, AppStates> {
 
     constructor(props) {
         super(props);
         this.state = { 
             songListHidden: false,
-            darkTheme: window.matchMedia("(prefers-color-scheme: dark)").matches,
+            themeDark: window.matchMedia("(prefers-color-scheme: dark)").matches,
             themeTransition: false
         }
-        this.viewerRef = React.createRef()
     }
 
     hideSongListOnMobile = () => {
-        if (window.innerWidth > 900) return;
+        if (window.innerWidth > 700) return;
         this.setState({
             songListHidden: true
         });
@@ -77,13 +92,14 @@ class App extends Component {
 
     toggleTheme = () => {
         this.setState((state) => ({
-            darkTheme: !this.state.darkTheme,
+            themeDark: !state.themeDark,
             themeTransition: true
         }));
         Meteor.setTimeout(() => {
             this.setState(() => ({themeTransition: false}));
         }, 1000);
     }
+
 
     render() {
         if (!this.props.user) {
@@ -121,19 +137,18 @@ class App extends Component {
 
         }
 
-        const theme = (this.state.darkTheme ? 'dark' : 'light') + (this.state.themeTransition ? ' transition' : '');
+        const theme = (this.state.themeDark ? 'dark' : 'light') + (this.state.themeTransition ? ' transition' : '');
 
         // If any song's title changes, the key for the <List /> changes and flushes all states.
-        // This is required to update all internal "caching states" (matches etc.)
+        // This is a hack to easily update all internal "caching states" (matches etc.)
         const list_key = this.props.songs.map( s => s.title).join('-');
 
         return (
             <BrowserRouter>
             <div className={theme}>
-                <MobileMenu 
-                    transposeHandler = {this.viewerRef}
-                    toggleMenu={this.toggleSongList}
-                />
+
+                <MobileMenu toggleSongList={this.toggleSongList} songListHidden={this.state.songListHidden} />
+
                 <div id="body">
                 <List 
                     songs={this.props.songs}
@@ -162,8 +177,12 @@ class App extends Component {
                         return (
                             <>
                                 <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
-                                <Viewer song={song}  ref={this.viewerRef} toggleTheme={this.toggleTheme} themeDark={this.state.darkTheme}
-                                {...routerProps} />
+                                <Viewer 
+                                    song={song}  
+                                    toggleTheme={this.toggleTheme} 
+                                    themeDark={this.state.themeDark}
+                                    {...routerProps} 
+                                />
                             </>
                         )
                     }} />

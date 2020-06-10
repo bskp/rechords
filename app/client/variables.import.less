@@ -39,7 +39,7 @@ div.dark {
   --ink: @ink;
   --gray: @gray;
   --gray-dark: mix(@gray, @ink, 66%);
-  --gray-light: fade(@gray, 40%);
+  --gray-light: mix(@gray, @void, 40%);
 
   --text: @ink;
   --text-inverted: @void;
@@ -51,8 +51,8 @@ div.dark {
   --text-revs: mix(@accent-flat, white);
   --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
 
-  --bg-filter-translucent: fade(@void, 60%);
-  --bg-filter-opaque: mix(@void, @dirt);
+  --bg-filter-translucent: fade(@void, 40%);
+  --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
 
 
   // Theme variations
@@ -60,11 +60,11 @@ div.dark {
     background-color: inherit;
     color: var(--text);
 
-    a.darling svg {
+    .darling svg {
       stroke: var(--text);
     }
 
-    a.darling.is_darling svg {
+    .darling.is_darling svg {
       stroke: var(--accent);
     }
   }
@@ -97,7 +97,7 @@ div.light {
   --ink: @ink;
   --gray: @gray;
   --gray-dark: mix(@gray, @ink, 66%);
-  --gray-light: fade(@gray, 40%);
+  --gray-light: mix(@gray, @dirt, 60%);
 
   --text: @ink;
   --text-inverted: @void;
@@ -109,8 +109,8 @@ div.light {
   --text-revs: mix(@accent-flat, white);
   --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
 
-  --bg-filter-translucent: fade(@void, 60%);
-  --bg-filter-opaque: mix(@void, @dirt);
+  --bg-filter-translucent: fade(@dirt, 60%);
+  --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
 }
 
 
@@ -126,6 +126,10 @@ div.light {
 .chordsheet-colors {
   h1 {
     color: var(--accent);
+  }
+
+  h2 {
+    color: var(--gray);
   }
 
   color: var(--text); // for aside only, is overridden in #chordsheet

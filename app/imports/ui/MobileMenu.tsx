@@ -1,14 +1,13 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
+import { Menu } from './Icons.jsx';
 
 import './MobileMenu.less'
-import { ITransposeHandler} from './Viewer'
 
-interface MobileMenuProps extends React.HTMLProps<HTMLElement>
-{
-    toggleMenu: Function
-    transposeHandler: {current: ITransposeHandler}
+interface MobileMenuProps extends React.HTMLProps<HTMLElement> {
+    toggleSongList: Function,
+    songListHidden: boolean
 }
-
 
 export class MobileMenu extends React.Component<MobileMenuProps>  {
 
@@ -16,23 +15,18 @@ export class MobileMenu extends React.Component<MobileMenuProps>  {
         super(props);
     }
 
-    increaseTranspose = () => {
-        if( this.props.transposeHandler.current )
-          this.props.transposeHandler.current.increaseTranspose();
-    };
-  
-    decreaseTranspose = () => {
-        if( this.props.transposeHandler.current )
-          this.props.transposeHandler.current.decreaseTranspose();
-    };
-
     render() {
-    return (
-        <div id="mobilemenu">
-            <span onClick={ev => this.props.toggleMenu()} id="menu">Menu</span>
-            <span onClick={ev => this.increaseTranspose()} id="plus">+</span>
-            <span onClick={ev => this.decreaseTranspose()} id="minus">-</span>
-        </div>
-    )
+        const toggle = _ => this.props.toggleSongList();
+
+        let classes = 'mobilemenu'
+        if (!this.props.songListHidden) classes += ' hide-extensions'
+
+        return <div className={classes} >
+                    <span onClick={toggle} id="menu"><Menu /></span>
+                    <span className="username"> 
+                        <Link onClick={toggle} to="/user">{Meteor.user().profile.name}</Link>
+                    </span>
+                </div>
+
     }
 }

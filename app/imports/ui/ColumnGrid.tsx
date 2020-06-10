@@ -7,7 +7,7 @@ import { DefaultSettingsStorage } from '../api/localStorageDefs';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 
-const defaultColumnWidth = 320 // px
+const defaultColumnWidth = 480 // px
 
 
 const debugColumns = false;

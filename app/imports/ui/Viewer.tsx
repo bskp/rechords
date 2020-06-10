@@ -1,16 +1,15 @@
 import * as React from "react";
-import * as ReactDOM from 'react-dom';
-import { useParams, useLocation, useHistory, useRouteMatch } from 'react-router-dom';
 import {  NavLink, RouteComponentProps } from "react-router-dom";
 import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
 import Drawer from './Drawer';
 import { Abcjs } from './Abcjs'
+import { MobileMenu } from "./MobileMenu";
 import { ColumnExpander } from "./ColumnGrid.js";
 import Kord from "./Kord.js";
 
-import { LayoutH, LayoutV, Day, Night } from './Icons.jsx';
+import { LayoutH, LayoutV, Day, Night, Sharp, Flat } from './Icons.jsx';
 
 var Parser = require("html-react-parser");
 
@@ -27,14 +26,7 @@ interface ViewerStates {
   columns: boolean
 }
 
-// Only expose necessary handler for transpose setting, not complete component
-export interface ITransposeHandler {
-  increaseTranspose: Function
-  decreaseTranspose: Function 
-}
-
-export default class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> implements
-ITransposeHandler {
+export default class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> {
   constructor(props) {
     super(props);
 
@@ -174,7 +166,7 @@ ITransposeHandler {
         // Remove process tags for read-only-users
         else if (node.name == 'ul' && node.attribs?.['class'] == 'tags' 
                  && Meteor.user().profile.role != 'admin') {
-          const hide = ['fini', '+', 'check', 'wip'];
+          const hide: string[] = ['fini', '+', 'check', 'wip'];
           node.children = node.children.filter((child) => {
             if (child?.name == 'li' && hide.includes(child?.children[0].data)) return false;
             return true;
@@ -237,9 +229,21 @@ ITransposeHandler {
         </Drawer>
     ) : undefined;
 
+    const footer = Meteor.user().profile.role == 'admin' ? (
+        <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} id="edit">Bearbeiten…</NavLink></div>
+    ) : undefined;
+
     return (
 
       <>
+        <div className="extend mobilemenu" >
+            <span onClick={ _ => this.increaseTranspose()} id="plus"><Sharp /></span>
+            <span onClick={ _ => this.decreaseTranspose()} id="minus"><Flat /></span>
+            <span onClick={ _ => this.props.toggleTheme()} id="theme-toggler">
+              {this.props.themeDark ? <Day /> : <Night />}
+            </span>
+        </div>
+
         <div
           className={'content' + (this.showMultiColumns() ? ' multicolumns':'')}
           id="chordsheet" ref={this.refChordsheet}
@@ -250,7 +254,7 @@ ITransposeHandler {
               {vdom}
             </ChordSheet>
           </section>
-        <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} id="edit">Bearbeiten…</NavLink></div>
+          {footer}
         </div>
         {settings}
         {drawer}

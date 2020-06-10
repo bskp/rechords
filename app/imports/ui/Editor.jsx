@@ -6,6 +6,7 @@ import Source from './Source.jsx';
 import RevBrowser from './RevBrowser.jsx';
 import Preview from './Preview.tsx';
 import Drawer from './Drawer.tsx';
+import { Ok, Cancel } from './Icons.jsx';
 
 
 class Editor extends Component {
@@ -87,6 +88,10 @@ class Editor extends Component {
       // Bearbeiten mit Echtzeit-Vorschau
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
+          <div className="extend mobilemenu" >
+              <span onClick={this.handleContextMenu} id="plus"><Ok /></span>
+              <span onClick={this.props.history.goBack} id="minus"><Cancel /></span>
+          </div>
 
           <Drawer onClick={this.handleContextMenu} className="list-colors">
             <h1>sichern<br />&amp; zurück</h1>

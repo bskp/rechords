@@ -4,6 +4,7 @@
 		"lib": [
 			"es6",
 			"dom.iterable",
+			"es2016.array.include",
 			"dom"
 		],
 		"preserveConstEnums": true,

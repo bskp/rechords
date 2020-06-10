@@ -1,54 +1,6 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
 
-#transposer {
-
-  .phone({
-    display: none;
-  });
-
-  padding: 2em;
-
-  width: 50px;
-  >* {
-  // TODO: The inside of the slider should have
-  // a better non collapsing centered box
-  // this is only a workaround
-    position: relative;
-    right: -40px;
-  }
-
-  .rc-slider {
-    width: 0px;
-    height: 400px;
-  }
-
-  .rc-slider-mark {
-    top: 2px;
-    left: -75px;
-  }
-
-  .rc-slider-mark-text {
-    width: 65px;
-    text-align: right;
-    line-height: 2.5em;
-    margin-bottom: -1em !important;
-
-    &:hover {
-      color: black;
-    }
-  }
-
-  .rc-slider-track {
-    background-color: var(--accent);
-  }
-
-  .rc-slider-handle,
-  .rc-slider-dot-active {
-    border-color: var(--accent);
-    background-color: var(--accent);
-  }
-}
 
 #transposer {
     flex-grow: 1;
@@ -71,6 +23,7 @@
 
   .rc-slider {
     width: 0px;
+    max-height: 400px;
   }
 
   .rc-slider-mark {
@@ -78,15 +31,25 @@
     left: -75px;
   }
 
+  .rc-slider-mark-text-active,
   .rc-slider-mark-text {
     width: 65px;
     text-align: right;
     line-height: 2.5em;
     margin-bottom: -1em !important;
 
+    color: var(--gray);
+
     &:hover {
-      color: black;
+      color: var(--ink);
     }
+  }
+
+  .rc-slider-dot,
+  .rc-slider-rail {
+    background-color: var(--gray);
+    border-color: var(--gray);
+
   }
 
   .rc-slider-track {
@@ -96,6 +59,7 @@
   .rc-slider-handle,
   .rc-slider-dot-active {
     border-color: var(--accent);
+    background-color: var(--accent);
   }
 }
 
