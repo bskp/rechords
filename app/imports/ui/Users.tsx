@@ -19,8 +19,9 @@ function Select( {options, ...rest} ) {
 
 
 const roles = [
-    { value: 'user', label: 'Betrachter' },
-    { value: 'admin', label: 'Mitarbeiter' },
+    { value: 'user', label: 'Lieder anzeigen' },
+    { value: 'writer', label: 'Lieder ändern' },
+    { value: 'admin', label: 'Lieder + Benutzer ändern' },
 ];
 
 class EditUser extends React.Component<{ user? : Meteor.User }, { user : Meteor.User, secret : string, msg : string }> {
@@ -160,7 +161,7 @@ class Users extends React.Component<{ users : Array<Meteor.User>}, { user : Mete
         },
         {
             Header: 'Rechte',
-            accessor: 'profile.role',
+            accessor: (u : Meteor.User) => roles.filter(d => d.value == u.profile.role)[0].label,
         },
         /*
         {

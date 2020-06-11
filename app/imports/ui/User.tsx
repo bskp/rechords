@@ -56,8 +56,9 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
 
         const u = this.state.user;
         const admin = this.props.user.profile.role == 'admin';
+        const writer = this.props.user.profile.role == 'writer' || admin;
 
-        if (!admin) {
+        if (!writer) {
             stats = <p>Du darfst Lieder <strong>ankucken</strong>, aber <strong>nicht bearbeiten</strong>
             . Schreibe eine Mail an <a href="mailto:hoelibu@posteo.ch">hoelibu@posteo.ch</a>
             , wenn du Lieder eintragen oder verbessern willst, und wir erstellen dir einen Mitarbeits-Account!</p>

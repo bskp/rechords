@@ -35,11 +35,16 @@ const nA404 = (
     </div>
 )
 
+const WriterRoute = ({ render: render, ...rest }) => (
+    <Route {...rest} render={(props) => {
+        const role = Meteor.user().profile.role;
+        return (role == 'admin' || role == 'writer') ? render(props) : nA404
+    }} />
+)
+
 const AdminRoute = ({ render: render, ...rest }) => (
     <Route {...rest} render={(props) => (
-
-        Meteor.user().profile.role == 'admin'
-            ? render(props) : nA404
+        Meteor.user().profile.role == 'admin' ? render(props) : nA404
     )} />
 )
 
@@ -187,7 +192,7 @@ class App extends React.Component<AppProps, AppStates> {
                         )
                     }} />
 
-                    <AdminRoute path='/edit/:author/:title' render={(match) => {
+                    <WriterRoute path='/edit/:author/:title' render={(match) => {
                         let song = getSong(match.match.params);
 
                         if (song === undefined) {
@@ -207,7 +212,7 @@ class App extends React.Component<AppProps, AppStates> {
                         )
                     }} />
 
-                    <Route path="/new" render={() => {
+                    <WriterRoute path="/new" render={() => {
                         var song = new Song(empty_song);
 
                         return (
@@ -232,7 +237,7 @@ class App extends React.Component<AppProps, AppStates> {
                         )
                     }} />
 
-                    <Route path="/users" render={() => {
+                    <AdminRoute path="/users" render={() => {
                         const users = Meteor.users.find().fetch();
                         return (
                             <>

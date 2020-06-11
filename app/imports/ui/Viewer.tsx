@@ -26,6 +26,11 @@ interface ViewerStates {
   columns: boolean
 }
 
+const userMayWrite = () => {
+  const role = Meteor.user().profile.role;
+  return role == 'admin' || role == 'writer';
+}
+
 export default class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> {
   constructor(props) {
     super(props);
@@ -61,7 +66,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   }
 
   handleContextMenu = event => {
-    if (Meteor.user().profile.role == 'admin') {
+    if (userMayWrite()) {
       let m = this.props.match.params;
       this.props.history.push("/edit/" + m.author + "/" + m.title);
     }
@@ -165,7 +170,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
         }
         // Remove process tags for read-only-users
         else if (node.name == 'ul' && node.attribs?.['class'] == 'tags' 
-                 && Meteor.user().profile.role != 'admin') {
+                 && userMayWrite()) {
           const hide: string[] = ['fini', '+', 'check', 'wip'];
           node.children = node.children.filter((child) => {
             if (child?.name == 'li' && hide.includes(child?.children[0].data)) return false;
@@ -222,14 +227,14 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
           </aside>
     
 
-    const drawer = Meteor.user().profile.role == 'admin' ? (
+    const drawer = userMayWrite() ? (
         <Drawer className="source-colors" onClick={this.handleContextMenu}>
           <h1>bearbeiten</h1>
           <p>Schneller:&nbsp;Rechtsklick!</p>
         </Drawer>
     ) : undefined;
 
-    const footer = Meteor.user().profile.role == 'admin' ? (
+    const footer = userMayWrite() ? (
         <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} id="edit">Bearbeiten…</NavLink></div>
     ) : undefined;
 
