@@ -170,7 +170,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
         }
         // Remove process tags for read-only-users
         else if (node.name == 'ul' && node.attribs?.['class'] == 'tags' 
-                 && userMayWrite()) {
+                 && !userMayWrite()) {
           const hide: string[] = ['fini', '+', 'check', 'wip'];
           node.children = node.children.filter((child) => {
             if (child?.name == 'li' && hide.includes(child?.children[0].data)) return false;

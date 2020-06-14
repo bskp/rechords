@@ -23,6 +23,10 @@
       margin-bottom: 1.5em;
     }
 
+    section {
+      clear: both;
+    }
+
     section > div {
       margin-bottom: .5em;
 
@@ -117,7 +121,7 @@
 
   // Verse container
   p {
-    margin: 1.4em 0;
+    margin: 1.33em 0;
     max-width: 40em;
     clear: both; // for the floated chord-diagrams
   }
@@ -214,7 +218,7 @@
 
   .chord-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     text-align: center;
 
     float: left;
@@ -233,6 +237,7 @@
 
     strong {
       font-weight: 600;
+      margin-left: 1em;
     }
   }
 
