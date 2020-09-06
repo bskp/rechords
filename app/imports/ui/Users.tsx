@@ -8,7 +8,7 @@ import { withRouter } from 'react-router-dom';
 import * as moment from 'moment';
 import "moment/locale/de";
 
-function Select( {options, ...rest} ) {
+export function Select( {options, ...rest} ) {
     
     const option_elements = options.map( data => {
         return <option value={data.value} key={data.value} >{data.label}</option>

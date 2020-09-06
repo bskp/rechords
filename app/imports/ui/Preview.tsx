@@ -142,6 +142,18 @@ export default class Preview extends React.Component<P, {}> {
     }
   }
 
+  public offsetChordPosition(event : React.SyntheticEvent<HTMLElement>, offset : number) {
+    event.currentTarget.removeAttribute('data-initial');
+    let chord = event.currentTarget.innerText;
+
+    let i = event.currentTarget.parentElement;
+
+    let md_ = this.removeChord(this.props.md, i);
+
+    md_ = this.prependChord(md_, i, chord, offset, false);
+    this.props.updateHandler(md_);
+  }
+
   public handleChordKey(event : React.KeyboardEvent<HTMLElement>) {
     let n = event.currentTarget;
     if (event.key == 'Enter') {
@@ -149,11 +161,20 @@ export default class Preview extends React.Component<P, {}> {
       n.blur();
       return;
     }
+
     if (event.key == 'Escape') {
       event.preventDefault();
       n.innerText = n.getAttribute('data-initial');
       n.blur();
       return;
+    }
+
+    if (event.ctrlKey && event.key == 'ArrowRight') {
+      this.offsetChordPosition(event, 1);
+    }
+
+    if (event.ctrlKey && event.key == 'ArrowLeft') {
+      this.offsetChordPosition(event, -1);
     }
 
     if (!n.hasAttribute('data-initial')) {

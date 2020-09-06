@@ -200,16 +200,18 @@ class List extends React.Component<ListProps, ListState> {
     onKeyDown = (event : React.KeyboardEvent) => {
         if (this.state.fuzzy_matches.length == 0) return;
 
-        let navigate = (s : Song) => {
-            this.props.history.push('/view/' + s.author_ + '/' + s.title_);
-            this.setFilter('');
-            this.refs.filter.blur();
-        }
-
         if (event.key == 'Enter') {
             let list = this.state.exact_matches.length ? this.state.exact_matches : this.state.fuzzy_matches;
             if (list.length == 0) return;
-            navigate(list[0]);
+
+            if (event.shiftKey) {
+                // Only navigate to song if shift is pressed with enter.
+                let s = list[0];
+                this.props.history.push('/view/' + s.author_ + '/' + s.title_);
+                this.setFilter('');
+            }
+
+            this.refs.filter.blur();
         }
     }
 

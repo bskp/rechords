@@ -50,7 +50,7 @@ const AdminRoute = ({ render: render, ...rest }) => (
 
 interface AppStates {
     songListHidden: boolean,
-    themeDark: boolean,
+    swapTheme: boolean,
     themeTransition: boolean
 }
 
@@ -71,9 +71,10 @@ class App extends React.Component<AppProps, AppStates> {
 
     constructor(props) {
         super(props);
+
         this.state = { 
             songListHidden: false,
-            themeDark: window.matchMedia("(prefers-color-scheme: dark)").matches,
+            swapTheme: false,
             themeTransition: false
         }
     }
@@ -97,7 +98,7 @@ class App extends React.Component<AppProps, AppStates> {
 
     toggleTheme = () => {
         this.setState((state) => ({
-            themeDark: !state.themeDark,
+            swapTheme: !state.swapTheme,
             themeTransition: true
         }));
         Meteor.setTimeout(() => {
@@ -142,7 +143,13 @@ class App extends React.Component<AppProps, AppStates> {
 
         }
 
-        const theme = (this.state.themeDark ? 'dark' : 'light') + (this.state.themeTransition ? ' transition' : '');
+        let ut = this.props.user?.profile.theme ?? 'auto';
+        let themeDark = false;
+        if (ut == 'auto') themeDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (ut == 'dark') themeDark = true;
+        if (this.state.swapTheme) themeDark = !themeDark;
+
+        const theme = (themeDark ? 'dark' : 'light') + (this.state.themeTransition ? ' transition' : '');
 
         // If any song's title changes, the key for the <List /> changes and flushes all states.
         // This is a hack to easily update all internal "caching states" (matches etc.)
@@ -185,7 +192,7 @@ class App extends React.Component<AppProps, AppStates> {
                                 <Viewer 
                                     song={song}  
                                     toggleTheme={this.toggleTheme} 
-                                    themeDark={this.state.themeDark}
+                                    themeDark={theme.includes('dark')}
                                     {...routerProps} 
                                 />
                             </>

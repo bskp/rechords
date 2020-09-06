@@ -5,6 +5,8 @@ import Songs, { Revisions, Song } from '../api/collections.js';
 
 import "moment/locale/de";
 
+import { Select } from './Users';
+
 class User extends React.Component<{ user : Meteor.User, revisionsLoading : boolean}, { user : Meteor.User, msg : string}> {
 
     constructor(props) {
@@ -32,6 +34,17 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
                 emails: [
                     { address: val, verified: false }
                 ]
+            },
+            msg: ''
+        }));
+    }
+
+    updateTheme = (e : React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        this.setState( prevState => ({ user: { ...prevState.user,
+                profile: { ...prevState.user.profile,
+                    theme: val
+                }
             },
             msg: ''
         }));
@@ -117,6 +130,12 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
             return s ? <li key={'sl' + s._id}><Link to={'/view/' + s.author_ + '/' + s.title_}>{s.title}</Link></li> : undefined;
         });
 
+        const options = [
+            { value: 'auto', label: 'Automatisch'},
+            { value: 'bright', label: 'Tag'},
+            { value: 'dark', label: 'Nacht'}
+        ];
+
         return (
             <div className="content" id="user">
                 <h1>Benutzer</h1>
@@ -153,6 +172,8 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
                 <form onSubmit={this.handleSubmit}>
                     <label>Name</label><input type="text" value={u.profile.name} onChange={this.updateName} placeholder="Name"/><br />
                     <label>Email-Adresse</label><input type="text" value={u.emails[0].address} onChange={this.updateEmail} placeholder="Email"/><br />
+                    <label>Farbschema</label><Select value={u.profile?.theme ?? 'auto'} options={options} onChange={this.updateTheme} />
+                    <br />
                     <br />
                     <label></label><input type="submit" value="Sichern" />
                 </form>
