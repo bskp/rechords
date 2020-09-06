@@ -124,9 +124,10 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
 
 
                 <p>
-                <a onClick={ e => Accounts.logout()} className="btn">Abmelden</a>
+                <Link to="/" className="btn">Begrüssungs-Seite</Link>
                 <Link to="progress" className="btn">Lieder-Übersicht</Link>
                 { admin ? <Link to="users" className="btn">Benutzerverwaltung</Link> : undefined}
+                <a onClick={ e => Accounts.logout()} className="btn">Abmelden</a>
                 </p>
                 <br />
 

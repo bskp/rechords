@@ -11,7 +11,7 @@ import Users from './Users';
 import User from './User';
 import HideSongList from './HideSongList';
 import Login from './Login';
-import MetaContent from './MetaContent';
+import Hallo from './Hallo';
 
 import { Header } from './Icons';
 
@@ -165,10 +165,10 @@ class App extends React.Component<AppProps, AppStates> {
                 <Switch>
 
                     <Route exact path='/' render={(props) => (
-                                    <section className="content" id="home">
-                                        <DocumentTitle title="Hölibu" />
-                                        <Header />
-                                    </section>
+                        <>
+                            <DocumentTitle title="Hölibu 3000" />
+                            <Hallo songs={this.props.songs} revisionsLoading={this.props.revisionsLoading}/>
+                        </>
                     )} />
 
 
