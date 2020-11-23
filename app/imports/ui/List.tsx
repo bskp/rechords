@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { withRouter, NavLink, Link } from 'react-router-dom';
+import { RouteComponentProps } from "react-router-dom";
 import MetaContent from './MetaContent';
 import { Song } from '../api/collections';
 
@@ -111,7 +112,7 @@ interface ListState {
     exact_matches: Array<Song>;
 }
 
-class List extends React.Component<ListProps, ListState> {
+class List extends React.Component<ListProps & RouteComponentProps, ListState> {
     constructor(props) {
         super(props);
         this.state = {

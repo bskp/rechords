@@ -22,6 +22,7 @@ react-meteor-data@2.0.1
 less@2.8.0
 static-html
 underscore@1.0.10
-adornis:typescript
 accounts-password@1.7.0
+refapp:typescript
+accounts-password
 mdg:validation-error

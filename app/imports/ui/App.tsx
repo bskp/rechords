@@ -19,6 +19,7 @@ import { Header } from './Icons';
 import { BrowserRouter, Route, Switch, RouteComponentProps} from 'react-router-dom';
 import TrackingDocumentTitle from './TrackingDocumentTitle';
 import { MobileMenu } from './MobileMenu'
+import EditorAdvanced from './EditorAdvanced';
 
 const empty_song = {
     title: "Neues Lied",
@@ -208,7 +209,12 @@ class App extends React.Component<AppProps, AppStates> {
 
                         // In any case, the editor is rendered. However, a re-render is triggered after the song's
                         // revisions have been loaded.
-                        let editor = this.props.revisionsLoading ? <Editor song={song} /> : <Editor song={song} />;
+                        let editor; 
+                        if( Meteor.settings.public.isAdvancedEditor ) {
+                            editor= this.props.revisionsLoading ? <EditorAdvanced song={song} /> : <EditorAdvanced song={song} />;
+                        } else {
+                            editor= this.props.revisionsLoading ? <Editor song={song} /> : <Editor song={song} />;
+                        }
 
                         return (
                             <>

@@ -1,6 +1,8 @@
 
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
+@import (reference) "./main.less";
+
 
 #editor {
   display: flex;
@@ -53,4 +55,29 @@ aside.drawer#revs {
   top: 2.5rem;
 
   .phone({ display: none; });
+}
+
+.added{
+  background-color: green;
+  min-height: 20px;
+}
+.removed {
+  // text-decoration: line-through;
+  min-height: 20px;
+  background-color: red;
+}
+
+.blameColumn {
+  width :40px;
+  overflow: hidden;
+  white-space: nowrap;
+  #textareafonts();
+}
+
+.source-adv {
+  display:flex;
+  flex-flow: row nowrap;
+  // >* {
+  //   height: 100%;
+  // }
 }

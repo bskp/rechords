@@ -19,6 +19,8 @@
     "bcrypt": "^5.0.0",
     "chordy-svg": "^1.2.1",
     "html-react-parser": "^1.2.4",
+    "blame-js": "^1.0.0",
+    "diff": "^5.0.0",
     "hyphenation.en-us": "^0.2.1",
     "hypher": "^0.2.5",
     "indexof": "0.0.1",
@@ -38,6 +40,7 @@
     "slug": "^0.9.4",
     "source-map-support": "^0.5.19",
     "xmldom": "^0.6.0",
+    "tslib": "^2.0.3",
     "xss": "^0.3.8"
 
   },
@@ -48,6 +51,8 @@
     "@types/requirejs": "^2.1.32",
     "babel-plugin-inline-react-svg": "^1.1.2",
     "grunt": "^1.4.1",
+    "@types/diff": "^4.0.2",
+    "@types/react-router-dom": "^5.1.6",
     "meteor-typings": "^1.4.1",
     "typescript": "3.7.5",
     "typescript-plugin-add-type": "^1.0.2"
