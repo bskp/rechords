@@ -5,6 +5,7 @@ import Source from './Source.jsx';
 import Drawer from './Drawer';
 import * as moment from 'moment';
 import "moment/locale/de";
+import { Change } from 'diff';
 const Diff = require('diff');
 
 type RevBrowserAdvancedProps = {
@@ -56,19 +57,6 @@ export default class RevBrowserAdvanced extends React.Component<RevBrowserAdvanc
       diff = []
     }
 
-    const convertDiff = t => 
-    {
-      let classNames=''
-      if( t.added){
-        classNames = 'added'
-      } else if (t.removed) {
-        classNames = 'removed'
-      }
-
-      const lines = t.value.split('\n')
-      const thinggoesbr = lines.reduce((all,curr)=> [...all,<br/>,curr])
-      return <span className={classNames}>{thinggoesbr}</span>
-    }
 
     const spans = diff.map(t => convertDiff(t) )
     return (
@@ -114,4 +102,17 @@ class RevLinkAdvanced extends Component<RevLinkAdvancedProps> {
       </li>
     );
   }
+}
+
+export function convertDiff(t: Change) {
+      let classNames = '';
+      if (t.added) {
+        classNames = 'added';
+      } else if (t.removed) {
+        classNames = 'removed';
+      }
+
+      const lines = t.value.split('\n');
+      const thinggoesbr = lines.reduce((all, curr) => [...all, <br />, curr]);
+      return <span className={classNames}>{thinggoesbr}</span>;
 }

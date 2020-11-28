@@ -1,4 +1,3 @@
-import blamejs from 'blame-js/build';
 import * as React from 'react';
 import { Component } from 'react';
 import Songs, { Revision, Revisions, Song } from '../api/collections.js';
@@ -79,13 +78,13 @@ class EditorAdvanced extends Component<EditorAdvancedProps & RouteComponentProps
   render() {
 
     let revs = this.props.song.getRevisions();
-    const blame_versions = revs.map( v => ({commit: v, code: v.text}) )
      
     let prompt = <Prompt
             when={this.state.dirty && revs > 0}
             message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
           />
 
+    const source = <SourceAdvanced md={this.state.md} revs={revs} updateHandler={this.update} className="source-colors" />
     if (this.state.versionTab == false) {
 
       let versions = revs ? (
@@ -95,8 +94,7 @@ class EditorAdvanced extends Component<EditorAdvancedProps & RouteComponentProps
         </Drawer>
       ) : undefined;
 
-      let dirtyLabel = this.state.dirty ? <span id="dirty" title="Ungesicherte Änderungen"></span> : undefined;
-
+      const dirtyLabel = this.state.dirty ? <span id="dirty" title="Ungesicherte Änderungen"></span> : undefined;
       // Bearbeiten mit Echtzeit-Vorschau
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
@@ -112,7 +110,7 @@ class EditorAdvanced extends Component<EditorAdvancedProps & RouteComponentProps
 
           {dirtyLabel}
           <Preview md={this.state.md} song={this.props.song} updateHandler={this.update}/>
-          <SourceAdvanced md={this.state.md} blamelines={getBlameLines(blame_versions)} updateHandler={this.update} className="source-colors" />
+          {source}
 
           {versions}
           {prompt}
@@ -130,13 +128,7 @@ class EditorAdvanced extends Component<EditorAdvancedProps & RouteComponentProps
           </Drawer>
 
 
-          {/* <Blame versions={blame_versions}  className="source-colors">
-            <span className="label">Version in Bearbeitung</span>
-          </Blame> */}
-          <SourceAdvanced md={this.state.md} blamelines={getBlameLines(blame_versions)} updateHandler={this.update} className="source-colors" />
-          {/* <Source md={this.state.md} updateHandler={this.update} className="source-colors">
-            <span className="label">Version in Bearbeitung</span>
-          </Source> */}
+          {source}
           <RevBrowserAdvanced song={this.props.song} />
           {prompt}
         </div>
@@ -167,8 +159,4 @@ class Blame extends Component<BlameProps> {
     <table>{rows}</table>
     </div>
   }
-}
-
-function getBlameLines(versions) {
-  return blamejs(versions,{getCode: a => a.code, getOrigin: b => b.commit })
 }

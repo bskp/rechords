@@ -69,9 +69,25 @@ aside.drawer#revs {
 
 .blameColumn {
   width :40px;
-  overflow: hidden;
   white-space: nowrap;
   #textareafonts();
+
+  .annotation {
+    
+    &:nth-child(even) {
+      background-color: var(--accent);
+    }
+    &:nth-child(odd) {
+      background-color: var(--bg-rev);
+    }
+  }
+  .hover {
+    position: absolute;
+    left: 45px;
+  }
+  .hidden {
+    display: none;
+  }
 }
 
 .source-adv {
