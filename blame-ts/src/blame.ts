@@ -5,21 +5,28 @@ export interface IBlameLine<T> {
   value: string
 }
 
-export interface IExtractor<T> {
+export interface IExtractor<T,S> {
    getCode: (a: T) => string
-   getOrigin: (a: T) => any
+   getOrigin: (a: T) => S
 }
 
-export function blame<T>( 
-  codes: Array<T>,
-  passedOptions?: IExtractor<T> ,
+/**
+ * 
+ * @param snapshots idx=0 => most recent snapshot (what is seen in the editor), idx=length-1 => oldest snapshot 
+ * @param passedOptions 
+ */
+export function blame<T,S>( 
+  snapshots: Array<T>,
+  passedOptions?: IExtractor<T,S> ,
 ): Array<IBlameLine<T>> {
 
   const result: Array<IBlameLine<T>> = []
-  const options: IExtractor<T> = Object.assign({}, passedOptions)
+  const options: IExtractor<T,S> = Object.assign({}, passedOptions)
 
-  codes.reverse().forEach((compareWith: T, codeIndex: number) => {
-    const base: T = codes[codeIndex - 1]
+  snapshots.reverse()
+
+  for( const [codeIndex, compareWith] of snapshots.entries()) { //(compareWith: T, codeIndex: number) => {
+    const base: T = snapshots[codeIndex - 1]
     const compareWithCode: string =
       typeof compareWith === 'string'
         ? compareWith
@@ -40,25 +47,21 @@ export function blame<T>(
 
     // Walk through diff result and check which parts needs to be updated
     let lineIndex = 0
-    diffResults.forEach(
-      (diffResult) => {
+    for( const diffResult of diffResults ) {
       if (diffResult.added) {
-        diffResult.value
-          .split('\n')
-          .slice(0, diffResult.count)
-          .forEach((line: string) => {
+        for( const line of diffResult.value.split('\n').slice(0, diffResult.count) ) {
             // Add line to result
             result.splice(lineIndex, 0, {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               origin:
                 typeof compareWith === 'string'
-                  ? codes.length - codeIndex - 1
+                  ? snapshots.length - codeIndex - 1
                   : options.getOrigin(compareWith),
               value: line.trimRight(),
             })
             lineIndex += 1
-          })
+          }
       } else if (diffResult.removed) {
         // Remove lines from result
         result.splice(lineIndex, diffResult.count)
@@ -67,7 +70,6 @@ export function blame<T>(
         lineIndex += diffResult.count || 0
       }
     }
-    )
   })
 
   return result
