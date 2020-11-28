@@ -4,10 +4,10 @@ import { Revision } from '../api/collections';
 
 import * as moment from 'moment';
 import "moment/locale/de";
-
-import blamejs from 'blame-js/build';
 import { Diff, diffChars } from 'diff';
 import { convertDiff } from './RevBrowserAdvanced';
+import { blame } from 'blame-ts/';
+import { IBlameLine } from '../../../blame-ts/dist/blame';
 
 interface SourceAdvancedProps {
   md: string;
@@ -164,6 +164,6 @@ function grouping(elements: React.ReactElement[], attribute: string, A: React.Fu
   return returnvalue;
 }
 
-function getBlameLines(versions) {
-  return blamejs(versions,{getCode: a => a.text, getOrigin: b => b })
+function getBlameLines(versions: Revision[]): IBlameLine<Revision>[] {
+  return blame(versions,{getCode: (a: Revision) => a.text, getOrigin: (b: Revision) => b })
 }
