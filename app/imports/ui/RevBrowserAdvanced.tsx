@@ -111,8 +111,7 @@ export function convertDiff(t: Change) {
       } else if (t.removed) {
         classNames = 'removed';
       }
-
       const lines = t.value.split('\n');
       const thinggoesbr = lines.reduce((all, curr) => [...all, <br />, curr]);
-      return <span className={classNames}>{thinggoesbr}</span>;
+    return {el:<span className={classNames}>{thinggoesbr}</span>, cnt: lines.length};
 }

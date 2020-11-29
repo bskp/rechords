@@ -1,4 +1,4 @@
-import { Change, diffLines, diffTrimmedLines } from 'diff'
+import { Change, diffChars, diffLines, diffTrimmedLines } from 'diff'
 
 export interface IBlameLine<S> {
   origin: S 
@@ -44,7 +44,6 @@ export function blame<T,S>(
 
   for( const [codeIndex, snapshot] of snapshots.entries()) { //(compareWith: T, codeIndex: number) => {
     const baseCode = codeIndex > 0 ? getString(snapshots[codeIndex-1]) : ''
-    const previousOrigin = codeIndex > 0 ? getOrigin(snapshots[codeIndex-1], snapshots.length - codeIndex ) : undefined 
     const newerCode = getString(snapshot)
 
     const diffResults: Change[] = diffLines(baseCode, newerCode, diffOptions)
@@ -62,7 +61,6 @@ export function blame<T,S>(
               value: line.trimRight(),
               diffentry: didx,
               lineindiff: lineIndex,
-              previousOrigin,
               diff: diffResults
             })
             lineIndex += 1

@@ -24,7 +24,6 @@ function blame(snapshots, extractor) {
     snapshots.reverse();
     for (const [codeIndex, snapshot] of snapshots.entries()) { //(compareWith: T, codeIndex: number) => {
         const baseCode = codeIndex > 0 ? getString(snapshots[codeIndex - 1]) : '';
-        const previousOrigin = codeIndex > 0 ? getOrigin(snapshots[codeIndex - 1], snapshots.length - codeIndex) : undefined;
         const newerCode = getString(snapshot);
         const diffResults = diff_1.diffLines(baseCode, newerCode, diffOptions);
         console.log(diffResults);
@@ -40,7 +39,6 @@ function blame(snapshots, extractor) {
                         value: line.trimRight(),
                         diffentry: didx,
                         lineindiff: lineIndex,
-                        previousOrigin,
                         diff: diffResults
                     });
                     lineIndex += 1;

@@ -170,13 +170,27 @@ type Diffline<S> = {
 const DiffGroup: React.FunctionComponent<{info: IBlameLine<Revision>,cb: (id:string) => any }> = 
 ({info, cb, children}) => {
   const [visible, setVisible] = React.useState<boolean>(false)
+  const ref: React.Ref<HTMLDivElement> = React.useRef()
   const id = info?.origin._id
   const diff = id ? cb(id) : []
-  return <div className='annotation' key={id} onClick={e => setVisible(p => !p)}>
+  const diffs = []
+  let totalLines = 0;
+  for( const d of diff ) {
+    const { el, cnt } = convertDiff(d)
+    diffs.push(el)
+    totalLines += cnt
+  }
+  React.useEffect( () => {
+    const el = ref.current
+    const h = el.scrollHeight 
+    const l = info?.lineindiff
+    el.scrollTop = l/totalLines * h 
+  } )
+
+  return <div  className='annotation' key={id} onClick={e => setVisible(p => !p)}>
     <div style={{ position: "relative" }}>
-      <div className={'hover ' + (visible ? '' : 'hidden')}>
-        Line: {info?.lineindiff}
-        {diff.map(d => convertDiff(d))}
+      <div ref={ref} className={'hover ' + (visible ? '' : 'hidden')}>
+        {diffs}
       </div>
     </div>
     {children}
