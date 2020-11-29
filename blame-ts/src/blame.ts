@@ -1,64 +1,69 @@
-import { Change, diffLines } from 'diff'
+import { Change, diffLines, diffTrimmedLines } from 'diff'
 
-export interface IBlameLine<T> {
-  origin: T extends string ? number : T
+export interface IBlameLine<S> {
+  origin: S 
   value: string
+  diffentry?: number
+  lineindiff?: number
+  previousOrigin?: S
+  diff?: Change[]
 }
 
 export interface IExtractor<T,S> {
    getCode: (a: T) => string
-   getOrigin: (a: T) => S
+   getOrigin: (a: T, idx: number) => S
+}
+
+export class StringExtractor<T extends string> implements IExtractor<T,number> {
+  getCode(a: T): T {
+    return a;
+  } 
+  getOrigin(a: string, idx: number): number {
+    return idx;
+  }
 }
 
 /**
  * 
  * @param snapshots idx=0 => most recent snapshot (what is seen in the editor), idx=length-1 => oldest snapshot 
- * @param passedOptions 
+ * @param extractor 
  */
 export function blame<T,S>( 
   snapshots: Array<T>,
-  passedOptions?: IExtractor<T,S> ,
-): Array<IBlameLine<T>> {
+  extractor: IExtractor<T,S>,
+): Array<IBlameLine<S>> {
 
-  const result: Array<IBlameLine<T>> = []
-  const options: IExtractor<T,S> = Object.assign({}, passedOptions)
+  const result: Array<IBlameLine<S>> = []
+  let result_: Array<IBlameLine<S>> = []
+  const getString = extractor.getCode
+  const getOrigin = extractor.getOrigin // idx will be ignored
+
+
 
   snapshots.reverse()
 
-  for( const [codeIndex, compareWith] of snapshots.entries()) { //(compareWith: T, codeIndex: number) => {
-    const base: T = snapshots[codeIndex - 1]
-    const compareWithCode: string =
-      typeof compareWith === 'string'
-        ? compareWith
-        : options.getCode(compareWith)
+  for( const [codeIndex, snapshot] of snapshots.entries()) { //(compareWith: T, codeIndex: number) => {
+    const baseCode = codeIndex > 0 ? getString(snapshots[codeIndex-1]) : ''
+    const previousOrigin = codeIndex > 0 ? getOrigin(snapshots[codeIndex-1], snapshots.length - codeIndex ) : undefined 
+    const newerCode = getString(snapshot)
 
-    // Diff code
-    let diffResults: Change[] = []
-    const diffOptions = {
-      newlineIsToken: false,
-    }
-    if (base) {
-      const baseCode: string =
-        typeof base === 'string' ? base : options.getCode(base)
-      diffResults = diffLines(baseCode, compareWithCode, diffOptions)
-    } else {
-      diffResults = diffLines('', compareWithCode, diffOptions)
-    }
+    const diffResults: Change[] = diffLines(baseCode, newerCode, diffOptions)
+    console.log(diffResults)
 
     // Walk through diff result and check which parts needs to be updated
     let lineIndex = 0
-    for( const diffResult of diffResults ) {
+    for( const [didx, diffResult] of diffResults.entries() ) {
       if (diffResult.added) {
-        for( const line of diffResult.value.split('\n').slice(0, diffResult.count) ) {
+        const lines = diffResult.value.split('\n');
+        for( const [lidx, line] of lines.slice(0, diffResult.count).entries() ) {
             // Add line to result
             result.splice(lineIndex, 0, {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              origin:
-                typeof compareWith === 'string'
-                  ? snapshots.length - codeIndex - 1
-                  : options.getOrigin(compareWith),
+              origin: getOrigin(snapshot, snapshots.length - codeIndex - 1 ),
               value: line.trimRight(),
+              diffentry: didx,
+              lineindiff: lineIndex,
+              previousOrigin,
+              diff: diffResults
             })
             lineIndex += 1
           }
@@ -70,7 +75,16 @@ export function blame<T,S>(
         lineIndex += diffResult.count || 0
       }
     }
-  })
+    if( codeIndex < snapshots.length-1 ) {
+      result_ = result.slice()
+    }
+  }
 
   return result
+}
+
+
+
+const diffOptions = {
+  newlineIsToken: false,
 }

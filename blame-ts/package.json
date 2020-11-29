@@ -5,14 +5,18 @@
   "deprecated": false,
   "description": "blame-js compares an array of source codes and outputs information about where each line originates from.",
   "devDependencies": {
+    "@types/chai": "^4.2.14",
     "@types/diff": "^4.0.2",
+    "@types/mocha": "^8.0.4",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
-    "chai": "^4.1.0",
+    "chai": "^4.2.0",
     "eslint": "^7.14.0",
     "husky": "^0.13.4",
     "lint-staged": "^3.6.1",
-    "mocha": "^3.5.0",
+    "mocha": "^3.5.3",
+    "nyc": "^15.1.0",
+    "ts-node": "^9.0.0",
     "typescript": "^4.1.2"
   },
   "email": "julian@hundeloh-consulting.ch",
@@ -31,15 +35,11 @@
   "types": "dist/index.d.ts",
   "name": "blame-ts",
   "scripts": {
-    "build": "better-npm-run build",
-    "commitmsg": "validate-commit-msg",
+    "build": "tsc",
     "dev": "tsc --watch",
-    "format": "better-npm-run format",
     "lint": "eslint . --ext .ts",
-    "postmerge": "npm install",
-    "postrewrite": "npm install",
-    "precommit": "npm run test && npm run format && npm run lint && npm run build && git add build",
-    "test": "better-npm-run test"
+    "test": "mocha -r ts-node/register src/*.spec.ts"
+
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }
