@@ -134,66 +134,81 @@ class LineTracker {
 
 }
 
-function grouping(elements: Diffline[], attribute: string, cb: (id: string) => any ): React.ReactElement[] {
-  let returnvalue = []
+function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: string) => Change[] ): React.ReactElement[] {
+
+  type BlameGroup = {
+    lines: Diffline<Revision>[];
+    info?: IBlameLine<Revision>;
+  };
+
+  let returnvalue: BlameGroup[] = []
   let last_id: string = null
-  let currentParent: React.ReactElement = null
+
+  let currentParent: BlameGroup
   // Maybe it was better to create a map first
   // not push directly into the children of the reactelements
   for (const el of elements) {
     if (el[attribute] != last_id) {
       last_id = el[attribute]
-      currentParent = <DiffGroup info={el.info} cb={cb}>{[]}</DiffGroup>
+      currentParent = {info: el.info, lines:[]}
       returnvalue.push(currentParent)
     }
-    console.log(currentParent.props.children.length)
-    currentParent.props.children.push(<div className={el.className}>{el.display}</div>)
+    currentParent.lines.push(el)
   }
-  // console.log(returnvalue.reduce( (a,c) => a + c.props.children.reduce( (e, f) => e + 1, 0 ), 0 ) )
 
-
-
-  return returnvalue;
+  return returnvalue.map(({info, lines}) => <DiffGroup info={info} lines={lines} cb={cb}></DiffGroup>)
 }
 
 function getBlameLines(versions: Revision[]): IBlameLine<Revision>[] {
   return blame(versions, { getCode: (a: Revision) => a.text, getOrigin: (b: Revision) => b })
 }
 
-type Diffline<S> = {
+type Diffline<O> = {
   dataRevid: string;
   className?: string;
-  info: IBlameLine<S>;
+  info: IBlameLine<O>;
   display: string;
 };
 
-const DiffGroup: React.FunctionComponent<{info: IBlameLine<Revision>,cb: (id:string) => any }> = 
-({info, cb, children}) => {
+const DiffGroup: React.FunctionComponent<{info: IBlameLine<Revision>, lines:Diffline<Revision>[] ,cb: (id:string) => any }> = 
+({info, lines, cb }) => {
   const [visible, setVisible] = React.useState<boolean>(false)
   const ref: React.Ref<HTMLDivElement> = React.useRef()
   const id = info?.origin._id
-  const diff = id ? cb(id) : []
-  const diffs = []
-  let totalLines = 0;
-  for( const d of diff ) {
-    const { el, cnt } = convertDiff(d)
-    diffs.push(el)
-    totalLines += cnt
+  const diffs = id ? cb(id) : []
+
+  const chardiff = []
+  let numBr = 0;
+  const flatDiffLines = diffs.flatMap(t => convertDiff(t));
+  for (const diff of flatDiffLines ) {
+    if (numBr >= info.lineindiff + lines.length + 2) {
+      break
+    }
+    if( numBr >= info.lineindiff -2 ) {
+      chardiff.push(diff)
+    } 
+
+    if( diff.type == 'br' ) {
+      numBr += 1
+    }
+
   }
-  React.useEffect( () => {
-    const el = ref.current
-    const h = el.scrollHeight 
-    const l = info?.lineindiff
-    el.scrollTop = l/totalLines * h 
-  } )
+
+
+  // React.useEffect( () => {
+  //   const el = ref.current
+  //   const h = el.scrollHeight 
+  //   const l = info?.lineindiff
+  //   el.scrollTop = l/totalLines * h 
+  // }, [visible] )
 
   return <div  className='annotation' key={id} onClick={e => setVisible(p => !p)}>
     <div style={{ position: "relative" }}>
       <div ref={ref} className={'hover ' + (visible ? '' : 'hidden')}>
-        {diffs}
+        {chardiff}
       </div>
     </div>
-    {children}
+    {lines?.map(el => <div className={el.className}>{el.display}</div>)}
   </div>
 }
 

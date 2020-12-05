@@ -58,7 +58,7 @@ export default class RevBrowserAdvanced extends React.Component<RevBrowserAdvanc
     }
 
 
-    const spans = diff.map(t => convertDiff(t) )
+    const spans = diff.map((t: Change) => convertDiff(t) )
     return (
       <>
         {/* <Source md={diff} readOnly={true} className="revision-colors">
@@ -104,7 +104,7 @@ class RevLinkAdvanced extends Component<RevLinkAdvancedProps> {
   }
 }
 
-export function convertDiff(t: Change) {
+export function convertDiff(t: Change): React.ReactElement[] {
       let classNames = '';
       if (t.added) {
         classNames = 'added';
@@ -112,6 +112,8 @@ export function convertDiff(t: Change) {
         classNames = 'removed';
       }
       const lines = t.value.split('\n');
-      const thinggoesbr = lines.reduce((all, curr) => [...all, <br />, curr]);
-    return {el:<span className={classNames}>{thinggoesbr}</span>, cnt: lines.length};
+
+
+    return lines.map( l => <span className={classNames}>{l}</span> )
+        .reduce((p,v,idx) => {if(idx>0) p.push(<br/>);p.push(v); return p} , [])
 }
