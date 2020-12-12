@@ -1,6 +1,8 @@
 import * as React from 'react';
+import { createStore } from "redux-dynamic-modules-core";
 import { withTracker } from 'meteor/react-meteor-data';
 import { useMatomo } from '@datapunt/matomo-tracker-react'
+import { Provider } from 'react-redux'
 
 import Songs, {Song} from '../api/collections';
 
@@ -19,7 +21,8 @@ import { Header } from './Icons';
 import { BrowserRouter, Route, Switch, RouteComponentProps} from 'react-router-dom';
 import TrackingDocumentTitle from './TrackingDocumentTitle';
 import { MobileMenu } from './MobileMenu'
-import EditorAdvanced from './EditorAdvanced';
+import { EditorAdvanced, getEditorModule } from './AdvancedEditor/EditorAdvanced';
+import { DynamicModuleLoader } from 'redux-dynamic-modules';
 
 const empty_song = {
     title: "Neues Lied",
@@ -70,6 +73,7 @@ interface AppProps extends RouteComponentProps {
 
 // App component - represents the whole app
 class App extends React.Component<AppProps, AppStates> {
+    store: any;
 
     constructor(props) {
         super(props);
@@ -79,6 +83,7 @@ class App extends React.Component<AppProps, AppStates> {
             swapTheme: false,
             themeTransition: false
         }
+        this.store = createStore({ })
     }
 
     hideSongListOnMobile = () => {
@@ -158,6 +163,7 @@ class App extends React.Component<AppProps, AppStates> {
 
         return (
             <BrowserRouter>
+            <Provider store={this.store} >
             <div className={theme}>
 
                 <MobileMenu toggleSongList={this.toggleSongList} songListHidden={this.state.songListHidden} />
@@ -211,8 +217,9 @@ class App extends React.Component<AppProps, AppStates> {
                         // revisions have been loaded.
                         let editor; 
                         if( Meteor.settings.public.isAdvancedEditor ) {
-                            editor= this.props.revisionsLoading ? <EditorAdvanced song={song} /> : <EditorAdvanced song={song} />;
-                        } else {
+                            editor= this.props.revisionsLoading ? 
+        <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader> :
+         <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader>; } else {
                             editor= this.props.revisionsLoading ? <Editor song={song} /> : <Editor song={song} />;
                         }
 
@@ -274,6 +281,7 @@ class App extends React.Component<AppProps, AppStates> {
                 </Switch>
                 </div>
             </div>
+            </Provider> 
             </BrowserRouter>
         );
     }

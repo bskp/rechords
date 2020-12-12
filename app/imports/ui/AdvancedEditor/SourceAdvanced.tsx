@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { Revision } from '../api/collections';
+import { Revision } from '../../api/collections';
 
 import * as moment from 'moment';
 import "moment/locale/de";
 import { Change, Diff, diffChars } from 'diff';
-import { convertDiff } from './RevBrowserAdvanced';
-import { blame } from 'blame-ts/';
-import { IBlameLine } from '../../../blame-ts/dist/blame';
+import { convertDiff, RevLinkAdvanced } from './RevBrowserAdvanced';
+import { blame, IBlameLine } from 'blame-ts';
 
 interface SourceAdvancedProps {
   md: string;
@@ -19,6 +18,9 @@ interface SourceAdvancedProps {
 }
 
 export class SourceAdvanced extends Component<SourceAdvancedProps> {
+  public static defaultProps = {
+    readOnly: false
+  }
   textAreaRef: React.RefObject<HTMLTextAreaElement>;
 
   constructor(props) {
@@ -71,7 +73,7 @@ export class SourceAdvanced extends Component<SourceAdvancedProps> {
       });
     }
 
-    const blamelines_grouped = grouping( blamelines, 'dataRevid', id => this.getDiff(id) )
+    const blamelines_grouped = grouping(blamelines, 'dataRevid', id => this.getDiff(id))
 
 
 
@@ -134,7 +136,7 @@ class LineTracker {
 
 }
 
-function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: string) => Change[] ): React.ReactElement[] {
+function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: string) => Change[]): React.ReactElement[] {
 
   type BlameGroup = {
     lines: Diffline<Revision>[];
@@ -150,13 +152,13 @@ function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: st
   for (const el of elements) {
     if (el[attribute] != last_id) {
       last_id = el[attribute]
-      currentParent = {info: el.info, lines:[]}
+      currentParent = { info: el.info, lines: [] }
       returnvalue.push(currentParent)
     }
     currentParent.lines.push(el)
   }
 
-  return returnvalue.map(({info, lines}) => <DiffGroup info={info} lines={lines} cb={cb}></DiffGroup>)
+  return returnvalue.map(({ info, lines }, idx) => <DiffGroup info={info} lines={lines} key={idx} cb={cb}></DiffGroup>)
 }
 
 function getBlameLines(versions: Revision[]): IBlameLine<Revision>[] {
@@ -170,46 +172,52 @@ type Diffline<O> = {
   display: string;
 };
 
-const DiffGroup: React.FunctionComponent<{info: IBlameLine<Revision>, lines:Diffline<Revision>[] ,cb: (id:string) => any }> = 
-({info, lines, cb }) => {
-  const [visible, setVisible] = React.useState<boolean>(false)
-  const ref: React.Ref<HTMLDivElement> = React.useRef()
-  const id = info?.origin._id
-  const diffs = id ? cb(id) : []
+const DiffGroup: React.FunctionComponent<{ info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: (id: string) => any }> =
+  ({ info, lines, cb }) => {
+    const [visible, setVisible] = React.useState<boolean>(false)
 
-  const chardiff = []
-  let numBr = 0;
-  const flatDiffLines = diffs.flatMap(t => convertDiff(t));
-  for (const diff of flatDiffLines ) {
-    if (numBr >= info.lineindiff + lines.length + 2) {
-      break
+    const chardiff = []
+    if(visible) {
+    const id = info?.origin._id
+    const diffs = id ? cb(id) : []
+
+    let numBr = 0;
+    const flatDiffLines: React.ReactElement[] = diffs.flatMap((t: Change) => convertDiff(t));
+    for (const [idx, diff] of flatDiffLines.entries() ) {
+      if (numBr >= info.lineindiff + lines.length + 2) {
+        break
+      }
+      if (numBr >= info.lineindiff - 2) {
+        chardiff.push(React.cloneElement(diff,{key: idx}))
+      }
+
+      if (diff.type == 'br') {
+        numBr += 1
+      }
+
     }
-    if( numBr >= info.lineindiff -2 ) {
-      chardiff.push(diff)
-    } 
-
-    if( diff.type == 'br' ) {
-      numBr += 1
     }
 
-  }
 
+    // React.useEffect( () => {
+    //   const el = ref.current
+    //   const h = el.scrollHeight 
+    //   const l = info?.lineindiff
+    //   el.scrollTop = l/totalLines * h 
+    // }, [visible] )
 
-  // React.useEffect( () => {
-  //   const el = ref.current
-  //   const h = el.scrollHeight 
-  //   const l = info?.lineindiff
-  //   el.scrollTop = l/totalLines * h 
-  // }, [visible] )
+    return <div className={'annotation-group' + (visible ? ' active' : '')}>
+      <div className="hover-container">
 
-  return <div  className='annotation' key={id} onClick={e => setVisible(p => !p)}>
-    <div style={{ position: "relative" }}>
-      <div ref={ref} className={'hover ' + (visible ? '' : 'hidden')}>
-        {chardiff}
+        <div className={'hover ' + (visible ? '' : 'hidden')}>
+          <div>{info && visible ? <RevLinkAdvanced rev={info.origin} ></RevLinkAdvanced> : ''}</div>
+          {chardiff}
+        </div>
+      </div>
+      <div className='annotation' key={id} onClick={e => setVisible(p => !p)}>
+        {lines?.map((el, idx) => <div key={idx} className={el.className}>{el.display}</div>)}
       </div>
     </div>
-    {lines?.map(el => <div className={el.className}>{el.display}</div>)}
-  </div>
-}
+  }
 
 
