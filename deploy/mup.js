@@ -16,6 +16,7 @@ module.exports = {
 
     buildOptions: {
       serverOnly: true,
+      debug: false
     },
 
     env: {

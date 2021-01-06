@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
+import { useMatomo } from '@datapunt/matomo-tracker-react'
 
 import Songs, {Song} from '../api/collections';
 
@@ -16,7 +17,7 @@ import Hallo from './Hallo';
 import { Header } from './Icons';
 
 import { BrowserRouter, Route, Switch, RouteComponentProps} from 'react-router-dom';
-import * as DocumentTitle from 'react-document-title';
+import TrackingDocumentTitle from './TrackingDocumentTitle';
 import { MobileMenu } from './MobileMenu'
 
 const empty_song = {
@@ -27,7 +28,7 @@ const empty_song = {
 
 const nA404 = (
     <div className="content chordsheet-colors">
-        <DocumentTitle title="Hölibu | 404" />
+        <TrackingDocumentTitle title="Hölibu | 404" track_as="error-404"/>
         <span id="logo">
             <h1>404</h1>
             <h2>n/A</h2>
@@ -113,7 +114,7 @@ class App extends React.Component<AppProps, AppStates> {
             const aside = window.innerWidth > 900 ? <aside className="drawer open list-colors"> </aside> : undefined;
             return (
                 <div id="body" className="light">
-                    <DocumentTitle title="Hölibu" />
+                    <TrackingDocumentTitle title="Hölibu" track_as="/no-login"/>
                     {aside}
                     <Login />
                 </div>
@@ -123,7 +124,6 @@ class App extends React.Component<AppProps, AppStates> {
         if (this.props.songsLoading) {
             return (
                 <div id="body" className="light">
-                    <DocumentTitle title="Hölibu" />
                     <aside className="drawer open list-colors">Lade Lieder…</aside>
                     <div className="content chordsheet-colors"> </div>
                 </div>
@@ -173,7 +173,7 @@ class App extends React.Component<AppProps, AppStates> {
 
                     <Route exact path='/' render={(props) => (
                         <>
-                            <DocumentTitle title="Hölibu 3000" />
+                            <TrackingDocumentTitle title="Hölibu 3000" />
                             <Hallo songs={this.props.songs} revisionsLoading={this.props.revisionsLoading}/>
                         </>
                     )} />
@@ -188,7 +188,7 @@ class App extends React.Component<AppProps, AppStates> {
 
                         return (
                             <>
-                                <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
+                                <TrackingDocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
                                 <Viewer 
                                     song={song}  
                                     toggleTheme={this.toggleTheme} 
@@ -212,7 +212,7 @@ class App extends React.Component<AppProps, AppStates> {
 
                         return (
                             <>
-                                <DocumentTitle title={"Hölibu | " + song.author + ": " + song.title + " (bearbeiten)"}/>
+                                <TrackingDocumentTitle title={"Hölibu | " + song.author + ": " + song.title + " (bearbeiten)"}/>
                                 <HideSongList handle={this.hideSongList}/>
                                 {editor}
                             </>
@@ -224,7 +224,7 @@ class App extends React.Component<AppProps, AppStates> {
 
                         return (
                             <>
-                                <DocumentTitle title="Hölibu | Neues Lied" />
+                                <TrackingDocumentTitle title="Hölibu | Neues Lied" />
                                 <HideSongList handle={this.hideSongList}/>
                                 <Editor song={song} />
                             </>
@@ -238,7 +238,7 @@ class App extends React.Component<AppProps, AppStates> {
 
                         return (
                             <>
-                                <DocumentTitle title="Hölibu | Lieder-Fortschritt" />
+                                <TrackingDocumentTitle title="Hölibu | Lieder-Fortschritt" />
                                 {content}
                             </>
                         )
@@ -248,7 +248,7 @@ class App extends React.Component<AppProps, AppStates> {
                         const users = Meteor.users.find().fetch();
                         return (
                             <>
-                                <DocumentTitle title="Hölibu | Alle Benutzer" />
+                                <TrackingDocumentTitle title="Hölibu | Alle Benutzer" />
                                 <Users users={users}/>
                             </>
                         )
@@ -258,7 +258,7 @@ class App extends React.Component<AppProps, AppStates> {
                         const user = Meteor.user();
                         return (
                             <>
-                                <DocumentTitle title={"Hölibu | " + user.profile.name} />
+                                <TrackingDocumentTitle title={"Hölibu | " + user.profile.name} />
                                 <User user={user} key={user._id} revisionsLoading={this.props.revisionsLoading}/>
                             </>
                         )
