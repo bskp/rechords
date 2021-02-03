@@ -8,9 +8,9 @@ interface TrackingDocumentTitleProps {
     track_as?: string
 }
 
-export default function TrackingDocumentTitle( {title, track_as} : TrackingDocumentTitleProps ) {
+function TrackingDocumentTitle( {title, track_as} : TrackingDocumentTitleProps ) {
     let location = track_as || useLocation().pathname;
-    const { trackPageView, pushInstruction } = useMatomo();
+    const { trackPageView } = useMatomo();
     React.useEffect(() => {
         trackPageView({
             customDimensions: [
@@ -29,3 +29,5 @@ export default function TrackingDocumentTitle( {title, track_as} : TrackingDocum
 
     return <DocumentTitle title={title} />
 }
+
+export default TrackingDocumentTitle;
