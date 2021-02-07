@@ -341,7 +341,7 @@ export default class Preview extends React.Component<P, {}> {
               >{node.attribs['data-chord']}</span>
         }
         if (!('data' in node.children[0])) return node;
-        const lyrics = nodeText(node).replace(/^/, '');
+        const lyrics = nodeText(node);
 
         return <React.Fragment>
                 {lyrics.split(' ').filter(el => true).map((word, idx, array) => {

@@ -17,8 +17,9 @@ module.exports = function showdownRechords() {
     var line = content.replace(/^([^\[]+)/, match => '<i>' + parseProsody(match) + '</i>');
     // Ab hier wird nun immer vom Akkord beginnend bis zum nächsten Akkord (exkl) gematcht
     line = line.replace(/\[([^\]]*)\]([^\[]*)/gi, function(_, chord, text) {
-      if (text === '') {
-        text = ' ';
+      // Akkorde am Zeilenende ohne folgenden Text
+      if (text.match(/^ *$/)) {
+        text = ' '; // Text wird als &nbps gesetzt als "Stamm" für den Akkord
       }
       // Line indents
       if (text.match(/^ ./)) {
