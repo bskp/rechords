@@ -3,17 +3,28 @@
 module.exports = function showdownRechords() {
   require('source-map-support').install(); // For mocha.
 
+  function parseProsody(text) {
+      // Prosodic annotations
+      text = text.replace(/_/g, '<u>‿</u>');
+      text = text.replace(/\B'\B/g, '<u>’</u>');  // "\B": negierte Wortgrenzen!
+      return text;
+  }
+
   function parseLine(match, content) {
     if( content.match(/^\s*$/g) )
       return "</p>\n</div>\n<div>\n<p>";
-    var line = content.replace(/^([^\[]+)/, '<i>$1</i>');
-    line = line.replace(/\[([^\]]*)\]([^\[]*)/gi, function(match, chord, text) {
+    // Match bis zum Einsatz des ersten Akkords:
+    var line = content.replace(/^([^\[]+)/, match => '<i>' + parseProsody(match) + '</i>');
+    // Ab hier wird nun immer vom Akkord beginnend bis zum nächsten Akkord (exkl) gematcht
+    line = line.replace(/\[([^\]]*)\]([^\[]*)/gi, function(_, chord, text) {
       if (text === '') {
         text = ' ';
       }
+      // Line indents
       if (text.match(/^ ./)) {
         text = '     ' + text.substring(1);
       }
+      text = parseProsody(text);
       return '<i data-chord="' + chord + '">' + text + '</i>';
     });
     return '<span class="line">' + line + '</span>\n';

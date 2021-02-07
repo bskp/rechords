@@ -1,7 +1,7 @@
 import { Song } from '../api/collections';
 import * as React from 'react';
 import { DetailedReactHTMLElement } from 'react'
-var Parser = require("html-react-parser");
+import parse from 'html-react-parser';
 
 
 interface Props {
@@ -26,7 +26,7 @@ export default class MetaContent extends React.Component<Props, {}> {
         } else {
             let html = matches[0].getHtml();
 
-            this.content = new Parser(html, {replace: this.props.replace});
+            this.content = parse(html, {replace: this.props.replace});
         }
     }
 

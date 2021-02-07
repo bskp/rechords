@@ -7,10 +7,14 @@ var Hypher = require('hypher'),
 english = require('hyphenation.en-us'),
 h = new Hypher(english);
 
-var Parser = require("html-react-parser");
+import parse, { domToReact } from 'html-react-parser';
 
 // The almighty expression matching a verse. Stolen from showdown-rechords.js:53
 const verseRegex = /(.*?): *\n((?:[^\n<>]*[^\n:<>]+\n\n?)+)/gi;
+
+const nodeText = (node) => {
+  return node.children.reduce( (out, child) => out += child.type == "text" ? child.data : nodeText(child), "" )
+}
 
 interface P {
   md: string;
@@ -324,7 +328,7 @@ export default class Preview extends React.Component<P, {}> {
   render() {
     this.props.song.parse(this.props.md);
 
-    let vdom = Parser(this.props.song.getHtml(), {replace: (node) => {
+    let vdom = parse(this.props.song.getHtml(), {replace: (node) => {
       if (node.name == 'i') {
         let chord;
         if ('data-chord' in node.attribs) {
@@ -337,7 +341,8 @@ export default class Preview extends React.Component<P, {}> {
               >{node.attribs['data-chord']}</span>
         }
         if (!('data' in node.children[0])) return node;
-        let lyrics = node.children[0].data.replace(/^ /, '');
+        const lyrics = nodeText(node).replace(/^/, '');
+
         return <React.Fragment>
                 {lyrics.split(' ').filter(el => true).map((word, idx, array) => {
                     if (word == '') return ' ';

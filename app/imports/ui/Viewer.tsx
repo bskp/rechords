@@ -11,7 +11,7 @@ import Kord from "./Kord.js";
 
 import { LayoutH, LayoutV, Day, Night, Sharp, Flat } from './Icons.jsx';
 
-var Parser = require("html-react-parser");
+import parse, { domToReact }  from 'html-react-parser';
 
 interface ViewerProps extends RouteComponentProps {
   song: Song,
@@ -115,21 +115,23 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
     let dT = this.state.relTranspose;
 
     // Parse HTML to react-vdom and replace chord values.
-    let vdom = Parser(rmd_html, {
+    let vdom = parse(rmd_html, {
       replace:  (node) => {
 
-        if (node.name && node.name == 'i' && 'data-chord' in node.attribs) {
-          if(!this.state.showChords)
-            return;
-          let chord = node.attribs['data-chord'];
-          let t = chrodlib.transpose(chord, key, dT);
-          let chord_;
-          if (t == null) {
-            chord_ = <span className="before">{chord}</span>;
-          } else {
-            chord_ = <span className={"before " + t.className}>{t.base}<sup>{t.suff}</sup></span>;
+        if (node.name && node.name == 'i') {
+          if (!this.state.showChords) return;
+
+          let chord_ = null;
+          if ('data-chord' in node.attribs){
+            let chord = node.attribs['data-chord'];
+            let t = chrodlib.transpose(chord, key, dT);
+            if (t == null) {
+              chord_ = <span className="before">{chord}</span>;
+            } else {
+              chord_ = <span className={"before " + t.className}>{t.base}<sup>{t.suff}</sup></span>;
+            }
           }
-          return <i>{chord_}{node.children[0].data}</i>;
+          return <i>{chord_}<span>{domToReact(node.children)}</span></i>;
         }
 
         else if (node.name == 'pre') {

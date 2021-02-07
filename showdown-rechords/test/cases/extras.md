@@ -6,7 +6,7 @@ I [G]know that it is free[em]zing but I think we have to [Cmaj7]walk
 ein kommentar
 
 2:
-Keep [G]waving at the taxis, they keep turning their lights [C]off
+Keep waving at the taxis, they keep_turning their lights ' [C]off
 
 
 -> asdf
