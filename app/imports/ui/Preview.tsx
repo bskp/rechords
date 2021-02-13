@@ -154,7 +154,7 @@ export default class Preview extends React.Component<P, {}> {
 
     let md_ = this.removeChord(this.props.md, i);
 
-    md_ = this.prependChord(md_, i, chord, offset, false);
+    md_ = this.prependChord(md_, i, chord, offset, true);
     this.props.updateHandler(md_);
   }
 
@@ -173,12 +173,14 @@ export default class Preview extends React.Component<P, {}> {
       return;
     }
 
-    if (event.ctrlKey && event.key == 'ArrowRight') {
+    if (event.shiftKey && event.key == 'ArrowRight') {
       this.offsetChordPosition(event, 1);
+      event.preventDefault();
     }
 
-    if (event.ctrlKey && event.key == 'ArrowLeft') {
+    if (event.shiftKey && event.key == 'ArrowLeft') {
       this.offsetChordPosition(event, -1);
+      event.preventDefault();
     }
 
     if (!n.hasAttribute('data-initial')) {
