@@ -113,13 +113,32 @@ div.light {
 }
 
 
+.prettyScrollbars(@bg) {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: @bg;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--gray);
+    border-radius: 20px;
+    border: 3px solid @bg;
+  }
+}
+
 
 // Color Schemes
 
 .list-colors {
   color: var(--text-sidebar);
   background-color: var(--bg-list);
-  scrollbar-color: fade(white, 50%) transparent;
+  .prettyScrollbars(var(--bg-list));
 }
 
 .chordsheet-colors {
@@ -133,7 +152,7 @@ div.light {
 
   color: var(--text); // for aside only, is overridden in #chordsheet
   background-color: var(--bg-sheet);
-  scrollbar-color: var(--text, 15%);
+  .prettyScrollbars(var(--bg-sheet));
 }
 
 .source-colors {
@@ -142,7 +161,7 @@ div.light {
   }
   color: var(--text-inverted);  // fade probably?
   background-color: var(--accent-flat);
-  scrollbar-color: var(--text);
+  .prettyScrollbars(var(--bg-accent-flat));
 
   textarea {
     color: black;
@@ -192,13 +211,13 @@ div.light {
 .scroll-vertical {
   overflow-y: auto;
   overflow-x: hidden;
-  .prettyScrollbars;
+  .prettyScrollbars(var(--bg-sheet));
 }
 
 .scroll-horizontal {
   overflow-y: hidden;
   overflow-x: auto;
-  .prettyScrollbars;
+  .prettyScrollbars(var(--bg-sheet));
 }
 
 
