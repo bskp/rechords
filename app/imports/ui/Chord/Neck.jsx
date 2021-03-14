@@ -31,7 +31,7 @@ const getBarreOffset = (strings, frets, baseFret, capo) => {
 }
 
 const Neck = ({ tuning, frets, strings, fretsOnChord, baseFret, capo, lite }) => {
-  return <g class='fret'>
+  return <g className='fret'>
     <path
       d={getNeckPath(strings, fretsOnChord)} />
     { baseFret === 1
@@ -42,7 +42,7 @@ const Neck = ({ tuning, frets, strings, fretsOnChord, baseFret, capo, lite }) =>
         height="2"
       />
       : <text
-        class='basefret'
+        className='basefret'
         textAnchor='end'
         x={getBarreOffset(strings, frets, baseFret, capo)}
         y='10'

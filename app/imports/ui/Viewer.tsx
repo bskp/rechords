@@ -9,7 +9,7 @@ import { MobileMenu } from "./MobileMenu";
 import { ColumnExpander } from "./ColumnGrid.js";
 import Kord from "./Kord.js";
 
-import { LayoutH, LayoutV, Day, Night, Sharp, Flat } from './Icons.jsx';
+import { LayoutH, LayoutV, Day, Night, Sharp, Flat, Conveyor } from './Icons.jsx';
 
 import parse, { domToReact }  from 'html-react-parser';
 
@@ -23,7 +23,8 @@ interface ViewerStates {
   relTranspose: number,
   inlineReferences: boolean,
   showChords: boolean,
-  columns: boolean
+  columns: boolean,
+  autoscroll: any
 }
 
 const userMayWrite = () => {
@@ -39,21 +40,26 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
       relTranspose: this.getInitialTranspose(),
       inlineReferences: false,
       showChords: true,
-      columns: false
-
+      columns: false,
+      autoscroll: undefined
     };
   }
 
   refChordsheet = React.createRef<HTMLDivElement>()
 
   componentDidUpdate(prevProps) {
-    if (this.props.song == prevProps.song) return;
+    if (this.props.song._id == prevProps.song._id) return;
 
     // Song has changed.
     this.refChordsheet.current?.scrollTo(0, 0)
     this.setState({
       relTranspose: this.getInitialTranspose(),
     });
+    this.setAutoScroll(false);
+  }
+
+  componentWillUnmount() {
+    this.setAutoScroll(false);
   }
 
   getInitialTranspose() {
@@ -88,6 +94,28 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
       return { relTranspose: state.relTranspose - 1 }
     })
   };
+
+  toggleAutoScroll = () => {
+    this.setAutoScroll( this.state.autoscroll == undefined );
+  }
+
+  setAutoScroll = (target_state) => {
+    const callback = () => {
+      this.refChordsheet.current?.scrollBy(0, 1);
+    }
+
+    this.setState( state => {
+        if (state.autoscroll == undefined && target_state == true) {
+          return { autoscroll: Meteor.setInterval(callback, 200) };
+        }
+
+        if (state.autoscroll != undefined && target_state == false) {
+          Meteor.clearInterval(state.autoscroll);
+          return { autoscroll: undefined };
+        }
+    });
+
+  }
 
   toggleChords = () => {
     this.setState( state => ({ showChords: !state.showChords }));
@@ -212,21 +240,24 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
     this.enrichReferences(vdom);
 
     const settings = <aside id="rightSettings">
-          {this.state.showChords? <TranposeSetter
+        {this.state.showChords ? <TranposeSetter
             onDoubleClick={this.toggleChords}
             transposeSetter={this.transposeSetter}
             transpose={this.state.relTranspose}
             keym={key} id="transposer"
           />
-          :
-          <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div> }
-          <div onClick={this.props.toggleTheme} id={'theme-toggler'} >
-            {this.props.themeDark ? <Day /> : <Night />}
-          </div>
-          <div onClick={this.toggleColumns} id={'layout-toggler'} >
-            {this.state.columns ? <LayoutH /> : <LayoutV />}
-          </div>
-          </aside>
+        :
+        <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div> }
+        <div onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
+          <Conveyor />
+        </div>
+        <div onClick={this.props.toggleTheme} id={'theme-toggler'} >
+          {this.props.themeDark ? <Day /> : <Night />}
+        </div>
+        <div onClick={this.toggleColumns} id={'layout-toggler'} >
+          {this.state.columns ? <LayoutH /> : <LayoutV />}
+        </div>
+      </aside>
     
 
     const drawer = userMayWrite() ? (
@@ -246,6 +277,9 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
         <div className="extend mobilemenu" >
             <span onClick={ _ => this.increaseTranspose()} id="plus"><Sharp /></span>
             <span onClick={ _ => this.decreaseTranspose()} id="minus"><Flat /></span>
+            <div onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
+              <Conveyor />
+            </div>
             <span onClick={ _ => this.props.toggleTheme()} id="theme-toggler">
               {this.props.themeDark ? <Day /> : <Night />}
             </span>
