@@ -106,7 +106,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
 
     this.setState( state => {
         if (state.autoscroll == undefined && target_state == true) {
-          return { autoscroll: Meteor.setInterval(callback, 200) };
+          return { autoscroll: Meteor.setInterval(callback, 133) };
         }
 
         if (state.autoscroll != undefined && target_state == false) {
@@ -277,9 +277,9 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
         <div className="extend mobilemenu" >
             <span onClick={ _ => this.increaseTranspose()} id="plus"><Sharp /></span>
             <span onClick={ _ => this.decreaseTranspose()} id="minus"><Flat /></span>
-            <div onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
+            <span onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
               <Conveyor />
-            </div>
+            </span>
             <span onClick={ _ => this.props.toggleTheme()} id="theme-toggler">
               {this.props.themeDark ? <Day /> : <Night />}
             </span>

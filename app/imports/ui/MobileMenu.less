@@ -9,6 +9,7 @@
 
 .mobilemenu {
   display: none;
+  overflow: hidden;
 
   .phone({
     display: flex;
@@ -27,6 +28,7 @@
   span {
     cursor: pointer;
     margin: 0;
+    flex-grow: 1;
 
     font-size: 3em;
   }
@@ -54,9 +56,18 @@
   }
 
   &.extend {
-    right: 7rem;
-    width: calc(~"100% - 7rem");
-    flex-direction: row
+    right: 5rem;
+    width: calc(~"100% - 5rem");
+    flex-direction: row;
+
+    span {
+      max-width: 5rem;
+    }
+
+    svg {
+      margin-left: -0.5rem;
+      margin-right: -0.5rem;
+    }
   }
 
   &.hide-extensions {
