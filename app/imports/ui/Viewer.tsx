@@ -43,9 +43,11 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
       columns: false,
       autoscroll: undefined
     };
+
   }
 
   refChordsheet = React.createRef<HTMLDivElement>()
+  duration_s = undefined;
 
   componentDidUpdate(prevProps) {
     if (this.props.song._id == prevProps.song._id) return;
@@ -56,6 +58,13 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
       relTranspose: this.getInitialTranspose(),
     });
     this.setAutoScroll(false);
+
+    let duration : string = this.props.song.checkTag('duration');
+    if (duration) {
+      let minutes, secs;
+      [minutes, secs] = duration.split(':');
+      this.duration_s = minutes*60 + secs;
+    }
   }
 
   componentWillUnmount() {
