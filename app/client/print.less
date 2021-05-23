@@ -1,17 +1,94 @@
 
 @media print {
-  aside, #transposer, .tags { display: none; }
+  aside, #transposer, .tags {
+    display: none !important;
+  }
 
   #body {
     font-size: 12pt;
-    width: 210mm;
   }
 
-  #chordsheet {
+  #chordsheetContent {
     columns: 2;
+    column-gap: 3em;
+
+    section > div {
+      break-inside: avoid;
+    }
+
+    margin-bottom: 0 !important;
+
+    .ref.open, h3 {
+      width: 2em;
+      margin-left: -3em;
+      overflow: hidden;
+    }
+
+    .abc-notation {
+      column-span: all;
+    }
   }
 
-  #head, h1, h2 {
-    column-span: all;
+  .content {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+
+    padding: 0 !important;
+    padding-left: 4em !important;
+
+    .sd-header {
+      column-span: all;
+      margin-top: 0.3em; // Für die Umlautzeichen
+
+      h1, h2 {
+        font-size: 2.5em !important;
+      }
+
+      h2 {
+        margin-bottom: 1em !important;
+      }
+    }
+  }
+
+.chord-container {
+  color: var(--text);
+}
+
+  #app div.dark, #app div.light {
+    // Color swatches
+    @accent: rgb(221, 68, 7);          // for text.
+    @h: hsvhue(@accent);
+    @accent-flat: hsv(@h, 0.7, 0.8); // duller and lighter variant of @accent for big areas
+
+    @ink: black;                        // for text.
+    @void: white;                       // for big areas.
+    @dirt: hsv(@h, 0.05, 0.9);               // a shaded @void, for areas
+    @gray: hsv(@h, 0.0, 0.5);        // perceptively neutral gray
+
+    // Derived color variables
+
+    --bg-list: @void;
+    --bg-sheet: @void;
+
+    --accent: @accent;
+    --accent-flat: @accent-flat;
+
+    --ink: @ink;
+    --gray: @gray;
+    --gray-dark: mix(@gray, @ink, 66%);
+    --gray-light: mix(@gray, @void, 40%);
+
+    --text: @ink;
+    --text-inverted: @void;
+    --text-sidebar: hsv(@h, 0.2, 0.4);
+
+    --bg-rev: hsv(hsvhue(@accent-flat), 0.7, 0.4);
+    --text-rev: mix(@accent-flat, white);
+
+    --text-revs: mix(@accent-flat, white);
+    --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
+
+    --bg-filter-translucent: fade(@void, 40%);
+    --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
   }
 }

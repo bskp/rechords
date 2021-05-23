@@ -99,26 +99,27 @@ body {
     padding: 2em 1em !important;
   });
 
-  h1:first-child, h1:first-child + h2 {
-    .cooperate();
-    font-size: 3em;
-    display: inline-block;
-
-    margin-bottom: 0.0em;
-    margin-top: 0;
-    line-height: 1em;
-  }
-
-  h1:first-child + h2 {
-    margin-bottom: 0.5em;
-  }
-
-  h1:first-child {
-    margin-right: 0.5em;
-  }
-
   .sd-header {
     margin-left: -0.1em;
+
+    h1, h2 {
+      .cooperate();
+      font-size: 3em;
+      line-height: 1em;
+
+      display: inline-block;
+
+      margin-bottom: 0.0em;
+      margin-top: 0;
+    }
+
+    h2 {
+      margin-bottom: 0.5em;
+    }
+
+    h1 {
+      margin-right: 0.5em;
+    }
   }
 
   a {
