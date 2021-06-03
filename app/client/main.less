@@ -102,24 +102,28 @@ body {
   .sd-header {
     margin-left: -0.1em;
 
-    h1, h2 {
-      .cooperate();
-      font-size: 3em;
-      line-height: 1em;
+  }
 
-      display: inline-block;
+  h1:first-child, h1:first-child + h2,
+  .sd-header h1, .sd-header h2 {
+    .cooperate();
+    font-size: 3em;
+    line-height: 1em;
 
-      margin-bottom: 0.0em;
-      margin-top: 0;
-    }
+    display: inline-block;
 
-    h2 {
-      margin-bottom: 0.5em;
-    }
+    margin-bottom: 0.0em;
+    margin-top: 0;
+  }
 
-    h1 {
-      margin-right: 0.5em;
-    }
+  h1:first-child + h2,
+  .sd-header h2 {
+    margin-bottom: 0.5em;
+  }
+
+  h1:first-child,
+  .sd-header h1 {
+    margin-right: 0.5em;
   }
 
   a {
