@@ -29,6 +29,7 @@
     "react-autosuggest": "^9.4.1",
     "react-document-title": "^2.0.3",
     "react-dom": "^16.14.0",
+    "react-responsive": "^8.2.0",
     "react-router-dom": "^5.1.1",
     "react-table": "^7.6.3",
     "react-transition-group": "^2.9.0",

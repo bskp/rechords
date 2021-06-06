@@ -19,6 +19,7 @@ import { Header } from './Icons';
 import { BrowserRouter, Route, Switch, RouteComponentProps} from 'react-router-dom';
 import TrackingDocumentTitle from './TrackingDocumentTitle';
 import { MobileMenu } from './MobileMenu'
+import Printer from './Printer';
 
 const empty_song = {
     title: "Neues Lied",
@@ -177,6 +178,27 @@ class App extends React.Component<AppProps, AppStates> {
                             <Hallo songs={this.props.songs} revisionsLoading={this.props.revisionsLoading}/>
                         </>
                     )} />
+
+
+                    <Route path='/print/:author/:title' render={(routerProps) => {
+                        let song = getSong(routerProps.match.params);
+
+                        if (song === undefined) {
+                            return nA404; 
+                        }
+
+                        return (
+                            <>
+                                <TrackingDocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
+                                <Printer 
+                                    song={song}  
+                                    toggleTheme={this.toggleTheme} 
+                                    themeDark={theme.includes('dark')}
+                                    {...routerProps} 
+                                />
+                            </>
+                        )
+                    }} />
 
 
                     <Route path='/view/:author/:title' render={(routerProps) => {

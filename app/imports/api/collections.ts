@@ -126,6 +126,20 @@ export class Song {
       return null; // Tag not present
   }
 
+  getTag(tag_name : string) {
+    for (let tag of this.getTags()) {
+        if (!(tag.toLowerCase().startsWith(tag_name.toLowerCase()))) continue;
+
+        let chunks = tag.split(':', 2);
+        if (chunks.length == 1) {
+          return undefined  // no colon in tag
+        }
+        return chunks[1];
+    }
+    return undefined; // Tag not present
+
+  }
+
   getVirtualDom() {
     return Parser(this.html);
   }

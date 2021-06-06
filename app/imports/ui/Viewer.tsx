@@ -8,6 +8,8 @@ import { Abcjs } from './Abcjs'
 import { MobileMenu } from "./MobileMenu";
 import { ColumnExpander } from "./ColumnGrid.js";
 import Kord from "./Kord.js";
+import {userMayWrite} from '../api/helpers';
+import Sheet from './Sheet';
 
 import { LayoutH, LayoutV, Day, Night, Sharp, Flat, Conveyor } from './Icons.jsx';
 
@@ -25,11 +27,6 @@ interface ViewerStates {
   showChords: boolean,
   columns: boolean,
   autoscroll: any
-}
-
-const userMayWrite = () => {
-  const role = Meteor.user().profile.role;
-  return role == 'admin' || role == 'writer';
 }
 
 export default class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> {
@@ -139,124 +136,25 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   };
 
   render() {
-    let chords = this.props.song.getChords();
-    let chrodlib = new ChrodLib();
-    let rmd_html = this.props.song.getHtml();
 
+    // Establish this songs' key
     let key_tag = this.props.song.checkTag("tonart");
     let key = key_tag && ChrodLib.parseTag(key_tag);
+
     if (key == null) {
-      key = ChrodLib.guessKey(chords);
+      key = ChrodLib.guessKey(this.props.song.getChords());
     }
-
-    let dT = this.state.relTranspose;
-
-    // Parse HTML to react-vdom and replace chord values.
-    let vdom = parse(rmd_html, {
-      replace:  (node) => {
-
-        if (node.name && node.name == 'i') {
-          if (!this.state.showChords) return;
-
-          let chord_ = null;
-          if ('data-chord' in node.attribs){
-            let chord = node.attribs['data-chord'];
-            let t = chrodlib.transpose(chord, key, dT);
-            if (t == null) {
-              chord_ = <span className="before">{chord}</span>;
-            } else {
-              chord_ = <span className={"before " + t.className}>{t.base}<sup>{t.suff}</sup></span>;
-            }
-          }
-          return <i>{chord_}<span>{domToReact(node.children)}</span></i>;
-        }
-
-        else if (node.name == 'pre') {
-          if (node.children.length != 1) 
-            return node;
-          let code = node.children[0];
-          if (!('class' in code.attribs))
-            return node;
-          let classes = code.attribs['class'];
-          if (!(classes.includes('language-abc')))
-            return node;
-          if (code.children.length != 1) 
-            return node;
-
-          if (this.state.showChords) {
-            let abc = code.children[0].data;
-
-            return <Abcjs
-              abcNotation={abc}
-              parserParams={{
-                  visualTranspose: dT,
-                }}
-            />
-          } else {
-            return <></>
-          }
-        }
-        // Insert fret diagrams
-        else if (node.name == 'abbr') {
-          const chord = node.children[0].data;
-          const c = chrodlib.transpose(chord, key, 0);
-          const style = dT != this.getInitialTranspose() ? {opacity: 0.5} : undefined;
-
-          return <span className='chord-container' style={style}>
-              <strong>{c.base}<sup>{c.suff}</sup></strong>
-              <Kord frets={node.attribs.title} fingers={node.attribs['data-fingers']} />
-            </span>
-        }
-        // Remove process tags for read-only-users
-        else if (node.name == 'ul' && node.attribs?.['class'] == 'tags' 
-                 && !userMayWrite()) {
-          const hide: string[] = ['fini', '+', 'check', 'wip'];
-          node.children = node.children.filter((child) => {
-            if (child?.name == 'li' && hide.includes(child?.children[0].data)) return false;
-            return true;
-          });
-        }
-      }
-    });
-
-    // Idee: obige replace-funktion könnte vom TransposeSetter geholt werden. Dadurch könnte der relTranspose-Zustand völlig in 
-    // den TransposeSetter wandern. 
-
-    /*
-    if (this.state.relTranspose != 0) {
-      chordtable = (
-        <table className="chordtable">
-          <tbody>
-            <tr>
-              <td>Orig:</td>
-              {chords.map((c, i) => <td key={i}>{c}</td>)}
-            </tr>
-            <tr>
-              <td>Tran:</td>
-              {chrodlib
-                .transpose(chords, this.state.relTranspose)
-                .map((c, i) => <td key={i}>{c}</td>)}
-            </tr>
-          </tbody>
-        </table>
-      );
-    } else {
-      chordtable = "";
-    }
-    */
-    const s = this.props.song;
-
-    this.enrichReferences(vdom);
 
     const settings = <aside id="rightSettings">
-        {this.state.showChords ? <TranposeSetter
-            onDoubleClick={this.toggleChords}
-            transposeSetter={this.transposeSetter}
-            transpose={this.state.relTranspose}
-            keym={key} id="transposer"
-          />
+        { this.state.showChords ? <TranposeSetter
+              onDoubleClick={this.toggleChords}
+              transposeSetter={this.transposeSetter}
+              transpose={this.state.relTranspose}
+              keym={key} id="transposer"
+            />
         :
-        <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div> }
+          <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div>
+        }
         <div onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
           <Conveyor />
         </div>
@@ -276,6 +174,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
         </Drawer>
     ) : undefined;
 
+    const s = this.props.song;
     const footer = userMayWrite() ? (
         <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} id="edit">Bearbeiten…</NavLink></div>
     ) : undefined;
@@ -299,11 +198,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
           id="chordsheet" ref={this.refChordsheet}
           onContextMenu={this.handleContextMenu}
         >
-          <section id="chordsheetContent">
-            <ChordSheet showMultiColumns={this.showMultiColumns()} song={this.props.song} >
-              {vdom}
-            </ChordSheet>
-          </section>
+          <Sheet song={this.props.song} transpose={this.state.relTranspose} hideChords={!this.state.showChords} />
           {footer}
         </div>
         {settings}
@@ -315,66 +210,8 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   private showMultiColumns() {
     return this.state.columns;
   }
-
-  // TODO: Outsource to helper class/ function
-  private enrichReferences(vdom: any) {
-    let sections_dict = new Map<String, any>();
-    for (let i = 0; i < vdom.length; i++) {
-      let elem = vdom[i];
-      if (elem.props) {
-        let id = elem.props.id;
-        if (id && id.startsWith('sd-ref')) {
-          sections_dict.set(id, elem);  // add section to dictionary
-        }
-      }
-    }
-
-    for (let i = 0; i < vdom.length; i++) {
-      let elem = vdom[i];
-      if (elem.props) {
-        if (elem.props.className == 'ref') {
-          const key = 'ref_'+i;
-          const visible = this.state.inlineReferences ? ' shown' : ' hidden'
-
-          let refName = React.Children.toArray(elem.props.children)[0].props.children;
-          if( typeof refName != 'string')
-            continue
-
-          // TODO: merge reference an content into one section so they don't break apart in column view
-          let ref = 'sd-ref-' + refName.trim();
-          let definition = sections_dict.get(ref)
-          if( !definition ) {
-            vdom[i] = React.cloneElement(elem,
-              {
-                'onClick': this.toggleInlineReferences,
-                className: 'ref collapsed',
-                key: key,
-                id: key
-              });
-          } else {
-            vdom[i] = React.cloneElement(elem,
-              {
-                'onClick': this.toggleInlineReferences,
-                className: 'ref' + (this.state.inlineReferences ? ' open' : ' collapsed'),
-                key: key,
-                id: key
-              });
-
-            vdom.splice(i + 1, 0,
-              React.cloneElement(definition, { 
-                id: null, 
-                key: definition.key + '-clone-' + i,
-                className: 'inlineReference' + visible 
-              })
-            );
-          }
-        }
-      }
-    }
-  }
-
-
 }
+
 function splitSongVdom(vdom: React.ReactElement[]): React.ReactElement[] {
   const sheetHeader = vdom.filter(el => el.props?.className == 'sd-header')
     .map(el => React.cloneElement(el))
@@ -387,6 +224,7 @@ function splitSongVdom(vdom: React.ReactElement[]): React.ReactElement[] {
   return [sheetHeader, sheetContent];
 
 }
+
 const ChordSheet = (props: React.PropsWithChildren<{showMultiColumns: boolean, song: Song}> ) => {
 
   const vdom = props.children;
