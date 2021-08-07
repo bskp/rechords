@@ -45,6 +45,7 @@
     "@types/react": "^16.14.3",
     "@types/requirejs": "^2.1.32",
     "babel-plugin-inline-react-svg": "^1.1.2",
+    "grunt": "^1.4.1",
     "meteor-typings": "^1.4.1",
     "typescript": "3.7.5",
     "typescript-plugin-add-type": "^1.0.2"
