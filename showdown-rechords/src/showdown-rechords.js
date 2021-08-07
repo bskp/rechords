@@ -4,15 +4,15 @@ module.exports = function showdownRechords() {
   require('source-map-support').install(); // For mocha.
 
   function parseProsody(text) {
-      // Prosodic annotations
-      text = text.replace(/_/g, '<u>‿</u>');
-      text = text.replace(/\B'\B/g, '<u>’</u>');  // "\B": negierte Wortgrenzen!
-      return text;
+    // Prosodic annotations
+    text = text.replace(/_/g, '<u>‿</u>');
+    text = text.replace(/\B'\B/g, '<u>’</u>');  // "\B": negierte Wortgrenzen!
+    return text;
   }
 
   function parseLine(match, content) {
     if( content.match(/^\s*$/g) )
-      return "</p>\n</div>\n<div>\n<p>";
+      return '</p>\n</div>\n<div>\n<p>';
     // Match bis zum Einsatz des ersten Akkords:
     var line = content.replace(/^([^\[]+)/, match => '<i>' + parseProsody(match) + '</i>');
     // Ab hier wird nun immer vom Akkord beginnend bis zum nächsten Akkord (exkl) gematcht
@@ -98,7 +98,7 @@ module.exports = function showdownRechords() {
       type: 'lang',
       regex: /\n\[([^\]]*)\]: +([0-9a-dx-]{6})\n( *[0-4-x ]{6}\n)?/gm,
       replace: function(match, label, frets, fingers) {
-        df = ''
+        df = '';
         if (fingers) {
           df = '" data-fingers="' + fingers.trim();
         }

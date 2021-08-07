@@ -44,6 +44,9 @@ module.exports = function (grunt) {
 
     // Enforce lint
     jshint: {
+      options: {
+        esversion: 6
+      },
       files: [
         'Gruntfile.js',
         'src/**/*.js',
