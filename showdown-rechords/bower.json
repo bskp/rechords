@@ -1,6 +1,6 @@
 {
   "name": "showdown-rechords",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Markdown dialect for lead sheets",
   "keywords": [
     "markdown",
@@ -17,7 +17,7 @@
     "web": "https://github.com/showdownjs/showdown-extension-boilerplate"
   },
   "dependencies": {
-    "showdown": "^1.7.4",
+    "showdown": "^1.9.1",
     "hyphenation.de": "^0.2.1",
     "hyphenation.en-us": "^0.2.1",
     "hypher": "^0.2.5"
