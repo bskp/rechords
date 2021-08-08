@@ -7,6 +7,13 @@ Meteor Based app for editing the songs more or less interactively.
 [x] Plain Text Markdown Editing support
 [ ] MarkdownRechords syntax Highlighting when editing
 [x] Transposing of Chords
+[ ] Autoscrolling with respect to total song time
+[ ] Print Layout over multiple Pages via CSS
+[ ] Print Layout over multiple Pages via PDFKit
+[ ] Import / Export
+[ ] Scrolling slave mode
+[ ] Diff + Blame in Editor
+
 
 # Get Started
 
@@ -34,6 +41,7 @@ mongorestore --port 3001 --archive=../backups/asdf.bson --nsFrom=Rechords.* --ns
 ```
 Db name on the server: Rechords -> locally meteor
 ( the -d flag known from older mongo versions has been deprecated and been replaced by the -nsXXX flags)
+
 
 
 
