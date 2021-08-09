@@ -40,6 +40,6 @@
   },
   "dependencies": {
     "hyphenation.en-us": "^0.2.1",
-    "showdown": "^1.7.4"
+    "showdown": "^1.9.1"
   }
 }
