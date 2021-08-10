@@ -24,5 +24,4 @@ static-html
 underscore@1.0.10
 accounts-password@1.7.0
 refapp:typescript
-accounts-password
 mdg:validation-error
