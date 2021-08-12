@@ -6,9 +6,10 @@ import { RevBrowserAdvanced } from './RevBrowserAdvanced';
 import Preview from '../Preview';
 import Drawer from '../Drawer';
 import { Ok, Cancel } from '../Icons.jsx';
-import { SourceAdvanced } from './SourceAdvanced';
+import { getBlameLines, SourceAdvanced } from './SourceAdvanced';
 import { DynamicModuleLoader, IModule } from 'redux-dynamic-modules';
 import { connect, ConnectedProps } from 'react-redux';
+import { PropsWithChildren } from 'react';
 
 type EditorAdvancedProps = {
   song: Song
@@ -143,20 +144,19 @@ interface BlameProps {
   className: string
 }
 
-class Blame extends Component<BlameProps> {
 
-  render() {
-    const versions = this.props.versions
+const Blame: React.FunctionComponent<PropsWithChildren<BlameProps>> = (props) => {
+    const versions = props.versions
 
     const line_list = getBlameLines(versions)
 
     const rows = line_list.map(r => <tr><td>{r.origin}</td><td>{r.value}</td></tr>)
 
-    return <div className={"content " + this.props.className}>
-      {this.props.children}
+    return <div className={"content " + props.className}>
+      {props.children}
       <table>{rows}</table>
     </div>
-  }
+  
 }
 
 export interface IEditorStates {

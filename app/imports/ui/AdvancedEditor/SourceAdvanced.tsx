@@ -7,36 +7,31 @@ import "moment/locale/de";
 import { Change, Diff, diffChars } from 'diff';
 import { convertDiff, RevLinkAdvanced } from './RevBrowserAdvanced';
 import { blame, IBlameLine } from 'blame-ts';
+import { FunctionComponent } from 'react';
+import { RefObject } from 'react';
+import { useState } from 'react';
 
 interface SourceAdvancedProps {
   md: string;
   updateHandler: Function;
   readOnly: boolean;
   className: string;
-  // todo:origin is anobjectwith revision tag, user and caption
+  // todo:origin is an objectwith revision tag, user and caption
   revs?: Revision[]
 }
 
-export class SourceAdvanced extends Component<SourceAdvancedProps> {
-  public static defaultProps = {
-    readOnly: false
-  }
-  textAreaRef: React.RefObject<HTMLTextAreaElement>;
+export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
+  const textAreaRef: RefObject<HTMLTextAreaElement> = React.createRef()
+  
 
-  constructor(props) {
-    super(props);
-    this.textAreaRef = React.createRef()
-  }
-
-  callUpdateHandler = () => {
-    if ('updateHandler' in this.props) {
-      this.props.updateHandler(this.textAreaRef?.current.value);
+  const callUpdateHandler = () => {
+    if ('updateHandler' in props) {
+      props.updateHandler(textAreaRef?.current.value);
     }
   }
 
-  render() {
     // Height estimation
-    let rowsMatch = this.props.md.match(/\n/g)
+    let rowsMatch = props.md.match(/\n/g)
 
     let rows: number;
     if (rowsMatch != null) {
@@ -49,91 +44,89 @@ export class SourceAdvanced extends Component<SourceAdvancedProps> {
       minHeight: rows + 'em',
     }
 
+    const content = textAreaRef.current?.value || props.md
 
+    const settingStates = {
+      name: useState(false),
+      date: useState(false)
+    }
 
-    const lt = new LineTracker()
-
-    const content = this.textAreaRef.current?.value || this.props.md
+    const lineDetail = (l: IBlameLine<Revision>) => {
+      let ret = ""
+      const ipOrEd = Meteor.users.findOne(l.origin.editor )?.profile.name || l.origin.ip
+      ret += settingStates.name[0] ? ipOrEd : ipOrEd.substr(0,2)
+      ret += settingStates.date[0] ? " "+moment(l.origin.timestamp).calendar() : ""
+      return ret
+    }
 
     const contentLines = content?.split('\n');
 
     let blamelines: Diffline<Revision>[] = []
-    const revs = this.props.revs.slice()
+    const revs = props.revs.slice()
     const pb = getBlameLines(revs);
     if (contentLines && pb) {
       blamelines = pb.map((l, idx) => {
         if (contentLines[idx] == l.value) {
           return {
             className: "annoline", dataRevid: l.origin._id, info: l,
-            display: lt.getLineDisplay(l.origin)
+            display: lineDetail(l)
           }
         } else {
-          return { davaRevid: "*", display: "*" }
+          return { dataRevid: "*", display: "*" }
         }
       });
     }
 
-    const blamelines_grouped = grouping(blamelines, 'dataRevid', id => this.getDiff(id))
+    const blamelines_grouped = grouping(blamelines, 'dataRevid', id => getDiff(id))
 
 
+    const [isDiff, setDiff] = useState(false)
 
+    const settings = 
+      <div className="settings">
+        <label>Diff
+          <input type="checkbox"  checked={isDiff} onChange={ ev => setDiff(ev.target.checked)} />
+          </label>
+          <div>
+        {isDiff && Object.entries(settingStates).map(
+          ([k,v])=> <div><label>
+            {k}
+          <input type="checkbox" name={k} checked={v[0]} onChange={ ev => v[1](ev.target.checked)} />
+          </label>
+          </div>
 
+        )}
+        </div>
+      </div>
 
     return (
-      <div className={"content source-adv " + this.props.className}>
-        {this.props.children}
-        <div style={style} className="blameColumn">{blamelines_grouped}</div>
+      <div className={"content "+ props.className}>
+      {settings}
+      <div className="source-adv">
+        {props.children}
+        { isDiff && <div style={style} className="blameColumn">{blamelines_grouped}</div> }
         <textarea
-          ref={this.textAreaRef}
-          onChange={this.callUpdateHandler}
-          value={this.props.md}
+          ref={textAreaRef}
+          onChange={callUpdateHandler}
+          value={props.md}
           style={style}
-          readOnly={this.props.readOnly}
+          readOnly={props.readOnly}
         />
+      </div>
+      <input type="checkbox"  />
       </div>
     )
   }
-  private getDiff(last_id: string) {
-    const revs = this.props.revs
-    if (revs && revs.length) {
-      const idx = revs.findIndex(v => v._id === last_id)
-      const oldText = idx < revs.length - 1 ? revs[idx + 1].text : ''
-      const diff = diffChars(oldText, revs[idx].text)
-      return diff
-    }
+  
+
+function getDiff(last_id: string) {
+  const revs = this.props.revs
+  if (revs && revs.length) {
+    const idx = revs.findIndex(v => v._id === last_id)
+    const oldText = idx < revs.length - 1 ? revs[idx + 1].text : ''
+    const diff = diffChars(oldText, revs[idx].text)
+    return diff
   }
-}
-
-
-class LineTracker {
-  sameCount = 0
-  lastId: string
-  getLineDisplay(origin: Revision): string {
-    if (!origin) {
-      return ""
-    }
-    if (this.lastId != origin._id) {
-      this.sameCount = 0;
-    }
-
-    let r;
-
-    switch (this.sameCount) {
-      case 0: r = Meteor.users.findOne(origin.editor)?.profile.name || origin.editor || '???'; break;
-      case 1: r = moment(origin.timestamp).format('lll'); break;
-      case 2: r = origin.ip; break;
-      default: r = "___"
-    }
-
-    this.lastId = origin._id
-    this.sameCount += 1
-
-    return r
-
-  }
-
-
-
 }
 
 function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: string) => Change[]): React.ReactElement[] {
@@ -161,7 +154,7 @@ function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: st
   return returnvalue.map(({ info, lines }, idx) => <DiffGroup info={info} lines={lines} key={idx} cb={cb}></DiffGroup>)
 }
 
-function getBlameLines(versions: Revision[]): IBlameLine<Revision>[] {
+export function getBlameLines(versions: Revision[]): IBlameLine<Revision>[] {
   return blame(versions, { getCode: (a: Revision) => a.text, getOrigin: (b: Revision) => b })
 }
 
