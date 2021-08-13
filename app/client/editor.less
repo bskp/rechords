@@ -61,62 +61,131 @@ aside.drawer#revs {
   );
 }
 
+.bubble {
+
+  li {
+    display: inline-block;
+    font-size: 0.75em;
+    line-height: 1.8em !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    background-color: var(--gray);
+    color: var(--text-inverted);
+
+    &::before {
+      content: none !important;
+    }
+
+    b {
+      display: inline-block;
+      font-weight: inherit;
+      padding: 0 0.8em;
+      padding-left: 0.3em;
+      margin: 0 -0.9em;
+      margin-left: 0.3em;
+      background-color: var(--accent);
+      border-top-right-radius: inherit;
+      border-bottom-right-radius: inherit;
+    }
+  }
+}
+
+#bubble {
+    border-radius: 0.8em;
+    padding: 0 0.8em;
+    margin-right: 0.8em;
+    white-space: nowrap;
+    background-color: var(--gray);
+}
+
 .diff {
   color : var(--text-invert);
   filter: brightness(0.8);
 
   &.added {
+    #bubble();
     background-color: var(--text);
     color           : var(--text-invert);
-    min-height      : 20px;
     filter          : unset;
   }
 
   &.removed {
-    text-decoration: line-through;
-    min-height     : 20px;
+    #bubble();
+    background-color: var(--accent);
+    color           : var(--text-inverted);
     filter         : unset;
+
   }
 }
 .settings {
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: row nowrap;
+  label {
+    font-size: 0.8rem;
+    font-family: 'Plesk Mono', monospace;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+  div {
+    margin: 0.3rem;
+  }
 }
 
 .blameColumn {
-  max-width:  70px;
   white-space: nowrap;
   #textareafonts();
 
+  margin-right: 0.2rem;
+
   .annotation-group {
+
+    cursor: pointer;
+
+    text-align: right;
+
+    display: flex;
+    flex-flow: row nowrap;
+
+
 
     &:nth-child(even) {
       background-color: var(--accent);
-
+      border-color: var(--accent);
     }
 
     &:nth-child(odd) {
       background-color: var(--bg-rev);
-
+      border-color: var(--bg-rev);
     }
 
-    &.annotation.active {
-      filter: brightness(1.2);
+    .annotation {
+      padding: 0 0.2rem;
+      margin-right: 0 0.2rem;
+      width: 100%;
+    }
+
+    &.active {
+      font-weight: bold;
     }
 
     .hover-container {
-      position        : relative;
       background-color: inherit;
+      border-color: inherit;
+      width: 0px;
+      order: 1;
+      position: relative;
 
       .hover {
+        text-align: left;
+        border: 1rem solid ;
         position           : absolute;
-        left               : 40px;
+        left               : rem;
         overflow-y         : scroll;
         padding            : 10px;
         margin-top         : -10px;
-        // background-color: inherit;
+        background-color: inherit;
+        border-color: inherit;
         backdrop-filter    : blur(5px);
-
       }
     }
 

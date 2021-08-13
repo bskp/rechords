@@ -7,6 +7,7 @@ import "moment/locale/de";
 import { Change } from 'diff';
 import { connect, ConnectedProps } from 'react-redux';
 import { IEditorStates, revisionReducer } from './EditorAdvanced.js';
+import Source from '../Source.jsx'
 const Diff = require('diff');
 
 interface RevBrowserAdvancedProps  {
@@ -26,7 +27,8 @@ const connector = connect((state: IEditorStates) =>
 class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevBrowserAdvancedStates> {
 
   readonly state = {
-    diffs: []
+    diffs: [],
+    showDiff: false
   }
   constructor(props: RevBrowserAdvancedProps_) {
     super(props)
@@ -55,7 +57,6 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
 
     const diff = Diff.diffChars(to_diff, current)
 
-
     const spans = diff.map((t: Change) => convertDiff(t) )
     return spans
   }
@@ -69,15 +70,21 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
                    : <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>
 
     const diffs = this.computeDiff(revs, this.props.selectedRev ) 
+
+
     return (
       <>
         {/* <Source md={diff} readOnly={true} className="revision-colors">
           {label}
         </Source> */}
         <div className="content source-colors">
-          {diffs}
+          <div className="settings">
+            <label>Diff<input type="checkbox" checked={this.state.showDiff} onChange={ev => this.setState((state) => ({...state, showDiff: ev.target.checked}))}/></label>
+          </div>
+          {this.state.showDiff && <div> {diffs} {label} </div>  }
+          {!this.state.showDiff && <Source md={this.props.selectedRev?.text || ''} readOnly={true} className="revision-colors"> {label} </Source>}
         </div>
-        <Drawer id="revs" className="revisions-colors">
+        <Drawer id="revs" className="revisions-colors" open={!ts}>
           {this.props.song._id}
           <h1>Versionen</h1>
           <ol>
