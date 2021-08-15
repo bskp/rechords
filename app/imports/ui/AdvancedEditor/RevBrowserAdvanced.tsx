@@ -1,16 +1,17 @@
-import Songs, {Revision, Revisions, Song} from '../../api/collections.js';
+import Songs, { Revision, Revisions, Song } from '../../api/collections.js';
 import * as React from 'react';
 import { Component } from 'react';
 import Drawer from '../Drawer';
 import * as moment from 'moment';
 import "moment/locale/de";
 import { Change } from 'diff';
+import { diffChars } from 'diff';
 import { connect, ConnectedProps } from 'react-redux';
 import { IEditorStates, revisionReducer } from './EditorAdvanced.js';
 import Source from '../Source.jsx'
-const Diff = require('diff');
+import { ReactElement } from 'react';
 
-interface RevBrowserAdvancedProps  {
+interface RevBrowserAdvancedProps {
   song: Song;
 }
 interface RevBrowserAdvancedStates {
@@ -19,10 +20,10 @@ interface RevBrowserAdvancedStates {
 
 type RevBrowserAdvancedProps_ = RevBrowserAdvancedProps & ConnectedProps<typeof connector>;
 
-const connector = connect((state: IEditorStates) => 
-({selectedRev: state.rev}), {
-  dispatchSelect: (rev:Revision)=>({type: 'revision/set', payload: rev}),
-  setRevTab: () => ({type: 'tab/rev'})
+const connector = connect((state: IEditorStates) =>
+  ({ selectedRev: state.rev }), {
+  dispatchSelect: (rev: Revision) => ({ type: 'revision/set', payload: rev }),
+  setRevTab: () => ({ type: 'tab/rev' })
 })
 class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevBrowserAdvancedStates> {
 
@@ -41,47 +42,45 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
   setRevById = (rev_id: string) => {
     let revs = this.props.song.getRevisions();
 
-    const rev = revs.find( r => r._id == rev_id )
-    if( rev ) {
+    const rev = revs.find(r => r._id == rev_id)
+    if (rev) {
       this.setRev(rev)
     }
   }
 
-  
-  computeDiff = (revs: Revision[], selectedRev: { _id: string; }) =>
-  {
-    const idx_of_current_Diff = revs.findIndex( (rev: Revision) => rev._id == selectedRev?._id )
 
-    const to_diff = idx_of_current_Diff>=0 && idx_of_current_Diff< revs.length-1 ? revs[idx_of_current_Diff+1].text : ""
+  computeDiff = (revs: Revision[], selectedRev: { _id: string; }) => {
+    const idx_of_current_Diff = revs.findIndex((rev: Revision) => rev._id == selectedRev?._id)
+
+    const to_diff = idx_of_current_Diff >= 0 && idx_of_current_Diff < revs.length - 1 ? revs[idx_of_current_Diff + 1].text : ""
     const current = this.props.selectedRev?.text ? this.props.selectedRev.text : ""
 
-    const diff = Diff.diffChars(to_diff, current)
+    const diff = diffChars(to_diff, current)
 
-    const spans = diff.map((t: Change) => convertDiff(t) )
+    const spans: ReactElement[] = reduceDiff(diff)
     return spans
   }
-  
+
   render() {
     let revs = this.props.song.getRevisions();
     let n = revs.length;
 
     let ts = this.props.selectedRev?.timestamp;
-    let label = ts ? <span className="label">Version vom {moment(ts).format('LLLL')}</span> 
-                   : <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>
+    let label = ts ? <span className="label">Version vom {moment(ts).format('LLLL')}</span>
+      : <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>
 
-    const diffs = this.computeDiff(revs, this.props.selectedRev ) 
+    const diffs = this.computeDiff(revs, this.props.selectedRev)
 
 
     return (
       <>
-        {/* <Source md={diff} readOnly={true} className="revision-colors">
-          {label}
-        </Source> */}
-        <div className="content source-colors">
+        <div className="content revision-colors">
           <div className="settings">
-            <label>Diff<input type="checkbox" checked={this.state.showDiff} onChange={ev => this.setState((state) => ({...state, showDiff: ev.target.checked}))}/></label>
+            <label><input type="checkbox" checked={this.state.showDiff} onChange={ev => this.setState((state) => ({ ...state, showDiff: ev.target.checked }))} />
+              Diff to previous Version
+            </label>
           </div>
-          {this.state.showDiff && <div> {diffs} {label} </div>  }
+          {this.state.showDiff && <div className="source-font"> {diffs} {label} </div>}
           {!this.state.showDiff && <Source md={this.props.selectedRev?.text || ''} readOnly={true} className="revision-colors"> {label} </Source>}
         </div>
         <Drawer id="revs" className="revisions-colors" open={!ts}>
@@ -97,15 +96,15 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
     )
   }
 }
-export const RevBrowserAdvanced: React.ComponentClass<RevBrowserAdvancedProps>  = connector(RevBrowserAdvanced_)
+export const RevBrowserAdvanced: React.ComponentClass<RevBrowserAdvancedProps> = connector(RevBrowserAdvanced_)
 
 
-interface RevLinkAdvancedProps  {
+interface RevLinkAdvancedProps {
   rev: Revision
   idx: any
-} 
+}
 
-type RevLinkAdvancedProps_ = ConnectedProps<typeof connector> & RevLinkAdvancedProps  
+type RevLinkAdvancedProps_ = ConnectedProps<typeof connector> & RevLinkAdvancedProps
 class RevLinkAdvanced_ extends Component<RevLinkAdvancedProps_> {
 
   render() {
@@ -113,15 +112,15 @@ class RevLinkAdvanced_ extends Component<RevLinkAdvancedProps_> {
     const who = (Meteor.users.findOne(r.editor)?.profile.name || '???') + ' ';
 
     return (
-      <li value={this.props.idx} 
+      <li value={this.props.idx}
         onClick={() => {
           this.props.dispatchSelect(this.props.rev)
           this.props.setRevTab()
         }}
         // TODOO: read from dispatche
         className={this.props.selectedRev == this.props.rev ? 'active' : undefined}
-        >
-          {who}{moment(r.timestamp).fromNow()}
+      >
+        {who}{moment(r.timestamp).fromNow()}
       </li>
     );
   }
@@ -129,17 +128,47 @@ class RevLinkAdvanced_ extends Component<RevLinkAdvancedProps_> {
 
 export const RevLinkAdvanced: React.ComponentClass<RevLinkAdvancedProps> = connector(RevLinkAdvanced_)
 
+export function reduceDiff(changes: Change[]): ReactElement[] {
+  const all: ReactElement[] = []
 
-export function convertDiff(t: Change): React.ReactElement[] {
-      let classNames = 'diff ';
-      if (t.added) {
-        classNames += 'added';
-      } else if (t.removed) {
+
+
+  for (let i = 0; i < changes.length; i++) {
+    const change = changes[i];
+    let before = '', after = change.value
+    let classNames = 'diff ';
+    let plusMinus = <></>;
+    if (change.added) {
+      classNames += 'added';
+      plusMinus = <span>+</span>;
+    } else if (change.removed) {
+      const next = i < changes.length ? changes[i + 1] : undefined
+      if (next && next.added) {
+        before = change.value
+        after = next.value
+        plusMinus = <span>→</span>;
+        classNames += 'changed';
+        i++;
+      } else {
         classNames += 'removed';
+        plusMinus = <span>-</span>;
       }
-      const lines = t.value.split('\n');
+    }
+
+    const beforeS = before.split('\n')
+    const afterS = after.split('\n')
+
+    for( let i=0; i<Math.max(beforeS.length, afterS.length); i++ ) {
+
+      if (i > 0) all.push(<br />); 
+      const beforeE = beforeS[i] || <></>
+      const afterE = afterS[i] || <></>
+       
+      all.push(<div className={classNames}>{beforeE}{plusMinus}{afterE}</div>)
+      
+    }
 
 
-    return lines.map( l => <span className={classNames}>{l}</span> )
-        .reduce((p,v,idx) => {if(idx>0) p.push(<br/>);p.push(v); return p} , [])
+  }
+  return all;
 }

@@ -92,28 +92,60 @@ aside.drawer#revs {
 
 #bubble {
     border-radius: 0.8em;
-    padding: 0 0.8em;
-    margin-right: 0.8em;
+    padding-right: 0.4em;
+    margin-right: 0.4em;
     white-space: nowrap;
-    background-color: var(--gray);
+}
+
+.source-font {
+  font-family: 'Plex Mono', monospace;
 }
 
 .diff {
-  color : var(--text-invert);
-  filter: brightness(0.8);
+  display: inline;
 
   &.added {
     #bubble();
-    background-color: var(--text);
-    color           : var(--text-invert);
+    background-color: var(--text-inverted);
+    color           : var(--text);
     filter          : unset;
+    span {
+      border-top-left-radius: inherit;
+      border-bottom-left-radius: inherit;
+      background-color: var(--text);
+      color: var(--text-inverted);
+      padding: 0 0.2rem;
+      margin-right: 0.2rem;
+    }
+  }
+
+  &.changed {
+
+    #bubble();
+    background-color: var(--text-inverted);
+    color           : var(--text);
+    filter          : unset;
+    span {
+      background-color: var(--text);
+      color: var(--text-inverted);
+      padding: 0 0.2rem;
+      margin-right: 0.2rem;
+    }
   }
 
   &.removed {
     #bubble();
-    background-color: var(--accent);
-    color           : var(--text-inverted);
+    background-color: var(--text-inverted);
+    color           : var(--accent);
     filter         : unset;
+    span {
+      padding: 0 0.2rem;
+      margin-right: 0.2rem;
+      border-top-left-radius: inherit;
+      border-bottom-left-radius: inherit;
+      background-color: var(--accent);
+      color: var(--text-inverted);
+    }
 
   }
 }

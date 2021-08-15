@@ -4,8 +4,8 @@ import { Revision } from '../../api/collections';
 
 import * as moment from 'moment';
 import "moment/locale/de";
-import { Change, Diff, diffChars } from 'diff';
-import { convertDiff, RevLinkAdvanced } from './RevBrowserAdvanced';
+import { Change, diffChars } from 'diff';
+import { reduceDiff, RevLinkAdvanced } from './RevBrowserAdvanced';
 import { blame, IBlameLine } from 'blame-ts';
 import { FunctionComponent } from 'react';
 import { RefObject } from 'react';
@@ -170,7 +170,7 @@ const CharDiff: FunctionComponent<DiffProps> = props => {
   const diffs = useMemo(() => id ? cb(id) : [], ['info'])
 
   let numBr = 0;
-  const flatDiffLines: React.ReactElement[] = diffs.flatMap((t: Change) => convertDiff(t));
+  const flatDiffLines: React.ReactElement[] = reduceDiff(diffs);
   for (const [idx, diff] of flatDiffLines.entries()) {
     if (numBr >= info.lineindiff + lines.length + 2) {
       break
