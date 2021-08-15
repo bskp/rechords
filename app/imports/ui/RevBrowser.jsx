@@ -1,4 +1,4 @@
-import Songs, {Revisions} from '../api/collections.js';
+import Songs, { Revisions } from '../api/collections.js';
 import React, { Component } from 'react';
 import Source from './Source.jsx';
 import PropTypes from 'prop-types';
@@ -21,13 +21,63 @@ export default class RevBrowser extends React.Component {
     });
   }
 
+  componentDidMount() {
+    document.addEventListener("keyup", this.keyHandler, {});
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keyup", this.keyHandler);
+  }
+
+  keyHandler = (e) => {
+    if (this.props.hidden) return;
+
+
+    // Do not steal focus if on <input>
+    if (e.target?.tagName == 'INPUT') return;
+
+    const rev = this.state?.revision
+    const revs = this.props.song.getRevisions();
+
+    const n = revs.length
+
+    if (n > 0) {
+      if (e.key == 'j' || e.key == 'ArrowRight') {
+        e.preventDefault();
+        if (rev) {
+          const idx = revs.findIndex(r => rev?._id == r._id)
+          if (idx != -1 && idx < n - 1) {
+            this.setRev(revs[idx + 1])
+            return
+          }
+        } else {
+          this.setRev(revs[0])
+        }
+      }
+
+      if (e.key == 'k' || e.key == 'ArrowLeft') {
+        e.preventDefault();
+        if (rev) {
+          const idx = revs.findIndex(r => rev?._id == r._id)
+          if (idx != -1 && idx > 0) {
+            this.setRev(revs[idx - 1])
+            return
+          }
+        } else {
+          this.setRev(revs[n - 1])
+        }
+      }
+    }
+
+  }
+
   render() {
     let revs = this.props.song.getRevisions();
     let n = revs.length;
 
     let ts = this.state.revision?.timestamp;
-    let label = ts ? <span className="label">Version vom {moment(ts).format('LLLL')}</span> 
-                   : <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>
+    let label = ts ? <span className="label">Version vom {moment(ts).format('LLLL')}</span>
+      : <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>
 
     return (
       <>
@@ -41,6 +91,10 @@ export default class RevBrowser extends React.Component {
               <RevLink rev={rev} idx={n - idx} key={rev._id} callback={this.setRev} active={rev._id == this.state.revision?._id} />
             )}
           </ol>
+          <p>Schneller:<br />
+            <span class="keyboard">J</span>&nbsp;|&nbsp;<span class="keyboard">→</span><br />
+            <span class="keyboard">K</span>&nbsp;|&nbsp;<span class="keyboard">←</span>
+          </p>
         </Drawer>
       </>
     )
@@ -61,11 +115,11 @@ class RevLink extends Component {
     const who = (Meteor.users.findOne(r.editor)?.profile.name || '???') + ' ';
 
     return (
-      <li value={this.props.idx} 
-        onClick={() => {this.props.callback(r)}}
+      <li value={this.props.idx}
+        onClick={() => { this.props.callback(r) }}
         className={this.props.active ? 'active' : undefined}
-        >
-          {who}{moment(r.timestamp).fromNow()}
+      >
+        {who}{moment(r.timestamp).fromNow()}
       </li>
     );
   }
