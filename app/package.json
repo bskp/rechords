@@ -52,6 +52,7 @@
     "@types/node": "^9.6.61",
     "@types/react": "~17",
     "@types/requirejs": "^2.1.32",
+    "@types/react-redux": "^7.1.18",
     "babel-plugin-inline-react-svg": "^1.1.2",
     "grunt": "^1.4.1",
     "@types/diff": "^4.0.2",

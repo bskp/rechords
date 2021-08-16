@@ -35,6 +35,55 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
     super(props)
   }
 
+  componentDidMount() {
+    document.addEventListener("keyup", this.keyHandler, {});
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keyup", this.keyHandler);
+  }
+
+  keyHandler = (e) => {
+
+    // Do not steal focus if on <input>
+    if (e.target?.tagName == 'INPUT') return;
+
+    const state = this.state
+    const rev = this.props.selectedRev
+    const revs = this.props.song.getRevisions();
+
+    const n = revs.length
+
+    if (n > 0) {
+      if (e.key == 'j' || e.key == 'ArrowRight') {
+        e.preventDefault();
+        if (rev) {
+          const idx = revs.findIndex(r => rev?._id == r._id)
+          if (idx != -1 && idx < n - 1) {
+            this.setRev(revs[idx + 1])
+            return
+          }
+        } else {
+          this.setRev(revs[0])
+        }
+      }
+
+      if (e.key == 'k' || e.key == 'ArrowLeft') {
+        e.preventDefault();
+        if (rev) {
+          const idx = revs.findIndex(r => rev?._id == r._id)
+          if (idx != -1 && idx > 0) {
+            this.setRev(revs[idx - 1])
+            return
+          }
+        } else {
+          this.setRev(revs[n - 1])
+        }
+      }
+    }
+  }
+
+
   setRev = (rev: Revision) => {
     this.props.dispatchSelect(rev)
   }
@@ -80,7 +129,7 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
               Diff to previous Version
             </label>
           </div>
-          {this.state.showDiff && <div className="source-font"> {diffs} {label} </div>}
+          {this.state.showDiff && [label, <div className="source-font"> {diffs} </div>] }
           {!this.state.showDiff && <Source md={this.props.selectedRev?.text || ''} readOnly={true} className="revision-colors"> {label} </Source>}
         </div>
         <Drawer id="revs" className="revisions-colors" open={!ts}>
@@ -96,7 +145,7 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
     )
   }
 }
-export const RevBrowserAdvanced: React.ComponentClass<RevBrowserAdvancedProps> = connector(RevBrowserAdvanced_)
+export const RevBrowserAdvanced = connector(RevBrowserAdvanced_)
 
 
 interface RevLinkAdvancedProps {
@@ -131,8 +180,6 @@ export const RevLinkAdvanced: React.ComponentClass<RevLinkAdvancedProps> = conne
 export function reduceDiff(changes: Change[]): ReactElement[] {
   const all: ReactElement[] = []
 
-
-
   for (let i = 0; i < changes.length; i++) {
     const change = changes[i];
     let before = '', after = change.value
@@ -165,10 +212,7 @@ export function reduceDiff(changes: Change[]): ReactElement[] {
       const afterE = afterS[i] || <></>
        
       all.push(<div className={classNames}>{beforeE}{plusMinus}{afterE}</div>)
-      
     }
-
-
   }
   return all;
 }

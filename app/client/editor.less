@@ -180,14 +180,31 @@ aside.drawer#revs {
 
 
 
+        filter: grayscale(0.5);
     &:nth-child(even) {
       background-color: var(--accent);
       border-color: var(--accent);
+      &:hover {
+        filter: drop-shadow(0.1rem 0.1rem var(--accent ) );
+      }
+      &.active {
+        .annotation {
+          filter: drop-shadow(0.1rem 0.1rem var(--accent ) );
+        }
+      }
     }
 
     &:nth-child(odd) {
       background-color: var(--bg-rev);
       border-color: var(--bg-rev);
+      &:hover {
+        filter: drop-shadow(0.1rem 0.1rem var(--bg-rev) );
+      }
+      &.active {
+        .annotation {
+          filter: drop-shadow(0.1rem 0.1rem var(--bg-rev) );
+        }
+      }
     }
 
     .annotation {
@@ -196,9 +213,6 @@ aside.drawer#revs {
       width: 100%;
     }
 
-    &.active {
-      font-weight: bold;
-    }
 
     .hover-container {
       background-color: inherit;
