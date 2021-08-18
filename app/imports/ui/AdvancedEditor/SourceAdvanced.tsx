@@ -197,33 +197,41 @@ type DiffProps = { info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: 
 
 const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProps) => {
     const { info, lines } = props
-    const [pinned, setPinned] = React.useState<boolean>(false)
     const [hover, setHover] = useState(false)
 
-    const selectRev = rev => {
-          props.dispatchSelect(info.origin)
-          props.setRevTab()
+    if(info) {
+      const rev = info.origin
+
+      const who = (Meteor.users.findOne(rev.editor)?.profile.name || rev.ip)
+
+      const when = moment(info.origin.timestamp).format('LLL')
+
+      const selectRev = () => {
+        props.dispatchSelect(rev)
+        props.setRevTab()
+      }
     }
 
-    const visible = pinned || hover
+    const visible = hover
 
     // Enter and leave of Parent element of tooltip
     // -> the tooltip stays open
     return <div 
+      onClick={selectRev}
       onMouseEnter={ev=>{setHover(true)}} 
       onMouseLeave={()=>setHover(false)} 
-      className={'annotation-group' + (pinned ? ' active' : '')}>
+      className={'annotation-group' }>
       <div className="hover-container" >
         { visible &&
           <div className={'hover'}>
-            <div>{info && <RevLinkAdvanced rev={info.origin} ></RevLinkAdvanced>}</div>
+            <div>{info && <div>{info.origin._id} | {who} | {when}</div> }</div>
             <CharDiff {...props} />
           </div>
         }
       </div>
       <div className='annotation' 
 
-      key={info?.origin._id} onClick={e => setPinned(p => !p)}>
+      key={info?.origin._id}>
         {lines?.map((el, idx) => <div key={idx} className={el.className}>{el.display}</div>)}
       </div>
     </div>
