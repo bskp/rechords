@@ -2,10 +2,9 @@
 @import (reference) "./variables.import.less";
 @import (reference) "./main.less";
 
-
 #editor {
   display: flex;
-  width  : 100%;
+  width: 100%;
 
   textarea {
     white-space: pre;
@@ -20,23 +19,21 @@
   }
 }
 
-
 aside.drawer#revs {
-
   ol {
     list-style-type: lower-greek;
-    padding-left   : 1.8em;
+    padding-left: 1.8em;
 
     li {
       font-size: 0.8em;
-      padding  : 0.3em;
+      padding: 0.3em;
 
       &:hover {
         background-color: white; //fade(@text, 30%);
       }
 
       &.active {
-        background-color: white //fade(@text, 50%);
+        background-color: white //fade(@text, 50%);;
       }
     }
   }
@@ -44,15 +41,15 @@ aside.drawer#revs {
 
 // dot. wohin?
 #dirty {
-  display         : block;
-  position        : absolute;
-  font-size       : 1.6em;
-  width           : 1em;
-  height          : 1em;
-  border-radius   : 1em;
+  display: block;
+  position: absolute;
+  font-size: 1.6em;
+  width: 1em;
+  height: 1em;
+  border-radius: 1em;
   background-color: var(--accent);
-  left            : 4rem;
-  top             : 2.5rem;
+  left: 4rem;
+  top: 2.5rem;
 
   .phone( {
       display: none;
@@ -62,7 +59,6 @@ aside.drawer#revs {
 }
 
 .bubble {
-
   li {
     display: inline-block;
     font-size: 0.75em;
@@ -91,14 +87,16 @@ aside.drawer#revs {
 }
 
 #bubble {
-    border-radius: 0.8em;
-    padding-right: 0.4em;
-    margin-right: 0.4em;
-    white-space: nowrap;
+  border-radius: 0.6em;
+  padding-right: 0.2rem;
+  padding-left: 0.2rem;
+  margin-right: 0.1rem;
+  margin-left: 0.1rem;
+  white-space: nowrap;
 }
 
 .source-font {
-  font-family: 'Plex Mono', monospace;
+  font-family: "Plex Mono", monospace;
 }
 
 .diff {
@@ -107,54 +105,37 @@ aside.drawer#revs {
   &.added {
     #bubble();
     background-color: var(--text-inverted);
-    color           : var(--text);
-    filter          : unset;
-    span {
-      border-top-left-radius: inherit;
-      border-bottom-left-radius: inherit;
-      background-color: var(--text);
-      color: var(--text-inverted);
-      padding: 0 0.2rem;
-      margin-right: 0.2rem;
-    }
-  }
-
-  &.changed {
-
-    #bubble();
-    background-color: var(--text-inverted);
-    color           : var(--text);
-    filter          : unset;
-    span {
-      background-color: var(--text);
-      color: var(--text-inverted);
-      padding: 0 0.2rem;
-      margin-right: 0.2rem;
-    }
+    color: var(--text);
+    filter: unset;
   }
 
   &.removed {
     #bubble();
+    text-decoration-line: line-through;
+    text-decoration-color: var(--text);
+    text-decoration-thickness: 0.1rem;
     background-color: var(--text-inverted);
-    color           : var(--accent);
-    filter         : unset;
-    span {
-      padding: 0 0.2rem;
-      margin-right: 0.2rem;
-      border-top-left-radius: inherit;
-      border-bottom-left-radius: inherit;
-      background-color: var(--accent);
-      color: var(--text-inverted);
+    color: var(--accent);
+    filter: unset;
+    position: relative;
+    z-index: 2;
+    + .diff.added {
+      position: relative;
+      margin-left: -.6rem;
+      padding-left: .6rem;
+      z-index: 1;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
     }
-
   }
 }
+
 .settings {
   display: flex;
   flex-flow: row nowrap;
   label {
     font-size: 0.8rem;
-    font-family: 'Plesk Mono', monospace;
+    font-family: "Plesk Mono", monospace;
     font-weight: bold;
     text-transform: capitalize;
   }
@@ -170,7 +151,6 @@ aside.drawer#revs {
   margin-right: 0.2rem;
 
   .annotation-group {
-
     cursor: pointer;
 
     text-align: right;
@@ -178,18 +158,18 @@ aside.drawer#revs {
     display: flex;
     flex-flow: row nowrap;
 
+    @glowDist: 0.4rem;
 
-
-        filter: grayscale(0.5);
+    filter: grayscale(0.5);
     &:nth-child(even) {
       background-color: var(--accent);
       border-color: var(--accent);
       &:hover {
-        filter: drop-shadow(0.1rem 0.1rem var(--accent ) );
+        filter: drop-shadow(0.4rem 0.4rem var(--accent));
       }
       &.active {
         .annotation {
-          filter: drop-shadow(0.1rem 0.1rem var(--accent ) );
+          filter: drop-shadow(0.4rem 0.4rem var(--accent));
         }
       }
     }
@@ -198,11 +178,11 @@ aside.drawer#revs {
       background-color: var(--bg-rev);
       border-color: var(--bg-rev);
       &:hover {
-        filter: drop-shadow(0.1rem 0.1rem var(--bg-rev) );
+        filter: drop-shadow(@glowDist @glowDist var(--bg-rev));
       }
       &.active {
         .annotation {
-          filter: drop-shadow(0.1rem 0.1rem var(--bg-rev) );
+          filter: drop-shadow(@glowDist @glowDist var(--bg-rev));
         }
       }
     }
@@ -213,7 +193,6 @@ aside.drawer#revs {
       width: 100%;
     }
 
-
     .hover-container {
       background-color: inherit;
       border-color: inherit;
@@ -223,15 +202,16 @@ aside.drawer#revs {
 
       .hover {
         text-align: left;
-        border: 1rem solid ;
-        position           : absolute;
-        left               : rem;
-        overflow-y         : scroll;
-        padding            : 10px;
-        margin-top         : -10px;
+        border: 1rem solid;
+        position: absolute;
+        left: rem;
+        overflow-y: scroll;
+        padding: 10px;
+        margin-top: -10px;
         background-color: inherit;
         border-color: inherit;
-        backdrop-filter    : blur(5px);
+        opacity: 0.8;
+        backdrop-filter: blur(5px);
       }
     }
 
@@ -242,8 +222,8 @@ aside.drawer#revs {
 }
 
 .source-adv {
-  display    : flex;
-  flex-flow  : row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
   // >* {
   //   height: 100%;
   // }

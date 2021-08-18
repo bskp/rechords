@@ -127,7 +127,7 @@ function getDiff(last_id: string, revs: Revision[]) {
   }
 }
 
-function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: string) => Change[]): React.ReactElement[] {
+function grouping(elements: Diffline<sevision>[], attribute: string, cb: (id: string) => Change[]): React.ReactElement[] {
 
   type BlameGroup = {
     lines: Diffline<Revision>[];

@@ -129,7 +129,7 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
               Diff to previous Version
             </label>
           </div>
-          {this.state.showDiff && [label, <div className="source-font"> {diffs} </div>] }
+          {this.state.showDiff && [label, <div className="source-font"> {diffs} </div>]}
           {!this.state.showDiff && <Source md={this.props.selectedRev?.text || ''} readOnly={true} className="revision-colors"> {label} </Source>}
         </div>
         <Drawer id="revs" className="revisions-colors" open={!ts}>
@@ -182,36 +182,23 @@ export function reduceDiff(changes: Change[]): ReactElement[] {
 
   for (let i = 0; i < changes.length; i++) {
     const change = changes[i];
-    let before = '', after = change.value
     let classNames = 'diff ';
-    let plusMinus = <></>;
+    let value = change.value;
     if (change.added) {
       classNames += 'added';
-      plusMinus = <span>+</span>;
+      value = value.replaceAll('\n', '⏎\n').replaceAll(' ', '␣')
     } else if (change.removed) {
-      const next = i < changes.length ? changes[i + 1] : undefined
-      if (next && next.added) {
-        before = change.value
-        after = next.value
-        plusMinus = <span>→</span>;
-        classNames += 'changed';
-        i++;
-      } else {
-        classNames += 'removed';
-        plusMinus = <span>-</span>;
-      }
+      classNames += 'removed';
     }
 
-    const beforeS = before.split('\n')
-    const afterS = after.split('\n')
+    const changeS = value.split('\n')
 
-    for( let i=0; i<Math.max(beforeS.length, afterS.length); i++ ) {
+    for (let i = 0; i < changeS.length; i++) {
 
-      if (i > 0) all.push(<br />); 
-      const beforeE = beforeS[i] || <></>
-      const afterE = afterS[i] || <></>
-       
-      all.push(<div className={classNames}>{beforeE}{plusMinus}{afterE}</div>)
+      if (i > 0) all.push(<br />);
+      const changeE = changeS[i] || <></>
+
+      all.push(<span className={classNames}>{changeE}</span>)
     }
   }
   return all;
