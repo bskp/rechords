@@ -184,11 +184,15 @@ export function reduceDiff(changes: Change[]): ReactElement[] {
     const change = changes[i];
     let classNames = 'diff ';
     let value = change.value;
+    function enhanceWhiteSpace() {
+      value = value.replaceAll(/^[^\S\n]+|[^\S\n]+$/gm, '␣')
+    }
     if (change.added) {
       classNames += 'added';
-      value = value.replaceAll('\n', '⏎\n').replaceAll(' ', '␣')
+      enhanceWhiteSpace()
     } else if (change.removed) {
       classNames += 'removed';
+      enhanceWhiteSpace()
     }
 
     const changeS = value.split('\n')
@@ -196,9 +200,10 @@ export function reduceDiff(changes: Change[]): ReactElement[] {
     for (let i = 0; i < changeS.length; i++) {
 
       if (i > 0) all.push(<br />);
-      const changeE = changeS[i] || <></>
-
-      all.push(<span className={classNames}>{changeE}</span>)
+      const changeE = changeS[i] 
+      if( changeE.length > 0) {
+        all.push(<span className={classNames}>{changeE}</span>)
+      }
     }
   }
   return all;
