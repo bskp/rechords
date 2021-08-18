@@ -5,12 +5,13 @@ import { Revision } from '../../api/collections';
 import * as moment from 'moment';
 import "moment/locale/de";
 import { Change, diffChars } from 'diff';
-import { reduceDiff, RevLinkAdvanced } from './RevBrowserAdvanced';
+import { connector, reduceDiff, RevLinkAdvanced } from './RevBrowserAdvanced';
 import { blame, IBlameLine } from 'blame-ts';
 import { FunctionComponent } from 'react';
 import { RefObject } from 'react';
 import { useState } from 'react';
 import { useMemo } from 'react';
+import { ConnectedProps, useDispatch } from 'react-redux';
 
 interface SourceAdvancedProps {
   md: string;
@@ -49,13 +50,16 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
 
     const settingStates = {
       name: useState(false),
-      date: useState(false)
+      date: useState(false),
+      fullRev: useState(false)
     }
 
     const lineDetail = (l: IBlameLine<Revision>) => {
       let ret = ""
       const ipOrEd = Meteor.users.findOne(l.origin.editor )?.profile.name || l.origin.ip
-      ret += settingStates.name[0] ? ipOrEd : ipOrEd.substr(0,2)
+      const revInfo = l.origin._id
+      ret += settingStates.fullRev[0] ? revInfo : revInfo.substr(0, 3)
+      ret += settingStates.name[0] ? ipOrEd : ''
       ret += settingStates.date[0] ? " "+moment(l.origin.timestamp).calendar() : ""
       return ret
     }
@@ -187,12 +191,19 @@ const CharDiff: FunctionComponent<DiffProps> = props => {
   return <>{chardiff}</>;
 }
 
-type DiffProps = { info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: (id: string) => Change[] }
+type DiffProps = { info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: (id: string) => Change[] } & ConnectedProps<typeof connector>
 
-const DiffGroup: React.FunctionComponent<DiffProps> = props => {
+
+
+const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProps) => {
     const { info, lines } = props
     const [pinned, setPinned] = React.useState<boolean>(false)
     const [hover, setHover] = useState(false)
+
+    const selectRev = rev => {
+          props.dispatchSelect(info.origin)
+          props.setRevTab()
+    }
 
     const visible = pinned || hover
 
@@ -216,6 +227,6 @@ const DiffGroup: React.FunctionComponent<DiffProps> = props => {
         {lines?.map((el, idx) => <div key={idx} className={el.className}>{el.display}</div>)}
       </div>
     </div>
-  }
+  })
 
 

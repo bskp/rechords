@@ -20,7 +20,7 @@ interface RevBrowserAdvancedStates {
 
 type RevBrowserAdvancedProps_ = RevBrowserAdvancedProps & ConnectedProps<typeof connector>;
 
-const connector = connect((state: IEditorStates) =>
+export const connector = connect((state: IEditorStates) =>
   ({ selectedRev: state.rev }), {
   dispatchSelect: (rev: Revision) => ({ type: 'revision/set', payload: rev }),
   setRevTab: () => ({ type: 'tab/rev' })
@@ -184,8 +184,8 @@ export function reduceDiff(changes: Change[]): ReactElement[] {
     const change = changes[i];
     let classNames = 'diff ';
     let value = change.value;
-    function enhanceWhiteSpace() {
-      value = value.replaceAll(/^[^\S\n]+|[^\S\n]+$/gm, '␣')
+    const enhanceWhiteSpace = () => {
+      value = value.replaceAll(/^[^\S\n]+|[^\S\n]+$/gm, '·')
     }
     if (change.added) {
       classNames += 'added';
