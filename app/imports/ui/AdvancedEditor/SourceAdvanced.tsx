@@ -24,7 +24,7 @@ interface SourceAdvancedProps {
 
 export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
   const textAreaRef: RefObject<HTMLTextAreaElement> = React.createRef()
-  
+
 
   const callUpdateHandler = () => {
     if ('updateHandler' in props) {
@@ -32,83 +32,83 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
     }
   }
 
-    // Height estimation
-    let rowsMatch = props.md.match(/\n/g)
+  // Height estimation
+  let rowsMatch = props.md.match(/\n/g)
 
-    let rows: number;
-    if (rowsMatch != null) {
-      rows = rowsMatch.length * 1.4 + 10;
-    }
+  let rows: number;
+  if (rowsMatch != null) {
+    rows = rowsMatch.length * 1.4 + 10;
+  }
 
-    rows = Math.max(50, rows);
+  rows = Math.max(50, rows);
 
-    let style = {
-      minHeight: rows + 'em',
-    }
+  let style = {
+    minHeight: rows + 'em',
+  }
 
-    const content = textAreaRef.current?.value || props.md
+  const content = textAreaRef.current?.value || props.md
 
-    const settingStates = {
-      name: useState(false),
-      date: useState(false),
-      fullRev: useState(false)
-    }
+  const settingStates = {
+    name: useState(false),
+    date: useState(false),
+    fullRev: useState(false)
+  }
 
-    const lineDetail = (l: IBlameLine<Revision>) => {
-      let ret = ""
-      const ipOrEd = Meteor.users.findOne(l.origin.editor )?.profile.name || l.origin.ip
-      const revInfo = l.origin._id
-      ret += settingStates.fullRev[0] ? revInfo : revInfo.substr(0, 3)
-      ret += settingStates.name[0] ? ipOrEd : ''
-      ret += settingStates.date[0] ? " "+moment(l.origin.timestamp).calendar() : ""
-      return ret
-    }
+  const lineDetail = (l: IBlameLine<Revision>) => {
+    let ret = ""
+    const ipOrEd = Meteor.users.findOne(l.origin.editor)?.profile.name || l.origin.ip
+    const revInfo = l.origin._id
+    ret += settingStates.fullRev[0] ? revInfo : revInfo.substr(0, 3)
+    ret += settingStates.name[0] ? ipOrEd : ''
+    ret += settingStates.date[0] ? " " + moment(l.origin.timestamp).calendar() : ""
+    return ret
+  }
 
-    const contentLines = content?.split('\n');
+  const contentLines = content?.split('\n');
 
-    let blamelines: Diffline<Revision>[] = []
-    const revs = props.revs.slice()
-    const pb = getBlameLines(revs);
-    if (contentLines && pb) {
-      blamelines = pb.map((l, idx) => {
-        if (contentLines[idx] == l.value) {
-          return {
-            className: "annoline", dataRevid: l.origin._id, info: l,
-            display: lineDetail(l)
-          }
-        } else {
-          return { dataRevid: "*", display: "*" }
+  let blamelines: Diffline<Revision>[] = []
+  const revs = props.revs.slice()
+  const pb = getBlameLines(revs);
+  if (contentLines && pb) {
+    blamelines = pb.map((l, idx) => {
+      if (contentLines[idx] == l.value) {
+        return {
+          className: "annoline", dataRevid: l.origin._id, info: l,
+          display: lineDetail(l)
         }
-      });
-    }
+      } else {
+        return { dataRevid: "*", display: "*" }
+      }
+    });
+  }
 
-    const blamelines_grouped = grouping(blamelines, 'dataRevid', id => getDiff(id, props.revs))
+  const blamelines_grouped = grouping(blamelines, 'dataRevid', id => getDiff(id, props.revs))
 
-    const [isDiff, setDiff] = useState(false)
+  const [isDiff, setDiff] = useState(false)
 
-    const settings = 
-      <div className="settings">
-        <div>
+  const settings =
+    <div className="settings">
+      <div>
         <label>
-          <input type="checkbox"  checked={isDiff} onChange={ ev => setDiff(ev.target.checked)} />
-Blame
-          </label>
-          </div>
-        {isDiff && Object.entries(settingStates).map(
-          ([k,v])=> <div><label>
-          <input type="checkbox" name={k} checked={v[0]} onChange={ ev => v[1](ev.target.checked)} />
-{k}
-          </label>
-          </div>
-        )}
+          <input type="checkbox" checked={isDiff} onChange={ev => setDiff(ev.target.checked)} />
+          Blame
+        </label>
       </div>
+      {isDiff && Object.entries(settingStates).map(
+        ([k, v]) => <div><label>
+          <input type="checkbox" name={k} checked={v[0]} onChange={ev => v[1](ev.target.checked)} />
+          {k}
+        </label>
+        </div>
+      )}
+    </div>
 
-    return (
-      <div className={"content "+ props.className}>
+  return (
+    <div className={"content " + props.className}>
       {settings}
       <div className="source-adv">
         {props.children}
-        { isDiff && <div style={style} className="blameColumn">{blamelines_grouped}</div> }
+        {isDiff && <div style={style} className="blameColumn">{blamelines_grouped}</div>}
         <textarea
           ref={textAreaRef}
           onChange={callUpdateHandler}
@@ -117,10 +117,10 @@ Blame
           readOnly={props.readOnly}
         />
       </div>
-      </div>
-    )
-  }
-  
+    </div>
+  )
+}
+
 
 function getDiff(last_id: string, revs: Revision[]) {
   if (revs && revs.length) {
@@ -131,7 +131,7 @@ function getDiff(last_id: string, revs: Revision[]) {
   }
 }
 
-function grouping(elements: Diffline<sevision>[], attribute: string, cb: (id: string) => Change[]): React.ReactElement[] {
+function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: string) => Change[]): React.ReactElement[] {
 
   type BlameGroup = {
     lines: Diffline<Revision>[];
@@ -196,45 +196,51 @@ type DiffProps = { info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: 
 
 
 const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProps) => {
-    const { info, lines } = props
-    const [hover, setHover] = useState(false)
+  const { info, lines } = props
+  const [hover, setHover] = useState(false)
 
-    if(info) {
-      const rev = info.origin
+  if (info) {
+    const rev = info.origin
 
-      const who = (Meteor.users.findOne(rev.editor)?.profile.name || rev.ip)
+    const who = (Meteor.users.findOne(rev.editor)?.profile.name || rev.ip)
 
-      const when = moment(info.origin.timestamp).format('LLL')
+    const when = moment(info.origin.timestamp).format('LLL')
 
-      const selectRev = () => {
-        props.dispatchSelect(rev)
-        props.setRevTab()
-      }
+    const selectRev = () => {
+      props.dispatchSelect(rev)
+      props.setRevTab()
     }
 
     const visible = hover
 
     // Enter and leave of Parent element of tooltip
     // -> the tooltip stays open
-    return <div 
+    return <div
       onClick={selectRev}
-      onMouseEnter={ev=>{setHover(true)}} 
-      onMouseLeave={()=>setHover(false)} 
-      className={'annotation-group' }>
+      onMouseEnter={ev => { setHover(true) }}
+      onMouseLeave={() => setHover(false)}
+      className={'annotation-group'}>
       <div className="hover-container" >
-        { visible &&
+        {visible &&
           <div className={'hover'}>
-            <div>{info && <div>{info.origin._id} | {who} | {when}</div> }</div>
+            <div className="info">{info.origin._id} | {who} | {when}</div>
             <CharDiff {...props} />
           </div>
         }
       </div>
-      <div className='annotation' 
+      <div className='annotation'
 
-      key={info?.origin._id}>
+        key={info?.origin._id}>
         {lines?.map((el, idx) => <div key={idx} className={el.className}>{el.display}</div>)}
       </div>
     </div>
-  })
+  }
+  else {
+    return <div className="annotation-group">
+      <div className='annotation'>
+        *
+      </div>
 
-
+    </div>
+  }
+})
