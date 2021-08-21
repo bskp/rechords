@@ -16,20 +16,25 @@ interface RevBrowserAdvancedProps {
 }
 interface RevBrowserAdvancedStates {
   diffs: React.ReactElement[]
+  showDiff: boolean
+  showWhitespace: boolean
 }
 
 type RevBrowserAdvancedProps_ = RevBrowserAdvancedProps & ConnectedProps<typeof connector>;
 
+// todo: remove redux... 
 export const connector = connect((state: IEditorStates) =>
-  ({ selectedRev: state.rev }), {
+  ({ selectedRev: state.rev, hoverRev: state.revHover }), {
   dispatchSelect: (rev: Revision) => ({ type: 'revision/set', payload: rev }),
+  dispatchHover: (rev: Revision) => ({ type: 'revisionHover/set', payload: rev }),
   setRevTab: () => ({ type: 'tab/rev' })
 })
 class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevBrowserAdvancedStates> {
 
   readonly state = {
     diffs: [],
-    showDiff: false
+    showDiff: false,
+    showWhitespace: false
   }
   constructor(props: RevBrowserAdvancedProps_) {
     super(props)
@@ -106,20 +111,25 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
 
     const diff = diffChars(to_diff, current)
 
-    const spans: ReactElement[] = reduceDiff(diff)
+    const spans: ReactElement[] = reduceDiff(diff, {showWhitespace:this.state.showWhitespace})
     return spans
   }
 
   render() {
-    let revs = this.props.song.getRevisions();
-    let n = revs.length;
+    const revs = this.props.song.getRevisions();
+    const n = revs.length;
 
-    let ts = this.props.selectedRev?.timestamp;
-    let label = ts ? <span className="label">Version vom {moment(ts).format('LLLL')}</span>
-      : <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>
+    const rev = this.props.selectedRev
+    let label
+    if (rev) {
+      const ts = rev.timestamp;
+      const who = (Meteor.users.findOne(rev.editor)?.profile.name || rev.ip) + ' ';
+      label = <span className="label">{who} | {moment(ts).format('LLL')} | {rev._id}</span>
+    } else {
+      label = <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>
+    }
 
     const diffs = this.computeDiff(revs, this.props.selectedRev)
-
 
     return (
       <>
@@ -128,6 +138,9 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
             <label><input type="checkbox" checked={this.state.showDiff} onChange={ev => this.setState((state) => ({ ...state, showDiff: ev.target.checked }))} />
               Diff to previous Version
             </label>
+            {this.state.showDiff && <label><input type="checkbox" checked={this.state.showWhitespace} onChange={ev => this.setState((state) => ({ ...state, showWhitespace: ev.target.checked }))} />
+              Display Whitespace
+            </label>}
           </div>
           {this.state.showDiff && [label, <div className="source-font"> {diffs} </div>]}
           {!this.state.showDiff && <Source md={this.props.selectedRev?.text || ''} readOnly={true} className="revision-colors"> {label} </Source>}
@@ -158,7 +171,7 @@ class RevLinkAdvanced_ extends Component<RevLinkAdvancedProps_> {
 
   render() {
     const r = this.props.rev;
-    const who = (Meteor.users.findOne(r.editor)?.profile.name || '???') + ' ';
+    const who = (Meteor.users.findOne(r.editor)?.profile.name || r.ip) + ' ';
 
     return (
       <li value={this.props.idx}
@@ -177,7 +190,12 @@ class RevLinkAdvanced_ extends Component<RevLinkAdvancedProps_> {
 
 export const RevLinkAdvanced: React.ComponentClass<RevLinkAdvancedProps> = connector(RevLinkAdvanced_)
 
-export function reduceDiff(changes: Change[]): ReactElement[] {
+export interface ConvertDiffOptions {
+  showWhitespace?: boolean;
+}
+
+// TODO: -> own diff tsx
+export function reduceDiff(changes: Change[], options: ConvertDiffOptions): ReactElement[] {
   const all: ReactElement[] = []
 
   for (let i = 0; i < changes.length; i++) {
@@ -185,13 +203,16 @@ export function reduceDiff(changes: Change[]): ReactElement[] {
     let classNames = 'diff ';
     let value = change.value;
     const enhanceWhiteSpace = () => {
-      value = value.replaceAll(/^[^\S\n]+|[^\S\n]+$/gm, '·')
+      value = value.replaceAll(/[^\S\n]/gm, '·')
+      value = value.replaceAll(/\n/g, '¶\n')
     }
     if (change.added) {
       classNames += 'added';
-      enhanceWhiteSpace()
     } else if (change.removed) {
       classNames += 'removed';
+    }
+
+    if (options?.showWhitespace) {
       enhanceWhiteSpace()
     }
 
@@ -200,10 +221,8 @@ export function reduceDiff(changes: Change[]): ReactElement[] {
     for (let i = 0; i < changeS.length; i++) {
 
       if (i > 0) all.push(<br />);
-      const changeE = changeS[i] 
-      if( changeE.length > 0) {
-        all.push(<span className={classNames}>{changeE}</span>)
-      }
+      const changeE = changeS[i]
+      all.push(<span className={classNames}>{changeE}</span>)
     }
   }
   return all;

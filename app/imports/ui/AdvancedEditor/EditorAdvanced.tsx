@@ -6,7 +6,7 @@ import { RevBrowserAdvanced } from './RevBrowserAdvanced';
 import Preview from '../Preview';
 import Drawer from '../Drawer';
 import { Ok, Cancel } from '../Icons.jsx';
-import { getBlameLines, SourceAdvanced } from './SourceAdvanced';
+import { getBlameLines, SourceAdvanced, ISourceOptions } from './SourceAdvanced';
 import { DynamicModuleLoader, IModule } from 'redux-dynamic-modules';
 import { connect, ConnectedProps } from 'react-redux';
 import { PropsWithChildren } from 'react';
@@ -16,16 +16,20 @@ type EditorAdvancedProps = {
 }
 class EditorAdvancedState {
   md: string
+  sourceOptions: ISourceOptions
 }
+
+
 
 
 const connector = connect(
   (state: IEditorStates) => ({ tab: state.tab, dirty: state.dirty }),
   {
     dispatchToggleTabRev: () => ({ type: 'tab/toggle' }),
-    dispatchDirty: (s: boolean) => ({type: (s ? 'dirty/set' : 'dirty/reset')})
+    dispatchDirty: (s: boolean) => ({ type: (s ? 'dirty/set' : 'dirty/reset') })
   }
 )
+
 
 
 
@@ -34,6 +38,7 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
 
   readonly state: EditorAdvancedState = {
     md: this.props.song.text,
+    sourceOptions: {blame: false, fullRev: false, name: false, date: false, showWhitespace: false, }
   };
   constructor(props) {
     super(props);
@@ -73,7 +78,6 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
     this.props.dispatchDirty(md_ != this.mdServer)
   }
 
-
   render() {
 
     let revs = this.props.song.getRevisions();
@@ -83,7 +87,14 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
       message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
     />
 
-    const source = <SourceAdvanced md={this.state.md} revs={revs} updateHandler={this.update} className="source-colors" />
+    const source = <SourceAdvanced md={this.state.md}
+      revs={revs}
+      updateHandler={this.update}
+      sourceOptions={this.state.sourceOptions}
+      setSourceOptions={l => this.setState( prev => ({...prev, sourceOptions: l(prev.sourceOptions) }))}
+      className="source-colors"
+    />
+
     if (!this.props.tab) {
 
       let versions = revs && revs.length ? (
@@ -146,21 +157,22 @@ interface BlameProps {
 
 
 const Blame: React.FunctionComponent<PropsWithChildren<BlameProps>> = (props) => {
-    const versions = props.versions
+  const versions = props.versions
 
-    const line_list = getBlameLines(versions)
+  const line_list = getBlameLines(versions)
 
-    const rows = line_list.map(r => <tr><td>{r.origin}</td><td>{r.value}</td></tr>)
+  const rows = line_list.map(r => <tr><td>{r.origin}</td><td>{r.value}</td></tr>)
 
-    return <div className={"content " + props.className}>
-      {props.children}
-      <table>{rows}</table>
-    </div>
-  
+  return <div className={"content " + props.className}>
+    {props.children}
+    <table>{rows}</table>
+  </div>
+
 }
 
 export interface IEditorStates {
   rev: Revision,
+  revHover: Revision,
   dirty: boolean,
   tab: boolean
 }
@@ -170,6 +182,7 @@ export function getEditorModule(): IModule<IEditorStates> {
     id: "adEditor",
     reducerMap: {
       rev: revisionReducer,
+      revHover: revisionHover,
       dirty: dirtyReducer,
       tab: tabReducer
     },
@@ -179,13 +192,27 @@ export function getEditorModule(): IModule<IEditorStates> {
   };
 }
 
-export const revisionReducer = (state: Revision, action: { type: 'revision/set'| 'revision/reset'; payload: any; }) => {
+export const revisionReducer = (state: Revision, action: { type: 'revision/set' | 'revision/reset'; payload: Revision; }) => {
   switch (action.type) {
     case 'revision/set': {
       return action.payload;
     }
     case 'revision/reset': {
-      return ''
+      return null
+    }
+
+    default: {
+      return state || null
+    }
+  }
+}
+export const revisionHover = (state: Revision, action: { type: 'revisionHover/set' | 'revisionHover/reset'; payload: Revision; }) => {
+  switch (action.type) {
+    case 'revisionHover/set': {
+      return action.payload;
+    }
+    case 'revisionHover/reset': {
+      return null
     }
 
     default: {
@@ -207,7 +234,7 @@ export const dirtyReducer = (state: boolean, action: { type: 'dirty/set' | 'dirt
     }
   }
 }
-export const tabReducer = (state: boolean, action: { type: 'tab/toggle'|'tab/rev' }) => {
+export const tabReducer = (state: boolean, action: { type: 'tab/toggle' | 'tab/rev' }) => {
   switch (action.type) {
     case 'tab/toggle': {
       return !state

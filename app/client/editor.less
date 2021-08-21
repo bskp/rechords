@@ -138,8 +138,7 @@ aside.drawer#revs {
 
   label {
     font-size     : 0.8rem;
-    font-family   : "Plesk Mono", monospace;
-    font-weight   : bold;
+    font-weight   : 500;
     text-transform: capitalize;
     margin-right  : 0.4rem;
   }
@@ -166,6 +165,9 @@ aside.drawer#revs {
     @glowDist: 0;
     @glowRad : 3rem;
 
+    @grayscaleStrong: 0.8;
+    @grayscaleWeak: 0.3;
+
 
     &:nth-child(even) {
       >* {
@@ -174,7 +176,11 @@ aside.drawer#revs {
       }
 
       .annotation {
-        filter: grayscale(0.8);
+        filter: grayscale(@grayscaleStrong);
+
+        &.hovering {
+          filter: grayscale(@grayscaleWeak)
+        }
 
         &:hover {
           position: relative;
@@ -190,14 +196,21 @@ aside.drawer#revs {
         border-color    : var(--bg-rev);
       }
 
+
+
       &:hover {
         filter: none;
       }
 
-      .annotation {
-        filter: grayscale(0.8);
 
-        &:hover {
+      .annotation {
+        filter: grayscale(@grayscaleStrong);
+
+        &.hovering {
+          filter: grayscale(@grayscaleWeak)
+        }
+
+        &:hover{
           position: relative;
           z-index : 100;
           filter  : drop-shadow(@glowDist @glowDist @glowRad var(--bg-rev));

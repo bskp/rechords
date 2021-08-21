@@ -5,21 +5,31 @@ import { Revision } from '../../api/collections';
 import * as moment from 'moment';
 import "moment/locale/de";
 import { Change, diffChars } from 'diff';
-import { connector, reduceDiff, RevLinkAdvanced } from './RevBrowserAdvanced';
+import { connector, ConvertDiffOptions, reduceDiff, RevLinkAdvanced } from './RevBrowserAdvanced';
 import { blame, IBlameLine } from 'blame-ts';
 import { FunctionComponent } from 'react';
 import { RefObject } from 'react';
 import { useState } from 'react';
 import { useMemo } from 'react';
 import { ConnectedProps, useDispatch } from 'react-redux';
+import { whiteList } from 'xss';
 
 interface SourceAdvancedProps {
   md: string;
   updateHandler: Function;
-  readOnly: boolean;
+  readOnly?: boolean;
   className: string;
   // todo:origin is an objectwith revision tag, user and caption
   revs?: Revision[]
+  sourceOptions: ISourceOptions
+  setSourceOptions: (l: (prevSourceOptions: ISourceOptions) => ISourceOptions) => void
+}
+export interface ISourceOptions extends OnlyBoolean {
+  date: boolean;
+  name: boolean;
+  fullRev: boolean;
+  blame: boolean;
+  showWhitespace: boolean;
 }
 
 export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
@@ -48,19 +58,22 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
 
   const content = textAreaRef.current?.value || props.md
 
-  const settingStates = {
-    name: useState(false),
-    date: useState(false),
-    fullRev: useState(false)
-  }
+  const options = props.sourceOptions;
+  const propSetter = props.setSourceOptions;
+
+  const [isDiff, setDiff] = useExternalState(options, propSetter, 'blame')
+  const keys: (keyof ISourceOptions)[] = ['fullRev', 'name', 'date', 'showWhitespace']
+  const detailStates = Object.fromEntries(keys.map(
+    name => [name, useExternalState(options, propSetter, name)]
+  ))
 
   const lineDetail = (l: IBlameLine<Revision>) => {
     let ret = ""
     const ipOrEd = Meteor.users.findOne(l.origin.editor)?.profile.name || l.origin.ip
     const revInfo = l.origin._id
-    ret += settingStates.fullRev[0] ? revInfo : revInfo.substr(0, 3)
-    ret += settingStates.name[0] ? ipOrEd : ''
-    ret += settingStates.date[0] ? " " + moment(l.origin.timestamp).calendar() : ""
+    ret += detailStates.fullRev[0] ? revInfo : revInfo.substr(0, 3)
+    ret += detailStates.name[0] ? ipOrEd : ''
+    ret += detailStates.date[0] ? " " + moment(l.origin.timestamp).calendar() : ""
     return ret
   }
 
@@ -82,9 +95,7 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
     });
   }
 
-  const blamelines_grouped = grouping(blamelines, 'dataRevid', id => getDiff(id, props.revs))
-
-  const [isDiff, setDiff] = useState(false)
+  const blamelines_grouped = grouping(blamelines, 'dataRevid', id => getDiff(id, props.revs), {showWhitespace: detailStates.showWhitespace[0]})
 
   const settings =
     <div className="settings">
@@ -94,7 +105,7 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
           Blame
         </label>
       </div>
-      {isDiff && Object.entries(settingStates).map(
+      {isDiff && Object.entries(detailStates).map(
         ([k, v]) => <div><label>
           <input type="checkbox" name={k} checked={v[0]} onChange={ev => v[1](ev.target.checked)} />
           {k}
@@ -121,6 +132,13 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
   )
 }
 
+export type OnlyBoolean = {
+  [key: string]: boolean
+}
+
+function useExternalState<T extends OnlyBoolean>(options: T, propSetter: (l: (prevSourceOptions: T) => T) => void, propName: keyof (T)): [boolean, (b: boolean) => void] {
+  return [options[propName], (b: boolean) => propSetter(p => ({ ...p, [propName]: b }))];
+}
 
 function getDiff(last_id: string, revs: Revision[]) {
   if (revs && revs.length) {
@@ -131,7 +149,7 @@ function getDiff(last_id: string, revs: Revision[]) {
   }
 }
 
-function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: string) => Change[]): React.ReactElement[] {
+function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: string) => Change[], options: ConvertDiffOptions): React.ReactElement[] {
 
   type BlameGroup = {
     lines: Diffline<Revision>[];
@@ -153,7 +171,7 @@ function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: st
     currentParent.lines.push(el)
   }
 
-  return returnvalue.map(({ info, lines }, idx) => <DiffGroup info={info} lines={lines} key={idx} cb={cb}></DiffGroup>)
+  return returnvalue.map(({ info, lines }, idx) => <DiffGroup options={options} info={info} lines={lines} key={idx} cb={cb}></DiffGroup>)
 }
 
 export function getBlameLines(versions: Revision[]): IBlameLine<Revision>[] {
@@ -168,13 +186,13 @@ type Diffline<O> = {
 };
 
 const CharDiff: FunctionComponent<DiffProps> = props => {
-  const { info, cb, lines } = props
+  const { info, cb, lines, options } = props
   const chardiff = []
   const id = info?.origin._id
   const diffs = useMemo(() => id ? cb(id) : [], ['info'])
 
   let numBr = 0;
-  const flatDiffLines: React.ReactElement[] = reduceDiff(diffs);
+  const flatDiffLines: React.ReactElement[] = reduceDiff(diffs, options);
   for (const [idx, diff] of flatDiffLines.entries()) {
     if (numBr >= info.lineindiff + lines.length + 2) {
       break
@@ -191,7 +209,7 @@ const CharDiff: FunctionComponent<DiffProps> = props => {
   return <>{chardiff}</>;
 }
 
-type DiffProps = { info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: (id: string) => Change[] } & ConnectedProps<typeof connector>
+type DiffProps = { info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: (id: string) => Change[], options: ConvertDiffOptions } & ConnectedProps<typeof connector>
 
 
 
@@ -211,24 +229,25 @@ const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProp
       props.setRevTab()
     }
 
-    const visible = hover
+
+    const hoverOrSelected = props.hoverRev == info.origin || props.selectedRev == info.origin
 
     // Enter and leave of Parent element of tooltip
     // -> the tooltip stays open
     return <div
       onClick={selectRev}
-      onMouseEnter={ev => { setHover(true) }}
-      onMouseLeave={() => setHover(false)}
+      onMouseEnter={() => { setHover(true); props.dispatchHover(info.origin) }}
+      onMouseLeave={() => { setHover(false); props.dispatchHover(null) }}
       className={'annotation-group'}>
       <div className="hover-container" >
-        {visible &&
+        {hover &&
           <div className={'hover'}>
             <div className="info">{info.origin._id} | {who} | {when}</div>
             <CharDiff {...props} />
           </div>
         }
       </div>
-      <div className='annotation'
+      <div className={'annotation' + (hoverOrSelected ? ' hovering' : '')}
 
         key={info?.origin._id}>
         {lines?.map((el, idx) => <div key={idx} className={el.className}>{el.display}</div>)}
