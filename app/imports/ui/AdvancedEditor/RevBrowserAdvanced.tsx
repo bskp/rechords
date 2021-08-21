@@ -10,6 +10,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { IEditorStates, revisionReducer } from './EditorAdvanced.js';
 import Source from '../Source.jsx'
 import { ReactElement } from 'react';
+import { getBlameLabel } from './BlameUtils';
 
 interface RevBrowserAdvancedProps {
   song: Song;
@@ -120,14 +121,7 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
     const n = revs.length;
 
     const rev = this.props.selectedRev
-    let label
-    if (rev) {
-      const ts = rev.timestamp;
-      const who = (Meteor.users.findOne(rev.editor)?.profile.name || rev.ip) + ' ';
-      label = <span className="label">{who} | {moment(ts).format('LLL')} | {rev._id}</span>
-    } else {
-      label = <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>
-    }
+    let label = getBlameLabel(rev);
 
     const diffs = this.computeDiff(revs, this.props.selectedRev)
 
@@ -145,7 +139,7 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
           {this.state.showDiff && [label, <div className="source-font"> {diffs} </div>]}
           {!this.state.showDiff && <Source md={this.props.selectedRev?.text || ''} readOnly={true} className="revision-colors"> {label} </Source>}
         </div>
-        <Drawer id="revs" className="revisions-colors" open={!ts}>
+        <Drawer id="revs" className="revisions-colors" open={!rev}>
           {this.props.song._id}
           <h1>Versionen</h1>
           <ol>
@@ -193,6 +187,7 @@ export const RevLinkAdvanced: React.ComponentClass<RevLinkAdvancedProps> = conne
 export interface ConvertDiffOptions {
   showWhitespace?: boolean;
 }
+
 
 // TODO: -> own diff tsx
 export function reduceDiff(changes: Change[], options: ConvertDiffOptions): ReactElement[] {

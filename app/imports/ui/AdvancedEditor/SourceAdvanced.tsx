@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { useMemo } from 'react';
 import { ConnectedProps, useDispatch } from 'react-redux';
 import { whiteList } from 'xss';
+import { getBlameLabel } from './BlameUtils';
 
 interface SourceAdvancedProps {
   md: string;
@@ -220,9 +221,7 @@ const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProp
   if (info) {
     const rev = info.origin
 
-    const who = (Meteor.users.findOne(rev.editor)?.profile.name || rev.ip)
-
-    const when = moment(info.origin.timestamp).format('LLL')
+    const label = getBlameLabel(rev, '')
 
     const selectRev = () => {
       props.dispatchSelect(rev)
@@ -242,7 +241,7 @@ const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProp
       <div className="hover-container" >
         {hover &&
           <div className={'hover'}>
-            <div className="info">{info.origin._id} | {who} | {when}</div>
+            <div className="info">{label}</div>
             <CharDiff {...props} />
           </div>
         }

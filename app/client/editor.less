@@ -10,8 +10,11 @@
     white-space: pre;
   }
 
-  .content {
+  >.content {
     padding-left: 2em;
+    .content {
+      padding: unset;
+    }
   }
 
   #chordsheet {
@@ -96,7 +99,7 @@ aside.drawer#revs {
 }
 
 .source-font {
-  font-family: "Plex Mono", monospace;
+  #textareafonts();
 }
 
 .diff {
@@ -166,7 +169,7 @@ aside.drawer#revs {
     @glowRad : 3rem;
 
     @grayscaleStrong: 0.8;
-    @grayscaleWeak: 0.3;
+    @grayscaleWeak  : 0.3;
 
 
     &:nth-child(even) {
@@ -210,7 +213,7 @@ aside.drawer#revs {
           filter: grayscale(@grayscaleWeak)
         }
 
-        &:hover{
+        &:hover {
           position: relative;
           z-index : 100;
           filter  : drop-shadow(@glowDist @glowDist @glowRad var(--bg-rev));
@@ -243,6 +246,7 @@ aside.drawer#revs {
         width           : 36vw;
 
         .info {
+
           font-family   : 'Roboto';
           text-transform: uppercase;
           font-weight   : 600;
