@@ -34,6 +34,7 @@ export interface ISourceOptions extends OnlyBoolean {
   showWhitespace: boolean;
 }
 
+// TODO: Blamelines could be an own component
 export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
   const textAreaRef: RefObject<HTMLTextAreaElement> = React.createRef()
 
@@ -69,35 +70,7 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
     name => [name, useExternalState(options, propSetter, name)]
   ))
 
-  const lineDetail = (l: IBlameLine<Revision>) => {
-    let ret = ""
-    const ipOrEd = Meteor.users.findOne(l.origin.editor)?.profile.name || l.origin.ip
-    const revInfo = l.origin._id
-    ret += detailStates.fullRev[0] ? revInfo : revInfo.substr(0, 3)
-    ret += detailStates.name[0] ? ipOrEd : ''
-    ret += detailStates.date[0] ? " " + moment(l.origin.timestamp).calendar() : ""
-    return ret
-  }
-
-  const contentLines = content?.split('\n');
-
-  let blamelines: Diffline<Revision>[] = []
-  const revs = props.revs.slice()
-  const pb = getBlameLines(revs);
-  if (contentLines && pb) {
-    blamelines = pb.map((l, idx) => {
-      if (contentLines[idx] == l.value) {
-        return {
-          className: "annoline", dataRevid: l.origin._id, info: l,
-          display: lineDetail(l)
-        }
-      } else {
-        return { dataRevid: "*", display: "*" }
-      }
-    });
-  }
-
-  const blamelines_grouped = grouping(blamelines, 'dataRevid', id => getDiff(id, props.revs), {showWhitespace: detailStates.showWhitespace[0]})
+  const blamelines_grouped = isDiff ? groupBlameLines(detailStates, content, props) : null
 
   const settings =
     <div className="settings">
@@ -136,6 +109,39 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
 
 export type OnlyBoolean = {
   [key: string]: boolean
+}
+
+function groupBlameLines(detailStates: { [k: string]: [boolean, (b: boolean) => void]; }, content: string, props: React.PropsWithChildren<SourceAdvancedProps>) {
+  const lineDetail = (l: IBlameLine<Revision>) => {
+    let ret = "";
+    const ipOrEd = Meteor.users.findOne(l.origin.editor)?.profile.name || l.origin.ip;
+    const revInfo = l.origin._id;
+    ret += detailStates.fullRev[0] ? revInfo : revInfo.substr(0, 3);
+    ret += detailStates.name[0] ? ipOrEd : '';
+    ret += detailStates.date[0] ? " " + moment(l.origin.timestamp).calendar() : "";
+    return ret;
+  };
+
+  const contentLines = content?.split('\n');
+
+  let blamelines: Diffline<Revision>[] = [];
+  const revs = props.revs.slice();
+  const pb = getBlameLines(revs);
+  if (contentLines && pb) {
+    blamelines = pb.map((l, idx) => {
+      if (contentLines[idx] == l.value) {
+        return {
+          className: "annoline", dataRevid: l.origin._id, info: l,
+          display: lineDetail(l)
+        };
+      } else {
+        return { dataRevid: "*", display: "*" };
+      }
+    });
+  }
+
+  const blamelines_grouped = grouping(blamelines, 'dataRevid', id => getDiff(id, props.revs), { showWhitespace: detailStates.showWhitespace[0] });
+  return blamelines_grouped;
 }
 
 function useExternalState<T extends OnlyBoolean>(options: T, propSetter: (l: (prevSourceOptions: T) => T) => void, propName: keyof (T)): [boolean, (b: boolean) => void] {

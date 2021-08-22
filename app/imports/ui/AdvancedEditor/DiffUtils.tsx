@@ -28,7 +28,7 @@ export function reduceDiff(changes: Change[], options: ConvertDiffOptions): Reac
 
     for (let i = 0; i < changeS.length; i++) {
 
-      if (i > 0)
+      if (i > 0 && !change.removed)
         all.push(<br />);
       const changeE = changeS[i];
       // Splitting by newlines has the following effect:
