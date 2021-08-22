@@ -6,7 +6,7 @@ import { FunctionComponent, PropsWithChildren } from "react";
 import './blame.less'
 import { blame, IBlameLine } from "blame-ts";
 import { reduceDiff } from "./DiffUtils";
-import { Change } from "diff";
+import { Change, diffChars } from "diff";
 import { connector, ConvertDiffOptions } from "./RevBrowserAdvanced";
 import { ConnectedProps } from "react-redux";
 
@@ -64,7 +64,7 @@ export const CharDiff: FunctionComponent<DiffProps> = props => {
   const { info, cb, lines, options } = props
   const chardiff = []
   const id = info?.origin._id
-  const diffs = React.useMemo(() => id ? cb(id) : [], ['info'])
+  const diffs = id ? cb(id) : []
 
   let numBr = 0;
   const flatDiffLines: React.ReactElement[] = reduceDiff(diffs, options);
@@ -85,3 +85,12 @@ export const CharDiff: FunctionComponent<DiffProps> = props => {
 }
 
 export type DiffProps = { info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: (id: string) => Change[], options: ConvertDiffOptions } & ConnectedProps<typeof connector>
+
+export function getDiff(last_id: string, revs: Revision[]) {
+  if (revs && revs.length) {
+    const idx = revs.findIndex(v => v._id === last_id)
+    const oldText = idx < revs.length - 1 ? revs[idx + 1].text : ''
+    const diff = diffChars(oldText, revs[idx].text)
+    return diff
+  }
+}

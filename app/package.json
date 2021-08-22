@@ -5,7 +5,8 @@
     "start": "meteor run",
     "debug": "meteor run --inspect",
     "preinstall": "grunt --gruntfile ../showdown-rechords/Gruntfile.js prep-release --force",
-    "postinstall-ignore": "rm -f node_modules/showdown-rechords && cp -R ../showdown-rechords node_modules/"
+    "postinstall-ignore": "rm -f node_modules/showdown-rechords && cp -R ../showdown-rechords node_modules/",
+    "lint": "eslint"
   },
   "dependencies": {
     "@babel/runtime": "^7.12.13",
@@ -41,7 +42,6 @@
     "showdown-rechords": "file:../showdown-rechords",
     "slug": "^0.9.4",
     "source-map-support": "^0.5.19",
-    "tslib": "^2.0.3",
     "xmldom": "^0.6.0",
     "xss": "^0.3.8"
   },
@@ -53,9 +53,14 @@
     "@types/react-redux": "^7.1.18",
     "@types/react-router-dom": "^5.1.6",
     "@types/requirejs": "^2.1.32",
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "@typescript-eslint/parser": "^4.29.2",
     "babel-plugin-inline-react-svg": "^1.1.2",
+    "eslint": "^7.32.0",
+    "eslint-plugin-react": "^7.24.0",
     "grunt": "^1.4.1",
     "meteor-typings": "^1.4.1",
+    "tslib": "^2.3.1",
     "typescript": "3.7.5",
     "typescript-plugin-add-type": "^1.0.2"
   }

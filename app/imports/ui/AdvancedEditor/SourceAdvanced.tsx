@@ -1,20 +1,15 @@
 import * as React from 'react';
-import { Component } from 'react';
 import { Revision } from '../../api/collections';
 
 import * as moment from 'moment';
 import "moment/locale/de";
-import { Change, diffChars } from 'diff';
-import { connector, ConvertDiffOptions, RevLinkAdvanced } from './RevBrowserAdvanced';
-import { reduceDiff } from "./DiffUtils";
-import { blame, IBlameLine } from 'blame-ts';
+import { Change } from 'diff';
+import { connector, ConvertDiffOptions } from './RevBrowserAdvanced';
+import { IBlameLine } from 'blame-ts';
 import { FunctionComponent } from 'react';
 import { RefObject } from 'react';
 import { useState } from 'react';
-import { useMemo } from 'react';
-import { ConnectedProps, useDispatch } from 'react-redux';
-import { whiteList } from 'xss';
-import { CharDiff, Diffline, DiffProps, getBlameLabel, getBlameLines } from './BlameUtils';
+import { CharDiff, Diffline, DiffProps, getBlameLabel, getBlameLines, getDiff } from './BlameUtils';
 
 interface SourceAdvancedProps {
   md: string;
@@ -125,36 +120,33 @@ function groupBlameLines(detailStates: { [k: string]: [boolean, (b: boolean) => 
   const contentLines = content?.split('\n');
 
   let blamelines: Diffline<Revision>[] = [];
+  // Defensive Copy
   const revs = props.revs.slice();
-  const pb = getBlameLines(revs);
+  const currentRev: Revision = {
+    text: content,
+    _id: '*',
+    ip: 'xxx',
+    of: '',
+    timestamp: new Date()
+  }
+
+  const revsInclCurrent = [currentRev, ...revs];
+  const pb = getBlameLines(revsInclCurrent.slice());
   if (contentLines && pb) {
     blamelines = pb.map((l, idx) => {
-      if (contentLines[idx] == l.value) {
         return {
           className: "annoline", dataRevid: l.origin._id, info: l,
           display: lineDetail(l)
         };
-      } else {
-        return { dataRevid: "*", display: "*" };
-      }
     });
   }
 
-  const blamelines_grouped = grouping(blamelines, 'dataRevid', id => getDiff(id, props.revs), { showWhitespace: detailStates.showWhitespace[0] });
+  const blamelines_grouped = grouping(blamelines, 'dataRevid', id => getDiff(id, revsInclCurrent), { showWhitespace: detailStates.showWhitespace[0] });
   return blamelines_grouped;
 }
 
 function useExternalState<T extends OnlyBoolean>(options: T, propSetter: (l: (prevSourceOptions: T) => T) => void, propName: keyof (T)): [boolean, (b: boolean) => void] {
   return [options[propName], (b: boolean) => propSetter(p => ({ ...p, [propName]: b }))];
-}
-
-function getDiff(last_id: string, revs: Revision[]) {
-  if (revs && revs.length) {
-    const idx = revs.findIndex(v => v._id === last_id)
-    const oldText = idx < revs.length - 1 ? revs[idx + 1].text : ''
-    const diff = diffChars(oldText, revs[idx].text)
-    return diff
-  }
 }
 
 function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: string) => Change[], options: ConvertDiffOptions): React.ReactElement[] {
