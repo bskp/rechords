@@ -6,7 +6,7 @@
     "debug": "meteor run --inspect",
     "preinstall": "grunt --gruntfile ../showdown-rechords/Gruntfile.js prep-release --force",
     "postinstall-ignore": "rm -f node_modules/showdown-rechords && cp -R ../showdown-rechords node_modules/",
-    "lint": "eslint"
+    "lint": "eslint imports/**"
   },
   "dependencies": {
     "@babel/runtime": "^7.12.13",
