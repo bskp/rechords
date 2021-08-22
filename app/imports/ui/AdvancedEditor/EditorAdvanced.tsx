@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { Component } from 'react';
-import Songs, { Revision, Revisions, Song } from '../../api/collections.js';
+import { Revision, Song } from '../../api/collections.js';
 import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
 import { RevBrowserAdvanced } from './RevBrowserAdvanced';
 import Preview from '../Preview';
 import Drawer from '../Drawer';
 import { Ok, Cancel } from '../Icons.jsx';
-import { getBlameLines, SourceAdvanced, ISourceOptions } from './SourceAdvanced';
-import { DynamicModuleLoader, IModule } from 'redux-dynamic-modules';
+import { SourceAdvanced, ISourceOptions } from './SourceAdvanced';
+import { IModule } from 'redux-dynamic-modules';
 import { connect, ConnectedProps } from 'react-redux';
-import { PropsWithChildren } from 'react';
 
 type EditorAdvancedProps = {
   song: Song
@@ -150,25 +149,6 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
 
 export const EditorAdvanced = withRouter(connector(EditorAdvanced_));  // injects history, location, match
 
-interface BlameProps {
-  versions: { code: string, commit: string }[]
-  className: string
-}
-
-
-const Blame: React.FunctionComponent<PropsWithChildren<BlameProps>> = (props) => {
-  const versions = props.versions
-
-  const line_list = getBlameLines(versions)
-
-  const rows = line_list.map(r => <tr><td>{r.origin}</td><td>{r.value}</td></tr>)
-
-  return <div className={"content " + props.className}>
-    {props.children}
-    <table>{rows}</table>
-  </div>
-
-}
 
 export interface IEditorStates {
   rev: Revision,
@@ -176,6 +156,10 @@ export interface IEditorStates {
   dirty: boolean,
   tab: boolean
 }
+
+// Replace Redux with RxJs?
+// Redux has way too much boilerplate und no typesafety
+// since enveryting is just text
 
 export function getEditorModule(): IModule<IEditorStates> {
   return {

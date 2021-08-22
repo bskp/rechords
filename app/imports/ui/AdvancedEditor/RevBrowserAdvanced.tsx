@@ -4,13 +4,13 @@ import { Component } from 'react';
 import Drawer from '../Drawer';
 import * as moment from 'moment';
 import "moment/locale/de";
-import { Change } from 'diff';
 import { diffChars } from 'diff';
 import { connect, ConnectedProps } from 'react-redux';
 import { IEditorStates, revisionReducer } from './EditorAdvanced.js';
 import Source from '../Source.jsx'
 import { ReactElement } from 'react';
 import { getBlameLabel } from './BlameUtils';
+import { reduceDiff } from './DiffUtils';
 
 interface RevBrowserAdvancedProps {
   song: Song;
@@ -189,36 +189,4 @@ export interface ConvertDiffOptions {
 }
 
 
-// TODO: -> own diff tsx
-export function reduceDiff(changes: Change[], options: ConvertDiffOptions): ReactElement[] {
-  const all: ReactElement[] = []
 
-  for (let i = 0; i < changes.length; i++) {
-    const change = changes[i];
-    let classNames = 'diff ';
-    let value = change.value;
-    const enhanceWhiteSpace = () => {
-      value = value.replaceAll(/[^\S\n]/gm, '·')
-      value = value.replaceAll(/\n/g, '¶\n')
-    }
-    if (change.added) {
-      classNames += 'added';
-    } else if (change.removed) {
-      classNames += 'removed';
-    }
-
-    if (options?.showWhitespace) {
-      enhanceWhiteSpace()
-    }
-
-    const changeS = value.split('\n')
-
-    for (let i = 0; i < changeS.length; i++) {
-
-      if (i > 0) all.push(<br />);
-      const changeE = changeS[i]
-      all.push(<span className={classNames}>{changeE}</span>)
-    }
-  }
-  return all;
-}

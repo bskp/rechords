@@ -5,7 +5,8 @@ import { Revision } from '../../api/collections';
 import * as moment from 'moment';
 import "moment/locale/de";
 import { Change, diffChars } from 'diff';
-import { connector, ConvertDiffOptions, reduceDiff, RevLinkAdvanced } from './RevBrowserAdvanced';
+import { connector, ConvertDiffOptions, RevLinkAdvanced } from './RevBrowserAdvanced';
+import { reduceDiff } from "./DiffUtils";
 import { blame, IBlameLine } from 'blame-ts';
 import { FunctionComponent } from 'react';
 import { RefObject } from 'react';
@@ -13,7 +14,7 @@ import { useState } from 'react';
 import { useMemo } from 'react';
 import { ConnectedProps, useDispatch } from 'react-redux';
 import { whiteList } from 'xss';
-import { getBlameLabel } from './BlameUtils';
+import { CharDiff, Diffline, DiffProps, getBlameLabel, getBlameLines } from './BlameUtils';
 
 interface SourceAdvancedProps {
   md: string;
@@ -175,46 +176,9 @@ function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: st
   return returnvalue.map(({ info, lines }, idx) => <DiffGroup options={options} info={info} lines={lines} key={idx} cb={cb}></DiffGroup>)
 }
 
-export function getBlameLines(versions: Revision[]): IBlameLine<Revision>[] {
-  return blame(versions, { getCode: (a: Revision) => a.text, getOrigin: (b: Revision) => b })
-}
-
-type Diffline<O> = {
-  dataRevid: string;
-  className?: string;
-  info: IBlameLine<O>;
-  display: string;
-};
-
-const CharDiff: FunctionComponent<DiffProps> = props => {
-  const { info, cb, lines, options } = props
-  const chardiff = []
-  const id = info?.origin._id
-  const diffs = useMemo(() => id ? cb(id) : [], ['info'])
-
-  let numBr = 0;
-  const flatDiffLines: React.ReactElement[] = reduceDiff(diffs, options);
-  for (const [idx, diff] of flatDiffLines.entries()) {
-    if (numBr >= info.lineindiff + lines.length + 2) {
-      break
-    }
-    if (numBr >= info.lineindiff - 2) {
-      chardiff.push(React.cloneElement(diff, { key: idx }))
-    }
-
-    if (diff.type == 'br') {
-      numBr += 1
-    }
-
-  }
-  return <>{chardiff}</>;
-}
-
-type DiffProps = { info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: (id: string) => Change[], options: ConvertDiffOptions } & ConnectedProps<typeof connector>
 
 
-
-const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProps) => {
+export const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProps) => {
   const { info, lines } = props
   const [hover, setHover] = useState(false)
 
