@@ -20,5 +20,9 @@ module.exports = {
             "error",
             "always"
         ]
-    }
+    },
+"parserOptions": {
+        "ecmaVersion": 6
+}
+
 };

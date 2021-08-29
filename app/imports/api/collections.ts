@@ -213,6 +213,7 @@ export class Song {
 export class Revision {
   text: string;
   of: string;
+  _id: string;
 
   ip: string;
   timestamp: Date;

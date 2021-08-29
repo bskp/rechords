@@ -1,6 +1,8 @@
 import * as React from 'react';
+import { createStore } from "redux-dynamic-modules-core";
 import { withTracker } from 'meteor/react-meteor-data';
 import { useMatomo } from '@datapunt/matomo-tracker-react'
+import { Provider } from 'react-redux'
 
 import Songs, {Song} from '../api/collections';
 
@@ -19,6 +21,8 @@ import { Header } from './Icons';
 import { BrowserRouter, Route, Switch, RouteComponentProps} from 'react-router-dom';
 import TrackingDocumentTitle from './TrackingDocumentTitle';
 import { MobileMenu } from './MobileMenu'
+import { EditorAdvanced, getEditorModule } from './AdvancedEditor/EditorAdvanced';
+import { DynamicModuleLoader } from 'redux-dynamic-modules';
 import Printer from './Printer';
 
 const empty_song = {
@@ -70,6 +74,7 @@ interface AppProps extends RouteComponentProps {
 
 // App component - represents the whole app
 class App extends React.Component<AppProps, AppStates> {
+    store: any;
 
     constructor(props) {
         super(props);
@@ -79,6 +84,7 @@ class App extends React.Component<AppProps, AppStates> {
             swapTheme: false,
             themeTransition: false
         }
+        this.store = createStore({ })
     }
 
     hideSongListOnMobile = () => {
@@ -158,6 +164,7 @@ class App extends React.Component<AppProps, AppStates> {
 
         return (
             <BrowserRouter>
+            <Provider store={this.store} >
             <div className={theme}>
 
                 <MobileMenu toggleSongList={this.toggleSongList} songListHidden={this.state.songListHidden} />
@@ -184,17 +191,17 @@ class App extends React.Component<AppProps, AppStates> {
                         let song = getSong(routerProps.match.params);
 
                         if (song === undefined) {
-                            return nA404; 
+                            return nA404;
                         }
 
                         return (
                             <>
                                 <TrackingDocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
-                                <Printer 
-                                    song={song}  
-                                    toggleTheme={this.toggleTheme} 
+                                <Printer
+                                    song={song}
+                                    toggleTheme={this.toggleTheme}
                                     themeDark={theme.includes('dark')}
-                                    {...routerProps} 
+                                    {...routerProps}
                                 />
                             </>
                         )
@@ -230,7 +237,13 @@ class App extends React.Component<AppProps, AppStates> {
 
                         // In any case, the editor is rendered. However, a re-render is triggered after the song's
                         // revisions have been loaded.
-                        let editor = this.props.revisionsLoading ? <Editor song={song} /> : <Editor song={song} />;
+                        let editor;
+                        if( Meteor.settings.public.isAdvancedEditor ) {
+                            editor= this.props.revisionsLoading ?
+        <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader> :
+         <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader>; } else {
+                            editor= this.props.revisionsLoading ? <Editor song={song} /> : <Editor song={song} />;
+                        }
 
                         return (
                             <>
@@ -290,6 +303,7 @@ class App extends React.Component<AppProps, AppStates> {
                 </Switch>
                 </div>
             </div>
+            </Provider>
             </BrowserRouter>
         );
     }

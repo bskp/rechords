@@ -1,11 +1,11 @@
 {
 	"compilerOptions": {
+		"importHelpers": true,
 		"target": "es5",
+		"downlevelIteration": true,
 		"lib": [
-			"es6",
-			"dom.iterable",
-			"es2016.array.include",
-			"dom"
+			"DOM",
+			"ESNext"
 		],
 		"preserveConstEnums": true,
 		"sourceMap": true,

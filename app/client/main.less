@@ -28,7 +28,6 @@ textarea {
   margin: 0;
   padding: 0;
   border-radius: 0;
-  -webkit-appearance: none;
 }
 
 button {
@@ -305,11 +304,14 @@ div.mobile-footer {
 
 // Content elements
 
-
-textarea {
-  font-family: "Input Mono", Courier New, Courier, monospace;
+#textareafonts {
+  font-family: "Plex Mono", Courier New, Courier, monospace;
   font-weight: 300;
   font-size: 0.9em;
+}
+
+textarea {
+  #textareafonts();
   width: inherit;
   cursor: text;
 
@@ -323,13 +325,24 @@ hr {
 
 .label {
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 1.2rem;
   text-transform: uppercase;
   background-color: inherit;
 
   display: block;
-  padding: 0.2em;
+  padding: 0.2rem;
   position: fixed;
-  bottom: 1em;
+  bottom: 1rem;
+  z-index: 10;
 }
 
+
+.keyboard {
+  border: 0.1rem solid currentColor;
+  border-radius: 0.4rem;
+  font-family: 'Plex Mono', monospace;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+
+
+}
