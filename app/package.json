@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "//": "0:xx enables to access the the dev server from another computer",
-    "start": "meteor --exclude-archs web.browser.legacy --port 0:3000",
+    "start": "meteor --settings settings-dev.json --exclude-archs web.browser.legacy --port 0:3000",
     "preinstall": "cd ../showdown-rechords && npm run prepare",
     "debug": "meteor run --inspect",
     "lint": "eslint imports/**"
@@ -67,6 +67,7 @@
     "babel-plugin-inline-react-svg": "^1.1.2",
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.24.0",
+    "less-loader": "^10.0.1",
     "typescript": "^4.4",
     "typescript-plugin-add-type": "^1.0.2"
   }

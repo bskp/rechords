@@ -2,12 +2,9 @@
 .vscode/
 .meteor/
 
-deploy/backups/
-
 node_modules/
 showdown-rechords/coverage
 showdown-rechords/.nyc_output
-
 
 **/.DS_Store
 *.swp

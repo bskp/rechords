@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { increaseHeaderSpan, expandColumns } from '../api/expandColumns';
 
-import './columnGridStyle.less'
+import './ColumnGridStyle.less'
 import { DefaultSettingsStorage } from '../api/localStorageDefs';
 
 import AwesomeDebouncePromise from 'awesome-debounce-promise';

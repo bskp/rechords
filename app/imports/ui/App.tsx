@@ -17,7 +17,7 @@ import HideSongList from './HideSongList'
 import Login from './Login'
 import Hallo from './Hallo'
 
-import { BrowserRouter, Route, Switch, RouteComponentProps, Redirect} from 'react-router-dom'
+import { BrowserRouter, Route, Switch, RouteComponentProps} from 'react-router-dom'
 import TrackingDocumentTitle from './TrackingDocumentTitle'
 import { MobileMenu } from './MobileMenu'
 import { EditorAdvanced, getEditorModule } from './AdvancedEditor/EditorAdvanced';
@@ -141,7 +141,7 @@ class App extends React.Component<AppProps, AppStates> {
         return (
           <div id="body" className="light">
             <aside className="drawer open list-colors">Lade Lieder…</aside>
-            <div className="content chordsheet-colors"></div>
+            <div className="content chordsheet-colors">&nbsp;</div>
           </div>
         )
       }
@@ -229,11 +229,7 @@ class App extends React.Component<AppProps, AppStates> {
                         <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title}/>
                         <Viewer 
                           song={song}  
-                                    song={song}  
-                          song={song}  
-                          toggleTheme={this.toggleTheme} 
-                                    toggleTheme={this.toggleTheme} 
-                          toggleTheme={this.toggleTheme} 
+                          toggleTheme={this.toggleTheme}
                           themeDark={theme.includes('dark')}
                           {...routerProps} 
                                     {...routerProps} 
@@ -252,11 +248,12 @@ class App extends React.Component<AppProps, AppStates> {
                         // In any case, the editor is rendered. However, a re-render is triggered after the song's
                         // revisions have been loaded.
                         let editor;
-                        if( Meteor.settings.public.isAdvancedEditor ) {
-                            editor= this.props.revisionsLoading ?
+                        if ( Meteor.settings.public.useAdvancedEditor ) {
+                            editor = this.props.revisionsLoading ?
         <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader> :
-         <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader>; } else {
-                            editor= this.props.revisionsLoading ? <Editor song={song} /> : <Editor song={song} />;
+         <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader>;
+                        } else {
+                            editor = this.props.revisionsLoading ? <Editor song={song} /> : <Editor song={song} />;
                         }
 
                         return (

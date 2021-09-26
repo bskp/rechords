@@ -4,7 +4,7 @@ import { render } from 'react-dom';
 import { MatomoProvider, createInstance } from '@datapunt/matomo-tracker-react'
  
 const instance = createInstance({
-  urlBase: 'https://stats.xn--hlibu-jua.ch',
+  urlBase: Meteor.settings.public.matomoUrlBase,
   siteId: 1,
   linkTracking: false, // optional, default value: true
 })

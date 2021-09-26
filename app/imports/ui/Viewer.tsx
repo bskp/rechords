@@ -4,16 +4,12 @@ import TranposeSetter from "./TransposeSetter.jsx";
 import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
 import Drawer from './Drawer';
-import { Abcjs } from './Abcjs'
-import { MobileMenu } from "./MobileMenu";
 import { ColumnExpander } from "./ColumnGrid";
-import Kord from "./Kord.js";
 import {userMayWrite} from '../api/helpers';
 import Sheet from './Sheet';
 
 import { LayoutH, LayoutV, Day, Night, Sharp, Flat, Conveyor } from './Icons.jsx';
 
-import parse, { domToReact }  from 'html-react-parser';
 
 interface ViewerProps extends RouteComponentProps {
   song: Song,
@@ -224,19 +220,3 @@ function splitSongVdom(vdom: React.ReactElement[]): React.ReactElement[] {
   return [sheetHeader, sheetContent];
 
 }
-
-const ChordSheet = (props: React.PropsWithChildren<{showMultiColumns: boolean, song: Song}> ) => {
-
-  const vdom = props.children;
-  if (props.showMultiColumns) {
-    const [sheetHeader, sheetContent]: React.ReactNode[] = splitSongVdom(vdom);
-
-    return <ColumnExpander song_id={props.song?._id} header={sheetHeader}>
-      {sheetContent}
-    </ColumnExpander>
-  } else {
-    return vdom;
-  }
-
-}
-
