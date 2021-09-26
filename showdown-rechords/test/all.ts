@@ -1,35 +1,25 @@
+import fs from 'fs'
+import {showdownRechords} from '../src/showdown-rechords'
+import showdown from 'showdown'
+import {TestCase} from './types'
+import chai from 'chai'
 /**
  * This is the default test case
  * The way you test your code is up to you
  * In showdown, we use this particular setup
  */
-// TODO: make common module
 (function (filename) {
-  if (arguments.length === 0)  {}
-  // do nothing
-  else {
-    grunt.log.writeln(filename);
-  }
-  
-
 
   require('source-map-support').install();
-  var showdown = require('showdown'),
-      ext = require('../src/showdown-rechords.js');
-  require('chai').should();
+  chai.should();
 
-  var fs = require('fs'),
-  // TODO: I did not yet figure out how 
-  // to pass argumements from grunt to the simplemocha task
-  // Therefore one task is hardcoded
-  // The filename is hardcoded overwriting the filter function (see below)
-      converter = new showdown.Converter({extensions: [ext]}),
-      cases = fs.readdirSync('test/cases/')
-        .filter(filter())
-        .map(map('test/cases/')),
-      issues = fs.readdirSync('test/issues/')
-        .filter(filter())
-        .map(map('test/issues/'));
+    const converter = new showdown.Converter({extensions:[showdownRechords]}),
+    cases = fs.readdirSync('test/cases/')
+      .filter(filter())
+      .map(map('test/cases/')),
+    issues = fs.readdirSync('test/issues/')
+      .filter(filter())
+      .map(map('test/issues/'));
 
   // Test cases
   describe('Rechords Extension testcases', function () {
@@ -39,14 +29,14 @@
   });
 
   function filter() {
-    return function (file) {
-      // HERE: change the name to current dev test
-      return (file === 'chords_only.md');
+    return function (file: string) {
+      var ext = file.slice(-3);
+      return (ext === '.md');
     };
   }
 
-  function map(dir) {
-    return function (file) {
+  function map(dir: string) {
+    return function (file: string) {
       var name = file.replace('.md', ''),
         htmlPath = dir + name + '.html',
         html = fs.readFileSync(htmlPath, 'utf8'),
@@ -54,15 +44,17 @@
         md = fs.readFileSync(mdPath, 'utf8');
 
       return {
-        name:     name,
-        input:    md,
-        expected: html
+        name: name,
+        input: md,
+        expected: html,
+        actual: ''
       };
     };
   }
 
+
   //Normalize input/output
-  function normalize(testCase) {
+  function normalize(testCase: TestCase): TestCase {
 
     // Normalize line returns
     testCase.expected = testCase.expected.replace(/\r/g, '');
@@ -92,7 +84,7 @@
     return testCase;
   }
 
-  function assertion(testCase, converter) {
+  function assertion(testCase: TestCase , converter: { makeHtml: (arg0: any) => any; }) {
     return function () {
       testCase.actual = converter.makeHtml(testCase.input);
       testCase = normalize(testCase);

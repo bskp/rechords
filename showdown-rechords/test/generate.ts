@@ -1,14 +1,16 @@
-var showdown = require('showdown');
-var ext = require('../src/showdown-rechords.js')
+import showdown from 'showdown'
+import ext from '../src/showdown-rechords'
 
-var fs = require('fs');
+import fs from 'fs'
+import path from 'path'
+
 var converter = new showdown.Converter({ extensions: [ext] });
-var cases = fs.readdirSync('cases/')
+var cases = fs.readdirSync(path.join(__dirname, 'cases'))
   .filter(filter());
-cases.forEach(w => generate('cases/'+w));
+cases.forEach(w => generate(path.join(__dirname, 'cases',w)));
     
 
-function generate(file) {
+function generate(file: string) {
   var name = file.replace('.md', ''),
     htmlPath =  name + '.html',
     //   html = fs.readFileSync(htmlPath, 'utf8'),
@@ -20,7 +22,7 @@ function generate(file) {
 };
 
 function filter() {
-  return function (file) {
+  return function (file: string ) {
     var ext = file.slice(-3);
     return (ext === '.md');
   };
