@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { Revision, Song } from '../../api/collections.js';
+import { Revision, Song } from '../../api/collections';
 import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
 import { RevBrowserAdvanced } from './RevBrowserAdvanced';
 import Preview from '../Preview';

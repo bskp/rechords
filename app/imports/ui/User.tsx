@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { withRouter, Link } from 'react-router-dom';
-import Songs, { Revisions, Song } from '../api/collections.js';
+import Songs, { Revisions, Song } from '../api/collections';
 
 import "moment/locale/de";
 

@@ -6,7 +6,7 @@ import { Song } from '../api/collections';
 import Drawer from './Drawer';
 import { Abcjs } from './Abcjs'
 import { MobileMenu } from "./MobileMenu";
-import { ColumnExpander } from "./ColumnGrid.js";
+import { ColumnExpander } from "./ColumnGrid";
 import Kord from "./Kord.js";
 import {userMayWrite} from '../api/helpers';
 import Sheet from './Sheet';

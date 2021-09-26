@@ -1,15 +1,16 @@
 import { Mongo } from "meteor/mongo";
 import { _ } from "meteor/underscore";
 
-var DATACHORD = 'data-chord';
-var showdown = require("showdown");
-var rmd = require("showdown-rechords");
-var DOMParser = require("xmldom").DOMParser;
-var Parser = require("html-react-parser");
-var slug = require("slug");
-var xss = require("xss");
+import * as showdown from 'showdown'
 
-var options = {
+const DATACHORD = 'data-chord'
+import {showdownRechords as rmd} from 'showdown-rechords'
+import { DOMParser } from 'xmldom'
+import Parser from 'html-react-parser'
+import slug from 'slug'
+import { FilterXSS } from 'xss';
+
+const options: XSS.IFilterXSSOptions = {
   whiteList: {
     a: ["href", "title"],
     span: ["class"],
@@ -154,7 +155,8 @@ export class Song {
     // Create HTML
     // only member that exist in the mongo db are published
     // to the outside.
-    this.html = xss(converter.makeHtml(this.text), options);
+    const filter = new FilterXSS(options)
+    this.html = filter.process(converter.makeHtml(this.text));
     this.title = "";
     this.author = "";
 

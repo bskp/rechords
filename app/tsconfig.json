@@ -9,6 +9,10 @@
 		],
 		"preserveConstEnums": true,
 		"sourceMap": true,
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		// "jsxImportSource": "react",
 							    
 		"plugins": [
 			{
@@ -21,7 +25,7 @@
 			"./node_modules"
 		],
 		"types": [
-			"meteor-typings",
+			"@types/meteor",
 			"core-js",
 			"requirejs"
 		],

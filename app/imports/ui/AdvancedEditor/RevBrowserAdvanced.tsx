@@ -1,4 +1,4 @@
-import Songs, { Revision, Revisions, Song } from '../../api/collections.js';
+import Songs, { Revision, Revisions, Song } from '../../api/collections';
 import * as React from 'react';
 import { Component } from 'react';
 import Drawer from '../Drawer';

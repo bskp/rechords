@@ -1,44 +1,53 @@
-import * as React from 'react';
-import { createStore } from "redux-dynamic-modules-core";
-import { withTracker } from 'meteor/react-meteor-data';
-import { useMatomo } from '@datapunt/matomo-tracker-react'
+import * as React from 'react'
+import { createStore } from 'redux-dynamic-modules-core'
+import { withTracker } from 'meteor/react-meteor-data'
 import { Provider } from 'react-redux'
+import {ErrorBoundary} from 'react-error-boundary'
 
-import Songs, {Song} from '../api/collections';
 
-import List from './List';
-import Viewer from './Viewer';
-import Editor from './Editor';
-import Progress from './Progress';
-import Users from './Users';
-import User from './User';
-import HideSongList from './HideSongList';
-import Login from './Login';
-import Hallo from './Hallo';
+import Songs, {Song} from '../api/collections'
 
-import { Header } from './Icons';
+import List from './List'
+import Viewer from './Viewer'
+import Editor from './Editor'
+import Progress from './Progress'
+import Users from './Users'
+import User from './User'
+import HideSongList from './HideSongList'
+import Login from './Login'
+import Hallo from './Hallo'
 
-import { BrowserRouter, Route, Switch, RouteComponentProps} from 'react-router-dom';
-import TrackingDocumentTitle from './TrackingDocumentTitle';
+import { BrowserRouter, Route, Switch, RouteComponentProps, Redirect} from 'react-router-dom'
+import TrackingDocumentTitle from './TrackingDocumentTitle'
 import { MobileMenu } from './MobileMenu'
 import { EditorAdvanced, getEditorModule } from './AdvancedEditor/EditorAdvanced';
 import { DynamicModuleLoader } from 'redux-dynamic-modules';
 import Printer from './Printer';
+import { Meteor } from 'meteor/meteor'
 
 const empty_song = {
-    title: "Neues Lied",
-    text: "Titel\nInterpret\n========\n\n#Schlagwort\n\n1:\nDas ist die [A]erste Strophe\nHat zum Teil auch [em]Akkorde\n\n\nNach zwei leeren Zeilen gilt jeglicher Text als Kommentar.\n\nRefrain:\nTra la lalala\nla la lala la la\n\n2:\nUnd noch eine weil's so schön ist",
-    author: "Unknown"
-};
+  title: 'Neues Lied',
+  text: 'Titel\nInterpret\n========\n\n#Schlagwort\n\n1:\nDas ist die [A]erste Strophe\nHat zum Teil auch [em]Akkorde\n\n\nNach zwei leeren Zeilen gilt jeglicher Text als Kommentar.\n\nRefrain:\nTra la lalala\nla la lala la la\n\n2:\nUnd noch eine weil\'s so schön ist',
+  author: 'Unknown'
+}
 
 const nA404 = (
-    <div className="content chordsheet-colors">
-        <TrackingDocumentTitle title="Hölibu | 404" track_as="error-404"/>
-        <span id="logo">
-            <h1>404</h1>
-            <h2>n/A</h2>
-        </span>
-    </div>
+  <div className="content chordsheet-colors">
+    <TrackingDocumentTitle title="Hölibu | 404" track_as="error-404"/>
+    <span id="logo">
+      <h1>404</h1>
+      <h2>n/A</h2>
+    </span>
+  </div>
+)
+const NA400 = () => (
+  <div className="content chordsheet-colors">
+    <TrackingDocumentTitle title="Hölibu | 404" track_as="error-404"/>
+    <span id="logo">
+      <h1>404</h1>
+      <h2>n/A</h2>
+    </span>
+  </div>
 )
 
 const WriterRoute = ({ render: render, ...rest }) => (
@@ -77,151 +86,156 @@ class App extends React.Component<AppProps, AppStates> {
     store: any;
 
     constructor(props) {
-        super(props);
+      super(props)
 
-        this.state = { 
-            songListHidden: false,
-            swapTheme: false,
-            themeTransition: false
-        }
-        this.store = createStore({ })
+      this.state = { 
+        songListHidden: false,
+        swapTheme: false,
+        themeTransition: false
+      }
+      this.store = createStore({ })
     }
 
     hideSongListOnMobile = () => {
-        if (window.innerWidth > 700) return;
-        this.setState({
-            songListHidden: true
-        });
+      if (window.innerWidth > 700) return
+      this.setState({
+        songListHidden: true
+      })
     }
 
     hideSongList = (hide) => {
-        this.setState({
-            songListHidden: hide
-        });
+      this.setState({
+        songListHidden: hide
+      })
     }
 
     toggleSongList = () => {
-        this.setState((state) => ({songListHidden: !state.songListHidden }));
+      this.setState((state) => ({songListHidden: !state.songListHidden }))
     }
 
     toggleTheme = () => {
-        this.setState((state) => ({
-            swapTheme: !state.swapTheme,
-            themeTransition: true
-        }));
-        Meteor.setTimeout(() => {
-            this.setState(() => ({themeTransition: false}));
-        }, 1000);
+      this.setState((state) => ({
+        swapTheme: !state.swapTheme,
+        themeTransition: true
+      }))
+      Meteor.setTimeout(() => {
+        this.setState(() => ({themeTransition: false}))
+      }, 1000)
     }
 
 
     render() {
-        if (!this.props.user) {
+      if (!this.props.user) {
 
-            const aside = window.innerWidth > 900 ? <aside className="drawer open list-colors"> </aside> : undefined;
-            return (
-                <div id="body" className="light">
-                    <TrackingDocumentTitle title="Hölibu" track_as="/no-login"/>
-                    {aside}
-                    <Login />
-                </div>
-            )
-        }
-
-        if (this.props.songsLoading) {
-            return (
-                <div id="body" className="light">
-                    <aside className="drawer open list-colors">Lade Lieder…</aside>
-                    <div className="content chordsheet-colors"> </div>
-                </div>
-            )
-        }
-
-        const getSong = (params) => {
-            if (params.author == '-') {
-                return Songs.findOne({
-                    title_: params.title
-                });
-            }
-            return Songs.findOne({
-                author_: params.author,
-                title_: params.title
-            });
-
-        }
-
-        let ut = this.props.user?.profile.theme ?? 'auto';
-        let themeDark = false;
-        if (ut == 'auto') themeDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        if (ut == 'dark') themeDark = true;
-        if (this.state.swapTheme) themeDark = !themeDark;
-
-        const theme = (themeDark ? 'dark' : 'light') + (this.state.themeTransition ? ' transition' : '');
-
-        // If any song's title changes, the key for the <List /> changes and flushes all states.
-        // This is a hack to easily update all internal "caching states" (matches etc.)
-        const list_key = this.props.songs.map( s => s.title).join('-');
-
+        const aside = window.innerWidth > 900 ? <aside className="drawer open list-colors"> </aside> : undefined
         return (
-            <BrowserRouter>
-            <Provider store={this.store} >
+          <div id="body" className="light">
+            <TrackingDocumentTitle title="Hölibu" track_as="/no-login"/>
+            {aside}
+            <Login />
+          </div>
+        )
+      }
+
+      if (this.props.songsLoading) {
+        return (
+          <div id="body" className="light">
+            <aside className="drawer open list-colors">Lade Lieder…</aside>
+            <div className="content chordsheet-colors"></div>
+          </div>
+        )
+      }
+
+      const getSong = (params) => {
+        if (params.author == '-') {
+          return Songs.findOne({
+            title_: params.title
+          })
+        }
+        return Songs.findOne({
+          author_: params.author,
+          title_: params.title
+        })
+
+      }
+
+      const ut = this.props.user?.profile.theme ?? 'auto'
+      let themeDark = false
+      if (ut == 'auto') themeDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      if (ut == 'dark') themeDark = true
+      if (this.state.swapTheme) themeDark = !themeDark
+
+      const theme = (themeDark ? 'dark' : 'light') + (this.state.themeTransition ? ' transition' : '')
+
+      // If any song's title changes, the key for the <List /> changes and flushes all states.
+      // This is a hack to easily update all internal "caching states" (matches etc.)
+      const list_key = this.props.songs.map( s => s.title).join('-')
+
+      return (
+        <BrowserRouter>
+          <Provider store={this.store} >
             <div className={theme}>
+            <MobileMenu toggleSongList={this.toggleSongList} songListHidden={this.state.songListHidden} />
 
-                <MobileMenu toggleSongList={this.toggleSongList} songListHidden={this.state.songListHidden} />
-
-                <div id="body">
+              <div id="body">
                 <List 
-                    songs={this.props.songs}
-                    key={list_key}
-                    hidden={this.state.songListHidden}
-                    hideOnMobile={this.hideSongListOnMobile}
-                    user={this.props.user}
+                  songs={this.props.songs}
+                  key={list_key}
+                  hidden={this.state.songListHidden}
+                  hideOnMobile={this.hideSongListOnMobile}
+                  user={this.props.user}
                 />
                 <Switch>
 
-                    <Route exact path='/' render={(props) => (
-                        <>
-                            <TrackingDocumentTitle title="Hölibu 3000" />
-                            <Hallo songs={this.props.songs} revisionsLoading={this.props.revisionsLoading}/>
-                        </>
-                    )} />
+                  <Route exact={true} path='/'>
+                      <TrackingDocumentTitle title="Hölibu 3000" />
+                      <ErrorBoundary fallback={<NA400 />}>
+                        <Hallo songs={this.props.songs} revisionsLoading={this.props.revisionsLoading}/>
+                      </ErrorBoundary>
+                </Route>
+                 
 
 
-                    <Route path='/print/:author/:title' render={(routerProps) => {
-                        let song = getSong(routerProps.match.params);
+                  <Route path='/print/:author/:title' render={(routerProps) => {
+                    const song = getSong(routerProps.match.params)
 
-                        if (song === undefined) {
-                            return nA404;
-                        }
+                    if (song === undefined) {
+                      return nA404
+                    }
 
-                        return (
-                            <>
-                                <TrackingDocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
-                                <Printer
-                                    song={song}
-                                    toggleTheme={this.toggleTheme}
-                                    themeDark={theme.includes('dark')}
-                                    {...routerProps}
-                                />
-                            </>
-                        )
-                    }} />
+                    return (
+                      <>
+                        <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title}/>
+                        <Printer
+                          song={song}
+                          toggleTheme={this.toggleTheme}
+                          themeDark={theme.includes('dark')}
+                          {...routerProps}
+                        />
+                      </>
+                    )
+                  }} />
 
 
-                    <Route path='/view/:author/:title' render={(routerProps) => {
-                        let song = getSong(routerProps.match.params);
+                  <Route path='/view/:author/:title' render={(routerProps) => {
+                    const song = getSong(routerProps.match.params)
 
-                        if (song === undefined) {
-                            return nA404; 
-                        }
+                    if (song === undefined) {
+                      return nA404 
+                    }
 
-                        return (
-                            <>
-                                <TrackingDocumentTitle title={"Hölibu | " + song.author + ": " + song.title}/>
-                                <Viewer 
+                    return (
+                      <>
+                        <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title}/>
+                        <Viewer 
+                          song={song}  
                                     song={song}  
+                          song={song}  
+                          toggleTheme={this.toggleTheme} 
                                     toggleTheme={this.toggleTheme} 
-                                    themeDark={theme.includes('dark')}
+                          toggleTheme={this.toggleTheme} 
+                          themeDark={theme.includes('dark')}
+                          {...routerProps} 
                                     {...routerProps} 
                                 />
                             </>
@@ -299,26 +313,27 @@ class App extends React.Component<AppProps, AppStates> {
                         )
                     }} />
 
-                    <Route component={NoMatch} />
+                    <Route >
+                      {nA404}
+                      </Route>
                 </Switch>
-                </div>
+              </div>
             </div>
-            </Provider>
-            </BrowserRouter>
-        );
+          </Provider>
+        </BrowserRouter>
+      )
     }
 }
 
-const NoMatch = ({ location }) => nA404;
 
 export default withTracker(props => {
-    const songHandle = Meteor.subscribe('songs');
-    const revHandle = Meteor.subscribe('revisions');
+  const songHandle = Meteor.subscribe('songs')
+  const revHandle = Meteor.subscribe('revisions')
 
-    return {
-        songsLoading: !songHandle.ready(),
-        revisionsLoading: !revHandle.ready(),
-        songs: Songs.find({}, { sort: { title: 1 } }).fetch(),
-        user: Meteor.user()
-    };
-})(App);
+  return {
+    songsLoading: !songHandle.ready(),
+    revisionsLoading: !revHandle.ready(),
+    songs: Songs.find({}, { sort: { title: 1 } }).fetch(),
+    user: Meteor.user()
+  }
+})(App)

@@ -1,18 +1,24 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Songs, { Revisions } from '../api/collections.js';
+import * as React from 'react'
+import  { Component } from 'react';
 import { withRouter, Prompt } from 'react-router-dom';
 import Source from './Source.jsx';
 import RevBrowser from './RevBrowser.jsx';
-import Preview from './Preview.tsx';
-import Drawer from './Drawer.tsx';
+import Preview from './Preview';
+import Drawer from './Drawer';
 import { Ok, Cancel } from './Icons.jsx';
+import { Song } from '../api/collections';
+import { Requireable } from 'react';
+import { Meteor } from 'meteor/meteor';
 
 
-class Editor extends Component {
+class Editor extends Component<{song: Song}, {md: string, versionTab: boolean, dirty: boolean}> {
+  mdServer: string;
+static propTypes:  {
+  song: Requireable<Song>
+};
 
   constructor(props) {
-    super();
+    super(props);
     this.state = {
       md: props.song.text,
       versionTab: false,
@@ -129,8 +135,5 @@ class Editor extends Component {
   }
 }
 
-Editor.propTypes = {
-  song: PropTypes.object.isRequired,
-};
 
 export default withRouter(Editor);  // injects history, location, match

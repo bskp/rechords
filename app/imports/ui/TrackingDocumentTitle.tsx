@@ -1,7 +1,8 @@
 import * as React from 'react';
-import * as DocumentTitle from 'react-document-title';
+import DocumentTitle from 'react-document-title';
 import { useMatomo } from '@datapunt/matomo-tracker-react'
 import { useLocation } from 'react-router-dom';
+import { Meteor } from 'meteor/meteor';
 
 interface TrackingDocumentTitleProps {
     title: string,
@@ -28,6 +29,7 @@ function TrackingDocumentTitle( {title, track_as} : TrackingDocumentTitleProps )
     }, [location]);
 
     return <DocumentTitle title={title} />
+
 }
 
 export default TrackingDocumentTitle;

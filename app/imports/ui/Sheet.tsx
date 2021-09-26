@@ -1,11 +1,12 @@
-import * as React from 'react';
-import parse, { domToReact } from 'html-react-parser';
-import ChrodLib from "../api/libchrod";
-import { Song } from '../api/collections';
+import * as React from 'react'
+import parse, { DOMNode, domToReact } from 'html-react-parser'
+import ChrodLib from '../api/libchrod'
+import { Song } from '../api/collections'
 import { Abcjs } from './Abcjs'
-import Kord from "./Kord.js";
-import { userMayWrite } from '../api/helpers';
-import { Element } from 'domhandler/lib/node';
+import Kord from './Kord'
+import { extractOrGuessKey, isRefId, userMayWrite } from '../api/helpers'
+import { Element } from 'domhandler/lib/node'
+import { FunctionComponent, ReactNode } from 'react'
 
 type SheetProps = {
     song: Song,

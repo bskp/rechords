@@ -1,4 +1,4 @@
-import Songs, { Revisions } from '../api/collections.js';
+import Songs, { Revisions } from '../api/collections';
 import React, { Component } from 'react';
 import Source from './Source.jsx';
 import PropTypes from 'prop-types';
@@ -92,8 +92,8 @@ export default class RevBrowser extends React.Component {
             )}
           </ol>
           <p>Schneller:<br />
-            <span class="keyboard">J</span>&nbsp;|&nbsp;<span class="keyboard">→</span><br />
-            <span class="keyboard">K</span>&nbsp;|&nbsp;<span class="keyboard">←</span>
+            <span className="keyboard">J</span>&nbsp;|&nbsp;<span className="keyboard">→</span><br />
+            <span className="keyboard">K</span>&nbsp;|&nbsp;<span className="keyboard">←</span>
           </p>
         </Drawer>
       </>
