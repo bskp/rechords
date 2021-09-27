@@ -6,6 +6,8 @@ import {Song} from '../api/collections';
 
 import Drawer from './Drawer';
 import {navigateTo, routePath, View} from "../api/helpers";
+import classNames from 'classnames';
+
 
 interface ListItemProps {
     song: Song;
@@ -109,7 +111,14 @@ interface ListProps {
 }
 interface ListState {
     filter: string;
+    /**
+     * Focus is in filter input
+     */
     active: boolean;
+    /**
+     * Tag menu manually open (mobile)
+     */
+    tagsopen: boolean;
     fuzzy_matches: Array<Song>;
     exact_matches: Array<Song>;
 }
@@ -122,6 +131,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
         this.state = {
             filter: props.filter || '',
             active: false,
+            tagsopen: false,
             fuzzy_matches: [],
             exact_matches: []
         }
@@ -236,6 +246,10 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
         });
     }
 
+    toggleTagsOpen = () => {
+        this.setState( s => ({tagsopen: !s.tagsopen}))
+    }
+
     onTagClick = (event : React.MouseEvent) => {
         let tag = '#' + event.currentTarget.childNodes[0].textContent.toLowerCase();
 
@@ -246,6 +260,10 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
             newFilter = this.state.filter + tag + ' '
         }
         this.setFilter(newFilter.replace('  ', ' ').trim());
+
+        // compromise: close overlay after selecting one tag
+        // is probably the most common case
+        this.setState({tagsopen: false})
 
         event.preventDefault();
     }
@@ -280,7 +298,6 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
             groups.get(cat_label).push(song);
         }
 
-        let active = this.state.active ? '' : 'hidden';
         let filled = this.state.filter == '' ? '' : 'filled';
 
         const process_filtermenu = () => {
@@ -306,7 +323,11 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
 
 
         return (
-            <Drawer id="list" open={true} className={"songlist " + (this.props.hidden ? 'hidden' : '')}>
+            <Drawer id="list" open={true} className={classNames(
+                "songlist", 
+                {hidden: this.props.hidden},
+                {noscroll: this.state.tagsopen}
+                )}>
                 <div className="filter">
                     <input type="text" 
                         placeholder="Filtern…" 
@@ -319,11 +340,13 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
                         onKeyDown={this.onKeyDown}
                         />
                     <span className={'reset ' + filled} onClick={ () => { this.setFilter('') } }>&times;</span>
+                    <span className="open-tags" onClick={this.toggleTagsOpen}>Tags</span>
                 </div>
 
                 <MetaContent 
                     replace={process_filtermenu()}
-                    className={'filterMenu ' + active} 
+                    className={classNames('filterMenu', 
+                    {hidden: !this.state.active, open: !this.props.hidden && this.state.tagsopen })} // tag menu is fix positioned and would stay on top otherwise
                     title="Schlagwortverzeichnis" 
                     songs={this.props.songs}
                     />

@@ -15,3 +15,15 @@
       @rules();
   }
 }
+
+.not-phone(@rules){
+  @media only screen and (min-width: @width-s) {
+      @rules();
+  }
+}
+
+.not-phone-tablet(@rules){
+  @media only screen and (min-width: @width-m) {
+      @rules();
+  }
+}

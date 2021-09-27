@@ -125,6 +125,20 @@ class App extends React.Component<AppProps, AppStates> {
 
 
     render() {
+      const ut = this.props.user?.profile.theme ?? 'auto'
+      let themeDark = false
+      if (ut == 'auto') themeDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      if (ut == 'dark') themeDark = true
+      if (this.state.swapTheme) themeDark = !themeDark
+
+      const theme = (themeDark ? 'dark' : 'light') + (this.state.themeTransition ? ' transition' : '')
+      // Setting class on body -> used for background color of body
+      document.documentElement.classList.value = theme
+
+      // If any song's title changes, the key for the <List /> changes and flushes all states.
+      // This is a hack to easily update all internal "caching states" (matches etc.)
+      const list_key = this.props.songs.map( s => s.title).join('-')
+
       if (!this.props.user) {
 
         const aside = window.innerWidth > 900 ? <aside className="drawer open list-colors"> </aside> : undefined
@@ -159,22 +173,10 @@ class App extends React.Component<AppProps, AppStates> {
 
       }
 
-      const ut = this.props.user?.profile.theme ?? 'auto'
-      let themeDark = false
-      if (ut == 'auto') themeDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      if (ut == 'dark') themeDark = true
-      if (this.state.swapTheme) themeDark = !themeDark
-
-      const theme = (themeDark ? 'dark' : 'light') + (this.state.themeTransition ? ' transition' : '')
-
-      // If any song's title changes, the key for the <List /> changes and flushes all states.
-      // This is a hack to easily update all internal "caching states" (matches etc.)
-      const list_key = this.props.songs.map( s => s.title).join('-')
 
       return (
         <BrowserRouter>
           <Provider store={this.store} >
-            <div className={theme}>
             <MobileMenu toggleSongList={this.toggleSongList} songListHidden={this.state.songListHidden} />
 
               <div id="body">
@@ -315,7 +317,6 @@ class App extends React.Component<AppProps, AppStates> {
                       </Route>
                 </Switch>
               </div>
-            </div>
           </Provider>
         </BrowserRouter>
       )

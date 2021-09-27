@@ -5,6 +5,7 @@ import ChrodLib from "../api/libchrod";
 import {Song} from '../api/collections';
 import Drawer from './Drawer';
 import {navigateCallback, routePath, userMayWrite, View} from '../api/helpers';
+import { MobileMenuShallow } from "./MobileMenu";
 import Sheet from './Sheet';
 
 import {Conveyor, ConveyorActive, Day, Flat, LayoutH, LayoutV, Night, Printer, Sharp} from './Icons.jsx';
@@ -210,7 +211,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
     return (
 
       <>
-        <div className="extend mobilemenu" >
+        <MobileMenuShallow>
             <span onClick={ _ => this.increaseTranspose()} id="plus"><Sharp /></span>
             <span onClick={ _ => this.decreaseTranspose()} id="minus"><Flat /></span>
             <span onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
@@ -220,7 +221,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
             <span onClick={ _ => this.props.toggleTheme(undefined)} id="theme-toggler">
               {this.props.themeDark ? <Day /> : <Night />}
             </span>
-        </div>
+        </MobileMenuShallow>
 
         <div
           className={'content' + (this.showMultiColumns() ? ' multicolumns':'')}
