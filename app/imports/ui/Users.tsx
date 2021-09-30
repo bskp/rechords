@@ -5,7 +5,7 @@ import Table from './Table';
 import Drawer from './Drawer';
 import { withRouter } from 'react-router-dom';
 
-import * as moment from 'moment';
+import moment from 'moment';
 import "moment/locale/de";
 
 export function Select( {options, ...rest} ) {

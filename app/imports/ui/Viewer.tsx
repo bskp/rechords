@@ -15,9 +15,13 @@ import { LayoutH, LayoutV, Day, Night, Sharp, Flat, Conveyor } from './Icons.jsx
 
 import parse, { domToReact }  from 'html-react-parser';
 
-interface ViewerProps extends RouteComponentProps {
+interface SongRouteParams {
+  author: string
+  title: string
+}
+interface ViewerProps extends RouteComponentProps<SongRouteParams> {
   song: Song,
-  toggleTheme: Function,
+  toggleTheme: React.MouseEventHandler<HTMLDivElement>,
   themeDark: boolean
 }
 
@@ -56,8 +60,8 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
     });
     this.setAutoScroll(false);
 
-    let duration : string = this.props.song.checkTag('duration');
-    if (duration) {
+    let duration : string | true = this.props.song.checkTag('duration');
+    if ( typeof duration === 'string') {
       let minutes, secs;
       [minutes, secs] = duration.split(':');
       this.duration_s = minutes*60 + secs;
@@ -77,7 +81,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
     return 0;
   }
 
-  handleContextMenu = event => {
+  handleContextMenu: React.MouseEventHandler<HTMLElement> = event => {
     if (userMayWrite()) {
       let m = this.props.match.params;
       this.props.history.push("/edit/" + m.author + "/" + m.title);
@@ -139,9 +143,9 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
 
     // Establish this songs' key
     let key_tag = this.props.song.checkTag("tonart");
-    let key = key_tag && ChrodLib.parseTag(key_tag);
+    let key = typeof key_tag === 'string' && ChrodLib.parseTag(key_tag);
 
-    if (key == null) {
+    if (!key) {
       key = ChrodLib.guessKey(this.props.song.getChords());
     }
 

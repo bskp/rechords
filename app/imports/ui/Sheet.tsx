@@ -4,9 +4,10 @@ import ChrodLib from '../api/libchrod'
 import { Song } from '../api/collections'
 import { Abcjs } from './Abcjs'
 import Kord from './Kord'
-import { extractOrGuessKey, isRefId, userMayWrite } from '../api/helpers'
-import { Element } from 'domhandler/lib/node'
-import { FunctionComponent, ReactNode } from 'react'
+import { userMayWrite } from '../api/helpers'
+import * as DH from 'domhandler'
+
+type DomOut = JSX.Element | object | void | undefined | null | false
 
 type SheetProps = {
     song: Song,
@@ -22,8 +23,8 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style }: SheetProps) 
 
     const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
-    const enrichReferences = (vdom: any) => {
-        let sections_dict = new Map<String, any>();
+    const enrichReferences = (vdom: JSX.Element[]) => {
+        let sections_dict = new Map<String, JSX.Element>();
         for (let i = 0; i < vdom.length; i++) {
             let elem = vdom[i];
             if (elem.props) {
@@ -92,9 +93,9 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style }: SheetProps) 
 
 
     // Postprocessing on each node from the dom-to-react parser
-    const populate_react_nodes = (node: any) => {  
+    const populate_react_nodes = (node: DOMNode): DomOut => {  
       
-      if (!(node instanceof Element && node.attribs)) return node;
+      if (!(node instanceof DH.Element && node.attribs)) return node;
 
         // <i>
         if (node.name && node.name == 'i') {
@@ -119,7 +120,7 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style }: SheetProps) 
           if (node.children.length != 1) 
             return node;
 
-          let code = node.children[0] as Element;
+          let code = node.firstChild as DH.Element;
           if (!('class' in code.attribs))
             return node;
 
@@ -134,7 +135,7 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style }: SheetProps) 
               return <></>
 
           } else {
-            const abc = code.children[0].data;
+            const abc = (code.firstChild as DH.DataNode)?.data;
             return <Abcjs abcNotation={abc} parserParams={{ visualTranspose: transpose, }} /> 
 
           }
@@ -142,7 +143,7 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style }: SheetProps) 
 
         // Fret diagrams
         else if (node.name == 'abbr') {
-          const chord = node.children[0].data;
+          const chord = (node.firstChild as DH.DataNode).data;
           const c = chrodlib.transpose(chord, key, 0);
 
           return <span className='chord-container'>
@@ -155,7 +156,7 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style }: SheetProps) 
         else if (node.name == 'ul' && node.attribs?.['class'] == 'tags' && !userMayWrite()) {
           const hide: string[] = ['fini', '+', 'check', 'wip'];
           node.children = node.children.filter((child) => {
-            if (child?.name == 'li' && hide.includes(child?.children[0].data)) return false;
+            if ((child as DH.Element) ?.name == 'li' && hide.includes(((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data)) return false;
             return true;
           });
         }
@@ -167,7 +168,7 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style }: SheetProps) 
       postprocess = (vdom) => processVdom( populate_react_nodes(vdom) );
     }
 
-    let vdom = parse(rmd_html, {replace: postprocess})
+    let vdom = parse(rmd_html, {replace: postprocess}) as JSX.Element[]
 
     if (inlineRefs) vdom = enrichReferences(vdom);
 

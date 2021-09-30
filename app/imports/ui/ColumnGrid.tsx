@@ -25,8 +25,8 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
     hoveringColumn: boolean = false;
     childupdate: number;
 
-    handleColumnDrag = (event: MouseEvent) => {
-        const target = event.target
+    handleColumnDrag: React.MouseEventHandler<HTMLDivElement> = (event) => {
+        const target = event.currentTarget
 
         if(event.type == 'mousedown')
         {
@@ -134,7 +134,7 @@ export class ColumnExpander extends React.Component<ColumnExpanderProps, ColumnE
     render() {
         const style = {
             "--columnWidth": this.state.columnWidth + 'px',
-        }
+        } as React.CSSProperties
 
         const debugStyle = debugColumns?
             <style dangerouslySetInnerHTML={{__html: 

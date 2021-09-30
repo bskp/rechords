@@ -5,7 +5,8 @@
 		"downlevelIteration": true,
 		"lib": [
 			"DOM",
-			"ESNext"
+			"ESNext",
+			"DOM.Iterable"
 		],
 		"preserveConstEnums": true,
 		"sourceMap": true,

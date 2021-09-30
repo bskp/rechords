@@ -19,7 +19,7 @@
     "blame-ts": "github:akkurat/blame-ts",
     "chordy-svg": "^1.2.1",
     "diff": "^5.0.0",
-    "html-react-parser": "^1.2.4",
+    "html-react-parser": "^1.3",
     "hyphenation.en-us": "^0.2.1",
     "hypher": "^0.2.5",
     "indexof": "0.0.1",
