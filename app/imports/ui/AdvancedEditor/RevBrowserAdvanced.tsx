@@ -2,11 +2,11 @@ import Songs, { Revision, Revisions, Song } from '../../api/collections';
 import * as React from 'react';
 import { Component } from 'react';
 import Drawer from '../Drawer';
-import * as moment from 'moment';
+import moment from 'moment';
 import "moment/locale/de";
 import { diffChars } from 'diff';
 import { connect, ConnectedProps } from 'react-redux';
-import { IEditorStates, revisionReducer } from './EditorAdvanced.js';
+import { IEditorStates } from './EditorAdvanced.js';
 import Source from '../Source.jsx'
 import { ReactElement } from 'react';
 import { getBlameLabel } from './BlameUtils';

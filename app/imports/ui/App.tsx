@@ -229,10 +229,6 @@ class App extends React.Component<AppProps, AppStates> {
                         <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title}/>
                         <Viewer 
                           song={song}  
-                                    song={song}  
-                          song={song}  
-                          toggleTheme={this.toggleTheme} 
-                                    toggleTheme={this.toggleTheme} 
                           toggleTheme={this.toggleTheme} 
                           themeDark={theme.includes('dark')}
                           {...routerProps} 

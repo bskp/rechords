@@ -1,6 +1,6 @@
 import * as React from 'react'
 import  { Component } from 'react';
-import { withRouter, Prompt } from 'react-router-dom';
+import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
 import Source from './Source.jsx';
 import RevBrowser from './RevBrowser.jsx';
 import Preview from './Preview';
@@ -11,7 +11,7 @@ import { Requireable } from 'react';
 import { Meteor } from 'meteor/meteor';
 
 
-class Editor extends Component<{song: Song}, {md: string, versionTab: boolean, dirty: boolean}> {
+class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, versionTab: boolean, dirty: boolean}> {
   mdServer: string;
 static propTypes:  {
   song: Requireable<Song>
@@ -76,7 +76,7 @@ static propTypes:  {
     let revs = this.props.song.getRevisions();
 
     let prompt = <Prompt
-            when={this.state.dirty && revs > 0}
+            when={this.state.dirty && revs.length > 0}
             message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
           />
 

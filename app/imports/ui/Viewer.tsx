@@ -192,7 +192,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
             <span onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
               <Conveyor />
             </span>
-            <span onClick={ _ => this.props.toggleTheme()} id="theme-toggler">
+            <span onClick={this.props.toggleTheme} id="theme-toggler">
               {this.props.themeDark ? <Day /> : <Night />}
             </span>
         </div>

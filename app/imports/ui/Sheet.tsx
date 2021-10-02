@@ -6,6 +6,8 @@ import { Abcjs } from './Abcjs'
 import Kord from './Kord'
 import { userMayWrite } from '../api/helpers'
 import * as DH from 'domhandler'
+import { element } from 'prop-types'
+import { PropsWithChildren } from 'react'
 
 type DomOut = JSX.Element | object | void | undefined | null | false
 

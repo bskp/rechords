@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Revision } from '../../api/collections';
 
-import * as moment from 'moment';
+import moment from 'moment';
 import 'moment/locale/de';
 import { Change } from 'diff';
 import { connector, ConvertDiffOptions } from './RevBrowserAdvanced';

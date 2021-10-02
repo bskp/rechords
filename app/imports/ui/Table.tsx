@@ -1,14 +1,22 @@
 import * as React from 'react';
-import { useTable, useSortBy } from 'react-table'
+import { FC } from 'react';
+import { useTable, useSortBy, Column, UseSortByColumnProps } from 'react-table'
+import User from './User';
 
-function Table({ columns, data }) {
+
+type TabpleProps<T extends object> = {
+    columns: Column<T>[];
+    data: T[];
+};
+
+const Table = <T extends object>({columns, data}: TabpleProps<T>) => {
     const {
         getTableProps,
         getTableBodyProps,
         headerGroups,
         rows,
         prepareRow,
-    } = useTable(
+    } = useTable<T>(
         {
             columns,
             data,
@@ -22,7 +30,7 @@ function Table({ columns, data }) {
                 <thead>
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
-                            {headerGroup.headers.map(column => (
+                            {headerGroup.headers.map(column  => (
                                 // Add the sorting props to control sorting. For this example
                                 // we can add them into the header props
                                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
