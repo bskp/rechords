@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "//": "0:xx enables to access the the dev server from another computer",
-    "start": "meteor --settings settings-dev.json --exclude-archs web.browser.legacy --port 0:3000",
-    "preinstall": "cd ../showdown-rechords && npm run prepare",
+    "start": "meteor --settings settings.json --exclude-archs web.browser.legacy --port 0:3000",
+    "preinstall": "npm --prefix=../showdown-rechords run build",
     "debug": "meteor run --inspect",
     "lint": "eslint imports/**"
   },
