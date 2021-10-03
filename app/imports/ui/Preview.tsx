@@ -138,12 +138,15 @@ export default class Preview extends React.Component<P, {}> {
 
     // Remove any selections.
     if (window.getSelection) {
+      console.log(window.getSelection)
       if (window.getSelection().empty) {  // Chrome
         window.getSelection().empty();
       } else if (window.getSelection().removeAllRanges) {  // Firefox
         window.getSelection().removeAllRanges();
       }
+    // @ts-ignore
     } else if (document.selection) {  // IE?
+    // @ts-ignore
       document.selection.empty();
     }
   }
@@ -374,6 +377,8 @@ export default class Preview extends React.Component<P, {}> {
       }
       else if (node.name == 'span' && 'attribs' in node && 'class' in node.attribs && 'line' == node.attribs.class) {
         // Fakey syllable to allow appended chords
+        // @ts-ignore -> not really sure about the types with this react parser stuff
+        // maby leave out types completely for dom operations
         node.children.push(<i>      </i>);
 
       }

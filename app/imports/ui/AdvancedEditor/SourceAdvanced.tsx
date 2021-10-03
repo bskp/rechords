@@ -10,6 +10,7 @@ import { FunctionComponent } from 'react';
 import { RefObject } from 'react';
 import { useState } from 'react';
 import { CharDiff, Diffline, DiffProps, getBlameLabel, getBlameLines, getDiff } from './BlameUtils';
+import { ConnectedProps } from 'react-redux';
 
 interface SourceAdvancedProps {
   md: string;
@@ -176,7 +177,7 @@ function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: st
 
 
 
-export const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProps) => {
+export const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProps & ConnectedProps<typeof connector>) => {
   const { info, lines } = props
   const [hover, setHover] = useState(false)
 

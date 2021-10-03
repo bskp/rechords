@@ -44,7 +44,8 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style }: SheetProps) 
                     const key = 'ref_' + i;
                     const visible = inlineRefs ? ' shown' : ' hidden'
 
-                    let refName = React.Children.toArray(elem.props.children)[0].props.children;
+                    const firstChild = React.Children.toArray(elem.props.children)[0] as Partial<React.ReactElement>
+                    let refName = firstChild?.props?.children;
                     if (typeof refName != 'string')
                         continue
 

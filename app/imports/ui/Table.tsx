@@ -1,8 +1,15 @@
 import * as React from 'react';
 import { FC } from 'react';
-import { useTable, useSortBy, Column, UseSortByColumnProps } from 'react-table'
+import { useTable, useSortBy, Column, UsePaginationOptions, UseSortByOptions } from 'react-table'
 import User from './User';
 
+declare module 'react-table' {
+    // This is annoying 
+    // Types for the plugins can only be added globally
+    interface ColumnInstance<D extends object = {}>
+    extends 
+      UseSortByColumnProps<D> {}
+}
 
 type TabpleProps<T extends object> = {
     columns: Column<T>[];

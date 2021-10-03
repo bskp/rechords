@@ -23,12 +23,11 @@
 
 		"typeRoots": [
 			"./node_modules/@types",
-			"./node_modules"
+			"./node_modules",
 		],
 		"types": [
 			"@types/meteor",
-			"core-js",
-			"requirejs"
+			"core-js"
 		],
 
 		"jsx": "react"

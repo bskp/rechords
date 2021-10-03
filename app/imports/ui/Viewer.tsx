@@ -202,7 +202,11 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
           id="chordsheet" ref={this.refChordsheet}
           onContextMenu={this.handleContextMenu}
         >
-          <Sheet song={this.props.song} transpose={this.state.relTranspose} hideChords={!this.state.showChords} />
+          <Sheet 
+          
+          song={this.props.song} 
+          transpose={this.state.relTranspose} 
+          hideChords={!this.state.showChords} />
           {footer}
         </div>
         {settings}
@@ -216,31 +220,4 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   }
 }
 
-function splitSongVdom(vdom: React.ReactElement[]): React.ReactElement[] {
-  const sheetHeader = vdom.filter(el => el.props?.className == 'sd-header')
-    .map(el => React.cloneElement(el))
-
-  const sheetContent = vdom.filter(el => el.props?.className != 'sd-header')
-    .filter(el => typeof el == 'object')
-    .map(el => React.cloneElement(el))
-
-  // @ts-ignore
-  return [sheetHeader, sheetContent];
-
-}
-
-const ChordSheet = (props: React.PropsWithChildren<{showMultiColumns: boolean, song: Song}> ) => {
-
-  const vdom = props.children;
-  if (props.showMultiColumns) {
-    const [sheetHeader, sheetContent]: React.ReactNode[] = splitSongVdom(vdom);
-
-    return <ColumnExpander song_id={props.song?._id} header={sheetHeader}>
-      {sheetContent}
-    </ColumnExpander>
-  } else {
-    return vdom;
-  }
-
-}
 
