@@ -6,8 +6,7 @@ import { Abcjs } from './Abcjs'
 import Kord from './Kord'
 import { userMayWrite } from '../api/helpers'
 import * as DH from 'domhandler'
-import { element } from 'prop-types'
-import { PropsWithChildren } from 'react'
+import { SheetSplit } from './SheetSplit'
 
 type DomOut = JSX.Element | object | void | undefined | null | false
 
@@ -17,9 +16,10 @@ type SheetProps = {
     hideChords?: boolean,
     processVdom?: (vdom: any) => any,
     style?: Object
+    multicolumns?: boolean
 }
 
-const Sheet = ({ song, transpose, hideChords, processVdom, style }: SheetProps) => {
+const Sheet = ({ song, transpose, hideChords, processVdom, style, multicolumns }: SheetProps) => {
 
     const [inlineRefs, setInlineRefs] = React.useState(true);
 
@@ -173,11 +173,14 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style }: SheetProps) 
 
     let vdom = parse(rmd_html, {replace: postprocess}) as JSX.Element[]
 
-    if (inlineRefs) vdom = enrichReferences(vdom);
+    if (inlineRefs){
+     vdom = enrichReferences(vdom);
+    }
+
 
     return (
       <section id="chordsheetContent" style={style}>
-        {vdom}
+        {multicolumns ? <SheetSplit song={song}>{vdom}</SheetSplit> : vdom}
       </section>
     )
 

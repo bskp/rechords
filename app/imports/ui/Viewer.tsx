@@ -204,6 +204,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
         >
           <Sheet 
           
+          multicolumns={this.showMultiColumns()}
           song={this.props.song} 
           transpose={this.state.relTranspose} 
           hideChords={!this.state.showChords} />
