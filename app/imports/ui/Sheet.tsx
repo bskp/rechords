@@ -39,8 +39,8 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style, multicolumns }
 
         for (let i = 0; i < vdom.length; i++) {
             let elem = vdom[i];
-            if (elem.props) {
-                if (elem.props.className == 'ref') {
+            {
+                if (elem?.props?.className == 'ref') {
                     const key = 'ref_' + i;
                     const visible = inlineRefs ? ' shown' : ' hidden'
 
@@ -55,7 +55,7 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style, multicolumns }
                     if (!definition) {
                         vdom[i] = React.cloneElement(elem,
                             {
-                                'onClick': toggleInlineRefs,
+                                'onClick': () => {console.log('sf'); toggleInlineRefs()},
                                 className: 'ref collapsed',
                                 key: key,
                                 id: key
@@ -173,9 +173,7 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style, multicolumns }
 
     let vdom = parse(rmd_html, {replace: postprocess}) as JSX.Element[]
 
-    if (inlineRefs){
-     vdom = enrichReferences(vdom);
-    }
+    vdom = enrichReferences(vdom);
 
 
     return (
