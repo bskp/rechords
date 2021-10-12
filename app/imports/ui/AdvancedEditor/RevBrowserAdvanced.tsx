@@ -2,11 +2,11 @@ import Songs, { Revision, Revisions, Song } from '../../api/collections';
 import * as React from 'react';
 import { Component } from 'react';
 import Drawer from '../Drawer';
-import * as moment from 'moment';
+import moment from 'moment';
 import "moment/locale/de";
 import { diffChars } from 'diff';
 import { connect, ConnectedProps } from 'react-redux';
-import { IEditorStates, revisionReducer } from './EditorAdvanced.js';
+import { IEditorStates } from './EditorAdvanced';
 import Source from '../Source.jsx'
 import { ReactElement } from 'react';
 import { getBlameLabel } from './BlameUtils';
@@ -182,7 +182,7 @@ class RevLinkAdvanced_ extends Component<RevLinkAdvancedProps_> {
   }
 }
 
-export const RevLinkAdvanced: React.ComponentClass<RevLinkAdvancedProps> = connector(RevLinkAdvanced_)
+export const RevLinkAdvanced = connector(RevLinkAdvanced_)
 
 export interface ConvertDiffOptions {
   showWhitespace?: boolean;

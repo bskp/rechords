@@ -8,16 +8,14 @@ export async function expandColumns(element: Node, maxIterations = 20,
     specialClass?: (idx: number) => string, depth = 1) {
 
     const stencil = element.cloneNode();
-    //@ts-ignore
-    let lastElement: HTMLElement = element;
+    let lastElement = element as HTMLElement;
 
     if (typeof specialClass == 'function') {
         lastElement.classList.add(specialClass(0))
     }
     lastElement.style.overflow = 'hidden'
     for (let i = 1; isVerticalOverflow(lastElement) && i <= maxIterations; i++) {
-        // @ts-ignore
-        const clone: HTMLElement = stencil.cloneNode();
+        const clone = stencil.cloneNode() as HTMLElement;
         clone.id = "artificialColumn" + i;
         if (typeof specialClass == 'function') {
             clone.classList.add(specialClass(i))
@@ -44,9 +42,9 @@ async function layout( c1: HTMLElement, c2, maxIterations ) {
         // await Sleep(150);
         const lastChild = c1.lastChild;
 
-        if (lastChild.hasChildNodes()) {
+        if (lastChild.hasChildNodes() && lastChild instanceof(Element) ) {
 
-            const container = lastChild.cloneNode(false);
+            const container = lastChild.cloneNode(false) as Element;
             container.id += 'copy_' + i;
             c2.prepend(container)
             for (let j = 0; isVerticalOverflow(c1) && j < maxIterations && lastChild.hasChildNodes(); j++) {

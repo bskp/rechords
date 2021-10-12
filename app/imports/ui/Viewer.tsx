@@ -11,9 +11,13 @@ import Sheet from './Sheet';
 import { LayoutH, LayoutV, Day, Night, Sharp, Flat, Conveyor } from './Icons.jsx';
 
 
-interface ViewerProps extends RouteComponentProps {
+interface SongRouteParams {
+  author: string
+  title: string
+}
+interface ViewerProps extends RouteComponentProps<SongRouteParams> {
   song: Song,
-  toggleTheme: Function,
+  toggleTheme: React.MouseEventHandler<HTMLDivElement>,
   themeDark: boolean
 }
 
@@ -52,8 +56,8 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
     });
     this.setAutoScroll(false);
 
-    let duration : string = this.props.song.checkTag('duration');
-    if (duration) {
+    let duration : string | true = this.props.song.checkTag('duration');
+    if ( typeof duration === 'string') {
       let minutes, secs;
       [minutes, secs] = duration.split(':');
       this.duration_s = minutes*60 + secs;
@@ -73,7 +77,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
     return 0;
   }
 
-  handleContextMenu = event => {
+  handleContextMenu: React.MouseEventHandler<HTMLElement> = event => {
     if (userMayWrite()) {
       let m = this.props.match.params;
       this.props.history.push("/edit/" + m.author + "/" + m.title);
@@ -135,9 +139,9 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
 
     // Establish this songs' key
     let key_tag = this.props.song.checkTag("tonart");
-    let key = key_tag && ChrodLib.parseTag(key_tag);
+    let key = typeof key_tag === 'string' && ChrodLib.parseTag(key_tag);
 
-    if (key == null) {
+    if (!key) {
       key = ChrodLib.guessKey(this.props.song.getChords());
     }
 
@@ -184,7 +188,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
             <span onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
               <Conveyor />
             </span>
-            <span onClick={ _ => this.props.toggleTheme()} id="theme-toggler">
+            <span onClick={this.props.toggleTheme} id="theme-toggler">
               {this.props.themeDark ? <Day /> : <Night />}
             </span>
         </div>
@@ -194,7 +198,12 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
           id="chordsheet" ref={this.refChordsheet}
           onContextMenu={this.handleContextMenu}
         >
-          <Sheet song={this.props.song} transpose={this.state.relTranspose} hideChords={!this.state.showChords} />
+          <Sheet 
+          
+          multicolumns={this.showMultiColumns()}
+          song={this.props.song} 
+          transpose={this.state.relTranspose} 
+          hideChords={!this.state.showChords} />
           {footer}
         </div>
         {settings}
@@ -208,15 +217,3 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   }
 }
 
-function splitSongVdom(vdom: React.ReactElement[]): React.ReactElement[] {
-  const sheetHeader = vdom.filter(el => el.props?.className == 'sd-header')
-    .map(el => React.cloneElement(el))
-
-  const sheetContent = vdom.filter(el => el.props?.className != 'sd-header')
-    .filter(el => typeof el == 'object')
-    .map(el => React.cloneElement(el))
-
-  // @ts-ignore
-  return [sheetHeader, sheetContent];
-
-}

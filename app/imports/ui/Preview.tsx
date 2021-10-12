@@ -7,7 +7,9 @@ var Hypher = require('hypher'),
 english = require('hyphenation.en-us'),
 h = new Hypher(english);
 
-import parse, { domToReact } from 'html-react-parser';
+import parse from 'html-react-parser';
+import * as DH from 'domhandler';
+import { DataNode } from 'domhandler';
 
 // The almighty expression matching a verse. Stolen from showdown-rechords.js:53
 const verseRegex = /(.*?): *\n((?:[^\n<>]*[^\n:<>]+\n\n?)+)/gi;
@@ -77,7 +79,7 @@ export default class Preview extends React.Component<P, {}> {
     let offset = 0;
     for (let child of node.children) {
       offset += 2;
-      offset += this.textLen(child.innerText);
+      offset += this.textLen((child as HTMLElement)?.innerText);
     }
 
     let skipWhitespace = true;
@@ -136,12 +138,15 @@ export default class Preview extends React.Component<P, {}> {
 
     // Remove any selections.
     if (window.getSelection) {
+      console.log(window.getSelection)
       if (window.getSelection().empty) {  // Chrome
         window.getSelection().empty();
       } else if (window.getSelection().removeAllRanges) {  // Firefox
         window.getSelection().removeAllRanges();
       }
+    // @ts-ignore
     } else if (document.selection) {  // IE?
+    // @ts-ignore
       document.selection.empty();
     }
   }
@@ -302,7 +307,7 @@ export default class Preview extends React.Component<P, {}> {
           letter += node.textContent.replace(/\s/g, '').length;
           continue;
         }
-        if (node.nodeName == 'SPAN' && node.className == 'before') {
+        if (node.nodeName == 'SPAN' && (node as HTMLSpanElement).className == 'before') {
           letter += 2;
           letter += this.textLen(node.textContent);
           chord += 1;
@@ -330,7 +335,9 @@ export default class Preview extends React.Component<P, {}> {
   render() {
     this.props.song.parse(this.props.md);
 
-    let vdom = parse(this.props.song.getHtml(), {replace: (node) => {
+    let vdom = parse(this.props.song.getHtml(), {replace: (domNode) => {
+      if(DH.isTag(domNode)) {
+        const node = domNode as DH.Element
       if (node.name == 'i') {
         let chord;
         if ('data-chord' in node.attribs) {
@@ -370,17 +377,19 @@ export default class Preview extends React.Component<P, {}> {
       }
       else if (node.name == 'span' && 'attribs' in node && 'class' in node.attribs && 'line' == node.attribs.class) {
         // Fakey syllable to allow appended chords
+        // @ts-ignore -> not really sure about the types with this react parser stuff
+        // maby leave out types completely for dom operations
         node.children.push(<i>      </i>);
 
       }
       else if (node.name == 'pre') {
         if (node.children.length != 1) return node;
-        let code = node.children[0];
+        let code = node.children[0] as DH.Element;
         if (!('class' in code.attribs)) return node;
         let classes = code.attribs['class'];
         if (!(classes.includes('language-abc'))) return node;
         if (code.children.length != 1) return node;
-        let abc = code.children[0].data;
+        let abc = (code.children[0] as DH.DataNode).data;
 
         return <Abcjs
           abcNotation={abc}
@@ -389,11 +398,12 @@ export default class Preview extends React.Component<P, {}> {
       }
       else if (node.name == 'abbr') {
         return <span className='chord-container'>
-            <strong>{node.children[0].data}</strong>
+            <strong>{(node.firstChild as DataNode).data}</strong>
             <Kord frets={node.attribs.title} fingers={node.attribs['data-fingers']} />
           </span>
       }
-      return node;
+    }
+      return domNode;
     }});
 
     return (
