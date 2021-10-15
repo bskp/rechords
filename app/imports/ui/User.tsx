@@ -1,11 +1,12 @@
 import * as React from 'react';
 
-import { withRouter, Link } from 'react-router-dom';
+import {withRouter, Link} from 'react-router-dom';
 import Songs, { Revisions, Song } from '../api/collections';
 
 import "moment/locale/de";
 
 import { Select } from './Users';
+import {routePath, View} from "../api/helpers";
 
 class User extends React.Component<{ user : Meteor.User, revisionsLoading : boolean}, { user : Meteor.User, msg : string}> {
 
@@ -84,7 +85,7 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
 
         let darlings = u.profile.darlings?.map ( id => {
             let s = Songs.findOne(id);
-            return s ? <li key={'sl' + s._id}><Link to={'/view/' + s.author_ + '/' + s.title_}>{s.title}</Link></li> : undefined;
+            return s ? <li key={'sl' + s._id}><Link to={routePath(View.view, s)}>{s.title}</Link></li> : undefined;
         });
 
         if (darlings === undefined || darlings.length == 0) {
@@ -127,7 +128,7 @@ class User extends React.Component<{ user : Meteor.User, revisionsLoading : bool
 
         const song_links = song_ids.map( ( id ) => {
             let s = Songs.findOne(id);
-            return s ? <li key={'sl' + s._id}><Link to={'/view/' + s.author_ + '/' + s.title_}>{s.title}</Link></li> : undefined;
+            return s ? <li key={'sl' + s._id}><Link to={routePath(View.view, s)}>{s.title}</Link></li> : undefined;
         });
 
         const options = [

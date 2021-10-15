@@ -6,6 +6,7 @@ import { NavLink } from "react-router-dom";
 
 import moment from 'moment';
 import "moment/locale/de";
+import {routePath, View} from "../api/helpers";
 
 function Progress(props) {
 
@@ -26,7 +27,7 @@ function Progress(props) {
                 Header: 'Titel',
                 accessor: 'title',
                 Cell: ({row: {original: s}}) => {
-                    return <NavLink to={`/view/${s.author_}/${s.title_}`} >{s.title}</NavLink>
+                    return <NavLink to={routePath(View.view, s)} >{s.title}</NavLink>
                 },
             },
             {

@@ -4,7 +4,7 @@ import TranposeSetter from "./TransposeSetter";
 import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
 import Drawer from './Drawer';
-import {userMayWrite} from '../api/helpers';
+import {navigateCallback, routePath, userMayWrite, View} from '../api/helpers';
 import Sheet from './Sheet';
 
 import { LayoutH, LayoutV, Day, Night, Sharp, Flat, Conveyor } from './Icons.jsx';
@@ -206,9 +206,8 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
         </Drawer>
     ) : undefined;
 
-    const s = this.props.song;
     const footer = userMayWrite() ? (
-        <div className="mobile-footer"><NavLink to={`/edit/${s.author_}/${s.title_}`} id="edit">Bearbeiten…</NavLink></div>
+        <div className="mobile-footer"><NavLink to={routePath(View.edit, this.props.song)} id="edit">Bearbeiten…</NavLink></div>
     ) : undefined;
 
     return (

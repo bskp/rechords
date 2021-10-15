@@ -1,14 +1,15 @@
 import * as React from 'react';
-import { Component } from 'react';
-import { Revision, Song } from '../../api/collections';
-import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
-import { RevBrowserAdvanced } from './RevBrowserAdvanced';
+import {Component} from 'react';
+import {Revision, Song} from '../../api/collections';
+import {Prompt, RouteComponentProps, withRouter} from 'react-router-dom';
+import {RevBrowserAdvanced} from './RevBrowserAdvanced';
 import Preview from '../Preview';
 import Drawer from '../Drawer';
-import { Ok, Cancel } from '../Icons.jsx';
-import { SourceAdvanced, ISourceOptions } from './SourceAdvanced';
-import { IModule } from 'redux-dynamic-modules';
-import { connect, ConnectedProps } from 'react-redux';
+import {Cancel, Ok} from '../Icons.jsx';
+import {ISourceOptions, SourceAdvanced} from './SourceAdvanced';
+import {IModule} from 'redux-dynamic-modules';
+import {connect, ConnectedProps} from 'react-redux';
+import {navigateTo, View} from "../../api/helpers";
 
 type EditorAdvancedProps = {
   song: Song
@@ -61,9 +62,9 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
       }
 
       if (isValid) {
-        this.props.history.push('/view/' + this.props.song.author_ + '/' + this.props.song.title_);
+        navigateTo(this.props.history, View.view, this.props.song);
       } else {
-        this.props.history.push('/');
+        navigateTo(this.props.history, View.home);
       }
     });
 

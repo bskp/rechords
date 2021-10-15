@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { withRouter, NavLink, Link } from 'react-router-dom';
-import { RouteComponentProps } from "react-router-dom";
+import {MouseEventHandler} from 'react';
+import {Link, NavLink, RouteComponentProps, withRouter} from 'react-router-dom';
 import MetaContent from './MetaContent';
-import { Song } from '../api/collections';
+import {Song} from '../api/collections';
 
 import Drawer from './Drawer';
-
-import { MouseEventHandler } from 'react';
+import {navigateTo, routePath, View} from "../api/helpers";
 
 interface ListItemProps {
     song: Song;
@@ -54,7 +53,7 @@ class ListItem extends React.Component<ListItemProps> {
         const darling_or_not = <span onClick={this.toggleDarling} className={"darling " + is_darling}>{darling_icon}</span>
         
         return (
-            <li><NavLink onClick={this.props.onClickHandler} to={`/view/${this.props.song.author_}/${this.props.song.title_}`}
+            <li><NavLink onClick={this.props.onClickHandler} to={routePath(View.view, this.props.song)}
                 activeClassName="selected">
                     <span className="title">{this.props.song.title}</span>
                     <span className="author">{this.props.song.author}</span>
@@ -217,7 +216,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
             if (event.shiftKey) {
                 // Only navigate to song if shift is pressed with enter.
                 let s = list[0];
-                this.props.history.push('/view/' + s.author_ + '/' + s.title_);
+                navigateTo(this.props.history, View.view, s);
                 this.setFilter('');
             }
 

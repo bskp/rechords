@@ -9,6 +9,7 @@ import Drawer from './Drawer';
 import { Ok, Cancel } from './Icons.jsx';
 import { Song } from '../api/collections';
 import { Meteor } from 'meteor/meteor';
+import {navigateTo, View} from "../api/helpers";
 
 
 class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, versionTab: boolean, dirty: boolean}> {
@@ -44,9 +45,9 @@ class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, 
       }
 
       if (isValid) {
-        this.props.history.push('/view/' + this.props.song.author_ + '/' + this.props.song.title_);
+        navigateTo(this.props.history, View.view, this.props.song);
       } else {
-        this.props.history.push('/');
+        navigateTo(this.props.history, View.home);
       }
     });
 
