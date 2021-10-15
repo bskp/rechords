@@ -138,6 +138,7 @@ class Users extends React.Component<UsersProps, { user : Meteor.User }> {
 
     newUser = () => {
         this.setState({
+            // @ts-ignore id_ will be added by meteor
             user: {
                 _id: undefined,
                 username: '',

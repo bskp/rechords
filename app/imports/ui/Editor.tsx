@@ -1,21 +1,18 @@
 import * as React from 'react'
 import  { Component } from 'react';
 import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
-import Source from './Source.jsx';
-import RevBrowser from './RevBrowser.jsx';
+
+import Source from './Source';
+import RevBrowser from './RevBrowser';
 import Preview from './Preview';
 import Drawer from './Drawer';
 import { Ok, Cancel } from './Icons.jsx';
 import { Song } from '../api/collections';
-import { Requireable } from 'react';
 import { Meteor } from 'meteor/meteor';
 
 
 class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, versionTab: boolean, dirty: boolean}> {
   mdServer: string;
-static propTypes:  {
-  song: Requireable<Song>
-};
 
   constructor(props) {
     super(props);

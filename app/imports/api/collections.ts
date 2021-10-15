@@ -55,7 +55,7 @@ function isDefined<T>(a: T | null | undefined): a is T {
 	return a !== null && a !== undefined;
 }
 
-export const rmd_version = 6;
+export const rmd_version = 7;
 export class Song {
   _id?: string;
 
@@ -115,14 +115,13 @@ export class Song {
       for (let tag of this.getTags()) {
           if (!(tag.toLowerCase().startsWith(needle.toLowerCase()))) continue;
 
-          let chunks = tag.split(':', 2);
+          let chunks = tag.split(':');
           if (chunks.length == 1) {
-            // legacy mode: the tag may not contain the colon yet.
-            // TODO: remove as soon each song has been edited once (and the tags have been re-parsed)
+            // Tags without "value" (ie. colon)
             chunks = tag.split(needle);
             if (chunks[1] == '') return true;
           }
-          return chunks[1];
+          return chunks.splice(1).join(':');
       }
       return null; // Tag not present
   }
@@ -131,11 +130,11 @@ export class Song {
     for (let tag of this.getTags()) {
         if (!(tag.toLowerCase().startsWith(tag_name.toLowerCase()))) continue;
 
-        let chunks = tag.split(':', 2);
+        let chunks = tag.split(':');
         if (chunks.length == 1) {
           return undefined  // no colon in tag
         }
-        return chunks[1];
+        return chunks.splice(1).join(':');
     }
     return undefined; // Tag not present
 

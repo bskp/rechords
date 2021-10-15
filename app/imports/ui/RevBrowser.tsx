@@ -1,21 +1,20 @@
-import Songs, { Revisions } from '../api/collections';
+import {Revision, Song} from '../api/collections';
 import React, { Component } from 'react';
-import Source from './Source.jsx';
-import PropTypes from 'prop-types';
+import Source from './Source';
 import Drawer from '../ui/Drawer';
 import moment from 'moment';
 import "moment/locale/de";
 
-export default class RevBrowser extends React.Component {
+export default class RevBrowser extends React.Component<{song: Song}, {revision: Revision}> {
 
   constructor(props) {
-    super();
+    super(props);
     this.state = {
       revision: undefined,
     }
   }
 
-  setRev = (rev) => {
+  setRev = (rev : Revision) => {
     this.setState({
       revision: rev
     });
@@ -30,14 +29,11 @@ export default class RevBrowser extends React.Component {
   }
 
   keyHandler = (e) => {
-    if (this.props.hidden) return;
-
-
     // Do not steal focus if on <input>
     if (e.target?.tagName == 'INPUT') return;
 
     const rev = this.state?.revision
-    const revs = this.props.song.getRevisions();
+    const revs : Array<Revision> = this.props.song.getRevisions();
 
     const n = revs.length
 
@@ -101,11 +97,7 @@ export default class RevBrowser extends React.Component {
   }
 }
 
-RevBrowser.propTypes = {
-  song: PropTypes.object.isRequired
-};
-
-class RevLink extends Component {
+class RevLink extends Component<{rev: Revision, idx: number, key: string, callback: Function, active: boolean}, {}> {
   constructor(props) {
     super(props);
   }

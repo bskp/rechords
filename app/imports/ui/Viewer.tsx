@@ -1,14 +1,14 @@
 import * as React from "react";
 import {  NavLink, RouteComponentProps } from "react-router-dom";
-import TranposeSetter from "./TransposeSetter.jsx";
+import TranposeSetter from "./TransposeSetter";
 import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
 import Drawer from './Drawer';
-import { ColumnExpander } from "./ColumnGrid";
 import {userMayWrite} from '../api/helpers';
 import Sheet from './Sheet';
 
 import { LayoutH, LayoutV, Day, Night, Sharp, Flat, Conveyor } from './Icons.jsx';
+import {MouseEventHandler} from "react";
 
 
 interface SongRouteParams {
@@ -29,7 +29,7 @@ interface ViewerStates {
   autoscroll: any
 }
 
-export default class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> {
+export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
   constructor(props) {
     super(props);
 
@@ -46,6 +46,20 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   refChordsheet = React.createRef<HTMLDivElement>()
   duration_s = undefined;
 
+  updateDuration() {
+    let duration : string = this.props.song.getTag('dauer');
+    if (duration) {
+      let chunks = duration.split(':');
+      this.duration_s = 60*Number(chunks[0]) + Number(chunks[1]);
+    } else {
+      this.duration_s = undefined;
+    }
+  }
+
+  componentDidMount() {
+    this.updateDuration();
+  }
+
   componentDidUpdate(prevProps) {
     if (this.props.song._id == prevProps.song._id) return;
 
@@ -55,13 +69,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
       relTranspose: this.getInitialTranspose(),
     });
     this.setAutoScroll(false);
-
-    let duration : string | true = this.props.song.checkTag('duration');
-    if ( typeof duration === 'string') {
-      let minutes, secs;
-      [minutes, secs] = duration.split(':');
-      this.duration_s = minutes*60 + secs;
-    }
+    this.updateDuration();
   }
 
   componentWillUnmount() {
@@ -80,6 +88,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   handleContextMenu: React.MouseEventHandler<HTMLElement> = event => {
     if (userMayWrite()) {
       let m = this.props.match.params;
+      // @ts-ignore
       this.props.history.push("/edit/" + m.author + "/" + m.title);
     }
     event.preventDefault();
@@ -106,15 +115,37 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   }
 
   setAutoScroll = (target_state) => {
-    const callback = () => {
-      this.refChordsheet.current?.scrollBy(0, 1);
-    }
+    let divElement = this.refChordsheet.current;
 
     this.setState( state => {
+        // Start autoscroll
         if (state.autoscroll == undefined && target_state == true) {
-          return { autoscroll: Meteor.setInterval(callback, 133) };
+          // default values
+          let delay_ms = 133;
+          let step_pixels = 1;
+
+          // use custom values, if a "dauer"-tag is present for the song.
+          // duration_s is set in #updateDuration
+          if (this.duration_s) {
+            let scroll_distance = divElement.scrollHeight - divElement.clientHeight;
+            delay_ms = this.duration_s*1000/scroll_distance;
+          }
+
+          if (delay_ms < 50) {
+            // Most browser/devices cannot keep up with scroll events over 20fps.
+            // For faster scrolling, we therefore take bigger steps.
+            step_pixels = Math.ceil(50/delay_ms);
+            delay_ms = delay_ms*step_pixels;
+          }
+
+          const callback = () => {
+            divElement?.scrollBy(0, step_pixels);
+          }
+
+          return { autoscroll: Meteor.setInterval(callback, delay_ms) };
         }
 
+        // Stop autoscroll
         if (state.autoscroll != undefined && target_state == false) {
           Meteor.clearInterval(state.autoscroll);
           return { autoscroll: undefined };
@@ -138,8 +169,9 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   render() {
 
     // Establish this songs' key
-    let key_tag = this.props.song.checkTag("tonart");
-    let key = typeof key_tag === 'string' && ChrodLib.parseTag(key_tag);
+
+    let key_tag = this.props.song.getTag("tonart");
+    let key = key_tag && ChrodLib.parseTag(key_tag);
 
     if (!key) {
       key = ChrodLib.guessKey(this.props.song.getChords());
@@ -150,7 +182,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
               onDoubleClick={this.toggleChords}
               transposeSetter={this.transposeSetter}
               transpose={this.state.relTranspose}
-              keym={key} id="transposer"
+              keym={key}
             />
         :
           <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div>
@@ -188,7 +220,8 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
             <span onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
               <Conveyor />
             </span>
-            <span onClick={this.props.toggleTheme} id="theme-toggler">
+
+            <span onClick={ _ => this.props.toggleTheme(undefined)} id="theme-toggler">
               {this.props.themeDark ? <Day /> : <Night />}
             </span>
         </div>

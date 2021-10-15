@@ -5,8 +5,8 @@ import MetaContent from './MetaContent';
 import { Song } from '../api/collections';
 
 import Drawer from './Drawer';
-import { MouseEventHandler } from 'react';
 
+import { MouseEventHandler } from 'react';
 
 interface ListItemProps {
     song: Song;
@@ -78,6 +78,7 @@ interface ListGroupProps {
   user: Meteor.User;
   label: string;
   onClickHandler: MouseEventHandler<HTMLElement>
+
 }
 class ListGroup extends React.Component<ListGroupProps, {}> {
     constructor(props) {
@@ -105,6 +106,7 @@ interface ListProps {
   filter?: string;
   hidden: boolean;
   hideOnMobile: MouseEventHandler<HTMLElement>
+
 }
 interface ListState {
     filter: string;
@@ -115,6 +117,7 @@ interface ListState {
 
 class List extends React.Component<ListProps & RouteComponentProps, ListState> {
     refFilter: React.RefObject<HTMLInputElement>;
+  
     constructor(props) {
         super(props);
         this.state = {
@@ -124,6 +127,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
             exact_matches: []
         }
         this.refFilter = React.createRef()
+
     }
 
     keyHandler = (e : KeyboardEvent) => {
@@ -132,6 +136,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
         if (e.key == 'Escape') {
             this.setFilter('');
             this.refFilter.current?.blur();
+
             e.preventDefault();
             return
         } 
@@ -145,11 +150,12 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
         // Check if the pressed key has a printable representation
         if (e.key && e.key.length === 1) {
             this.refFilter.current?.focus();
+
         }
     }
 
     componentDidMount() {
-        document.addEventListener("keydown", this.keyHandler, {});
+        document.addEventListener("keydown", this.keyHandler);
         this.setFilter('');
     }
 
@@ -307,12 +313,13 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
                         placeholder="Filtern…" 
                         value={this.state.filter} 
                         ref={this.refFilter}
+
                         onChange={this.onChange}
                         onFocus={this.onFocus}
                         onBlur={this.onBlur}
                         onKeyDown={this.onKeyDown}
                         />
-                    <span className={'reset ' + filled} onClick={(e)=>{this.setFilter('')}}>&times;</span>
+                    <span className={'reset ' + filled} onClick={ () => { this.setFilter('') } }>&times;</span>
                 </div>
 
                 <MetaContent 

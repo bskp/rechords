@@ -58,7 +58,6 @@ body {
   overflow: hidden;
   //position: fixed; halb-gut auf safari, andere mobile browser?
 
-  .select(none);
   -webkit-tap-highlight-color: transparent;
 
   font-family: "Roboto", "Cardo", "Last Resort", Helvetica, Arial, sans-serif;
@@ -304,14 +303,14 @@ div.mobile-footer {
 
 // Content elements
 
-#textareafonts {
+.textareafonts {
   font-family: "Plex Mono", Courier New, Courier, monospace;
   font-weight: 300;
   font-size: 0.9em;
 }
 
 textarea {
-  #textareafonts();
+  .textareafonts();
   width: inherit;
   cursor: text;
 

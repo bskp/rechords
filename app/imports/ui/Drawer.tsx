@@ -11,7 +11,8 @@ interface DrawerProps extends RouteComponentProps {
 
 class Drawer extends React.Component<DrawerProps> {
     public static defaultProps = {
-        open: false
+        open: false,
+        id: ""
     };
 
     constructor(props: Readonly<DrawerProps>) {
