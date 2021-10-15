@@ -9,7 +9,7 @@ interface DrawerProps extends RouteComponentProps {
     open?: boolean,
 }
 
-class Drawer extends React.Component<DrawerProps, {}> {
+class Drawer extends React.Component<DrawerProps> {
     public static defaultProps = {
         open: false,
         id: ""

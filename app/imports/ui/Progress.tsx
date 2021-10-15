@@ -4,7 +4,7 @@ import Table from './Table';
 
 import { NavLink } from "react-router-dom";
 
-import * as moment from 'moment';
+import moment from 'moment';
 import "moment/locale/de";
 
 function Progress(props) {

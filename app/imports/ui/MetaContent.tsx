@@ -1,18 +1,20 @@
 import { Song } from '../api/collections';
 import * as React from 'react';
 import { DetailedReactHTMLElement } from 'react'
-import parse from 'html-react-parser';
+import parse, { DOMNode, domToReact } from 'html-react-parser';
 
 
 interface Props {
   title: string;
   className?: string;
   songs: Array<Song>;
-  replace?: Function;
+  replace?: (
+    domNode: DOMNode
+  ) => JSX.Element | Record<string,unknown> | void | undefined | null | false;
 }
 
 export default class MetaContent extends React.Component<Props, {}> {
-    content: object;
+    content: ReturnType<typeof domToReact>
 
     constructor(props) {
         super(props);

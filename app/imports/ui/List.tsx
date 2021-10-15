@@ -5,15 +5,15 @@ import MetaContent from './MetaContent';
 import { Song } from '../api/collections';
 
 import Drawer from './Drawer';
-import {MouseEventHandler} from "react";
 
+import { MouseEventHandler } from 'react';
 
 interface ListItemProps {
     song: Song;
-    onClickHandler: MouseEventHandler;
+    onClickHandler: MouseEventHandler<HTMLAnchorElement>;
     user: Meteor.User;
 }
-class ListItem extends React.Component<ListItemProps, {}> {
+class ListItem extends React.Component<ListItemProps> {
     constructor(props) {
         super(props);
     }
@@ -77,7 +77,8 @@ interface ListGroupProps {
   songs: Array<Song>;
   user: Meteor.User;
   label: string;
-  onClickHandler: MouseEventHandler;
+  onClickHandler: MouseEventHandler<HTMLElement>
+
 }
 class ListGroup extends React.Component<ListGroupProps, {}> {
     constructor(props) {
@@ -102,9 +103,10 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
 interface ListProps {
   songs: Array<Song>;
   user: Meteor.User;
-  filter?: String;
+  filter?: string;
   hidden: boolean;
-  hideOnMobile: MouseEventHandler;
+  hideOnMobile: MouseEventHandler<HTMLElement>
+
 }
 interface ListState {
     filter: string;
@@ -114,7 +116,8 @@ interface ListState {
 }
 
 class List extends React.Component<ListProps & RouteComponentProps, ListState> {
-    private filter: React.RefObject<HTMLInputElement>;
+    refFilter: React.RefObject<HTMLInputElement>;
+  
     constructor(props) {
         super(props);
         this.state = {
@@ -123,7 +126,8 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
             fuzzy_matches: [],
             exact_matches: []
         }
-        this.filter = React.createRef();
+        this.refFilter = React.createRef()
+
     }
 
     keyHandler = (e : KeyboardEvent) => {
@@ -131,21 +135,22 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
 
         if (e.key == 'Escape') {
             this.setFilter('');
-            this.filter.current.blur();
+            this.refFilter.current?.blur();
+
             e.preventDefault();
             return
         } 
 
         // Do not steal focus if on <input>
-        // @ts-ignore
-        if (e.target?.tagName == 'INPUT' ) return;
+        if( (e.target as Element)?.tagName == 'INPUT' ) return;
 
         // Ignore special keys
         if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
 
         // Check if the pressed key has a printable representation
         if (e.key && e.key.length === 1) {
-            this.filter.current.focus();
+            this.refFilter.current?.focus();
+
         }
     }
 
@@ -216,7 +221,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
                 this.setFilter('');
             }
 
-            this.filter.current.blur();
+            this.refFilter?.current.blur();
         }
     }
 
@@ -307,7 +312,8 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
                     <input type="text" 
                         placeholder="Filtern…" 
                         value={this.state.filter} 
-                        ref={this.filter}
+                        ref={this.refFilter}
+
                         onChange={this.onChange}
                         onFocus={this.onFocus}
                         onBlur={this.onBlur}
