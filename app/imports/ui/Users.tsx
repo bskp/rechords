@@ -133,10 +133,11 @@ class Users extends React.Component<{ users : Array<Meteor.User>}, { user : Mete
 
     newUser = () => {
         this.setState({
+            // @ts-ignore id_ will be added by meteor
             user: {
                 username: '',
                 emails: [ { address: '', verified: false} ],
-                createdAt: new Date().getTime(),
+                createdAt: new Date(),
 
                 profile: {
                     role: 'user',
