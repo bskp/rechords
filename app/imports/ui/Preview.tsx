@@ -221,7 +221,7 @@ export default class Preview extends React.Component<P, {}> {
           countedLetters += adding;
           return match;
         });
-      };
+      }
 
       return title + ':\n' + v;
     });
@@ -254,7 +254,7 @@ export default class Preview extends React.Component<P, {}> {
 
           return l;
         });
-      };
+      }
 
       return title + ':\n' + v;
     });
@@ -311,7 +311,7 @@ export default class Preview extends React.Component<P, {}> {
           letter += 2;
           letter += this.textLen(node.textContent);
           chord += 1;
-          continue;
+
         }
       }
     }

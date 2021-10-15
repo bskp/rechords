@@ -1,8 +1,12 @@
 import * as React from 'react';
-import { Song } from '../api/collections';
+import {Song} from '../api/collections';
 
 
 import Sheet from './Sheet';
+import {navigateCallback, View} from "../api/helpers";
+import {Button} from "./Button";
+import {Cancel} from "./Icons";
+import {RouteComponentProps, withRouter} from "react-router-dom";
 
 type PrinterProps = {
   song: Song,
@@ -10,15 +14,7 @@ type PrinterProps = {
   themeDark: boolean
 }
 
-interface ViewerStates {
-  relTranspose: number,
-  inlineReferences: boolean,
-  showChords: boolean,
-  columns: boolean,
-  autoscroll: any
-}
-
-const Printer = ({song}: PrinterProps) => {
+const Printer = ({song, history}: PrinterProps & RouteComponentProps) => {
 
   const initial_transpose = () => {
     for (let tag of song.getTags()) {
@@ -38,7 +34,11 @@ const Printer = ({song}: PrinterProps) => {
 
   const refChordsheet = React.createRef<HTMLDivElement>();
 
-  const settings = <></>;
+  const settings = <aside id="rightSettings">
+    <Button onClick={navigateCallback(history, View.view, song)}>
+      <Cancel />
+    </Button>
+  </aside>
 
 
   const sheetStyle = {
@@ -61,4 +61,4 @@ const Printer = ({song}: PrinterProps) => {
   );
 }
 
-export default Printer;
+export default withRouter(Printer);

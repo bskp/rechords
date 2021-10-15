@@ -19,7 +19,7 @@ function generate(file: string) {
   var html = converter.makeHtml(md);
   fs.writeFileSync(htmlPath, html, 'utf8');
 
-};
+}
 
 function filter() {
   return function (file: string ) {

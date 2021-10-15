@@ -1,14 +1,14 @@
 import * as React from "react";
-import {  NavLink, RouteComponentProps } from "react-router-dom";
+import {NavLink, RouteComponentProps} from "react-router-dom";
 import TranposeSetter from "./TransposeSetter";
 import ChrodLib from "../api/libchrod";
-import { Song } from '../api/collections';
+import {Song} from '../api/collections';
 import Drawer from './Drawer';
 import {navigateCallback, routePath, userMayWrite, View} from '../api/helpers';
 import Sheet from './Sheet';
 
-import { LayoutH, LayoutV, Day, Night, Sharp, Flat, Conveyor } from './Icons.jsx';
-import {MouseEventHandler} from "react";
+import {Conveyor, ConveyorActive, Day, Flat, LayoutH, LayoutV, Night, Printer, Sharp} from './Icons.jsx';
+import {Button} from "./Button";
 
 
 interface SongRouteParams {
@@ -178,26 +178,23 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
     }
 
     const settings = <aside id="rightSettings">
-        { this.state.showChords ? <TranposeSetter
-              onDoubleClick={this.toggleChords}
-              transposeSetter={this.transposeSetter}
-              transpose={this.state.relTranspose}
-              keym={key}
-            />
-        :
-          <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div>
-        }
-        <div onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
-          <Conveyor />
-        </div>
-        <div onClick={this.props.toggleTheme} id={'theme-toggler'} >
+        <TranposeSetter
+            onDoubleClick={this.toggleChords}
+            transposeSetter={this.transposeSetter}
+            transpose={this.state.relTranspose}
+            keym={key}
+          />
+        <Button onClick={this.toggleAutoScroll}>
+          {this.state.autoscroll ? <ConveyorActive /> : <Conveyor />}
+        </Button>
+        <Button onClick={this.props.toggleTheme}>
           {this.props.themeDark ? <Day /> : <Night />}
-        </div>
-        <div onClick={this.toggleColumns} id={'layout-toggler'} >
+        </Button>
+        <Button onClick={this.toggleColumns}>
           {this.state.columns ? <LayoutH /> : <LayoutV />}
-        </div>
+        </Button>
       </aside>
-    
+
 
     const drawer = userMayWrite() ? (
         <Drawer className="source-colors" onClick={this.handleContextMenu}>
@@ -230,11 +227,11 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
           id="chordsheet" ref={this.refChordsheet}
           onContextMenu={this.handleContextMenu}
         >
-          <Sheet 
-          
+          <Sheet
+
           multicolumns={this.showMultiColumns()}
-          song={this.props.song} 
-          transpose={this.state.relTranspose} 
+          song={this.props.song}
+          transpose={this.state.relTranspose}
           hideChords={!this.state.showChords} />
           {footer}
         </div>

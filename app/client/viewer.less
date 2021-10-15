@@ -1,5 +1,6 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
+@import (reference) "./icons.less";
 
 
 #transposer {
@@ -60,6 +61,18 @@
   .rc-slider-dot-active {
     border-color: var(--accent);
     background-color: var(--accent);
+  }
+}
+
+a.iconbutton {
+  display: block;
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+  cursor: pointer;
+
+  svg {
+    width: 4em;
+    .applySchemeColors;
   }
 }
 

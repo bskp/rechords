@@ -245,14 +245,14 @@ class App extends React.Component<AppProps, AppStates> {
                             return nA404;
                         }
 
-                        // In any case, the editor is rendered. However, a re-render is triggered after the song's
-                        // revisions have been loaded.
                         let editor;
                         if ( Meteor.settings.public.useAdvancedEditor ) {
                             editor = this.props.revisionsLoading ?
         <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader> :
          <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader>;
                         } else {
+                            // In any case, the editor is rendered. However, a re-render is triggered after the song's
+                            // revisions have been loaded.
                             editor = this.props.revisionsLoading ? <Editor song={song} /> : <Editor song={song} />;
                         }
 

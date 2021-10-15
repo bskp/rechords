@@ -175,7 +175,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
             if (this.props.user.profile.role == 'user' && 
                 (!song.checkTag('fini')) ) {
                     // Display only songs which contain the tag "fini"
-                    continue nextSong;
+                    continue;
                 }
 
             // Check filter words

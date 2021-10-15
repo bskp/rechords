@@ -33,7 +33,7 @@ export async function expandColumns(element: Node, maxIterations = 20,
 
 
 
-};
+}
 
 async function layout( c1: HTMLElement, c2, maxIterations ) {
 
