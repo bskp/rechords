@@ -37,9 +37,11 @@ import { ShowdownExtension } from "showdown";
     // Title
     {
       type: 'lang',
-      regex: /([^\n]+)\n([^\n]+)\n=+\s*\n/,
+      regex: /([^\n]+)\n([^\n]+\n)?=+\s*\n/,
       replace: function(match: string, song: string, artist: string): string {
-        return '<div class="sd-header">\n<h1>' + song + '</h1>\n<h2>' + artist + '</h2>\n</div>\n\n';
+        artist = artist?.trim();
+        let h2 = artist ? '<h2>' + artist + '</h2>\n' : '';
+        return '<div class="sd-header">\n<h1>' + song + '</h1>\n' + h2 + '</div>\n\n';
       }
     }
 
@@ -108,7 +110,6 @@ export const refPrefix = 'sd-ref-'
         if (fingers) {
           df = '" data-fingers="' + fingers.trim();
         }
-        fingers = (fingers || '').trim();
         return '<abbr class="chord" title="' + frets + df + '">' + label + '</abbr>';
       }
 
