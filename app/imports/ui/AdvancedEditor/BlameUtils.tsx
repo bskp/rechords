@@ -31,7 +31,8 @@ export function getBlameLabel(rev: Revision, className="label") {
 }
 
 interface BlameProps {
-  versions: { code: string, commit: string }[]
+  // versions: { code: string, commit: string }[]
+  versions: Revision[]
   className: string
 }
 
@@ -84,7 +85,7 @@ export const CharDiff: FunctionComponent<DiffProps> = props => {
   return <>{chardiff}</>;
 }
 
-export type DiffProps = { info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: (id: string) => Change[], options: ConvertDiffOptions } & ConnectedProps<typeof connector>
+export type DiffProps = { info: IBlameLine<Revision>, lines: Diffline<Revision>[], cb: (id: string) => Change[], options: ConvertDiffOptions }
 
 export function getDiff(last_id: string, revs: Revision[]) {
   if (revs && revs.length) {

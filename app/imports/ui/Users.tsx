@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
+import { Mongo } from 'meteor/mongo'
 
 import Table from './Table';
 import Drawer from './Drawer';
-import { withRouter } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-import * as moment from 'moment';
+import moment from 'moment';
 import "moment/locale/de";
 
 export function Select( {options, ...rest} ) {
@@ -122,7 +123,11 @@ function mark(checkOutput) {
     return checkOutput;
 }
 
-class Users extends React.Component<{ users : Array<Meteor.User>}, { user : Meteor.User }> {
+type UsersProps = {
+    users: Array<Meteor.User>;
+} & RouteComponentProps;
+
+class Users extends React.Component<UsersProps, { user : Meteor.User }> {
 
     constructor(props) {
         super(props);
@@ -135,6 +140,7 @@ class Users extends React.Component<{ users : Array<Meteor.User>}, { user : Mete
         this.setState({
             // @ts-ignore id_ will be added by meteor
             user: {
+                _id: undefined,
                 username: '',
                 emails: [ { address: '', verified: false} ],
                 createdAt: new Date(),
@@ -203,9 +209,9 @@ class Users extends React.Component<{ users : Array<Meteor.User>}, { user : Mete
         );
     }
 }
-
-export default withRouter(withTracker(props => {
+const wrapped = withTracker( (props: UsersProps)=> {
     return {
         users: Meteor.users.find().fetch()
     };
-})(Users));
+})(Users)
+export default withRouter(wrapped);
