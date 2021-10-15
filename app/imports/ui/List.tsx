@@ -5,11 +5,12 @@ import MetaContent from './MetaContent';
 import { Song } from '../api/collections';
 
 import Drawer from './Drawer';
+import {MouseEventHandler} from "react";
 
 
 interface ListItemProps {
     song: Song;
-    onClickHandler: Function;
+    onClickHandler: MouseEventHandler;
     user: Meteor.User;
 }
 class ListItem extends React.Component<ListItemProps, {}> {
@@ -76,7 +77,7 @@ interface ListGroupProps {
   songs: Array<Song>;
   user: Meteor.User;
   label: string;
-  onClickHandler: Function;
+  onClickHandler: MouseEventHandler;
 }
 class ListGroup extends React.Component<ListGroupProps, {}> {
     constructor(props) {
@@ -103,7 +104,7 @@ interface ListProps {
   user: Meteor.User;
   filter?: String;
   hidden: boolean;
-  hideOnMobile: Function;
+  hideOnMobile: MouseEventHandler;
 }
 interface ListState {
     filter: string;
@@ -113,6 +114,7 @@ interface ListState {
 }
 
 class List extends React.Component<ListProps & RouteComponentProps, ListState> {
+    private filter: React.RefObject<HTMLInputElement>;
     constructor(props) {
         super(props);
         this.state = {
@@ -121,6 +123,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
             fuzzy_matches: [],
             exact_matches: []
         }
+        this.filter = React.createRef();
     }
 
     keyHandler = (e : KeyboardEvent) => {
@@ -128,25 +131,26 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
 
         if (e.key == 'Escape') {
             this.setFilter('');
-            this.refs.filter.blur();
+            this.filter.current.blur();
             e.preventDefault();
             return
         } 
 
         // Do not steal focus if on <input>
-        if( e.target?.tagName == 'INPUT' ) return;
+        // @ts-ignore
+        if (e.target?.tagName == 'INPUT' ) return;
 
         // Ignore special keys
         if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
 
         // Check if the pressed key has a printable representation
         if (e.key && e.key.length === 1) {
-            this.refs.filter.focus();
+            this.filter.current.focus();
         }
     }
 
     componentDidMount() {
-        document.addEventListener("keydown", this.keyHandler, {});
+        document.addEventListener("keydown", this.keyHandler);
         this.setFilter('');
     }
 
@@ -212,7 +216,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
                 this.setFilter('');
             }
 
-            this.refs.filter.blur();
+            this.filter.current.blur();
         }
     }
 
@@ -303,13 +307,13 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
                     <input type="text" 
                         placeholder="Filtern…" 
                         value={this.state.filter} 
-                        ref="filter"
+                        ref={this.filter}
                         onChange={this.onChange}
                         onFocus={this.onFocus}
                         onBlur={this.onBlur}
                         onKeyDown={this.onKeyDown}
                         />
-                    <span className={'reset ' + filled} onClick={(e)=>{this.setFilter('')}}>&times;</span>
+                    <span className={'reset ' + filled} onClick={ () => { this.setFilter('') } }>&times;</span>
                 </div>
 
                 <MetaContent 

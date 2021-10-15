@@ -3,15 +3,16 @@ import * as React from 'react';
 
 
 interface DrawerProps extends RouteComponentProps {
-    id: string,
-    onClick: React.MouseEventHandler<HTMLElement>
+    id?: string,
+    onClick?: React.MouseEventHandler<HTMLElement>
     className: string,
-    open: boolean,
+    open?: boolean,
 }
 
 class Drawer extends React.Component<DrawerProps, {}> {
     public static defaultProps = {
-        open: false
+        open: false,
+        id: ""
     };
 
     constructor(props: Readonly<DrawerProps>) {

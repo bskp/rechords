@@ -1,16 +1,15 @@
-import Songs, { Revision, Revisions, Song } from '../../api/collections';
+import {Revision, Song} from '../../api/collections';
 import * as React from 'react';
-import { Component } from 'react';
+import {Component, ReactElement} from 'react';
 import Drawer from '../Drawer';
 import * as moment from 'moment';
 import "moment/locale/de";
-import { diffChars } from 'diff';
-import { connect, ConnectedProps } from 'react-redux';
-import { IEditorStates, revisionReducer } from './EditorAdvanced.js';
-import Source from '../Source.jsx'
-import { ReactElement } from 'react';
-import { getBlameLabel } from './BlameUtils';
-import { reduceDiff } from './DiffUtils';
+import {diffChars} from 'diff';
+import {connect, ConnectedProps} from 'react-redux';
+import {IEditorStates} from './EditorAdvanced.js';
+import Source from '../Source'
+import {getBlameLabel} from './BlameUtils';
+import {reduceDiff} from './DiffUtils';
 
 interface RevBrowserAdvancedProps {
   song: Song;
@@ -54,7 +53,6 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
     // Do not steal focus if on <input>
     if (e.target?.tagName == 'INPUT') return;
 
-    const state = this.state
     const rev = this.props.selectedRev
     const revs = this.props.song.getRevisions();
 
@@ -112,8 +110,7 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
 
     const diff = diffChars(to_diff, current)
 
-    const spans: ReactElement[] = reduceDiff(diff, {showWhitespace:this.state.showWhitespace})
-    return spans
+    return reduceDiff(diff, {showWhitespace: this.state.showWhitespace})
   }
 
   render() {

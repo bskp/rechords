@@ -1,19 +1,19 @@
 import * as React from "react";
 import {  NavLink, RouteComponentProps } from "react-router-dom";
-import TranposeSetter from "./TransposeSetter.jsx";
+import TranposeSetter from "./TransposeSetter";
 import ChrodLib from "../api/libchrod";
 import { Song } from '../api/collections';
 import Drawer from './Drawer';
-import { ColumnExpander } from "./ColumnGrid";
 import {userMayWrite} from '../api/helpers';
 import Sheet from './Sheet';
 
 import { LayoutH, LayoutV, Day, Night, Sharp, Flat, Conveyor } from './Icons.jsx';
+import {MouseEventHandler} from "react";
 
 
 interface ViewerProps extends RouteComponentProps {
   song: Song,
-  toggleTheme: Function,
+  toggleTheme: MouseEventHandler,
   themeDark: boolean
 }
 
@@ -25,7 +25,7 @@ interface ViewerStates {
   autoscroll: any
 }
 
-export default class Viewer extends React.Component<RouteComponentProps & ViewerProps, ViewerStates> {
+export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
   constructor(props) {
     super(props);
 
@@ -52,7 +52,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
     });
     this.setAutoScroll(false);
 
-    let duration : string = this.props.song.checkTag('duration');
+    let duration : string = this.props.song.getTag('duration');
     if (duration) {
       let minutes, secs;
       [minutes, secs] = duration.split(':');
@@ -76,6 +76,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   handleContextMenu = event => {
     if (userMayWrite()) {
       let m = this.props.match.params;
+      // @ts-ignore
       this.props.history.push("/edit/" + m.author + "/" + m.title);
     }
     event.preventDefault();
@@ -134,7 +135,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
   render() {
 
     // Establish this songs' key
-    let key_tag = this.props.song.checkTag("tonart");
+    let key_tag = this.props.song.getTag("tonart");
     let key = key_tag && ChrodLib.parseTag(key_tag);
 
     if (key == null) {
@@ -146,7 +147,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
               onDoubleClick={this.toggleChords}
               transposeSetter={this.transposeSetter}
               transpose={this.state.relTranspose}
-              keym={key} id="transposer"
+              keym={key}
             />
         :
           <div onClick={this.toggleChords} className="rightSettingsButton"><span>Chords</span></div>
@@ -184,7 +185,7 @@ export default class Viewer extends React.Component<RouteComponentProps & Viewer
             <span onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
               <Conveyor />
             </span>
-            <span onClick={ _ => this.props.toggleTheme()} id="theme-toggler">
+            <span onClick={ _ => this.props.toggleTheme(undefined)} id="theme-toggler">
               {this.props.themeDark ? <Day /> : <Night />}
             </span>
         </div>
