@@ -42,6 +42,20 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
   refChordsheet = React.createRef<HTMLDivElement>()
   duration_s = undefined;
 
+  updateDuration() {
+    let duration : string = this.props.song.getTag('dauer');
+    if (duration) {
+      let chunks = duration.split(':');
+      this.duration_s = 60*Number(chunks[0]) + Number(chunks[1]);
+    } else {
+      this.duration_s = undefined;
+    }
+  }
+
+  componentDidMount() {
+    this.updateDuration();
+  }
+
   componentDidUpdate(prevProps) {
     if (this.props.song._id == prevProps.song._id) return;
 
@@ -51,13 +65,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
       relTranspose: this.getInitialTranspose(),
     });
     this.setAutoScroll(false);
-
-    let duration : string = this.props.song.getTag('duration');
-    if (duration) {
-      let minutes, secs;
-      [minutes, secs] = duration.split(':');
-      this.duration_s = minutes*60 + secs;
-    }
+    this.updateDuration();
   }
 
   componentWillUnmount() {
@@ -103,15 +111,37 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
   }
 
   setAutoScroll = (target_state) => {
-    const callback = () => {
-      this.refChordsheet.current?.scrollBy(0, 1);
-    }
+    let divElement = this.refChordsheet.current;
 
     this.setState( state => {
+        // Start autoscroll
         if (state.autoscroll == undefined && target_state == true) {
-          return { autoscroll: Meteor.setInterval(callback, 133) };
+          // default values
+          let delay_ms = 133;
+          let step_pixels = 1;
+
+          // use custom values, if a "dauer"-tag is present for the song.
+          // duration_s is set in #updateDuration
+          if (this.duration_s) {
+            let scroll_distance = divElement.scrollHeight - divElement.clientHeight;
+            delay_ms = this.duration_s*1000/scroll_distance;
+          }
+
+          if (delay_ms < 50) {
+            // Most browser/devices cannot keep up with scroll events over 20fps.
+            // For faster scrolling, we therefore take bigger steps.
+            step_pixels = Math.ceil(50/delay_ms);
+            delay_ms = delay_ms*step_pixels;
+          }
+
+          const callback = () => {
+            divElement?.scrollBy(0, step_pixels);
+          }
+
+          return { autoscroll: Meteor.setInterval(callback, delay_ms) };
         }
 
+        // Stop autoscroll
         if (state.autoscroll != undefined && target_state == false) {
           Meteor.clearInterval(state.autoscroll);
           return { autoscroll: undefined };
