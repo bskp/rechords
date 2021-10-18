@@ -1,7 +1,13 @@
+import classNames from 'classnames'
 import { Meteor } from 'meteor/meteor'
+import { ReactElementLike } from 'prop-types'
 import * as React from 'react'
+import { useRef } from 'react'
+import { PropsWithChildren } from 'react'
 import { MouseEventHandler } from 'react'
+import { FC } from 'react'
 import { Link } from 'react-router-dom'
+import { useScrollHideEffect, useScrollHideEffectRef } from '../api/helpers'
 import { Menu } from './Icons.jsx'
 
 
@@ -12,23 +18,46 @@ interface MobileMenuProps extends React.HTMLProps<HTMLElement> {
     songListHidden: boolean
 }
 
-export class MobileMenu extends React.Component<MobileMenuProps>  {
-  constructor(props: MobileMenuProps ) {
-    super(props)
-  }
 
-  render() {
-    const toggle = ev => this.props.toggleSongList(ev)
+export const MobileMenu: FC<MobileMenuProps> = (p) => {
 
-    let classes = 'mobilemenu'
-    if (!this.props.songListHidden) classes += ' hide-extensions'
+  const toggle = ev => p.toggleSongList(ev)
 
-    return <div className={classes} >
-      <span onClick={toggle} id="menu"><Menu /></span>
-      <span className="username"> 
-        <Link onClick={toggle} to="/user">{Meteor.user().profile.name}</Link>
-      </span>
-    </div>
+  const classes = classNames(
+    'mobilemenu', 
+    {'hide-extensions': !p.songListHidden}
+  )
+  React.useEffect( () =>{
+    document.documentElement.classList.toggle('noscroll',!p.songListHidden)}, [p.songListHidden])
 
-  }
+  const ref = useRef()
+  useScrollHideEffectRef(ref, 64)
+
+  return <div className={classes} ref={ref}>
+    <span onClick={toggle} id="menu"><Menu /></span>
+    <span className="username"> 
+      <Link onClick={toggle} to="/user">{Meteor.user().profile.name}</Link>
+    </span>
+  </div>
 }
+
+
+export const MobileMenuShallow: FC<{children: ReactElementLike[]}> = ({children}) => {
+
+  const ref = useRef()
+  
+  useScrollHideEffectRef(ref, 64)
+
+
+  const classes = classNames(
+    'mobilemenu', 
+    'extend' 
+  )
+
+
+  return <div className={classes} ref={ref}>
+    {children}
+  </div>
+}
+
+

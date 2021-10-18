@@ -39,15 +39,21 @@ textarea {
   width: 100%;
 }
 
-
 .transition * {
   transition: background-color 1s, color 1s, fill 1s, stroke 1s, border-color 1s !important;
 }
 
 // Base Layout
 
+
 html {
   height: 100%;
+  width: 100%;
+  background-color: var(--bg-list);
+}
+
+.noscroll {
+  overflow: hidden;
 }
 
 body {
@@ -55,14 +61,17 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
-  overflow: hidden;
-  //position: fixed; halb-gut auf safari, andere mobile browser?
 
   -webkit-tap-highlight-color: transparent;
 
   font-family: "Roboto", "Cardo", "Last Resort", Helvetica, Arial, sans-serif;
   font-size: 18px;
   background-color: var(--bg-sheet);
+  display: flex;
+  flex-flow: column nowrap;
+  .phone( {
+        height    : unset;
+    });
 }
 
 #app {
@@ -70,10 +79,17 @@ body {
 }
 
 #body {
+
+  flex: 1;
+
   display: flex;
   width: 100%;
   height: 100%;
   background-color: var(--bg-sheet);
+  .phone({
+    flex-flow: row wrap;
+    overflow-y: scroll;
+  })
 }
 
 // Generic content pages
@@ -336,4 +352,8 @@ hr {
   padding-right: 0.4rem;
 
 
+}
+
+.hideInMobile {
+  .phone-tablet({display: none;})
 }

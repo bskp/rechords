@@ -10,6 +10,7 @@ import {ISourceOptions, SourceAdvanced} from './SourceAdvanced';
 import {IModule} from 'redux-dynamic-modules';
 import {connect, ConnectedProps} from 'react-redux';
 import {navigateTo, View} from "../../api/helpers";
+import { MobileMenuShallow } from '../MobileMenu'
 
 type EditorAdvancedProps = {
   song: Song
@@ -108,10 +109,10 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
       // Bearbeiten mit Echtzeit-Vorschau
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
-          <div className="extend mobilemenu" >
+          <MobileMenuShallow>
             <span onClick={this.handleContextMenu} id="plus"><Ok /></span>
             <span onClick={this.props.history.goBack} id="minus"><Cancel /></span>
-          </div>
+          </MobileMenuShallow>
 
           <Drawer onClick={this.handleContextMenu} className="list-colors">
             <h1>sichern<br />&amp; zurück</h1>

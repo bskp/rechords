@@ -4,6 +4,7 @@
   "scripts": {
     "//": "0:xx enables to access the the dev server from another computer",
     "start": "meteor --settings settings.json --exclude-archs web.browser.legacy --port 0:3000",
+    "startAdvanced": "meteor --settings settings.advanced.json --exclude-archs web.browser.legacy --port 0:3000",
     "preinstall": "npm --prefix=../showdown-rechords run build",
     "debug": "meteor run --inspect",
     "lint": "eslint imports/**"
@@ -18,6 +19,7 @@
     "bcrypt": "^5.0.0",
     "blame-ts": "github:akkurat/blame-ts",
     "chordy-svg": "^1.2.1",
+    "classnames": "^2.3.1",
     "diff": "^5.0.0",
     "html-react-parser": "^1.3",
     "hyphenation.en-us": "^0.2.1",
