@@ -4,11 +4,11 @@ import TranposeSetter from "./TransposeSetter";
 import ChrodLib from "../api/libchrod";
 import {Song} from '../api/collections';
 import Drawer from './Drawer';
-import {navigateCallback, routePath, userMayWrite, View} from '../api/helpers';
+import {routePath, userMayWrite, View} from '../api/helpers';
 import { MobileMenuShallow } from "./MobileMenu";
 import Sheet from './Sheet';
 
-import {Conveyor, ConveyorActive, Day, Flat, LayoutH, LayoutV, Night, Printer, Sharp} from './Icons.jsx';
+import {Conveyor, ConveyorActive, Day, Flat, LayoutH, LayoutV, Night, Sharp} from './Icons.jsx';
 import {Button} from "./Button";
 
 
@@ -116,7 +116,16 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
   }
 
   setAutoScroll = (target_state) => {
-    let divElement = this.refChordsheet.current;
+    // Determine the correct content-scrolling container
+    let chordsheet = this.refChordsheet.current;
+    let scrollContainer;
+    if (chordsheet.scrollHeight > chordsheet.clientHeight) {
+      // div#chordsheet is overflowing (on Desktop/Tablet)
+      scrollContainer = chordsheet;
+    } else {
+      // body is overflowing (on Phone)
+      scrollContainer = window.document.scrollingElement;
+    }
 
     this.setState( state => {
         // Start autoscroll
@@ -128,7 +137,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
           // use custom values, if a "dauer"-tag is present for the song.
           // duration_s is set in #updateDuration
           if (this.duration_s) {
-            let scroll_distance = divElement.scrollHeight - divElement.clientHeight;
+            let scroll_distance = scrollContainer.scrollHeight - scrollContainer.clientHeight;
             delay_ms = this.duration_s*1000/scroll_distance;
           }
 
@@ -140,7 +149,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
           }
 
           const callback = () => {
-            divElement?.scrollBy(0, step_pixels);
+            scrollContainer?.scrollBy(0, step_pixels);
           }
 
           return { autoscroll: Meteor.setInterval(callback, delay_ms) };
