@@ -233,10 +233,9 @@ class App extends React.Component<AppProps, AppStates> {
                           song={song}  
                           toggleTheme={this.toggleTheme}
                           themeDark={theme.includes('dark')}
-                          {...routerProps} 
-                                    {...routerProps} 
-                                />
-                            </>
+                          {...routerProps}
+                        />
+                      </>
                         )
                     }} />
 

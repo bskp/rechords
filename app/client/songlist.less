@@ -8,27 +8,38 @@ aside.drawer#list {
   .list-colors;
 
   .phone({
-    font-size: 1.2em;
-    min-height: unset;
-    top: 4rem;
-    height: calc(~"100vh - 4rem");
-    transition: all 0.5s ease-in-out;
     position: fixed;
     z-index: 6;
-  &.hidden {
-    padding: 0;
-    height: 0px;
-  }
 
+    top: 4rem;
+    padding-top: 0;
 
+    height: calc(~"100vh - 4rem");
+    min-height: unset;
+
+    font-size: 1.2em;
+    transition: all 0.5s ease-in-out;
+
+    &.hidden {
+      padding: 0;
+      height: 0;
+    }
   });
 
   > div {
     padding-top: 1em;
     width: auto;
 
+    .phone({
+      padding-top: 0;
+    });
+
     > ul {
       padding-left: 0.5em;
+
+      .phone({
+        margin-top: 0;
+      });
     }
   }
 
@@ -62,17 +73,14 @@ aside.drawer#list {
       font-size: 1.4em;
       margin-left: -1.5em;
       cursor: pointer;
-      margin-top: 1rem;
+      margin-top: 0;
+      line-height: 2em;
 
       display: none;
 
       &.filled {
         display: block;
       }
-      .phone({
-        margin-top:0;
-        margin-left: -1.5rem;
-      })
     }
 
     .open-tags {
@@ -83,18 +91,18 @@ aside.drawer#list {
       })
     }
 
+    // Suchfeld
     input {
-      margin-top: 1rem;
+      margin-top: 0;
       padding-left: 0.5em;
-      height: 2em;
+      height: 3em;
 
       display: block;
       flex: 1 1 auto;
+
       .phone({
-        width: 0px;
-        height: 2rem;
+        height: 4rem;
         margin: 0;
-        padding-right: 2rem;
       });
 
 
@@ -129,20 +137,20 @@ aside.drawer#list {
     left: @drawer-open;
     right: 0;
     top: 0;
-    z-index: 1;
 
     overflow: hidden;
 
     padding-top: 0.5em;
-    padding-left: 2em;
+    padding-left: 1em;
+    padding-right: @drawer-closed;
     padding-bottom: 1.5em;
 
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-content: flex-start;
+    justify-content: space-evenly;
     z-index: 1;
-
 
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -158,8 +166,7 @@ aside.drawer#list {
       display: none !important;
     }
 
-    h1,
-    h2 {
+    .sd-header {
       display: none;
     }
 
@@ -175,7 +182,7 @@ aside.drawer#list {
     ul {
       margin-left: 0.5em;
       margin-right: 0.5em;
-      flex: 0 0 7em;
+      flex: 0 0 0;
     }
 
     li {
@@ -227,8 +234,6 @@ aside.drawer#list {
 
   } //filtermenu
 
-  // Make list items fill the entire width
-
   li {
     // Stick to one row per li
     white-space: nowrap;
@@ -243,6 +248,10 @@ aside.drawer#list {
       margin-left: -0.05em;
       margin-top: 0.5rem;
       margin-bottom: -0.5rem;
+
+      &.wordy {
+        font-size:2em;
+      }
     }
 
     a {
@@ -268,12 +277,16 @@ aside.drawer#list {
 
       .author {
         display: none;
-        flex: 1 0 0;
+        flex: 1 1 auto;
         color: var(--accent);
         background-color: var(--bg-list);
         text-align: right;
         direction: rtl;
         overflow: hidden;
+
+        .phone({
+          display: inherit;
+        })
       }
 
       .darling {
@@ -320,6 +333,19 @@ aside.drawer#list {
       }
 
       &:hover {
+        .showAuthor();
+      }
+
+      .phone({
+        .showAuthor();
+
+        .author {
+          max-width: 66%;
+          direction: ltr;
+        }
+      });
+
+      .showAuthor{
         .title {
           flex: 1 0 0;
         }

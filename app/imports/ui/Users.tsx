@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { Mongo } from 'meteor/mongo'
 
 import Table from './Table';
-import Drawer from './Drawer';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import moment from 'moment';
@@ -193,10 +191,8 @@ class Users extends React.Component<UsersProps, { user : Meteor.User }> {
     ]
 
     render() {
-
         let id = this.state.user?._id;
         if (id === undefined && this.state.user !== undefined) id = 'draft';
-
 
         return (
             <div className="content" id="users">

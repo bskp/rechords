@@ -87,9 +87,14 @@ class ListGroup extends React.Component<ListGroupProps, {}> {
     }
 
     render() {
+        const classes = classNames(
+          'huge',
+          {'wordy': this.props.label.length > 5}
+        )
+
         return (
             <li key={this.props.label}>
-                <h2 className="huge">{this.props.label}</h2>
+                <h2 className={classes}>{this.props.label}</h2>
                 <ul>
                     {this.props.songs.map((song) => 
                         <ListItem song={song} user={this.props.user} key={song._id} onClickHandler={this.props.onClickHandler}/>
@@ -280,7 +285,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
             this.state.exact_matches.length && 
             this.state.fuzzy_matches.length > 1
             ) {
-            groups.set("Titel", this.state.exact_matches);
+            groups.set("im Titel", this.state.exact_matches);
         }
 
         // Add and group fuzzy matches
@@ -330,7 +335,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
                 )}>
                 <div className="filter">
                     <input type="text" 
-                        placeholder="Filtern…" 
+                        placeholder="Lieder suchen…"
                         value={this.state.filter} 
                         ref={this.refFilter}
 
