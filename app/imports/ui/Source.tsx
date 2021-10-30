@@ -28,7 +28,7 @@ export default class Source extends Component<SourceProps, {}> {
     let rows = 0;
 
     if (row_matches != null) {
-        rows = row_matches.length * 1.4 + 10;
+        rows = row_matches.length * 1.8 + 10;
     }
 
     rows = Math.max(50, rows);

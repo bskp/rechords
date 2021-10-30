@@ -208,6 +208,10 @@ aside.drawer {
   padding-bottom: 2em;
   padding-left: 0.5em;
 
+  &.hidden {
+    display: none;
+  }
+
   &.closed {
     width: @drawer-closed;
     padding-left: @drawer-closed;
@@ -231,6 +235,10 @@ aside.drawer {
 
     &.closed {
       display: none;
+    }
+
+    &.hidden {
+      display: inherit;
     }
   });
 
