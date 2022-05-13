@@ -40,7 +40,7 @@ class ListItem extends React.Component<ListItemProps> {
     render() {
         const u = this.props.user;
 
-        if (!('darlings' in u.profile) || !(u.profile.darlings instanceof Array)) {
+        if (!('darlings' in u.profile) || !(u.profile.darlings instanceof Array)) {
             u.profile.darlings = [];
             Meteor.call('saveUser', u, (error) => {
                 console.log(error);
@@ -217,8 +217,6 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
           fuzzy_matches: fuzzy,
           exact_matches: exact
         });
-
-        event.preventDefault();
       };
 
     onKeyDown = (event : React.KeyboardEvent) => {
@@ -246,6 +244,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
     }
 
     onBlur = () => {
+
         this.setState({
             active: false
         });

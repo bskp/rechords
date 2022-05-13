@@ -1,14 +1,9 @@
 import classNames from 'classnames'
-import { Meteor } from 'meteor/meteor'
-import { ReactElementLike } from 'prop-types'
+import {ReactElementLike} from 'prop-types'
 import * as React from 'react'
-import { useRef } from 'react'
-import { PropsWithChildren } from 'react'
-import { MouseEventHandler } from 'react'
-import { FC } from 'react'
-import { Link } from 'react-router-dom'
-import { useScrollHideEffect, useScrollHideEffectRef } from '../api/helpers'
-import { Menu } from './Icons.jsx'
+import {FC, MouseEventHandler, useRef} from 'react'
+import {useScrollHideEffectRef} from '../api/helpers'
+import {Menu} from './Icons.jsx'
 
 
 import './mobileMenuStyle.less'
@@ -35,9 +30,6 @@ export const MobileMenu: FC<MobileMenuProps> = (p) => {
 
   return <div className={classes} ref={ref}>
     <span onClick={toggle} id="menu"><Menu /></span>
-    <span className="username"> 
-      <Link onClick={toggle} to="/user">{Meteor.user().profile.name}</Link>
-    </span>
   </div>
 }
 

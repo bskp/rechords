@@ -5,7 +5,7 @@ import { Song } from '../api/collections'
 import { Abcjs } from './Abcjs'
 import Kord from './Kord'
 import { userMayWrite } from '../api/helpers'
-import * as DH from 'domhandler'
+import * as DH from 'domhandler'
 import { SheetSplit } from './SheetSplit'
 
 type DomOut = JSX.Element | object | void | undefined | null | false
