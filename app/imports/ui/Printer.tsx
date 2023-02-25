@@ -3,10 +3,10 @@ import {Song} from '../api/collections';
 
 
 import Sheet from './Sheet';
-import {navigateCallback, View} from "../api/helpers";
-import {Button} from "./Button";
-import {Cancel} from "./Icons";
-import {RouteComponentProps, withRouter} from "react-router-dom";
+import {navigateCallback, View} from '../api/helpers';
+import {Button} from './Button';
+import {Cancel} from './Icons';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 
 type PrinterProps = {
   song: Song,
@@ -17,13 +17,13 @@ type PrinterProps = {
 const Printer = ({song, history}: PrinterProps & RouteComponentProps) => {
 
   const initial_transpose = () => {
-    for (let tag of song.getTags()) {
+    for (const tag of song.getTags()) {
       if (!tag.startsWith('transponierung:')) continue;
-      let dT = parseInt(tag.split(':')[1], 10);
+      const dT = parseInt(tag.split(':')[1], 10);
       return isNaN(dT) ? 0 : dT;
     }
     return 0;
-  }
+  };
 
   const [cols, setCols] = React.useState(2);
   const [scale, setScale] = React.useState(100);
@@ -38,7 +38,7 @@ const Printer = ({song, history}: PrinterProps & RouteComponentProps) => {
     <Button onClick={navigateCallback(history, View.view, song)}>
       <Cancel />
     </Button>
-  </aside>
+  </aside>;
 
 
   const sheetStyle = {
@@ -47,7 +47,7 @@ const Printer = ({song, history}: PrinterProps & RouteComponentProps) => {
     lineHeight: lineHeight
   };
 
-  const colMode = cols == 1 ? ' singleCol' : ''
+  const colMode = cols == 1 ? ' singleCol' : '';
 
   return (
     <>
@@ -59,6 +59,6 @@ const Printer = ({song, history}: PrinterProps & RouteComponentProps) => {
       {settings}
     </>
   );
-}
+};
 
 export default withRouter(Printer);

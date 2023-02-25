@@ -1,5 +1,5 @@
-import * as React from "react";
-import {MouseEventHandler} from "react";
+import * as React from 'react';
+import {MouseEventHandler} from 'react';
 
 type ButtonProps = {
   onClick: MouseEventHandler,
@@ -9,4 +9,4 @@ type ButtonProps = {
 export const Button: React.FunctionComponent<ButtonProps> = props =>
   <a onClick={props.onClick} className="iconbutton">
     {props.children}
-  </a>
+  </a>;

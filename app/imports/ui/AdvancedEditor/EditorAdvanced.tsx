@@ -9,8 +9,8 @@ import {Cancel, Ok} from '../Icons.jsx';
 import {ISourceOptions, SourceAdvanced} from './SourceAdvanced';
 import {IModule} from 'redux-dynamic-modules';
 import {connect, ConnectedProps} from 'react-redux';
-import {navigateTo, View} from "../../api/helpers";
-import { MobileMenuShallow } from '../MobileMenu'
+import {navigateTo, View} from '../../api/helpers';
+import { MobileMenuShallow } from '../MobileMenu';
 
 type EditorAdvancedProps = {
   song: Song
@@ -29,7 +29,7 @@ const connector = connect(
     dispatchToggleTabRev: () => ({ type: 'tab/toggle' }),
     dispatchDirty: (s: boolean) => ({ type: (s ? 'dirty/set' : 'dirty/reset') })
   }
-)
+);
 
 
 
@@ -49,7 +49,7 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
 
   handleContextMenu = (event) => {
     if (this.props.tab) {
-      this.props.dispatchToggleTabRev()
+      this.props.dispatchToggleTabRev();
       event.preventDefault();
       return;
     }
@@ -59,7 +59,7 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
       if (error !== undefined) {
         console.log(error);
       } else {
-        this.props.dispatchDirty(false)
+        this.props.dispatchDirty(false);
       }
 
       if (isValid) {
@@ -76,17 +76,17 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
     this.setState({
       md: md_,
     });
-    this.props.dispatchDirty(md_ != this.mdServer)
+    this.props.dispatchDirty(md_ != this.mdServer);
   }
 
   render() {
 
-    let revs = this.props.song.getRevisions();
+    const revs = this.props.song.getRevisions();
 
-    let prompt = <Prompt
+    const prompt = <Prompt
       when={this.props.dirty && revs.length > 0}
-      message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
-    />
+      message={'Du hast noch ungespeicherte Änderungen. Verwerfen?'}
+    />;
 
     const source = <SourceAdvanced md={this.state.md}
       revs={revs}
@@ -94,11 +94,11 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
       sourceOptions={this.state.sourceOptions}
       setSourceOptions={l => this.setState( prev => ({...prev, sourceOptions: l(prev.sourceOptions) }))}
       className="source-colors"
-    />
+    />;
 
     if (!this.props.tab) {
 
-      let versions = revs && revs.length ? (
+      const versions = revs && revs.length ? (
         <Drawer id="revs" className="revision-colors" onClick={this.props.dispatchToggleTabRev}>
           <h1>Verlauf</h1>
           <p>Es existieren {revs.length} Versionen. Klicke, um diese zu durchstöbern!</p>
@@ -165,7 +165,7 @@ export interface IEditorStates {
 
 export function getEditorModule(): IModule<IEditorStates> {
   return {
-    id: "adEditor",
+    id: 'adEditor',
     reducerMap: {
       rev: revisionReducer,
       revHover: revisionHover,
@@ -180,57 +180,57 @@ export function getEditorModule(): IModule<IEditorStates> {
 
 export const revisionReducer = (state: Revision, action: { type: 'revision/set' | 'revision/reset'; payload: Revision; }) => {
   switch (action.type) {
-    case 'revision/set': {
-      return action.payload;
-    }
-    case 'revision/reset': {
-      return null
-    }
-
-    default: {
-      return state || null
-    }
+  case 'revision/set': {
+    return action.payload;
   }
-}
+  case 'revision/reset': {
+    return null;
+  }
+
+  default: {
+    return state || null;
+  }
+  }
+};
 export const revisionHover = (state: Revision, action: { type: 'revisionHover/set' | 'revisionHover/reset'; payload: Revision; }) => {
   switch (action.type) {
-    case 'revisionHover/set': {
-      return action.payload;
-    }
-    case 'revisionHover/reset': {
-      return null
-    }
-
-    default: {
-      return state || null
-    }
+  case 'revisionHover/set': {
+    return action.payload;
   }
-}
+  case 'revisionHover/reset': {
+    return null;
+  }
+
+  default: {
+    return state || null;
+  }
+  }
+};
 export const dirtyReducer = (state: boolean, action: { type: 'dirty/set' | 'dirty/reset' }) => {
   switch (action.type) {
-    case 'dirty/set': {
-      return true
-    }
-    case 'dirty/reset': {
-      return false
-    }
-
-    default: {
-      return state === undefined ? false : state
-    }
+  case 'dirty/set': {
+    return true;
   }
-}
+  case 'dirty/reset': {
+    return false;
+  }
+
+  default: {
+    return state === undefined ? false : state;
+  }
+  }
+};
 export const tabReducer = (state: boolean, action: { type: 'tab/toggle' | 'tab/rev' }) => {
   switch (action.type) {
-    case 'tab/toggle': {
-      return !state
-    }
-    case 'tab/rev': {
-      return true;
-    }
-
-    default: {
-      return state === undefined ? false : state
-    }
+  case 'tab/toggle': {
+    return !state;
   }
-}
+  case 'tab/rev': {
+    return true;
+  }
+
+  default: {
+    return state === undefined ? false : state;
+  }
+  }
+};

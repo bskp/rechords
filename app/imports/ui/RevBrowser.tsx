@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Source from './Source';
 import Drawer from '../ui/Drawer';
 import moment from 'moment';
-import "moment/locale/de";
+import 'moment/locale/de';
 
 export default class RevBrowser extends React.Component<{song: Song}, {revision: Revision}> {
 
@@ -11,7 +11,7 @@ export default class RevBrowser extends React.Component<{song: Song}, {revision:
     super(props);
     this.state = {
       revision: undefined,
-    }
+    };
   }
 
   setRev = (rev : Revision) => {
@@ -21,46 +21,46 @@ export default class RevBrowser extends React.Component<{song: Song}, {revision:
   }
 
   componentDidMount() {
-    document.addEventListener("keyup", this.keyHandler, {});
+    document.addEventListener('keyup', this.keyHandler, {});
   }
 
   componentWillUnmount() {
-    document.removeEventListener("keyup", this.keyHandler);
+    document.removeEventListener('keyup', this.keyHandler);
   }
 
   keyHandler = (e) => {
     // Do not steal focus if on <input>
     if (e.target?.tagName == 'INPUT') return;
 
-    const rev = this.state?.revision
+    const rev = this.state?.revision;
     const revs : Array<Revision> = this.props.song.getRevisions();
 
-    const n = revs.length
+    const n = revs.length;
 
     if (n > 0) {
       if (e.key == 'j' || e.key == 'ArrowRight') {
         e.preventDefault();
         if (rev) {
-          const idx = revs.findIndex(r => rev?._id == r._id)
+          const idx = revs.findIndex(r => rev?._id == r._id);
           if (idx != -1 && idx < n - 1) {
-            this.setRev(revs[idx + 1])
-            return
+            this.setRev(revs[idx + 1]);
+            return;
           }
         } else {
-          this.setRev(revs[0])
+          this.setRev(revs[0]);
         }
       }
 
       if (e.key == 'k' || e.key == 'ArrowLeft') {
         e.preventDefault();
         if (rev) {
-          const idx = revs.findIndex(r => rev?._id == r._id)
+          const idx = revs.findIndex(r => rev?._id == r._id);
           if (idx != -1 && idx > 0) {
-            this.setRev(revs[idx - 1])
-            return
+            this.setRev(revs[idx - 1]);
+            return;
           }
         } else {
-          this.setRev(revs[n - 1])
+          this.setRev(revs[n - 1]);
         }
       }
     }
@@ -68,12 +68,12 @@ export default class RevBrowser extends React.Component<{song: Song}, {revision:
   }
 
   render() {
-    let revs = this.props.song.getRevisions();
-    let n = revs.length;
+    const revs = this.props.song.getRevisions();
+    const n = revs.length;
 
-    let ts = this.state.revision?.timestamp;
-    let label = ts ? <span className="label">Version vom {moment(ts).format('LLLL')}</span>
-      : <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>
+    const ts = this.state.revision?.timestamp;
+    const label = ts ? <span className="label">Version vom {moment(ts).format('LLLL')}</span>
+      : <span className="label">Wähle rechts eine Version zum Vergleichen aus!</span>;
 
     return (
       <>
@@ -93,7 +93,7 @@ export default class RevBrowser extends React.Component<{song: Song}, {revision:
           </p>
         </Drawer>
       </>
-    )
+    );
   }
 }
 
@@ -108,7 +108,7 @@ class RevLink extends Component<{rev: Revision, idx: number, key: string, callba
 
     return (
       <li value={this.props.idx}
-        onClick={() => { this.props.callback(r) }}
+        onClick={() => { this.props.callback(r); }}
         className={this.props.active ? 'active' : undefined}
       >
         {who}{moment(r.timestamp).fromNow()}

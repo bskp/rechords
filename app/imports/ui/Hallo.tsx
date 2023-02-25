@@ -1,14 +1,14 @@
-import * as React from 'react'
+import * as React from 'react';
 
-import { withRouter } from 'react-router-dom'
-import { Song } from '../api/collections'
-import { Header } from './Icons'
+import { withRouter } from 'react-router-dom';
+import { Song } from '../api/collections';
+import { Header } from './Icons';
 
-import './halloStyle.less'
+import './halloStyle.less';
 
-import 'moment/locale/de'
-import MetaContent from './MetaContent'
-import { Meteor } from 'meteor/meteor'
+import 'moment/locale/de';
+import MetaContent from './MetaContent';
+import { Meteor } from 'meteor/meteor';
 
 interface HalloProps {
     songs: Array<Song>
@@ -18,7 +18,7 @@ interface HalloProps {
 class Hallo extends React.Component<HalloProps> {
 
   constructor(props) {
-    super(props)
+    super(props);
   }
 
 
@@ -29,8 +29,8 @@ class Hallo extends React.Component<HalloProps> {
         <Header />
         <MetaContent songs={this.props.songs} title="Hallo" />
       </div>
-    )
+    );
   }
 }
 
-export default withRouter(Hallo)
+export default withRouter(Hallo);

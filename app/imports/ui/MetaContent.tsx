@@ -1,6 +1,6 @@
 import { Song } from '../api/collections';
 import * as React from 'react';
-import { DetailedReactHTMLElement } from 'react'
+import { DetailedReactHTMLElement } from 'react';
 import parse, { DOMNode, domToReact } from 'html-react-parser';
 
 
@@ -17,26 +17,26 @@ export default class MetaContent extends React.Component<Props, {}> {
     content: ReturnType<typeof domToReact>
 
     constructor(props) {
-        super(props);
+      super(props);
 
-        let matches : Array<Song> = this.props.songs.filter((song : Song) => {
-            return song.author == 'Meta' && song.title == this.props.title;
-        })
-        if (matches.length == 0) {
-            this.content = <span>No match for {this.props.title}!</span>;
+      const matches : Array<Song> = this.props.songs.filter((song : Song) => {
+        return song.author == 'Meta' && song.title == this.props.title;
+      });
+      if (matches.length == 0) {
+        this.content = <span>No match for {this.props.title}!</span>;
 
-        } else {
-            let html = matches[0].getHtml();
+      } else {
+        const html = matches[0].getHtml();
 
-            this.content = parse(html, {replace: this.props.replace});
-        }
+        this.content = parse(html, {replace: this.props.replace});
+      }
     }
 
 
     render() {
-        return (
-            <div className={this.props.className}>{this.content}</div>
-        );
+      return (
+        <div className={this.props.className}>{this.content}</div>
+      );
     }
 
 }

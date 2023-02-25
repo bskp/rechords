@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from 'react';
 import  { Component } from 'react';
 import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ import Drawer from './Drawer';
 import { Ok, Cancel } from './Icons.jsx';
 import { Song } from '../api/collections';
 import { Meteor } from 'meteor/meteor';
-import {navigateTo, View} from "../api/helpers";
+import {navigateTo, View} from '../api/helpers';
 import { MobileMenuShallow } from './MobileMenu';
 
 
@@ -34,7 +34,7 @@ class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, 
       return;
     }
 
-    this.props.song.parse(this.state.md)
+    this.props.song.parse(this.state.md);
 
     Meteor.call('saveSong', this.props.song, (error, isValid) => {
       if (error !== undefined) {
@@ -66,36 +66,36 @@ class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, 
     this.setState((prevState, props) => {
       return {
         versionTab: !prevState.versionTab
-      }
+      };
     });
   }
 
   render() {
 
-    let revs = this.props.song.getRevisions();
+    const revs = this.props.song.getRevisions();
 
-    let prompt = <Prompt
-            when={this.state.dirty && revs.length > 0}
-            message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
-          />
+    const prompt = <Prompt
+      when={this.state.dirty && revs.length > 0}
+      message={'Du hast noch ungespeicherte Änderungen. Verwerfen?'}
+    />;
 
     if (this.state.versionTab == false) {
 
-      let versions = revs ? (
+      const versions = revs ? (
         <Drawer id="revs" className="revision-colors" onClick={this.toggleRevTab}>
           <h1>Verlauf</h1>
           <p>Es existieren {revs.length} Versionen. Klicke, um diese zu durchstöbern!</p>
         </Drawer>
       ) : undefined;
 
-      let dirtyLabel = this.state.dirty ? <span id="dirty" title="Ungesicherte Änderungen"></span> : undefined;
+      const dirtyLabel = this.state.dirty ? <span id="dirty" title="Ungesicherte Änderungen"></span> : undefined;
 
       // Bearbeiten mit Echtzeit-Vorschau
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
           <MobileMenuShallow>
-              <span onClick={this.handleContextMenu} id="plus"><Ok /></span>
-              <span onClick={this.props.history.goBack} id="minus"><Cancel /></span>
+            <span onClick={this.handleContextMenu} id="plus"><Ok /></span>
+            <span onClick={this.props.history.goBack} id="minus"><Cancel /></span>
           </MobileMenuShallow>
 
           <Drawer onClick={this.handleContextMenu} className="list-colors">

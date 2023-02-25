@@ -5,7 +5,6 @@
     "//": "0:xx enables to access the the dev server from another computer",
     "start": "meteor --settings settings.json --exclude-archs web.browser.legacy --port 0:3000",
     "startAdvanced": "meteor --settings settings.advanced.json --exclude-archs web.browser.legacy --port 0:3000",
-    "preinstall": "npm --prefix=../showdown-rechords run build",
     "debug": "meteor run --inspect",
     "lint": "eslint imports/**"
   },
@@ -42,7 +41,6 @@
     "react-transition-group": "^2.9.0",
     "redux-dynamic-modules": "^5.2.3",
     "showdown": "^1.9.1",
-    "showdown-rechords": "file:../showdown-rechords",
     "slug": "^0.9.4",
     "source-map-support": "^0.5.19",
     "sshpk": "^1.16.1",
