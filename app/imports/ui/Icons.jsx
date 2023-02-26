@@ -12,4 +12,4 @@ import Conveyor from '../../private/conveyor.svg';
 import ConveyorActive from '../../private/conveyor_active.svg';
 import Printer from '../../private/printer2.svg';
 
-export { LayoutH, LayoutV, Header, Day, Night, Menu, Sharp, Flat, Ok, Cancel, Conveyor, ConveyorActive, Printer};
+export {LayoutH, LayoutV, Header, Day, Night, Menu, Sharp, Flat, Ok, Cancel, Conveyor, ConveyorActive, Printer};

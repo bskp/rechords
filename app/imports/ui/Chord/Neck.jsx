@@ -1,5 +1,5 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const offsets = {
   4: {
@@ -12,23 +12,23 @@ const offsets = {
     y: 0,
     length: 50
   }
-}
+};
 
 const getNeckHorizonalLine = (pos, strings) =>
-  `M ${offsets[strings].x} ${12 * pos} H ${offsets[strings].length}`
+  `M ${offsets[strings].x} ${12 * pos} H ${offsets[strings].length}`;
 
 const getNeckVerticalLine = (pos, strings) =>
-  `M ${offsets[strings].y + pos * 10} 0 V 48`
+  `M ${offsets[strings].y + pos * 10} 0 V 48`;
 
 const getNeckPath = (strings, fretsOnChord) =>
   Array.apply(null, Array(fretsOnChord + 1)).map((_, pos) => getNeckHorizonalLine(pos, strings)).join(' ').concat(
-    Array.apply(null, Array(strings)).map((_, pos) => getNeckVerticalLine(pos, strings)).join(' '))
+    Array.apply(null, Array(strings)).map((_, pos) => getNeckVerticalLine(pos, strings)).join(' '));
 
 const getBarreOffset = (strings, frets, baseFret, capo) => {
-    let offset = -6;
-    if (capo || frets[0] == 1) offset += -3;
-    return offset;
-}
+  let offset = -6;
+  if (capo || frets[0] == 1) offset += -3;
+  return offset;
+};
 
 const Neck = ({ tuning, frets, strings, fretsOnChord, baseFret, capo, lite }) => {
   return <g className='fret'>
@@ -62,8 +62,8 @@ const Neck = ({ tuning, frets, strings, fretsOnChord, baseFret, capo, lite }) =>
         )}
       </g>
     }
-  </g>
-}
+  </g>;
+};
 
 Neck.propTypes = {
   tuning: PropTypes.array,
@@ -73,11 +73,11 @@ Neck.propTypes = {
   baseFret: PropTypes.oneOf([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ]),
   fretsOnChord: PropTypes.number.isRequired,
   lite: PropTypes.bool
-}
+};
 
 Neck.defaultProps = {
   baseFret: 1,
   lite: false
-}
+};
 
-export default Neck
+export default Neck;

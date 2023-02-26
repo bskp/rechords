@@ -33,12 +33,12 @@ export default class Kord extends React.Component<ChordProps, never> {
     });
     if (frets.length != 6) return 'Chord with invalid frets.';
 
-    const minFret = Math.min(...frets);
+    const minFret = Math.min(...frets.filter(f => f > -1));
     const maxFret = Math.max(...frets);
 
     // Higher basefret for high-fretted chords
     let baseFret = 1;
-    if (maxFret > 4) baseFret = minFret;
+    if (maxFret > 4) baseFret = minFret ;
 
     const fingers = this.props.fingers.split('', 6).map( n => parseInt(n, 10) || 0);
 

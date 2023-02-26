@@ -1,16 +1,21 @@
 {
-    "plugins": [
-        [
-            "inline-react-svg",
+  "plugins": [
+    [
+      "inline-react-svg",
+      {
+        "svgo": {
+          "plugins": [
             {
-              "svgo": {
-                "plugins": [
-                  {
-                    "cleanupIDs": false
-                  }
-                ]
+              "name": "preset-default",
+              "params": {
+                "overrides": {
+                  "cleanupIDs": false
+                }
               }
             }
-        ]
+          ]
+        }
+      }
     ]
+  ]
 }

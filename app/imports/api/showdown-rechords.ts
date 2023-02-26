@@ -1,5 +1,6 @@
-
 import {ShowdownExtension} from 'showdown';
+
+export const refPrefix = 'sd-ref-';
 
 function parseProsody(text: string) {
   // Prosodic annotations
@@ -12,9 +13,9 @@ function parseLine(match: any, content: string) {
   if (content.match(/^\s*$/g))
     return '</p>\n</div>\n<div>\n<p>';
   // Match bis zum Einsatz des ersten Akkords:
-  let line = content.replace(/^([^\[]+)/, (match: string) => '<i>' + parseProsody(match) + '</i>');
+  let line = content.replace(/^([^[]+)/, (match: string) => '<i>' + parseProsody(match) + '</i>');
   // Ab hier wird nun immer vom Akkord beginnend bis zum nächsten Akkord (exkl) gematcht
-  line = line.replace(/\[([^\]]*)\]([^\[]*)/gi, function (_: string, chord: string, text: string) {
+  line = line.replace(/\[([^\]]*)\]([^[]*)/gi, function (_: string, chord: string, text: string) {
     // Akkorde am Zeilenende ohne folgenden Text
     if (text.match(/^ *$/)) {
       text = ' '; // Text wird als &nbps gesetzt als "Stamm" für den Akkord
@@ -64,51 +65,45 @@ export const verses = {
   type: 'lang',
   regex: verseRegex,
 
-  replace: function (match: string, id: string, content: string): string {
+  replace: (match: string, id: string, content: string): string => {
 
     let h3 = '';
     if (id) {
       h3 = '<h3>' + id + '</h3>\n';
     }
 
-    content = content.replace(/\n$/, ''); // remove end-of-verser linebreaks
+    content = content.replace(/\n$/, ''); // remove end-of-verse linebreaks
     content = content.replace(/\n{3,}/g, '\n\n'); // remove excessive line breaks
     content = content.replace(/(.*?)\n/g, parseLine);
 
-    const verse = '<section id="sd-ref-' + id + '">\n<div>\n' +
-      h3 + '<p>\n' + content + '</p>' + '\n</div>\n</section>';
-
-    return verse;
+    return `<section id="${refPrefix}${id}">
+<div>${h3}<p>${content}</p>
+</div>
+</section>`;
   }
 };
 
 export const references = {
   type: 'lang',
   regex: /-> *(.*?)(?:: *(.*))?\n/gm,
-  replace: function (match: string, ref: string, annotation: string): string {
+  replace: (match: string, ref: string, annotation: string): string => {
 
     annotation = annotation ? annotation : '';
-    return '<div class="ref"><strong>' + ref + '</strong>' + annotation + '</div>';
+    return `<div class="ref"><strong>${ref}</strong>${annotation}</div>`;
   }
 };
 
-export const chordfrets = {
+export const chordFrets = {
   type: 'lang',
   regex: /\n\[([^\]]*)\]: +([0-9a-dx-]{6})\n( *[0-4-x ]{6}\n)?/gm,
-  replace: function (match: string, label: string, frets: string, fingers: string): string {
+  replace: (match: string, label: string, frets: string, fingers: string): string => {
 
-    let df = '';
-    if (fingers) {
-      df = '" data-fingers="' + fingers.trim();
-    }
-    return '<abbr class="chord" title="' + frets + df + '">' + label + '</abbr>';
+    const df = fingers ? ` data-fingers="${fingers.trim()}"` : '';
+    return `<abbr class="chord" title="${frets}"${df}>${label}</abbr>`;
   }
-
 };
 
-export const refPrefix = 'sd-ref-';
-
-export const showdownRechords: ShowdownExtensionExplicit[] = [title, tags, verses, references, chordfrets];
+export const showdownRechords: ShowdownExtensionExplicit[] = [title, tags, verses, references, chordFrets];
 
 // Variadic Tuples. Noice :)
 type little = [substring: string, ...p: string[]]

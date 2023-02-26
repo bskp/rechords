@@ -1,34 +1,31 @@
 {
-	"compilerOptions": {
-		"importHelpers": true,
-		"target": "es5",
-		"downlevelIteration": true,
-		"lib": [
-			"DOM",
-			"ESNext",
-			"DOM.Iterable"
-		],
-		"preserveConstEnums": true,
-		"sourceMap": true,
-		"moduleResolution": "node",
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-
-		"plugins": [
-			{
-				"name": "typescript-plugin-add-type"
-			}
-		],
-
-		"typeRoots": [
-			"./node_modules/@types",
-			"./node_modules"
-		],
-		"types": [
-			"@types/meteor",
-			"core-js"
-		],
-
-		"jsx": "react"
-	}
+  "compilerOptions": {
+    "importHelpers": true,
+    "target": "es5",
+    "downlevelIteration": true,
+    "lib": [
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "plugins": [
+      {
+        "name": "typescript-plugin-add-type"
+      }
+    ],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules"
+    ],
+    "types": [
+      "@types/meteor",
+      "core-js",
+      "mocha"
+    ],
+    "jsx": "react"
+  }
 }

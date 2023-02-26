@@ -1,45 +1,45 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const positions = {
   string: [ 50, 40, 30, 20, 10, 0 ],
   fret: [ -6, 6, 18, 30, 42, 54 ],
-}
+};
 
 const offset = {
   4: 0,
   6: -1
-}
+};
 
 const getStringPosition = (string, strings) =>
-  positions.string[ string + offset[strings] ]
+  positions.string[ string + offset[strings] ];
 
 const radius = {
   muted: 2.5,
   open: 2.5,
   fret: 5
-}
+};
 
 const Dot = ({ string, fret, finger, strings, lite }) => {
   const x = getStringPosition(string, strings);
   const y = positions.fret[fret < 0 ? 0 : fret];
 
   if (fret === -1) return <g class='dot muted'>
-      <line 
-        x1={x - radius.muted}
-        x2={x + radius.muted}
-        y1={y - radius.muted}
-        y2={y + radius.muted}
-      />
-      <line 
-        x1={x + radius.muted}
-        x2={x - radius.muted}
-        y1={y - radius.muted}
-        y2={y + radius.muted}
-      />
-    </g>;
+    <line 
+      x1={x - radius.muted}
+      x2={x + radius.muted}
+      y1={y - radius.muted}
+      y2={y + radius.muted}
+    />
+    <line 
+      x1={x + radius.muted}
+      x2={x - radius.muted}
+      y1={y - radius.muted}
+      y2={y + radius.muted}
+    />
+  </g>;
 
-  return <g class={'dot' + (fret === 0 ? ' open' : '')}>
+  return <g className={'dot' + (fret === 0 ? ' open' : '')}>
     <circle
       cx={x}
       cy={y}
@@ -50,8 +50,8 @@ const Dot = ({ string, fret, finger, strings, lite }) => {
         x={x}
         y={y + radius.fret/2}
       >{ finger }</text>}
-</g>
-}
+  </g>;
+};
 
 Dot.propTypes = {
   string: PropTypes.number,
@@ -59,11 +59,11 @@ Dot.propTypes = {
   finger: PropTypes.oneOf([ 0, 1, 2, 3, 4, 5 ]),
   strings: PropTypes.number.isRequired,
   lite: PropTypes.bool
-}
+};
 
 Dot.defaultProps = {
   fret: 0,
   lite: false
-}
+};
 
-export default Dot
+export default Dot;

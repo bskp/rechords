@@ -14,7 +14,7 @@ const offset = {
 
 const positions = {
   string: [ 50, 40, 30, 20, 10, 0 ],
-  fret  : [ -4, 6, 18, 30, 42, 54 ],
+  fret: [ -4, 6, 18, 30, 42, 54 ],
   finger: [ -3, 8, 19.5, 31.5, 43.5 ]
 };
 
@@ -93,10 +93,10 @@ const Barre = ({ barre, frets, capo, finger, lite }) => {
 };
 
 Barre.propTypes = {
-  frets : PropTypes.array,
-  barre : PropTypes.number,
-  capo  : PropTypes.bool,
-  lite  : PropTypes.bool,
+  frets: PropTypes.array,
+  barre: PropTypes.number,
+  capo: PropTypes.bool,
+  lite: PropTypes.bool,
   finger: PropTypes.oneOf([ 0, 1, 2, 3, 4, 5 ])
 };
 
