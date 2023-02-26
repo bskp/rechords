@@ -16,8 +16,8 @@ type EditorAdvancedProps = {
   song: Song
 }
 class EditorAdvancedState {
-  md: string
-  sourceOptions: ISourceOptions
+  md: string;
+  sourceOptions: ISourceOptions;
 }
 
 
@@ -70,14 +70,14 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
     });
 
     event.preventDefault();
-  }
+  };
 
   update = (md_) => {
     this.setState({
       md: md_,
     });
     this.props.dispatchDirty(md_ != this.mdServer);
-  }
+  };
 
   render() {
 

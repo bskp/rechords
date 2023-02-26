@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import 'moment/locale/de';
 import {routePath, View} from '../api/helpers';
-import {ColumnInstance} from "react-table";
+import {ColumnInstance} from 'react-table';
 
 function Progress(props: {songs: Song[]}) {
 

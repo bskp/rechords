@@ -53,14 +53,14 @@ class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, 
     });
 
     event.preventDefault();
-  }
+  };
 
   update = (md_) => {
     this.setState({
       md: md_,
       dirty: md_ != this.mdServer
     });
-  }
+  };
 
   toggleRevTab = () => {
     this.setState((prevState, props) => {
@@ -68,7 +68,7 @@ class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, 
         versionTab: !prevState.versionTab
       };
     });
-  }
+  };
 
   render() {
 

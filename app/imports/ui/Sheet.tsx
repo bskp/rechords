@@ -15,7 +15,7 @@ type SheetProps = {
     transpose?: number,
     hideChords?: boolean,
     processVdom?: (vdom: any) => any,
-    style?: Object
+    style?: unknown
     multicolumns?: boolean
 }
 

@@ -12,11 +12,11 @@ import {Conveyor, ConveyorActive, Day, Flat, LayoutH, LayoutV, Night, Sharp} fro
 import {Button} from './Button';
 
 
-interface SongRouteParams {
+export interface SongRouteParams {
   author: string
   title: string
 }
-interface ViewerProps extends RouteComponentProps<SongRouteParams> {
+interface ViewerProps extends RouteComponentProps<Partial<SongRouteParams>> {
   song: Song,
   toggleTheme: React.MouseEventHandler<HTMLDivElement>,
   themeDark: boolean
@@ -44,7 +44,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
 
   }
 
-  refChordsheet = React.createRef<HTMLDivElement>()
+  refChordsheet = React.createRef<HTMLDivElement>();
   duration_s = undefined;
 
   updateDuration() {
@@ -112,7 +112,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
 
   toggleAutoScroll = () => {
     this.setAutoScroll( this.state.autoscroll == undefined );
-  }
+  };
 
   setAutoScroll = (target_state) => {
     // Determine the correct content-scrolling container
@@ -161,7 +161,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
       }
     });
 
-  }
+  };
 
   toggleChords = () => {
     this.setState( state => ({ showChords: !state.showChords }));

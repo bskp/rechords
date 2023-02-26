@@ -14,29 +14,29 @@ interface Props {
 }
 
 export default class MetaContent extends React.Component<Props, {}> {
-    content: ReturnType<typeof domToReact>
+  content: ReturnType<typeof domToReact>;
 
-    constructor(props) {
-      super(props);
+  constructor(props) {
+    super(props);
 
-      const matches : Array<Song> = this.props.songs.filter((song : Song) => {
-        return song.author == 'Meta' && song.title == this.props.title;
-      });
-      if (matches.length == 0) {
-        this.content = <span>No match for {this.props.title}!</span>;
+    const matches : Array<Song> = this.props.songs.filter((song : Song) => {
+      return song.author == 'Meta' && song.title == this.props.title;
+    });
+    if (matches.length == 0) {
+      this.content = <span>No match for {this.props.title}!</span>;
 
-      } else {
-        const html = matches[0].getHtml();
+    } else {
+      const html = matches[0].getHtml();
 
-        this.content = parse(html, {replace: this.props.replace});
-      }
+      this.content = parse(html, {replace: this.props.replace});
     }
+  }
 
 
-    render() {
-      return (
-        <div className={this.props.className}>{this.content}</div>
-      );
-    }
+  render() {
+    return (
+      <div className={this.props.className}>{this.content}</div>
+    );
+  }
 
 }

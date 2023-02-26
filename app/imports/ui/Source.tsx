@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 
 
-type SourceProps = {
-  md: string,
-  updateHandler?: Function,
-  readOnly?: boolean,
-  className: string
-};
+interface SourceProps extends React.PropsWithChildren {
+  md: string;
+  updateHandler?: (md: string) => void;
+  readOnly?: boolean;
+  className: string;
+}
 
-export default class Source extends Component<SourceProps, {}> {
+export default class Source extends Component<SourceProps, never> {
   private readonly source: React.RefObject<HTMLTextAreaElement>;
 
   constructor(props) {
@@ -20,26 +20,26 @@ export default class Source extends Component<SourceProps, {}> {
     if ('updateHandler' in this.props) {
       this.props.updateHandler(this.source.current.value);
     }
-  }
+  };
 
   render() {
     // Height estimation
-    let row_matches = this.props.md.match(/\n/g)
+    const row_matches = this.props.md.match(/\n/g);
     let rows = 0;
 
     if (row_matches != null) {
-        rows = row_matches.length * 1.8 + 10;
+      rows = row_matches.length * 1.8 + 10;
     }
 
     rows = Math.max(50, rows);
 
-    let style = {
-        minHeight: rows + 'em',
-    }
+    const style = {
+      minHeight: rows + 'em',
+    };
 
     return (
-      <div className={"content " + this.props.className}>
-          {this.props.children}
+      <div className={'content ' + this.props.className}>
+        {this.props.children}
         <textarea
           ref={this.source}
           onChange={this.callUpdateHandler}
@@ -48,7 +48,7 @@ export default class Source extends Component<SourceProps, {}> {
           readOnly={this.props.readOnly}
         />
       </div>
-    )
+    );
   }
 }
 

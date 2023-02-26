@@ -19,51 +19,51 @@ class ListItem extends React.Component<ListItemProps> {
     super(props);
   }
 
-    toggleDarling = e => {
-      const u = this.props.user;
-      const id = this.props.song._id;
+  toggleDarling = e => {
+    const u = this.props.user;
+    const id = this.props.song._id;
 
-      if (u.profile.darlings.includes(id)) {
-        u.profile.darlings = u.profile.darlings.filter( i => i != id );
-      } 
-      else {
-        u.profile.darlings.push(id);
-      }
+    if (u.profile.darlings.includes(id)) {
+      u.profile.darlings = u.profile.darlings.filter( i => i != id );
+    } 
+    else {
+      u.profile.darlings.push(id);
+    }
 
+    Meteor.call('saveUser', u, (error) => {
+      console.log(error);
+    });
+
+    e.preventDefault();
+  };
+
+  render() {
+    const u = this.props.user;
+
+    if (!('darlings' in u.profile) || !(u.profile.darlings instanceof Array)) {
+      u.profile.darlings = [];
       Meteor.call('saveUser', u, (error) => {
         console.log(error);
       });
-
-      e.preventDefault();
-    }
-
-    render() {
-      const u = this.props.user;
-
-      if (!('darlings' in u.profile) || !(u.profile.darlings instanceof Array)) {
-        u.profile.darlings = [];
-        Meteor.call('saveUser', u, (error) => {
-          console.log(error);
-        });
             
-      } 
+    } 
 
-      const darlings = u.profile.darlings;
+    const darlings = u.profile.darlings;
 
-      const is_darling = darlings.includes(this.props.song._id) ? 'is_darling' : '';
+    const is_darling = darlings.includes(this.props.song._id) ? 'is_darling' : '';
 
-      const darling_or_not = <span onClick={this.toggleDarling} className={'darling ' + is_darling}>{darling_icon}</span>;
+    const darling_or_not = <span onClick={this.toggleDarling} className={'darling ' + is_darling}>{darling_icon}</span>;
         
-      return (
-        <li><NavLink onClick={this.props.onClickHandler} to={routePath(View.view, this.props.song)}
-          activeClassName="selected">
-          <span className="title">{this.props.song.title}</span>
-          <span className="author">{this.props.song.author}</span>
-          {darling_or_not}
-        </NavLink>
-        </li>
-      );
-    }
+    return (
+      <li><NavLink onClick={this.props.onClickHandler} to={routePath(View.view, this.props.song)}
+        activeClassName="selected">
+        <span className="title">{this.props.song.title}</span>
+        <span className="author">{this.props.song.author}</span>
+        {darling_or_not}
+      </NavLink>
+      </li>
+    );
+  }
 }
 
 const darling_icon = (
@@ -81,7 +81,7 @@ interface ListGroupProps {
   onClickHandler: MouseEventHandler<HTMLElement>
 
 }
-class ListGroup extends React.Component<ListGroupProps, {}> {
+class ListGroup extends React.Component<ListGroupProps, never> {
   constructor(props) {
     super(props);
   }
@@ -129,244 +129,244 @@ interface ListState {
 }
 
 class List extends React.Component<ListProps & RouteComponentProps, ListState> {
-    refFilter: React.RefObject<HTMLInputElement>;
+  refFilter: React.RefObject<HTMLInputElement>;
   
-    constructor(props) {
-      super(props);
-      this.state = {
-        filter: props.filter || '',
-        active: false,
-        tagsopen: false,
-        fuzzy_matches: [],
-        exact_matches: []
-      };
-      this.refFilter = React.createRef();
+  constructor(props) {
+    super(props);
+    this.state = {
+      filter: props.filter || '',
+      active: false,
+      tagsopen: false,
+      fuzzy_matches: [],
+      exact_matches: []
+    };
+    this.refFilter = React.createRef();
 
-    }
+  }
 
-    keyHandler = (e : KeyboardEvent) => {
-      if (this.props.hidden) return;
+  keyHandler = (e : KeyboardEvent) => {
+    if (this.props.hidden) return;
 
-      if (e.key == 'Escape') {
-        this.setFilter('');
-        this.refFilter.current?.blur();
-
-        e.preventDefault();
-        return;
-      } 
-
-      // Do not steal focus if on <input>
-      if( (e.target as Element)?.tagName == 'INPUT' ) return;
-
-      // Ignore special keys
-      if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
-
-      // Check if the pressed key has a printable representation
-      if (e.key && e.key.length === 1) {
-        this.refFilter.current?.focus();
-
-      }
-    }
-
-    componentDidMount() {
-      document.addEventListener('keydown', this.keyHandler);
+    if (e.key == 'Escape') {
       this.setFilter('');
+      this.refFilter.current?.blur();
+
+      e.preventDefault();
+      return;
+    } 
+
+    // Do not steal focus if on <input>
+    if( (e.target as Element)?.tagName == 'INPUT' ) return;
+
+    // Ignore special keys
+    if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
+
+    // Check if the pressed key has a printable representation
+    if (e.key && e.key.length === 1) {
+      this.refFilter.current?.focus();
+
     }
+  };
 
-    componentWillUnmount() {
-      document.removeEventListener('keydown', this.keyHandler);
-    }
+  componentDidMount() {
+    document.addEventListener('keydown', this.keyHandler);
+    this.setFilter('');
+  }
 
-    onChange = (event : React.ChangeEvent<HTMLInputElement>) => {
-      this.setFilter(event.currentTarget.value);
-    }
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.keyHandler);
+  }
 
-    setFilter = (new_filter) => {
-      const fuzzy = Array<Song>();
-      const exact = Array<Song>();
+  onChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+    this.setFilter(event.currentTarget.value);
+  };
 
-      nextSong:
-      for (const song of this.props.songs) {
-        if (this.props.user.profile.role == 'user' && 
+  setFilter = (new_filter) => {
+    const fuzzy = Array<Song>();
+    const exact = Array<Song>();
+
+    nextSong:
+    for (const song of this.props.songs) {
+      if (this.props.user.profile.role == 'user' && 
                 (!song.checkTag('fini')) ) {
-          // Display only songs which contain the tag "fini"
-          continue;
-        }
+        // Display only songs which contain the tag "fini"
+        continue;
+      }
 
-        // Check filter words
-        for (let filter of new_filter.split(' ')) {
-          filter = filter.toLowerCase();
+      // Check filter words
+      for (let filter of new_filter.split(' ')) {
+        filter = filter.toLowerCase();
 
-          if (!song.title.toLowerCase().includes(filter) &&
+        if (!song.title.toLowerCase().includes(filter) &&
                     !song.text.toLowerCase().includes(filter) &&
                     !song.author.toLowerCase().includes(filter)) {
-            continue nextSong;
-          }
-        }
-
-        // It's a match!
-        fuzzy.push(song);
-
-        if (song.title.toLowerCase().includes(new_filter.toLowerCase())) {
-          exact.push(song);
+          continue nextSong;
         }
       }
 
-      this.setState({
-        'filter': new_filter,
-        fuzzy_matches: fuzzy,
-        exact_matches: exact
-      });
-    };
+      // It's a match!
+      fuzzy.push(song);
 
-    onKeyDown = (event : React.KeyboardEvent) => {
-      if (this.state.fuzzy_matches.length == 0) return;
-
-      if (event.key == 'Enter') {
-        const list = this.state.exact_matches.length ? this.state.exact_matches : this.state.fuzzy_matches;
-        if (list.length == 0) return;
-
-        if (event.shiftKey) {
-          // Only navigate to song if shift is pressed with enter.
-          const s = list[0];
-          navigateTo(this.props.history, View.view, s);
-          this.setFilter('');
-        }
-
-        this.refFilter?.current.blur();
+      if (song.title.toLowerCase().includes(new_filter.toLowerCase())) {
+        exact.push(song);
       }
     }
 
-    onFocus = () => {
-      this.setState({
-        active: true
-      });
-    }
+    this.setState({
+      'filter': new_filter,
+      fuzzy_matches: fuzzy,
+      exact_matches: exact
+    });
+  };
 
-    onBlur = () => {
+  onKeyDown = (event : React.KeyboardEvent) => {
+    if (this.state.fuzzy_matches.length == 0) return;
 
-      this.setState({
-        active: false
-      });
-    }
+    if (event.key == 'Enter') {
+      const list = this.state.exact_matches.length ? this.state.exact_matches : this.state.fuzzy_matches;
+      if (list.length == 0) return;
 
-    toggleTagsOpen = () => {
-      this.setState( s => ({tagsopen: !s.tagsopen}));
-    }
-
-    onTagClick = (event : React.MouseEvent) => {
-      const tag = '#' + event.currentTarget.childNodes[0].textContent.toLowerCase();
-
-      let newFilter;
-      if (this.state.filter.includes(tag)) {
-        newFilter = this.state.filter.replace(tag, '');
-      } else {
-        newFilter = this.state.filter + tag + ' ';
+      if (event.shiftKey) {
+        // Only navigate to song if shift is pressed with enter.
+        const s = list[0];
+        navigateTo(this.props.history, View.view, s);
+        this.setFilter('');
       }
-      this.setFilter(newFilter.replace('  ', ' ').trim());
 
-      // compromise: close overlay after selecting one tag
-      // is probably the most common case
-      this.setState({tagsopen: false});
-
-      event.preventDefault();
+      this.refFilter?.current.blur();
     }
+  };
+
+  onFocus = () => {
+    this.setState({
+      active: true
+    });
+  };
+
+  onBlur = () => {
+
+    this.setState({
+      active: false
+    });
+  };
+
+  toggleTagsOpen = () => {
+    this.setState( s => ({tagsopen: !s.tagsopen}));
+  };
+
+  onTagClick = (event : React.MouseEvent) => {
+    const tag = '#' + event.currentTarget.childNodes[0].textContent.toLowerCase();
+
+    let newFilter;
+    if (this.state.filter.includes(tag)) {
+      newFilter = this.state.filter.replace(tag, '');
+    } else {
+      newFilter = this.state.filter + tag + ' ';
+    }
+    this.setFilter(newFilter.replace('  ', ' ').trim());
+
+    // compromise: close overlay after selecting one tag
+    // is probably the most common case
+    this.setState({tagsopen: false});
+
+    event.preventDefault();
+  };
 
 
-    render() {
-      // Split list of filtered songs into groups.
-      const grouper = (s : Song) => s.title[0];
+  render() {
+    // Split list of filtered songs into groups.
+    const grouper = (s : Song) => s.title[0];
 
-      const groups = new Map<string, Array<Song>>();
+    const groups = new Map<string, Array<Song>>();
 
-      // Add exact matches
-      if (this.state.filter.length && 
+    // Add exact matches
+    if (this.state.filter.length && 
             this.state.exact_matches.length && 
             this.state.fuzzy_matches.length > 1
-      ) {
-        groups.set('im Titel', this.state.exact_matches);
-      }
-
-      // Add and group fuzzy matches
-      for (const song of this.state.fuzzy_matches) {
-        // Hack to hide all songs containing an 'privat'-tag
-        if (!this.state.filter.includes('#privat')) {
-          if (song.checkTag('privat')) continue;
-        }
-
-        const cat_label = grouper(song);
-
-        if (!groups.has(cat_label)) {
-          groups.set(cat_label, new Array<Song>());
-        }
-        groups.get(cat_label).push(song);
-      }
-
-      const filled = this.state.filter == '' ? '' : 'filled';
-
-      const process_filtermenu = () => {
-        let bucket;
-
-        return (node) => {
-          if (node.name == 'li') {
-            const b = node.children.length > 1 ? <b>…</b> : null;
-            return <li onMouseDown={this.onTagClick.bind(this)}>{node.children[0].data}{b}</li>;
-          }
-
-          if (node.name == 'h4') {
-            bucket = node;
-            return node;
-          }
-
-          if (node.name == 'ul') {
-            node.children.unshift(bucket);
-            return node;
-          }
-        };
-      };
-
-
-      return (
-        <Drawer id="list" open={true} className={classNames(
-          'songlist', 
-          {hidden: this.props.hidden},
-          {noscroll: this.state.tagsopen}
-        )}>
-          <div className="filter">
-            <input type="text" 
-              placeholder="Lieder suchen…"
-              value={this.state.filter} 
-              ref={this.refFilter}
-
-              onChange={this.onChange}
-              onFocus={this.onFocus}
-              onBlur={this.onBlur}
-              onKeyDown={this.onKeyDown}
-            />
-            <span className={'reset ' + filled} onClick={ () => { this.setFilter(''); } }>&times;</span>
-            <span className="open-tags" onClick={this.toggleTagsOpen}>Tags</span>
-          </div>
-
-          <MetaContent 
-            replace={process_filtermenu()}
-            className={classNames('filterMenu', 
-              {hidden: !this.state.active, open: !this.props.hidden && this.state.tagsopen })} // tag menu is fix positioned and would stay on top otherwise
-            title="Schlagwortverzeichnis" 
-            songs={this.props.songs}
-          />
-          <ul>
-            {Array.from(groups, ([group, songs]) => {
-              return <ListGroup user={this.props.user} label={group} songs={songs} key={group} onClickHandler={this.props.hideOnMobile}/>;
-            }
-            )}
-            <li>
-              <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
-            </li>
-          </ul>
-          <Link to="/user" className="username">{Meteor.user().profile.name}</Link>
-        </Drawer>
-      );
+    ) {
+      groups.set('im Titel', this.state.exact_matches);
     }
+
+    // Add and group fuzzy matches
+    for (const song of this.state.fuzzy_matches) {
+      // Hack to hide all songs containing an 'privat'-tag
+      if (!this.state.filter.includes('#privat')) {
+        if (song.checkTag('privat')) continue;
+      }
+
+      const cat_label = grouper(song);
+
+      if (!groups.has(cat_label)) {
+        groups.set(cat_label, new Array<Song>());
+      }
+      groups.get(cat_label).push(song);
+    }
+
+    const filled = this.state.filter == '' ? '' : 'filled';
+
+    const process_filtermenu = () => {
+      let bucket;
+
+      return (node) => {
+        if (node.name == 'li') {
+          const b = node.children.length > 1 ? <b>…</b> : null;
+          return <li onMouseDown={this.onTagClick.bind(this)}>{node.children[0].data}{b}</li>;
+        }
+
+        if (node.name == 'h4') {
+          bucket = node;
+          return node;
+        }
+
+        if (node.name == 'ul') {
+          node.children.unshift(bucket);
+          return node;
+        }
+      };
+    };
+
+
+    return (
+      <Drawer id="list" open={true} className={classNames(
+        'songlist', 
+        {hidden: this.props.hidden},
+        {noscroll: this.state.tagsopen}
+      )}>
+        <div className="filter">
+          <input type="text" 
+            placeholder="Lieder suchen…"
+            value={this.state.filter} 
+            ref={this.refFilter}
+
+            onChange={this.onChange}
+            onFocus={this.onFocus}
+            onBlur={this.onBlur}
+            onKeyDown={this.onKeyDown}
+          />
+          <span className={'reset ' + filled} onClick={ () => { this.setFilter(''); } }>&times;</span>
+          <span className="open-tags" onClick={this.toggleTagsOpen}>Tags</span>
+        </div>
+
+        <MetaContent 
+          replace={process_filtermenu()}
+          className={classNames('filterMenu', 
+            {hidden: !this.state.active, open: !this.props.hidden && this.state.tagsopen })} // tag menu is fix positioned and would stay on top otherwise
+          title="Schlagwortverzeichnis" 
+          songs={this.props.songs}
+        />
+        <ul>
+          {Array.from(groups, ([group, songs]) => {
+            return <ListGroup user={this.props.user} label={group} songs={songs} key={group} onClickHandler={this.props.hideOnMobile}/>;
+          }
+          )}
+          <li>
+            <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
+          </li>
+        </ul>
+        <Link to="/user" className="username">{Meteor.user().profile.name}</Link>
+      </Drawer>
+    );
+  }
 }
 
 export default withRouter(List);  // injects history, location, match

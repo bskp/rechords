@@ -3,12 +3,12 @@ import * as React from 'react';
 import {Component} from 'react';
 import Drawer from '../Drawer';
 import moment from 'moment';
-import "moment/locale/de";
+import 'moment/locale/de';
 
 import { diffChars } from 'diff';
 import { connect, ConnectedProps } from 'react-redux';
 import { IEditorStates } from './EditorAdvanced';
-import Source from '../Source'
+import Source from '../Source';
 import { getBlameLabel } from './BlameUtils';
 import { reduceDiff } from './DiffUtils';
 
@@ -29,24 +29,24 @@ export const connector = connect((state: IEditorStates) =>
   dispatchSelect: (rev: Revision) => ({ type: 'revision/set', payload: rev }),
   dispatchHover: (rev: Revision) => ({ type: 'revisionHover/set', payload: rev }),
   setRevTab: () => ({ type: 'tab/rev' })
-})
+});
 class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevBrowserAdvancedStates> {
 
   readonly state = {
     diffs: [],
     showDiff: false,
     showWhitespace: false
-  }
+  };
   constructor(props: RevBrowserAdvancedProps_) {
-    super(props)
+    super(props);
   }
 
   componentDidMount() {
-    document.addEventListener("keyup", this.keyHandler, {});
+    document.addEventListener('keyup', this.keyHandler, {});
   }
 
   componentWillUnmount() {
-    document.removeEventListener("keyup", this.keyHandler);
+    document.removeEventListener('keyup', this.keyHandler);
   }
 
   keyHandler = (e) => {
@@ -54,74 +54,74 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
     // Do not steal focus if on <input>
     if (e.target?.tagName == 'INPUT') return;
 
-    const rev = this.props.selectedRev
+    const rev = this.props.selectedRev;
     const revs = this.props.song.getRevisions();
 
-    const n = revs.length
+    const n = revs.length;
 
     if (n > 0) {
       if (e.key == 'j' || e.key == 'ArrowRight') {
         e.preventDefault();
         if (rev) {
-          const idx = revs.findIndex(r => rev?._id == r._id)
+          const idx = revs.findIndex(r => rev?._id == r._id);
           if (idx != -1 && idx < n - 1) {
-            this.setRev(revs[idx + 1])
-            return
+            this.setRev(revs[idx + 1]);
+            return;
           }
         } else {
-          this.setRev(revs[0])
+          this.setRev(revs[0]);
         }
       }
 
       if (e.key == 'k' || e.key == 'ArrowLeft') {
         e.preventDefault();
         if (rev) {
-          const idx = revs.findIndex(r => rev?._id == r._id)
+          const idx = revs.findIndex(r => rev?._id == r._id);
           if (idx != -1 && idx > 0) {
-            this.setRev(revs[idx - 1])
-            return
+            this.setRev(revs[idx - 1]);
+            return;
           }
         } else {
-          this.setRev(revs[n - 1])
+          this.setRev(revs[n - 1]);
         }
       }
     }
-  }
+  };
 
 
   setRev = (rev: Revision) => {
-    this.props.dispatchSelect(rev)
-  }
+    this.props.dispatchSelect(rev);
+  };
 
   setRevById = (rev_id: string) => {
-    let revs = this.props.song.getRevisions();
+    const revs = this.props.song.getRevisions();
 
-    const rev = revs.find(r => r._id == rev_id)
+    const rev = revs.find(r => r._id == rev_id);
     if (rev) {
-      this.setRev(rev)
+      this.setRev(rev);
     }
-  }
+  };
 
 
   computeDiff = (revs: Revision[], selectedRev: { _id: string; }) => {
-    const idx_of_current_Diff = revs.findIndex((rev: Revision) => rev._id == selectedRev?._id)
+    const idx_of_current_Diff = revs.findIndex((rev: Revision) => rev._id == selectedRev?._id);
 
-    const to_diff = idx_of_current_Diff >= 0 && idx_of_current_Diff < revs.length - 1 ? revs[idx_of_current_Diff + 1].text : ""
-    const current = this.props.selectedRev?.text ? this.props.selectedRev.text : ""
+    const to_diff = idx_of_current_Diff >= 0 && idx_of_current_Diff < revs.length - 1 ? revs[idx_of_current_Diff + 1].text : '';
+    const current = this.props.selectedRev?.text ? this.props.selectedRev.text : '';
 
-    const diff = diffChars(to_diff, current)
+    const diff = diffChars(to_diff, current);
 
-    return reduceDiff(diff, {showWhitespace: this.state.showWhitespace})
-  }
+    return reduceDiff(diff, {showWhitespace: this.state.showWhitespace});
+  };
 
   render() {
     const revs = this.props.song.getRevisions();
     const n = revs.length;
 
-    const rev = this.props.selectedRev
-    let label = getBlameLabel(rev);
+    const rev = this.props.selectedRev;
+    const label = getBlameLabel(rev);
 
-    const diffs = this.computeDiff(revs, this.props.selectedRev)
+    const diffs = this.computeDiff(revs, this.props.selectedRev);
 
     return (
       <>
@@ -147,10 +147,10 @@ class RevBrowserAdvanced_ extends React.Component<RevBrowserAdvancedProps_, RevB
           </ol>
         </Drawer>
       </>
-    )
+    );
   }
 }
-export const RevBrowserAdvanced = connector(RevBrowserAdvanced_)
+export const RevBrowserAdvanced = connector(RevBrowserAdvanced_);
 
 
 interface RevLinkAdvancedProps {
@@ -168,8 +168,8 @@ class RevLinkAdvanced_ extends Component<RevLinkAdvancedProps_> {
     return (
       <li value={this.props.idx}
         onClick={() => {
-          this.props.dispatchSelect(this.props.rev)
-          this.props.setRevTab()
+          this.props.dispatchSelect(this.props.rev);
+          this.props.setRevTab();
         }}
         // TODOO: read from dispatche
         className={this.props.selectedRev == this.props.rev ? 'active' : undefined}
@@ -180,7 +180,7 @@ class RevLinkAdvanced_ extends Component<RevLinkAdvancedProps_> {
   }
 }
 
-export const RevLinkAdvanced = connector(RevLinkAdvanced_)
+export const RevLinkAdvanced = connector(RevLinkAdvanced_);
 
 export interface ConvertDiffOptions {
   showWhitespace?: boolean;

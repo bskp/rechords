@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
 export const instrumentPropTypes = PropTypes.shape({
   strings: PropTypes.number.isRequired,
@@ -12,4 +12,4 @@ export const instrumentPropTypes = PropTypes.shape({
   tunings: PropTypes.shape({
     standard: PropTypes.arrayOf(PropTypes.string).isRequired
   }).isRequired
-})
+});

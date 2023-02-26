@@ -32,17 +32,17 @@ export interface ISourceOptions extends OnlyBoolean {
 
 // TODO: Blamelines could be an own component
 export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
-  const textAreaRef: RefObject<HTMLTextAreaElement> = React.createRef()
+  const textAreaRef: RefObject<HTMLTextAreaElement> = React.createRef();
 
 
   const callUpdateHandler = () => {
     if ('updateHandler' in props) {
       props.updateHandler(textAreaRef?.current.value);
     }
-  }
+  };
 
   // Height estimation
-  let rowsMatch = props.md.match(/\n/g)
+  const rowsMatch = props.md.match(/\n/g);
 
   let rows: number;
   if (rowsMatch != null) {
@@ -51,22 +51,22 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
 
   rows = Math.max(50, rows);
 
-  let style = {
+  const style = {
     minHeight: rows + 'em',
-  }
+  };
 
-  const content = textAreaRef.current?.value || props.md
+  const content = textAreaRef.current?.value || props.md;
 
   const options = props.sourceOptions;
   const propSetter = props.setSourceOptions;
 
-  const [isDiff, setDiff] = useExternalState(options, propSetter, 'blame')
-  const keys: (keyof ISourceOptions)[] = ['fullRev', 'name', 'date', 'showWhitespace']
+  const [isDiff, setDiff] = useExternalState(options, propSetter, 'blame');
+  const keys: (keyof ISourceOptions)[] = ['fullRev', 'name', 'date', 'showWhitespace'];
   const detailStates = Object.fromEntries(keys.map(
     name => [name, useExternalState(options, propSetter, name)]
-  ))
+  ));
 
-  const blamelines_grouped = isDiff ? groupBlameLines(detailStates, content, props) : null
+  const blamelines_grouped = isDiff ? groupBlameLines(detailStates, content, props) : null;
 
   const settings =
     <div className="settings">
@@ -83,10 +83,10 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
         </label>
         </div>
       )}
-    </div>
+    </div>;
 
   return (
-    <div className={"content " + props.className}>
+    <div className={'content ' + props.className}>
       {settings}
       <div className="source-adv">
         {props.children}
@@ -100,8 +100,8 @@ export const SourceAdvanced: FunctionComponent<SourceAdvancedProps> = props => {
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export type OnlyBoolean = {
   [key: string]: boolean
@@ -109,12 +109,12 @@ export type OnlyBoolean = {
 
 function groupBlameLines(detailStates: { [k: string]: [boolean, (b: boolean) => void]; }, content: string, props: React.PropsWithChildren<SourceAdvancedProps>) {
   const lineDetail = (l: IBlameLine<Revision>) => {
-    let ret = "";
+    let ret = '';
     const ipOrEd = Meteor.users.findOne(l.origin.editor)?.profile.name || l.origin.ip;
     const revInfo = l.origin._id;
     ret += detailStates.fullRev[0] ? revInfo : revInfo.substr(0, 3);
     ret += detailStates.name[0] ? ipOrEd : '';
-    ret += detailStates.date[0] ? " " + moment(l.origin.timestamp).calendar() : "";
+    ret += detailStates.date[0] ? ' ' + moment(l.origin.timestamp).calendar() : '';
     return ret;
   };
 
@@ -129,16 +129,16 @@ function groupBlameLines(detailStates: { [k: string]: [boolean, (b: boolean) => 
     ip: 'xxx',
     of: '',
     timestamp: new Date()
-  }
+  };
 
   const revsInclCurrent = [currentRev, ...revs];
   const pb = getBlameLines(revsInclCurrent.slice());
   if (contentLines && pb) {
     blamelines = pb.map((l, idx) => {
-        return {
-          className: "annoline", dataRevid: l.origin._id, info: l,
-          display: lineDetail(l)
-        };
+      return {
+        className: 'annoline', dataRevid: l.origin._id, info: l,
+        display: lineDetail(l)
+      };
     });
   }
 
@@ -157,49 +157,49 @@ function grouping(elements: Diffline<Revision>[], attribute: string, cb: (id: st
     info?: IBlameLine<Revision>;
   };
 
-  let returnvalue: BlameGroup[] = []
-  let last_id: string = null
+  const returnvalue: BlameGroup[] = [];
+  let last_id: string = null;
 
-  let currentParent: BlameGroup
+  let currentParent: BlameGroup;
   // Maybe it was better to create a map first
   // not push directly into the children of the reactelements
   for (const el of elements) {
     if (el[attribute] != last_id) {
-      last_id = el[attribute]
-      currentParent = { info: el.info, lines: [] }
-      returnvalue.push(currentParent)
+      last_id = el[attribute];
+      currentParent = { info: el.info, lines: [] };
+      returnvalue.push(currentParent);
     }
-    currentParent.lines.push(el)
+    currentParent.lines.push(el);
   }
 
-  return returnvalue.map(({ info, lines }, idx) => <DiffGroup options={options} info={info} lines={lines} key={idx} cb={cb}></DiffGroup>)
+  return returnvalue.map(({ info, lines }, idx) => <DiffGroup options={options} info={info} lines={lines} key={idx} cb={cb}></DiffGroup>);
 }
 
 
 
 export const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: DiffProps & ConnectedProps<typeof connector>) => {
-  const { info, lines } = props
-  const [hover, setHover] = useState(false)
+  const { info, lines } = props;
+  const [hover, setHover] = useState(false);
 
   if (info) {
-    const rev = info.origin
+    const rev = info.origin;
 
-    const label = getBlameLabel(rev, '')
+    const label = getBlameLabel(rev, '');
 
     const selectRev = () => {
-      props.dispatchSelect(rev)
-      props.setRevTab()
-    }
+      props.dispatchSelect(rev);
+      props.setRevTab();
+    };
 
 
-    const hoverOrSelected = props.hoverRev == info.origin || props.selectedRev == info.origin
+    const hoverOrSelected = props.hoverRev == info.origin || props.selectedRev == info.origin;
 
     // Enter and leave of Parent element of tooltip
     // -> the tooltip stays open
     return <div
       onClick={selectRev}
-      onMouseEnter={() => { setHover(true); props.dispatchHover(info.origin) }}
-      onMouseLeave={() => { setHover(false); props.dispatchHover(null) }}
+      onMouseEnter={() => { setHover(true); props.dispatchHover(info.origin); }}
+      onMouseLeave={() => { setHover(false); props.dispatchHover(null); }}
       className={'annotation-group'}>
       <div className="hover-container" >
         {hover &&
@@ -214,7 +214,7 @@ export const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: D
         key={info?.origin._id}>
         {lines?.map((el, idx) => <div key={idx} className={el.className}>{el.display}</div>)}
       </div>
-    </div>
+    </div>;
   }
   else {
     return <div className="annotation-group">
@@ -222,6 +222,6 @@ export const DiffGroup: React.FunctionComponent<DiffProps> = connector((props: D
         *
       </div>
 
-    </div>
+    </div>;
   }
-})
+});

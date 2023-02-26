@@ -1,11 +1,11 @@
 import {Revision, Song} from '../api/collections';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Source from './Source';
 import Drawer from '../ui/Drawer';
 import moment from 'moment';
 import 'moment/locale/de';
 
-export default class RevBrowser extends React.Component<{song: Song}, {revision: Revision}> {
+export default class RevBrowser extends React.Component<{ song: Song }, { revision: Revision }> {
 
   constructor(props) {
     super(props);
@@ -14,11 +14,11 @@ export default class RevBrowser extends React.Component<{song: Song}, {revision:
     };
   }
 
-  setRev = (rev : Revision) => {
+  setRev = (rev: Revision) => {
     this.setState({
       revision: rev
     });
-  }
+  };
 
   componentDidMount() {
     document.addEventListener('keyup', this.keyHandler, {});
@@ -33,7 +33,7 @@ export default class RevBrowser extends React.Component<{song: Song}, {revision:
     if (e.target?.tagName == 'INPUT') return;
 
     const rev = this.state?.revision;
-    const revs : Array<Revision> = this.props.song.getRevisions();
+    const revs: Array<Revision> = this.props.song.getRevisions();
 
     const n = revs.length;
 
@@ -65,7 +65,7 @@ export default class RevBrowser extends React.Component<{song: Song}, {revision:
       }
     }
 
-  }
+  };
 
   render() {
     const revs = this.props.song.getRevisions();
@@ -84,11 +84,15 @@ export default class RevBrowser extends React.Component<{song: Song}, {revision:
           <h1>Versionen</h1>
           <ol>
             {revs.map((rev, idx) =>
-              <RevLink rev={rev} idx={n - idx} key={rev._id} callback={this.setRev} active={rev._id == this.state.revision?._id} />
+              <RevLink rev={rev}
+                idx={n - idx}
+                key={rev._id}
+                showRevision={this.setRev}
+                active={rev._id == this.state.revision?._id}/>
             )}
           </ol>
-          <p>Schneller:<br />
-            <span className="keyboard">J</span>&nbsp;|&nbsp;<span className="keyboard">→</span><br />
+          <p>Schneller:<br/>
+            <span className="keyboard">J</span>&nbsp;|&nbsp;<span className="keyboard">→</span><br/>
             <span className="keyboard">K</span>&nbsp;|&nbsp;<span className="keyboard">←</span>
           </p>
         </Drawer>
@@ -97,7 +101,14 @@ export default class RevBrowser extends React.Component<{song: Song}, {revision:
   }
 }
 
-class RevLink extends Component<{rev: Revision, idx: number, key: string, callback: Function, active: boolean}, {}> {
+class RevLink extends Component<{
+    rev: Revision,
+    idx: number,
+    key: string,
+    showRevision: (rev: Revision) => void,
+    active: boolean
+},
+    never> {
   constructor(props) {
     super(props);
   }
@@ -108,7 +119,9 @@ class RevLink extends Component<{rev: Revision, idx: number, key: string, callba
 
     return (
       <li value={this.props.idx}
-        onClick={() => { this.props.callback(r); }}
+        onClick={() => {
+          this.props.showRevision(r);
+        }}
         className={this.props.active ? 'active' : undefined}
       >
         {who}{moment(r.timestamp).fromNow()}

@@ -1,14 +1,14 @@
-import { Mongo } from 'meteor/mongo'
-import { _ } from 'meteor/underscore'
+import { Mongo } from 'meteor/mongo';
+import { _ } from 'meteor/underscore';
 
-import * as showdown from 'showdown'
+import * as showdown from 'showdown';
 
-const DATACHORD = 'data-chord'
-import { DOMParser } from 'xmldom'
-import Parser from 'html-react-parser'
-import slug from 'slug'
-import { FilterXSS } from 'xss'
-import {showdownRechords} from './showdown-rechords'
+const DATACHORD = 'data-chord';
+import { DOMParser } from 'xmldom';
+import Parser from 'html-react-parser';
+import slug from 'slug';
+import { FilterXSS } from 'xss';
+import {showdownRechords} from './showdown-rechords';
 
 const options: XSS.IFilterXSSOptions = {
   whiteList: {
@@ -36,26 +36,26 @@ const options: XSS.IFilterXSSOptions = {
     img: ['src', 'alt'],
     abbr: ['class', 'title', 'data-fingers']
   }
-}
+};
 
 const converter = new showdown.Converter({ 
   extensions: [showdownRechords],
   striketrough: true,
   ghCodeBlocks: true,
   smoothLivePreview: true
-})
+});
 
-showdown.setOption('simpleLineBreaks', true)
-showdown.setOption('smoothLivePreview', true)
-showdown.setOption('simplifiedAutoLink', true)
-showdown.setOption('openLinksInNewWindow', true)
+showdown.setOption('simpleLineBreaks', true);
+showdown.setOption('smoothLivePreview', true);
+showdown.setOption('simplifiedAutoLink', true);
+showdown.setOption('openLinksInNewWindow', true);
 
 
 function isDefined<T>(a: T | null | undefined): a is T {
-  return a !== null && a !== undefined
+  return a !== null && a !== undefined;
 }
 
-export const rmd_version = 7
+export const rmd_version = 7;
 export class Song {
   _id?: string;
 
@@ -78,121 +78,121 @@ export class Song {
 
 
   constructor (doc) {
-    _.extend(this, doc)
+    _.extend(this, doc);
   }
 
   getHtml() {
-    this.validateField('html')
-    return this.html
+    this.validateField('html');
+    return this.html;
   }
 
   getChords() {
-    this.validateField('chords')
-    return this.chords
+    this.validateField('chords');
+    return this.chords;
   }
 
   getTags() {
-    this.validateField('tags')
-    return this.tags
+    this.validateField('tags');
+    return this.tags;
   }
 
   validateField(field : string) {
-    if (field in this && this?.parsed_rmd_version == rmd_version) return
+    if (field in this && this?.parsed_rmd_version == rmd_version) return;
 
     // A field is missing or bad parser version. Re-parse and store!
-    this.parse(this.text)
+    this.parse(this.text);
 
     Meteor.call('saveSong', this, (error, isValid) => {
       if (error !== undefined) {
-        console.log(error)
+        console.log(error);
       }
-    })
+    });
 
 
   }
 
   checkTag(needle : string) {
     for (const tag of this.getTags()) {
-      if (!(tag.toLowerCase().startsWith(needle.toLowerCase()))) continue
+      if (!(tag.toLowerCase().startsWith(needle.toLowerCase()))) continue;
 
-      let chunks = tag.split(':')
+      let chunks = tag.split(':');
       if (chunks.length == 1) {
         // Tags without "value" (ie. colon)
-        chunks = tag.split(needle)
-        if (chunks[1] == '') return true
+        chunks = tag.split(needle);
+        if (chunks[1] == '') return true;
       }
-      return chunks.splice(1).join(':')
+      return chunks.splice(1).join(':');
     }
-    return null // Tag not present
+    return null; // Tag not present
   }
 
   getTag(tag_name : string) {
     for (const tag of this.getTags()) {
-      if (!(tag.toLowerCase().startsWith(tag_name.toLowerCase()))) continue
+      if (!(tag.toLowerCase().startsWith(tag_name.toLowerCase()))) continue;
 
-      const chunks = tag.split(':')
+      const chunks = tag.split(':');
       if (chunks.length == 1) {
-        return undefined  // no colon in tag
+        return undefined;  // no colon in tag
       }
-      return chunks.splice(1).join(':')
+      return chunks.splice(1).join(':');
     }
-    return undefined // Tag not present
+    return undefined; // Tag not present
 
   }
 
   getVirtualDom() {
-    return Parser(this.html)
+    return Parser(this.html);
   }
 
   isEmpty() {
-    return this.text.match(/^\s*$/) != null
+    return this.text.match(/^\s*$/) != null;
   }
 
   parse(md) {
-    this.text = md
+    this.text = md;
 
     // Create HTML
     // only member that exist in the mongo db are published
     // to the outside.
-    const filter = new FilterXSS(options)
-    this.html = filter.process(converter.makeHtml(this.text))
-    this.title = ''
-    this.author = ''
+    const filter = new FilterXSS(options);
+    this.html = filter.process(converter.makeHtml(this.text));
+    this.title = '';
+    this.author = '';
 
-    this.tags = []
-    this.chords = []
+    this.tags = [];
+    this.chords = [];
 
     // URL-compatible strings
-    this.title_ = ''
-    this.author_ = ''
+    this.title_ = '';
+    this.author_ = '';
 
     // this._id may be present or not, but is, most importantly: unaffected!
 
     // Set Metadata
 
-    if (this.isEmpty()) return  // delete song upon next save.
+    if (this.isEmpty()) return;  // delete song upon next save.
 
-    const dom = new DOMParser().parseFromString(this.html, 'text/html')
+    const dom = new DOMParser().parseFromString(this.html, 'text/html');
 
-    const h1 = dom.getElementsByTagName('h1')
+    const h1 = dom.getElementsByTagName('h1');
     if (h1.length > 0) {
-      this.title = h1[0].textContent
+      this.title = h1[0].textContent;
     } else {
-      this.title = '(Ohne Titel)'
+      this.title = '(Ohne Titel)';
     }
-    this.title_ = slug(this.title)
+    this.title_ = slug(this.title);
 
-    const h2 = dom.getElementsByTagName('h2')
+    const h2 = dom.getElementsByTagName('h2');
     if (h2.length > 0) {
-      this.author = h2[0].textContent
+      this.author = h2[0].textContent;
     } else {
-      this.author = '-'
+      this.author = '-';
     }
-    this.author_ = slug(this.author)
+    this.author_ = slug(this.author);
 
-    this.tags = RmdHelpers.collectTags(dom)
-    this.chords = RmdHelpers.collectChords(dom)
-    this.parsed_rmd_version = rmd_version
+    this.tags = RmdHelpers.collectTags(dom);
+    this.chords = RmdHelpers.collectChords(dom);
+    this.parsed_rmd_version = rmd_version;
   }
 
 
@@ -201,13 +201,13 @@ export class Song {
       this.revision_cache = Revisions.find(
         { of: this._id }, 
         { sort: {timestamp: -1} 
-        }).fetch()
+        }).fetch();
     }
-    return this.revision_cache
+    return this.revision_cache;
   }
 
   getRevision(steps: number) {
-    return this.getRevisions()[steps]
+    return this.getRevisions()[steps];
   }
 }
 
@@ -222,47 +222,47 @@ export class Revision {
 }
 
 
-const Revisions = new Mongo.Collection<Revision>('revisions')
+const Revisions = new Mongo.Collection<Revision>('revisions');
 
 const Songs = new Mongo.Collection<Song>('songs', {
   transform (doc) {
-    return new Song(doc)
+    return new Song(doc);
   }
-})
+});
 
 
 export class RmdHelpers {
   static collectTags(dom) {
-    const tags = []
-    const uls = dom.getElementsByTagName('ul')
+    const tags = [];
+    const uls = dom.getElementsByTagName('ul');
     for (const ul of uls) {
-      if (ul.getAttribute('class') != 'tags') continue
+      if (ul.getAttribute('class') != 'tags') continue;
 
-      const lis : Array<HTMLElement> = ul.getElementsByTagName('li')
+      const lis : Array<HTMLElement> = ul.getElementsByTagName('li');
       for (const li of lis) {
-        const contents = Array.from(li.childNodes).map(child => child.textContent)
-        tags.push( contents.join(':') )
+        const contents = Array.from(li.childNodes).map(child => child.textContent);
+        tags.push( contents.join(':') );
       }
     }
-    return tags
+    return tags;
   }
   static collectChords(dom) {
-    return this.collectChordsDom(dom)
+    return this.collectChordsDom(dom);
   }
   static collectChordsDom(dom) {
-    const chords = []
+    const chords = [];
 
-    const uls = dom.getElementsByTagName('i')
+    const uls = dom.getElementsByTagName('i');
     for (const chord_dom of uls) {
       if (chord_dom.hasAttribute(DATACHORD)) {
-        const chord = chord_dom.getAttribute(DATACHORD)
-        chords.push(chord)
+        const chord = chord_dom.getAttribute(DATACHORD);
+        chords.push(chord);
       }
     }
-    return chords
+    return chords;
   }
 }
 
-export { Revisions }
+export { Revisions };
 
-export default Songs
+export default Songs;
