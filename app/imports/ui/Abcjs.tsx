@@ -1,10 +1,20 @@
 import * as React from 'react';
+import {useEffect} from 'react';
 import abcjs, {AbcVisualParams} from 'abcjs';
 
 const regular = 'Roboto 12';
 const bold = regular + ' bold';
 
-const defaults: AbcVisualParams = {
+
+interface AbcTabParams {
+  tablature?: {
+    instrument: string;
+    label?: string;
+    tuning?: string[];
+  }[];
+}
+
+const defaults: AbcVisualParams & AbcTabParams = {
   add_classes       : true,
   paddingtop        : 0,
   paddingbottom     : 0,
@@ -32,14 +42,15 @@ const defaults: AbcVisualParams = {
   },
 };
 
-export const Abcjs = (props: {
-  abcNotation: string,
-  params: AbcVisualParams
-}) => {
+export const Abcjs = (props: { abcNotation: string, params: AbcVisualParams }) => {
+
   const target = 'abcjs-result-' + Date.now() + Math.random();
-  abcjs.renderAbc(target,
-    props.abcNotation,
-    {...props.params, ...defaults});
+
+  useEffect(() => {
+    abcjs.renderAbc(target,
+      props.abcNotation,
+      {...props.params, ...defaults});
+  });
 
   return <div className="abc-notation">
     <div id={target} style={{width: '100%'}}/>

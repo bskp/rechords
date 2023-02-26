@@ -3,16 +3,11 @@ import * as React from 'react';
 import {Abcjs} from './Abcjs';
 import Kord from './Kord';
 
-import Hypher from 'hypher';
 import parse from 'html-react-parser';
 import * as DH from 'domhandler';
 import {DataNode} from 'domhandler';
 
 import {verseRegex} from '../api/showdown-rechords';
-
-const english = require('hyphenation.en-us'),
-  h = new Hypher(english);
-
 
 const nodeText = (node) => {
   return node.children.reduce( (out, child) => out += child.type == 'text' ? child.data : nodeText(child), '' );
@@ -58,7 +53,7 @@ export default class Preview extends React.Component<P, never> {
     md.replace(verseRegex, (match:string, title:string, v:string) => {
       const progression = new Array<string>();
 
-      v.replace(/\[([^\]]*)\]/g, (match, chord) => {
+      v.replace(/\[([^\]]*)]/g, (match, chord) => {
         progression.push(chord);
         return '';
       });
@@ -209,7 +204,7 @@ export default class Preview extends React.Component<P, never> {
 
         // Iterate over letters
         let countedLetters = 0;
-        v = v.replace(/(\[[^\]]*\])|([^[]*)/gm, (match, chord, lyrics) => {
+        v = v.replace(/(\[[^\]]*])|([^[]*)/gm, (match, chord, lyrics) => {
           const adding = this.textLen(match);
           if (countedLetters == pos.letter) match = lyrics || '';  // retains line breaks.
           countedLetters += adding;
@@ -273,8 +268,7 @@ export default class Preview extends React.Component<P, never> {
     let chord  = 0;
     let section : HTMLElement;
 
-    while(true) {
-
+    for(;;) {
       if (segment.previousElementSibling != null) {
         segment = segment.previousElementSibling;
       } else {
@@ -353,7 +347,7 @@ export default class Preview extends React.Component<P, never> {
           const lyrics = nodeText(node);
 
           return <React.Fragment>
-            {lyrics.split(' ').filter(el => true).map((word, idx, array) => {
+            {lyrics.split(' ').map((word, idx, array) => {
               if (word == '') return ' ';
 
               const isLast = idx == array.length - 1;
@@ -377,8 +371,7 @@ export default class Preview extends React.Component<P, never> {
         }
         else if (node.name == 'span' && 'attribs' in node && 'class' in node.attribs && 'line' == node.attribs.class) {
           // Fakey syllable to allow appended chords
-          // @ts-ignore
-          node.children.push(<i>      </i>);
+          node.children.push(<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>);
 
         }
         else if (node.name == 'pre') {
@@ -392,7 +385,7 @@ export default class Preview extends React.Component<P, never> {
 
           return <Abcjs
             abcNotation={abc}
-            engraverParams={{ responsive: 'resize' }}
+            params={{ responsive: 'resize' }}
           />;
         }
         else if (node.name == 'abbr') {

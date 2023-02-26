@@ -139,7 +139,7 @@ const Sheet = ({ song, transpose, hideChords, processVdom, style, multicolumns }
 
       } else {
         const abc = (code.firstChild as DH.DataNode)?.data;
-        return <Abcjs abcNotation={abc} parserParams={{ visualTranspose: transpose, }} />; 
+        return <Abcjs abcNotation={abc} params={{ visualTranspose: transpose, }} />;
 
       }
     }
