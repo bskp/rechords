@@ -1,7 +1,7 @@
 import React from 'react';
 import {Meteor} from 'meteor/meteor';
 import {render} from 'react-dom';
-import {createInstance, MatomoProvider} from '@datapunt/matomo-tracker-react'
+import {createInstance, MatomoProvider} from '@datapunt/matomo-tracker-react';
 import App from '../imports/ui/App.tsx';
 
 const matomoUrlBase = Meteor.settings.public.matomoUrlBase;
@@ -13,7 +13,7 @@ const app = matomoUrlBase ? (
   })}>
     <App/>
   </MatomoProvider>
-) : <App/>
+) : <App/>;
 
 Meteor.startup(() => {
   render(app, document.getElementById('app'));

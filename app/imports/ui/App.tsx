@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { createStore } from 'redux-dynamic-modules-core';
-import { withTracker } from 'meteor/react-meteor-data';
-import { Provider } from 'react-redux';
+import {createStore} from 'redux-dynamic-modules-core';
+import {withTracker} from 'meteor/react-meteor-data';
+import {Provider} from 'react-redux';
 import {ErrorBoundary} from 'react-error-boundary';
 
 
 import Songs, {Song} from '../api/collections';
 
 import List from './List';
-import Viewer, {SongRouteParams} from './Viewer';
+import Viewer from './Viewer';
 import Editor from './Editor';
 import Progress from './Progress';
 import Users from './Users';
@@ -17,13 +17,13 @@ import HideSongList from './HideSongList';
 import Login from './Login';
 import Hallo from './Hallo';
 
-import { BrowserRouter, Route, Switch, RouteComponentProps} from 'react-router-dom';
+import {BrowserRouter, Route, RouteComponentProps, Switch} from 'react-router-dom';
 import TrackingDocumentTitle from './TrackingDocumentTitle';
-import { MobileMenu } from './MobileMenu';
-import { EditorAdvanced, getEditorModule } from './AdvancedEditor/EditorAdvanced';
-import { DynamicModuleLoader } from 'redux-dynamic-modules';
+import {MobileMenu} from './MobileMenu';
+import {EditorAdvanced, getEditorModule} from './AdvancedEditor/EditorAdvanced';
+import {DynamicModuleLoader} from 'redux-dynamic-modules';
 import Printer from './Printer';
-import { Meteor } from 'meteor/meteor';
+import {Meteor} from 'meteor/meteor';
 
 const empty_song = {
   title: 'Neues Lied',
@@ -42,9 +42,9 @@ const nA404 = (
 );
 const NA400 = () => (
   <div className="content chordsheet-colors">
-    <TrackingDocumentTitle title="Hölibu | 404" track_as="error-404"/>
+    <TrackingDocumentTitle title="Hölibu | 400" track_as="error-400"/>
     <span id="logo">
-      <h1>404</h1>
+      <h1>400</h1>
       <h2>n/A</h2>
     </span>
   </div>
@@ -188,15 +188,12 @@ class App extends React.Component<AppProps, AppStates> {
               user={this.props.user}
             />
             <Switch>
-
               <Route exact={true} path='/'>
                 <TrackingDocumentTitle title="Hölibu 3000" />
                 <ErrorBoundary fallback={<NA400 />}>
                   <Hallo user={this.props.user} songs={this.props.songs} revisionsLoading={this.props.revisionsLoading}/>
                 </ErrorBoundary>
               </Route>
-                 
-
 
               <Route path='/print/:author/:title' render={(routerProps) => {
                 const song = getSong(routerProps.match.params);
@@ -217,7 +214,6 @@ class App extends React.Component<AppProps, AppStates> {
                   </>
                 );
               }} />
-
 
               <Route path='/view/:author/:title' render={(routerProps) => {
                 const song = getSong(routerProps.match.params);
@@ -252,7 +248,7 @@ class App extends React.Component<AppProps, AppStates> {
                     <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader> :
                     <DynamicModuleLoader modules={[getEditorModule()]}> <EditorAdvanced song={song} /></DynamicModuleLoader>;
                 } else {
-                  // In any case, the editor is rendered. However, a re-render is triggered after the song's
+                  // In any case, the editor is rendered. However, a rerender is triggered after the song's
                   // revisions have been loaded.
                   editor = this.props.revisionsLoading ? <Editor song={song} /> : <Editor song={song} />;
                 }

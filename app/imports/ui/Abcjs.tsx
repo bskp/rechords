@@ -5,7 +5,6 @@ import abcjs, {AbcVisualParams} from 'abcjs';
 const regular = 'Roboto 12';
 const bold = regular + ' bold';
 
-
 interface AbcTabParams {
   tablature?: {
     instrument: string;
@@ -44,7 +43,7 @@ const defaults: AbcVisualParams & AbcTabParams = {
 
 export const Abcjs = (props: { abcNotation: string, params: AbcVisualParams }) => {
 
-  const target = 'abcjs-result-' + Date.now() + Math.random();
+  const target = 'abcjs-result-' + Math.round(100000*Math.random());
 
   useEffect(() => {
     abcjs.renderAbc(target,

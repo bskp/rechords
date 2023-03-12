@@ -1,10 +1,9 @@
 import * as React from 'react';
-import * as DocumentTitle from 'react-document-title';
 
 import { Header } from './Icons.jsx';
 
 
-export default class Login extends React.Component<{}, { one: string, two: string, three: string, four: string, msg: string }> {
+export default class Login extends React.Component<any, { one: string, two: string, three: string, four: string, msg: string }> {
   private one = React.createRef<HTMLInputElement>();
   private two = React.createRef<HTMLInputElement>();
   private three = React.createRef<HTMLInputElement>();
@@ -47,6 +46,7 @@ export default class Login extends React.Component<{}, { one: string, two: strin
     );
 
   };
+
 
   handleKey = (e : React.KeyboardEvent<HTMLInputElement>) => {
 
