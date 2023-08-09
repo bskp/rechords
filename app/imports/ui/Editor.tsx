@@ -1,5 +1,5 @@
 import * as React from 'react';
-import  { Component } from 'react';
+import { Component } from 'react';
 import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
 
 import Source from './Source';
@@ -9,11 +9,12 @@ import Drawer from './Drawer';
 import { Ok, Cancel } from './Icons.jsx';
 import { Song } from '../api/collections';
 import { Meteor } from 'meteor/meteor';
-import {navigateTo, View} from '../api/helpers';
+import { navigateTo, View } from '../api/helpers';
 import { MobileMenuShallow } from './MobileMenu';
+import { convertToHoelibuSyntax } from '../api/ascii-importer';
 
 
-class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, versionTab: boolean, dirty: boolean}> {
+class Editor extends Component<{ song: Song } & RouteComponentProps, { md: string, versionTab: boolean, dirty: boolean }> {
   mdServer: string;
 
   constructor(props) {
@@ -53,6 +54,10 @@ class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, 
     });
 
     event.preventDefault();
+  };
+
+  handlePaste = (text: string) => {
+    return convertToHoelibuSyntax(text);
   };
 
   update = (md_) => {
@@ -104,8 +109,14 @@ class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, 
           </Drawer>
 
           {dirtyLabel}
-          <Preview md={this.state.md} song={this.props.song} updateHandler={this.update}/>
-          <Source md={this.state.md} updateHandler={this.update} className="source-colors" />
+          <Preview md={this.state.md} song={this.props.song} updateHandler={this.update} />
+          <Source
+            md={this.state.md}
+            updateHandler={this.update}
+            className="source-colors"
+
+            onPasteInterceptor={this.handlePaste}
+          />
 
           {versions}
           {prompt}
@@ -122,7 +133,11 @@ class Editor extends Component<{song: Song} & RouteComponentProps, {md: string, 
             <p>…und weiterbearbeiten!</p>
           </Drawer>
 
-          <Source md={this.state.md} updateHandler={this.update} className="source-colors">
+          <Source
+            md={this.state.md}
+            updateHandler={this.update}
+            className="source-colors"
+          >
             <span className="label">Version in Bearbeitung</span>
           </Source>
           <RevBrowser song={this.props.song} />
