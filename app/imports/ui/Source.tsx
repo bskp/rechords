@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
+import React, { ClipboardEventHandler, Component } from 'react';
 
 
-interface SourceProps extends React.PropsWithChildren {
-  md: string;
+type SourceProps = {
+  md: string,
   updateHandler?: (md: string) => void;
-  readOnly?: boolean;
-  className: string;
-}
+  readOnly?: boolean,
+  className: string,
+  onPasteInterceptor?: (v: string) => string
+};
 
 export default class Source extends Component<SourceProps, never> {
   private readonly source: React.RefObject<HTMLTextAreaElement>;
@@ -19,6 +20,31 @@ export default class Source extends Component<SourceProps, never> {
   callUpdateHandler = () => {
     if ('updateHandler' in this.props) {
       this.props.updateHandler(this.source.current.value);
+    }
+  };
+
+  onPasteHandler = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    if (this.props.onPasteInterceptor) {
+      const inText = e.clipboardData.getData('Text');
+      const newText = this.props.onPasteInterceptor(inText);
+      if (inText != newText) {
+        e.preventDefault();
+        // The working way (preserving undo)
+        // officially deprecated but with no replacement
+        document.execCommand('insertText', false, newText);
+
+        // The "new" way -- clumsy and breaking undo...
+        /*         const start = this.source.current.selectionStart
+        const end = this.source.current.selectionEnd
+
+        const valueBefore = this.props.md
+
+        const inFrontSelection = valueBefore.substring(0, start);
+        // const selectionText = valueBefore.substring(start, end);
+        const afterSelection = valueBefore.substring(end);
+        this.props.updateHandler(inFrontSelection + newText + afterSelection) */
+
+      }
     }
   };
 
@@ -46,6 +72,7 @@ export default class Source extends Component<SourceProps, never> {
           value={this.props.md}
           style={style}
           readOnly={this.props.readOnly}
+          onPaste={this.onPasteHandler}
         />
       </div>
     );
