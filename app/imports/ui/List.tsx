@@ -5,14 +5,14 @@ import MetaContent from './MetaContent';
 import {Song} from '../api/collections';
 
 import Drawer from './Drawer';
-import {navigateTo, routePath, View} from '../api/helpers';
+import {navigateTo, routePath, userMayWrite, View} from '../api/helpers';
 import classNames from 'classnames';
 
 
 interface ListItemProps {
     song: Song;
     onClickHandler: MouseEventHandler<HTMLAnchorElement>;
-    user: Meteor.User;
+    user: Meteor.User | null;
 }
 class ListItem extends React.Component<ListItemProps> {
   constructor(props) {
@@ -25,7 +25,7 @@ class ListItem extends React.Component<ListItemProps> {
 
     if (u.profile.darlings.includes(id)) {
       u.profile.darlings = u.profile.darlings.filter( i => i != id );
-    } 
+    }
     else {
       u.profile.darlings.push(id);
     }
@@ -40,20 +40,19 @@ class ListItem extends React.Component<ListItemProps> {
   render() {
     const u = this.props.user;
 
-    if (!('darlings' in u.profile) || !(u.profile.darlings instanceof Array)) {
+    if (u && (!('darlings' in u.profile) || !(u.profile.darlings instanceof Array))) {
       u.profile.darlings = [];
       Meteor.call('saveUser', u, (error) => {
         console.log(error);
       });
-            
-    } 
+    }
 
-    const darlings = u.profile.darlings;
+    const darlings = u?.profile?.darlings ?? [];
 
     const is_darling = darlings.includes(this.props.song._id) ? 'is_darling' : '';
 
-    const darling_or_not = <span onClick={this.toggleDarling} className={'darling ' + is_darling}>{darling_icon}</span>;
-        
+    const darling_or_not = u ? <span onClick={this.toggleDarling} className={'darling ' + is_darling}>{darling_icon}</span> : undefined;
+
     return (
       <li><NavLink onClick={this.props.onClickHandler} to={routePath(View.view, this.props.song)}
         activeClassName="selected">
@@ -71,8 +70,6 @@ const darling_icon = (
     <circle cx="12" cy="12" r="10"/>
   </svg>
 );
-
-
 
 interface ListGroupProps {
   songs: Array<Song>;
@@ -96,7 +93,7 @@ class ListGroup extends React.Component<ListGroupProps, never> {
       <li key={this.props.label}>
         <h2 className={classes}>{this.props.label}</h2>
         <ul>
-          {this.props.songs.map((song) => 
+          {this.props.songs.map((song) =>
             <ListItem song={song} user={this.props.user} key={song._id} onClickHandler={this.props.onClickHandler}/>
           )}
         </ul>
@@ -108,7 +105,7 @@ class ListGroup extends React.Component<ListGroupProps, never> {
 
 interface ListProps {
   songs: Array<Song>;
-  user: Meteor.User;
+  user: Meteor.User | null;
   filter?: string;
   hidden: boolean;
   hideOnMobile: MouseEventHandler<HTMLElement>
@@ -130,7 +127,7 @@ interface ListState {
 
 class List extends React.Component<ListProps & RouteComponentProps, ListState> {
   refFilter: React.RefObject<HTMLInputElement>;
-  
+
   constructor(props) {
     super(props);
     this.state = {
@@ -153,7 +150,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
 
       e.preventDefault();
       return;
-    } 
+    }
 
     // Do not steal focus if on <input>
     if( (e.target as Element)?.tagName == 'INPUT' ) return;
@@ -187,8 +184,8 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
 
     nextSong:
     for (const song of this.props.songs) {
-      if (this.props.user.profile.role == 'user' && 
-                (!song.checkTag('fini')) ) {
+      if (this.props.user === null && !song.checkTag('frei')) continue;
+      if (this.props.user?.profile?.role == 'user' && (!song.checkTag('fini')) ) {
         // Display only songs which contain the tag "fini"
         continue;
       }
@@ -280,8 +277,8 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
     const groups = new Map<string, Array<Song>>();
 
     // Add exact matches
-    if (this.state.filter.length && 
-            this.state.exact_matches.length && 
+    if (this.state.filter.length &&
+            this.state.exact_matches.length &&
             this.state.fuzzy_matches.length > 1
     ) {
       groups.set('im Titel', this.state.exact_matches);
@@ -326,44 +323,53 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
     };
 
 
+    const userLink = this.props.user ? <Link to="/user" className="username">{this.props.user.profile.name}</Link> : undefined;
+    const addSong = userMayWrite() ? <li>
+      <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
+    </li> : undefined;
+
     return (
       <Drawer id="list" open={true} className={classNames(
-        'songlist', 
+        'songlist',
         {hidden: this.props.hidden},
         {noscroll: this.state.tagsopen}
       )}>
         <div className="filter">
-          <input type="text" 
-            placeholder="Lieder suchen…"
-            value={this.state.filter} 
-            ref={this.refFilter}
+          <input type="text"
+                 placeholder="Lieder suchen…"
+                 value={this.state.filter}
+                 ref={this.refFilter}
 
-            onChange={this.onChange}
-            onFocus={this.onFocus}
-            onBlur={this.onBlur}
-            onKeyDown={this.onKeyDown}
+                 onChange={this.onChange}
+                 onFocus={this.onFocus}
+                 onBlur={this.onBlur}
+                 onKeyDown={this.onKeyDown}
           />
-          <span className={'reset ' + filled} onClick={ () => { this.setFilter(''); } }>&times;</span>
+          <span className={'reset ' + filled} onClick={() => {
+            this.setFilter('');
+          }}>&times;</span>
           <span className="open-tags" onClick={this.toggleTagsOpen}>Tags</span>
         </div>
 
-        <MetaContent 
+        <MetaContent
           replace={process_filtermenu()}
-          className={classNames('filterMenu', 
-            {hidden: !this.state.active, open: !this.props.hidden && this.state.tagsopen })} // tag menu is fix positioned and would stay on top otherwise
-          title="Schlagwortverzeichnis" 
+          className={classNames('filterMenu',
+            {
+              hidden: !this.state.active,
+              open  : !this.props.hidden && this.state.tagsopen
+            })} // tag menu is fix positioned and would stay on top otherwise
+          title="Schlagwortverzeichnis"
           songs={this.props.songs}
         />
         <ul>
           {Array.from(groups, ([group, songs]) => {
-            return <ListGroup user={this.props.user} label={group} songs={songs} key={group} onClickHandler={this.props.hideOnMobile}/>;
-          }
+              return <ListGroup user={this.props.user} label={group} songs={songs} key={group}
+                                onClickHandler={this.props.hideOnMobile}/>;
+            }
           )}
-          <li>
-            <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
-          </li>
+          {addSong}
         </ul>
-        <Link to="/user" className="username">{Meteor.user().profile.name}</Link>
+        {userLink}
       </Drawer>
     );
   }

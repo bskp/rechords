@@ -74,7 +74,7 @@ interface AppProps extends RouteComponentProps {
     revisionsLoading: boolean,
 
     songs: Array<Song>,
-    user: Meteor.User,
+    user: Meteor.User | null,
 
     toggleSongList: () => void,
     toggleTheme: () => void,
@@ -327,6 +327,6 @@ export default withTracker(props => {
     songsLoading: !songHandle.ready(),
     revisionsLoading: !revHandle.ready(),
     songs: Songs.find({}, { sort: { title: 1 } }).fetch(),
-    user: Meteor.user()
+    user: Meteor.user() ?? null
   };
 })(App);
