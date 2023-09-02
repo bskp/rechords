@@ -39,7 +39,7 @@ jobs:
         run: npm install mup
 
       - name: Install meteor
-        run: curl https://install.meteor.com/ | sh
+        run: curl https://install.meteor.com/?release=2.1 | sh
 
       - name: Bundle the app and upload to Hoster
         run: cd ./deploy && npx mup deploy
