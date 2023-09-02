@@ -4,10 +4,10 @@ import {Column, useSortBy, useTable} from 'react-table';
 declare module 'react-table' {
     // This is annoying 
     // Types for the plugins can only be added globally
-    type ColumnInstance<D> = UseSortByColumnProps<D>
+  type ColumnInstance<D> = UseSortByColumnProps<D>
 }
 
-const Table = <T extends unknown>({columns, data}: {
+const Table = <T extends object,>({columns, data}: {
     columns: Column<T>[];
     data: T[];
 }) => {

@@ -69,7 +69,7 @@ function Progress(props: {songs: Song[]}) {
           while (s.text == s.getRevision(ago).text && s.getRevision(ago + 1)) {
             ago++;
           }
-          return s.getRevision(ago) && s.getRevision(ago).timestamp.getTime();
+          return s.getRevision(ago)?.timestamp.getTime();
         },
         Cell: ({ cell: { value } }) => String(value && moment(value).format('L')),
       },
@@ -94,11 +94,9 @@ function Progress(props: {songs: Song[]}) {
 
   const songs: Song[] = props.songs.filter((s: Song) => !s.checkTag('privat') && !s.title.startsWith('!'));
 
-  for (const song of songs) {
-    // fills each instance's revisions-cache. This is required, as each DB access from within 
-    // the Table component has to be memoized.
-    song.getRevisions();  
-  }
+  // fills each instance's revisions-cache. This is required, as each DB access from within
+  // the Table component has to be memoized.
+  songs.forEach(song => song.getRevisions());
 
   const data = React.useMemo(() => songs, []);
 

@@ -1,11 +1,11 @@
 import Songs, {Revisions} from '../imports/api/collections';
 
 Meteor.publish('songs', function () {
-    return Songs.find({});
+  return Songs.find({});
 });
 
 Meteor.publish('revisions', function () {
-    return Revisions.find({});
+  return Revisions.find({});
 });
 
 Meteor.startup(()=>{
