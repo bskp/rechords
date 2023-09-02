@@ -36,7 +36,7 @@ jobs:
         run: cd ./app && npm install --production
 
       - name: (Hack) Remove malformed package
-        run: find ./node_modules -name malformed_package_json -type d -prune -exec rm -rf "{}" \;
+        run: find ./app/node_modules -name malformed_package_json -type d -prune -exec rm -rf "{}" \;
 
       - name: Install mup locally
         run: npm install mup
