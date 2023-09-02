@@ -45,5 +45,5 @@ jobs:
         env:
           SSH_USER: ${{ vars.SSH_USER }}
           SSH_HOST: ${{ vars.SSH_HOST }}
-          DOMAIN: ${{ vars.DOMAIN }}
-          PROXY_PORT: ${{ vars.PROXY_PORT }}
+          DOMAIN: ${{ env.DOMAIN }}
+          PROXY_PORT: ${{ env.PROXY_PORT }}
