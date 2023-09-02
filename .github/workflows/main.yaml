@@ -18,6 +18,7 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    environment: prod
     steps:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -45,5 +46,5 @@ jobs:
         env:
           SSH_USER: ${{ vars.SSH_USER }}
           SSH_HOST: ${{ vars.SSH_HOST }}
-          DOMAIN: ${{ env.DOMAIN }}
-          PROXY_PORT: ${{ env.PROXY_PORT }}
+          DOMAIN: ${{ vars.DOMAIN }}
+          PROXY_PORT: ${{ vars.PROXY_PORT }}
