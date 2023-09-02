@@ -9,7 +9,7 @@ module.exports = {
 
   app: {
     name: process.env.DOMAIN.replaceAll('.', '-'),
-    path: './rechords/app',
+    path: '../app',
 
     servers: {
       one: {},
