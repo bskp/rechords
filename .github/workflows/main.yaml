@@ -28,7 +28,7 @@ jobs:
 
       # Test SSH connectivity (fail fast)
       - name: Test ssh key to fail fast
-        run: ssh ${{ SSH_USER }}@${{ SSH_HOST }} -t "pwd"
+        run: ssh ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} -t "pwd"
 
       - uses: actions/checkout@v2
 
