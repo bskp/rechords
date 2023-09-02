@@ -32,17 +32,17 @@ jobs:
 
       - uses: actions/checkout@v2
 
-      - name: get production dependencies only
+      - name: Get production dependencies only
         run: cd ./app && npm install --production
 
-      - name: install mup locally
+      - name: Install mup locally
         run: npm install mup
 
-      - name: install meteor
+      - name: Install meteor
         run: curl https://install.meteor.com/ | sh
 
       - name: Bundle the app and upload to Hoster
-        run: cd ../deploy && npx mup deploy
+        run: cd ./deploy && npx mup deploy
         env:
           SSH_USER: ${{ vars.SSH_USER }}
           SSH_HOST: ${{ vars.SSH_HOST }}
