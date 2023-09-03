@@ -24,3 +24,4 @@ underscore@1.0.10
 accounts-password@1.7.0
 refapp:meteor-typescript
 mdg:validation-error
+service-configuration
