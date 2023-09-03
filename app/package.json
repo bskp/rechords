@@ -15,6 +15,7 @@
     "@tombatossals/chords-db": "^0.5.1",
     "abcjs": "^6.1.9",
     "awesome-debounce-promise": "^2.1.0",
+    "babel-plugin-module-resolver": "^5.0.0",
     "bcrypt": "^5.0.0",
     "blame-ts": "github:akkurat/blame-ts",
     "classnames": "^2.3.1",
