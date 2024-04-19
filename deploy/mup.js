@@ -3,7 +3,7 @@ module.exports = {
     one: {
       host: process.env.SSH_HOST,
       username: process.env.SSH_USER,
-      pem: '~/.ssh/id_rsa',
+      pem: 'id_rsa_github_actor',
     }
   },
 
