@@ -7,7 +7,7 @@ aside.drawer#list {
   overflow-y: scroll; 
   .list-colors;
 
-  font-weight: 500;
+  font-weight: 450;
   font-variation-settings: "wdth" 91;
 
   .phone({
@@ -84,9 +84,13 @@ aside.drawer#list {
       &.filled {
         display: block;
       }
+      &:hover {
+        color: var(--text);
+      }
     }
 
     .open-tags {
+      font-family: "Bricolage Grotesque";
       cursor: pointer;
       margin-left: 0.7rem;
       .not-phone({
@@ -100,6 +104,7 @@ aside.drawer#list {
       padding-left: 0.5em;
       height: 3em;
       width: 100%;
+      font-weight: 600;
 
       display: block;
       flex: 1 1 auto;
@@ -109,10 +114,8 @@ aside.drawer#list {
         margin: 0;
       });
 
-
       .noFocusBorder;
-
-      transition: color, background-color 0.5s;
+      transition: color 0.5s, background-color 0.5s;
 
       background-color: var(--bg-list);
       &::placeholder {
@@ -152,12 +155,6 @@ aside.drawer#list {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     background-color: var(--bg-filter-translucent);
-
-    @media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
-      // non-webkit-browsers
-      background-color: var(--bg-filter-opaque);
-    }
-
 
     & > h4 {
       display: none !important;

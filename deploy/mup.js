@@ -1,9 +1,10 @@
+require('dotenv').config();
 module.exports = {
   servers: {
     one: {
       host: process.env.SSH_HOST,
       username: process.env.SSH_USER,
-      pem: '~/.ssh/id_rsa',
+      pem: '~/.ssh/id_rsa_github_actor',
     }
   },
 
@@ -27,14 +28,14 @@ module.exports = {
     },
 
     docker: {
-      image: 'abernix/meteord:node-12-base',
+      image: 'zodern/meteor:latest',
     },
 
     enableUploadProgressBar: false
   },
 
   mongo: {
-    version: '3.4.1',
+    version: '5.0.26',
     servers: {
       one: {}
     }

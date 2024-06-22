@@ -155,7 +155,7 @@
     display: inline-block;
     font-family: "Input Mono", Courier New, Courier, monospace;
     font-size: 0.9em;
-    font-weight: 300;
+    font-weight: 400;
     padding: 0 0.5em;
     border-radius: 0.4em;
     line-height: 1.5em;
@@ -275,6 +275,10 @@
     &:not(.hasChord):hover {
       border-top: 2px solid var(--accent);
       margin-top: -2px;
+    }
+
+    &.hasChord:hover span {
+      color: var(--text);
     }
 
     text-indent: 0 !important;
