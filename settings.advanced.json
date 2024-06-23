@@ -1,0 +1,6 @@
+{
+  "public": {
+    "useAdvancedEditor": true,
+    "printRenderer": "html"
+  }
+}

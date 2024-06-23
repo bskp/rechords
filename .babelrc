@@ -1,5 +1,8 @@
 {
   "plugins": [
+    ["module-resolver", {
+      "root": ["."]
+    }],
     ["inline-react-svg", {
         "svgo": {
           "plugins": [

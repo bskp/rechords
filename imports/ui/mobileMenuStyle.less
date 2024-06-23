@@ -1,0 +1,77 @@
+@import '../../client/responsive.import.less';
+@import '../../client/variables.import.less';
+
+.mobilemenu + #body {
+  .phone({
+    padding-top: 4rem;
+  });
+}
+
+.mobilemenu {
+  display: none;
+  overflow: hidden;
+
+  .phone({
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+
+    top: 0; 
+    width: 100%;
+    height: 4rem;
+    position: fixed;
+  });
+
+  background-color: var(--bg-list);
+  color: var(--gray-light);
+
+  span {
+    cursor: pointer;
+    margin: 0;
+    flex-grow: 1;
+
+    font-size: 3em;
+  }
+
+
+  svg {
+    width: 4rem;
+    fill: var(--gray-light);
+    margin: 1rem 0.7rem 0;
+  }
+
+  span#menu {
+    flex-grow: 1;
+    text-align: right;
+    background-position-x: right;
+  }
+
+  span.username {
+    text-transform: uppercase;
+    font-weight: 900;
+    font-size: 1.2em;
+    white-space: nowrap;
+
+    padding: 0 1rem;
+  }
+
+  &.extend {
+    right: 5rem;
+    width: calc(~"100% - 5rem");
+    flex-direction: row;
+
+    span {
+      max-width: 5rem;
+    }
+
+    svg {
+      margin-left: -0.5rem;
+      margin-right: -0.5rem;
+    }
+  }
+
+  &.hide-extensions {
+    z-index: 5;
+  }
+
+}
