@@ -3,7 +3,7 @@ import {ReactElementLike} from 'prop-types';
 import * as React from 'react';
 import {FC, MouseEventHandler, useRef} from 'react';
 import {useScrollHideEffectRef} from '../api/helpers';
-import {Menu} from './Icons.jsx';
+import { MdManageSearch } from 'react-icons/md';
 
 
 import './mobileMenuStyle.less';
@@ -29,7 +29,7 @@ export const MobileMenu: FC<MobileMenuProps> = (p) => {
   useScrollHideEffectRef(ref, 64);
 
   return <div className={classes} ref={ref}>
-    <span onClick={toggle} id="menu"><Menu /></span>
+    <span onClick={toggle} id="menu"><MdManageSearch /></span>
   </div>;
 };
 

@@ -2,7 +2,6 @@
   "name": "rechords",
   "private": true,
   "scripts": {
-    "//": "0:xx enables to access the the dev server from another computer",
     "start": "meteor --settings settings.json --exclude-archs web.browser.legacy --port 0:3000",
     "startAdvanced": "meteor --settings settings.advanced.json --exclude-archs web.browser.legacy --port 0:3000",
     "debug": "meteor run --inspect",
@@ -34,6 +33,7 @@
     "react-document-title": "^2.0.3",
     "react-dom": "18.2.0",
     "react-error-boundary": "^3.1.3",
+    "react-icons": "^5.2.1",
     "react-redux": "^8.0.5",
     "react-responsive": "^9.0.2",
     "react-router-dom": "^5.1.1",

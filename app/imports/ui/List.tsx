@@ -8,6 +8,7 @@ import Drawer from './Drawer';
 import {navigateTo, routePath, userMayWrite, View} from '../api/helpers';
 import classNames from 'classnames';
 
+import {MdFace, MdFavorite, MdFavoriteBorder, MdSell, MdStyle} from 'react-icons/md';
 
 interface ListItemProps {
     song: Song;
@@ -49,9 +50,12 @@ class ListItem extends React.Component<ListItemProps> {
 
     const darlings = u?.profile?.darlings ?? [];
 
-    const is_darling = darlings.includes(this.props.song._id) ? 'is_darling' : '';
+    const is_darling = darlings.includes(this.props.song._id);
 
-    const darling_or_not = u ? <span onClick={this.toggleDarling} className={'darling ' + is_darling}>{darling_icon}</span> : undefined;
+    const toggler = is_darling ?
+        <span onClick={this.toggleDarling} className='darling is_darling'><MdFavorite/></span> :
+        <span onClick={this.toggleDarling} className='darling'><MdFavoriteBorder/></span>
+    const darling_or_not = u ? toggler : undefined;
 
     return (
       <li><NavLink onClick={this.props.onClickHandler} to={routePath(View.view, this.props.song)}
@@ -64,12 +68,6 @@ class ListItem extends React.Component<ListItemProps> {
     );
   }
 }
-
-const darling_icon = (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="10"/>
-  </svg>
-);
 
 interface ListGroupProps {
   songs: Array<Song>;
@@ -252,13 +250,13 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
   };
 
   onTagClick = (event : React.MouseEvent) => {
-    const tag = '#' + event.currentTarget.childNodes[0].textContent.toLowerCase();
+    const tag = ' #' + event.currentTarget.childNodes[0].textContent.toLowerCase();
 
     let newFilter;
     if (this.state.filter.includes(tag)) {
       newFilter = this.state.filter.replace(tag, '');
     } else {
-      newFilter = this.state.filter + tag + ' ';
+      newFilter = this.state.filter + tag;
     }
     this.setFilter(newFilter.replace('  ', ' ').trim());
 
@@ -348,9 +346,8 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
           <span className={'reset ' + filled} onClick={() => {
             this.setFilter('');
           }}>&times;</span>
-          <span className="open-tags" onClick={this.toggleTagsOpen}>Tags</span>
+          <span className="open-tags" onClick={this.toggleTagsOpen}><MdSell /></span>
         </div>
-
         <MetaContent
           replace={process_filtermenu()}
           className={classNames('filterMenu',
@@ -362,14 +359,16 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
           songs={this.props.songs}
         />
         <ul>
+          <h2>aabb</h2>
           {Array.from(groups, ([group, songs]) => {
-              return <ListGroup user={this.props.user} label={group} songs={songs} key={group}
-                                onClickHandler={this.props.hideOnMobile}/>;
-            }
+                return <ListGroup user={this.props.user} label={group} songs={songs} key={group}
+                                  onClickHandler={this.props.hideOnMobile}/>;
+              }
           )}
           {addSong}
         </ul>
         {userLink}
+        <MdFace />
       </Drawer>
     );
   }

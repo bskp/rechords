@@ -26,6 +26,6 @@
       "core-js",
       "mocha"
     ],
-    "jsx": "react"
+    "jsx": "react",
   }
 }

@@ -53,3 +53,8 @@ svg {
         fill: var(--gray-light);
     }
 }
+
+svg path[fill="none"] {
+    // protect Angular Material Icon's bounding boxes from switching color
+    stroke: transparent;
+}
