@@ -1,0 +1,29 @@
+// Screen sizes
+@width-xl: 1500px;
+@width-l : 1200px;
+@width-m : 900px;
+@width-s : 700px;
+
+.phone(@rules) {
+  @media only screen and (max-width: @width-s) {
+      @rules();
+  }
+}
+
+.phone-tablet(@rules) {
+  @media only screen and (max-width: @width-m) {
+      @rules();
+  }
+}
+
+.not-phone(@rules){
+  @media only screen and (min-width: @width-s) {
+      @rules();
+  }
+}
+
+.not-phone-tablet(@rules){
+  @media only screen and (min-width: @width-m) {
+      @rules();
+  }
+}

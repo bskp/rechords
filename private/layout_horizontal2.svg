@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40" viewBox="0 0 80 40">
+  <g id="text" class="fillGrayLight">
+    <rect x="7.25" y="13.97" width="13.65" height="3.75"/>
+    <rect x="7.25" y="6.32" width="15.75" height="3.75"/>
+    <rect x="7.25" y="29.27" width="15.75" height="3.75"/>
+    <rect x="7.25" y="21.62" width="18.15" height="3.75"/>
+    <rect x="33.65" y="13.97" width="14.55" height="3.75"/>
+    <rect x="33.65" y="6.32" width="17.1" height="3.75"/>
+    <rect x="33.65" y="29.27" width="17.1" height="3.75"/>
+    <rect x="33.65" y="21.62" width="11.55" height="3.75"/>
+  </g>
+  <g id="pfeil" class="fillAccent">
+    <g>
+      <rect x="53.75" y="17.99" width="18.48" height="3.45" transform="translate(-0.08 0.25) rotate(-0.23)"/>
+      <polygon points="67.76 28.74 65.24 26.39 71.46 19.71 65.23 12.95 67.77 10.61 76.16 19.73 67.76 28.74"/>
+    </g>
+  </g>
+</svg>

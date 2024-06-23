@@ -1,0 +1,136 @@
+@import (reference) "./responsive.import.less";
+@import (reference) "./variables.import.less";
+@import (reference) "./icons.less";
+
+
+#transposer {
+    flex-grow: 1;
+
+  .phone({
+    display: none;
+  });
+
+  padding: 2em;
+
+  height: 400px;
+  width: 50px;
+  >* {
+    position: relative;
+    right: -40px;
+  }
+
+  .rc-slider {
+    width: 0;
+    max-height: 400px;
+  }
+
+  .rc-slider-mark {
+    left: -75px;
+  }
+
+  .rc-slider-mark-text-active,
+  .rc-slider-mark-text {
+    width: 65px;
+    text-align: right;
+    line-height: 2.5em;
+
+    color: var(--gray);
+
+    &:hover {
+      color: var(--ink);
+    }
+  }
+
+  .rc-slider-dot,
+  .rc-slider-rail {
+    background-color: var(--gray);
+    border-color: var(--gray);
+
+  }
+
+  .rc-slider-track {
+    background-color: var(--accent);
+  }
+
+  .rc-slider-handle,
+  .rc-slider-dot-active {
+    border-color: var(--accent);
+    background-color: var(--accent);
+  }
+}
+
+a.iconbutton {
+  display: block;
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+  cursor: pointer;
+
+  svg {
+    width: 4em;
+    .applySchemeColors;
+  }
+}
+
+#rightSettings {
+  .phone({display: none;});
+
+  height: 100%;
+  position: fixed;
+  right: @drawer-closed;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  #scroll-toggler {
+    padding-right: 0.5em;
+    cursor: pointer;
+    svg {
+      width: 4em;
+    }
+  }
+
+  #layout-toggler {
+    padding-right: 0.5em;
+    cursor: pointer;
+    flex-grow: 0;
+  }
+
+  #theme-toggler {
+    padding-right: 0.5em;
+    margin-bottom: 1em;
+    cursor: pointer;
+    flex-grow: 0;
+
+    svg {
+      width: 4em;
+    }
+  }
+
+  &:last-child {  // If no "edit"-Aside is shown…
+    right: 0;  // …pull it flush to the right edge.
+  }
+}
+
+.rightSettingsButton
+{
+  text-align: center;
+  padding: 1em 0.3em;
+  margin: 2px 0;
+  width: 40px;
+  background-color: var(--gray);
+  border-radius: 5% 0 0 5%;
+  color: var(--text-inverted);
+
+  &.active {
+    .source-colors;
+  }
+  
+
+  > *{
+    display: inline-block;
+    cursor: pointer;
+    writing-mode:vertical-rl;
+    transform: rotate(180deg);
+  }
+}

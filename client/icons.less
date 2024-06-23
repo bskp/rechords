@@ -1,0 +1,60 @@
+
+@import (reference) "./variables.import.less";
+
+
+.applySchemeColors {
+    .fillGrayLight {    fill:   var(--gray-light); }
+    .strokeGrayLight {  stroke: var(--gray-light); }
+    .fillGray{          fill: var(--gray); }
+    .fillAccent{        fill: var(--accent); }
+    .fillBgSheet{       fill: var(--bg-sheet); }
+}
+
+#layout-toggler svg {
+    #text {
+        fill: var(--gray-light);
+    }
+
+    #pfeil {
+        fill: var(--accent);
+    }
+}
+
+#theme-toggler svg {
+    fill: var(--gray-light);
+}
+
+#scroll-toggler svg {
+    fill: var(--gray-light);
+}
+
+#scroll-toggler.active svg {
+    fill: var(--accent);
+}
+
+svg {
+    #header {
+        #titling {
+            fill: var(--gray);
+        }
+
+        #swoosh {
+            fill: var(--accent);
+        }
+
+        #swoosh-shadow {
+            fill: black;
+        }
+    }
+}
+
+svg {
+    #menu {
+        fill: var(--gray-light);
+    }
+}
+
+svg path[fill="none"] {
+    // protect Angular Material Icon's bounding boxes from switching color
+    stroke: transparent;
+}

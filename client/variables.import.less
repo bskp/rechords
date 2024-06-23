@@ -1,0 +1,227 @@
+@drawer-open: 220px;
+@drawer-closed: 30px;
+
+.cooperate {
+  font-family: 'Cooper';
+  font-weight: normal;
+}
+
+// Dark color scheme
+html.dark {
+
+  // Color swatches
+  @accent: #ffcb00;                   // for text.
+  @h: hsvhue(@accent);
+  @accent-flat: hsv(@h - 5, 0.8, 0.85); // duller and lighter variant of @accent for big areas
+
+  @ink: white;                        // for text.
+  @void: black;                       // for big areas.
+  @dirt: hsv(@h, 0, 0.1);               // a shaded @void, for areas
+  @gray: hsv(@h - 10, 0.2, 0.6);        // perceptively neutral gray
+
+
+  // Derived color variables
+
+  --bg-list: @void;
+  --bg-sheet: @dirt;
+
+  --accent: @accent;
+  --accent-flat: @accent-flat;
+
+  --ink: @ink;
+  --gray: @gray;
+  --gray-dark: mix(@gray, @ink, 66%);
+  --gray-light: mix(@gray, @void, 40%);
+
+  --text: @ink;
+  --text-inverted: @void;
+  --text-sidebar: hsv(@h, 0.2, 0.4);
+
+  --bg-rev: hsv(hsvhue(@accent-flat), 0.7, 0.4);
+  --text-rev: mix(@accent-flat, white);
+
+  --text-revs: mix(@accent-flat, white);
+  --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
+
+  --bg-filter-translucent: fade(@void, 40%);
+  --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
+
+
+  // Theme variations
+  aside.drawer#list li a.selected {
+    background-color: inherit;
+    color: var(--text);
+
+    .darling svg {
+      stroke: var(--text);
+    }
+
+    .darling.is_darling svg {
+      stroke: var(--accent);
+    }
+  }
+
+}
+
+// Light color scheme
+html.light {
+
+  // Color swatches
+
+  @accent: rgb(221, 68, 7);          // for text.
+  @h: hsvhue(@accent);
+  @accent-flat: hsv(@h, 0.7, 0.8); // duller and lighter variant of @accent for big areas
+
+  @ink: black;                        // for text.
+  @void: white;                       // for big areas.
+  @dirt: hsv(@h, 0.05, 0.9);               // a shaded @void, for areas
+  @gray: hsv(@h, 0.2, 0.6);        // perceptively neutral gray
+
+
+  // Derived color variables
+
+  --bg-list: @dirt;
+  --bg-sheet: @void;
+
+  --accent: @accent;
+  --accent-flat: @accent-flat;
+
+  --ink: @ink;
+  --gray: @gray;
+  --gray-dark: mix(@gray, @ink, 66%);
+  --gray-light: mix(@gray, @dirt, 60%);
+
+  --text: @ink;
+  --text-inverted: @void;
+  --text-sidebar: hsv(@h, 0.2, 0.4);
+
+  --bg-rev: hsv(hsvhue(@accent-flat), 0.7, 0.4);
+  --text-rev: mix(@accent-flat, white);
+
+  --text-revs: mix(@accent-flat, white);
+  --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
+
+  --bg-filter-translucent: fade(@dirt, 60%);
+  --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
+}
+
+
+.prettyScrollbars(@bg) {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: @bg;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--gray);
+    border-radius: 20px;
+    border: 3px solid @bg;
+  }
+}
+
+
+// Color Schemes
+
+.list-colors {
+  color: var(--text-sidebar);
+  background-color: var(--bg-list);
+  .prettyScrollbars(var(--bg-list));
+}
+
+.chordsheet-colors {
+  h1 {
+    color: var(--accent);
+  }
+
+  h2 {
+    color: var(--gray);
+  }
+
+  color: var(--text); // for aside only, is overridden in #chordsheet
+  background-color: var(--bg-sheet);
+  .prettyScrollbars(var(--bg-sheet));
+}
+
+.source-colors {
+  h1 {
+    color: var(--text-inverted);
+  }
+  color: var(--text-inverted);  // fade probably?
+  background-color: var(--accent-flat);
+  .prettyScrollbars(var(--bg-accent-flat));
+
+  textarea {
+    color: black;
+  }
+}
+
+.revision-colors {
+  // ie. a particular revision
+  color: var(--text-rev);
+  background-color: var(--bg-rev);
+}
+
+.revisions-colors {
+  // ie. the list of revisions
+  color: var(--text-revs);
+  background-color: var(--bg-revs);
+}
+
+.select(@mode: none;) {
+  -webkit-touch-callout: @mode; /* iOS Safari */
+    -webkit-user-select: @mode; /* Safari */
+     -khtml-user-select: @mode; /* Konqueror HTML */
+       -moz-user-select: @mode; /* Firefox */
+        -ms-user-select: @mode; /* Internet Explorer/Edge */
+            user-select: @mode; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+.prettyScrollbars {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--bg-sheet);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--text-sidebar);
+    border-radius: 20px;
+    border: 3px solid var(--bg-sheet);
+  }
+}
+
+.scroll-vertical {
+  overflow-y: auto;
+  overflow-x: hidden;
+  .prettyScrollbars(var(--bg-sheet));
+}
+
+.scroll-horizontal {
+  overflow-y: hidden;
+  overflow-x: auto;
+  .prettyScrollbars(var(--bg-sheet));
+}
+
+
+.noFocusBorder {
+  &:focus {
+    outline: none;
+  }
+
+  &::selection,
+  &::-moz-selection {
+    //color: hsv(hsvhue(@accent), 0.4, 0.8);
+    //background-color: hsva(hsvhue(@accent), 0.3, 0.3, 1);
+  }
+}

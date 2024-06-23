@@ -1,0 +1,378 @@
+@import "./responsive.import.less";
+@import "./variables.import.less";
+@import "./fonts.less";
+
+// Resets
+ul {
+  padding-left: 0;
+  list-style-type: none;
+}
+
+ol {
+  padding-left: 1em;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  font-weight: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  border-style: none;
+  color: inherit;
+  background-color: inherit;
+  text-align: inherit;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+}
+
+.transition * {
+  transition: background-color 1s, color 1s, fill 1s, stroke 1s, border-color 1s !important;
+}
+
+// Base Layout
+
+
+html {
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-list);
+}
+
+.noscroll {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+
+  -webkit-tap-highlight-color: transparent;
+
+  font-family: "Bricolage Grotesque", "Roboto", "Cardo", "Last Resort", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-variation-settings: "wdth" 97;
+
+  background-color: var(--bg-sheet);
+  display: flex;
+  flex-flow: column nowrap;
+  .phone({
+    height: unset;
+  });
+}
+
+#app {
+  display: contents;
+}
+
+#body {
+  flex: 1;
+
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-sheet);
+  .phone({
+    flex-flow: row wrap;
+    overflow-y: scroll;
+  })
+}
+
+// Generic content pages
+.content {
+  box-sizing: border-box;
+  min-height: 100vh;
+
+  .scroll-vertical;
+
+  width: 100%;
+  padding: 1.5em 2em;
+
+  padding-left: 6em;
+
+  & > :last-child {
+    margin-bottom: 5rem;
+  }
+
+  .phone({
+    font-size: 0.9em;
+    padding: 2em 1em !important;
+  });
+
+  .sd-header {
+    margin-left: -0.1em;
+
+  }
+
+  h1:first-child, h1:first-child + h2,
+  .sd-header h1, .sd-header h2 {
+    .cooperate();
+    font-size: 3em;
+    line-height: 1em;
+
+    display: inline-block;
+
+    margin-bottom: 0.0em;
+    margin-top: 0;
+  }
+
+  h1:first-child + h2,
+  .sd-header h2 {
+    margin-bottom: 0.5em;
+  }
+
+  h1:first-child,
+  .sd-header h1 {
+    margin-right: 0.5em;
+  }
+
+  a {
+    color: var(--accent);
+    display: inline-block;
+
+    &:hover {
+      border-bottom: 0.2em solid var(--gray-light);
+      line-height: 1em;
+    }
+  }
+
+  h4 {
+    margin-top: 2em;
+    margin-bottom: -0.5em;
+  }
+
+  img {
+    width: 100%;
+  }
+
+  // Table formats
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+
+    a {
+      cursor: pointer;
+
+      img {
+        height: 1em;
+      }
+    }
+  }
+
+  thead {
+    text-align: left;
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: var(--dirt);
+  }
+
+  td,
+  th {
+    padding: 0.1em 0.5em 0.1em 0.5em;
+
+    max-width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+
+aside.drawer {
+  flex-grow: 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: @drawer-open;
+
+  .scroll-vertical;
+  overflow-x: hidden;
+
+  padding-top: 1em;
+  padding-right: 0;
+  padding-bottom: 2em;
+  padding-left: 0.5em;
+
+  &.hidden {
+    display: none;
+  }
+
+  &.closed {
+    width: @drawer-closed;
+    padding-left: @drawer-closed;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 100;
+    box-sizing: border-box;
+
+    // Mitigates the rendering bug of the contained .label
+    position: relative;
+
+    &:hover {
+      width: @drawer-open;
+      padding-left: 0.8em;
+    }
+  }
+
+  .phone({
+    width: 100%;
+    min-height: 100%;
+
+    &.closed {
+      display: none;
+    }
+
+    &.hidden {
+      display: inherit;
+    }
+  });
+
+  // Content-width blocker:
+  & > div {
+    width: @drawer-open - @drawer-closed; //ie. width - padding
+  }
+
+  // Drawer Contents:
+  h1, h2, h3 {
+    font-size: 2em;
+    font-weight: 600;
+    font-variation-settings: "wdth" 85;
+  }
+
+  p {
+    font-variation-settings: "wdth" 90;
+  }
+
+  h1:first-child {
+    margin-top: 0;
+  }
+
+  h2 {
+    font-size: 1em;
+    margin-bottom: 0;
+    color: var(--accent);
+  }
+}
+
+
+// Special content
+
+.tags {
+
+  &:last-of-type {
+    margin-bottom: 3rem;
+  }
+
+  li {
+    display: inline-block;
+    font-size: 0.75em;
+    line-height: 1.8em !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    background-color: var(--gray);
+    color: var(--text-inverted);
+    border-radius: 0.8em;
+    padding: 0 0.8em;
+    margin-right: 0.8em;
+    white-space: nowrap;
+
+    &::before {
+      content: none !important;
+    }
+
+    b {
+      display: inline-block;
+      font-weight: inherit;
+      padding: 0 0.8em;
+      padding-left: 0.3em;
+      margin: 0 -0.9em;
+      margin-left: 0.3em;
+      background-color: var(--accent);
+      border-top-right-radius: inherit;
+      border-bottom-right-radius: inherit;
+    }
+  }
+}
+
+div.mobile-footer {
+  display: none;
+
+  .phone({
+    display: block;
+  });
+}
+
+
+#progress {
+  .chordsheet-colors;
+  padding-left: 1em;
+}
+
+// Content elements
+
+.textareafonts {
+  font-family: "Plex Mono", Courier New, Courier, monospace;
+  font-weight: 300;
+  font-size: 0.9em;
+}
+
+textarea {
+  .textareafonts();
+  width: inherit;
+  cursor: text;
+
+  .noFocusBorder;
+}
+
+hr {
+  border-style: solid;
+  margin-bottom: 1em;
+}
+
+.label {
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  background-color: inherit;
+
+  display: block;
+  padding: 0.2rem;
+  position: fixed;
+  bottom: 1rem;
+  z-index: 10;
+}
+
+
+.keyboard {
+  border: 0.1rem solid currentColor;
+  border-radius: 0.4rem;
+  font-family: 'Plex Mono', monospace;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+
+
+}
+
+.hideInMobile {
+  .phone-tablet({
+    display: none;
+  })
+}
