@@ -10,7 +10,6 @@ Meteor.publish('revisions', function () {
   return Revisions.find({});
 });
 
-/*
 Meteor.startup(async ()=>{
   if (Meteor.users.find().count() === 0) {
     Accounts.createUser({
@@ -21,7 +20,6 @@ Meteor.startup(async ()=>{
     });
   }
 });
- */
 
 Meteor.publish(null, function () {
   if (!this.userId) {

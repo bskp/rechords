@@ -1,5 +1,7 @@
 import Songs, {Song, Revisions, rmd_version} from '../imports/api/collections';
 import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 
 Meteor.methods({
   saveUser(user: Meteor.User, new_secret : string) {
@@ -21,7 +23,7 @@ Meteor.methods({
     // Set a new 4-word-secret:
 
     // fetches the (possibly) newly generated user id.
-    const id = Accounts.findUserByEmail(user.emails[0].address)._id;
+    const id = Accounts.findUserByEmail(user.emails[0].address)?._id;
 
     const chunks = new_secret.trim().split(' ');
     if (chunks.length != 4) throw new Meteor.Error('users.invalid_secret', '', 'Gib vier Wörter an, getrennt durch Leerschläge');

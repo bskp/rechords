@@ -3,7 +3,7 @@
     /* Basic Options */
     "target": "es2018",
     "module": "esNext",
-    "lib": ["esnext", "dom"],
+    "lib": ["esnext", "DOM", "DOM.Iterable"],
     "allowJs": true,
     "checkJs": false,
     "jsx": "preserve",
