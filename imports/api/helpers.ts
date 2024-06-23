@@ -119,7 +119,8 @@ export const useScrollHideEffectRef = (ref: RefObject<HTMLElement>,maxheight: nu
           const dY = -(max(0,y1)-max(0,y0)), dT = t1-t0;
 
           const newHeight = min(maxheight, max(height+ dY, 0) ); 
-          console.log(y0,y1,newHeight, dY, height);
+          //console.log(y0,y1,newHeight, dY, height);
+
           if(height !== newHeight ) {
             height = newHeight;
 
