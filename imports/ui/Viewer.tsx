@@ -8,8 +8,9 @@ import {routePath, userMayWrite, View} from '../api/helpers';
 import { MobileMenuShallow } from './MobileMenu';
 import Sheet from './Sheet';
 
-import {Conveyor, ConveyorActive, Day, Flat, LayoutH, LayoutV, Night, Sharp} from './Icons.jsx';
 import {Button} from './Button';
+import {ReactSVG} from "react-svg";
+import { Meteor } from 'meteor/meteor';
 
 
 export interface SongRouteParams {
@@ -31,7 +32,7 @@ interface ViewerStates {
 }
 
 export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
-  constructor(props) {
+  constructor(props: ViewerProps) {
     super(props);
 
     this.state = {
@@ -61,7 +62,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
     this.updateDuration();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: ViewerProps) {
     if (this.props.song._id == prevProps.song._id) return;
 
     // Song has changed.
@@ -94,36 +95,32 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
     event.preventDefault();
   };
 
-  transposeSetter = pitch => {
+  transposeSetter = (pitch: number) => {
     this.setState({ relTranspose: pitch });
   };
 
   increaseTranspose = () => {
-    this.setState(function (state, props) {
-      return { relTranspose: state.relTranspose + 1 };
-    });
+    this.setState(state => ({relTranspose: state.relTranspose + 1}));
   };
 
   decreaseTranspose = () => {
-    this.setState(function (state, props) {
-      return { relTranspose: state.relTranspose - 1 };
-    });
+    this.setState(state => ({relTranspose: state.relTranspose - 1}));
   };
 
   toggleAutoScroll = () => {
     this.setAutoScroll( this.state.autoscroll == undefined );
   };
 
-  setAutoScroll = (target_state) => {
+  setAutoScroll = (target_state: boolean) => {
     // Determine the correct content-scrolling container
-    const chordsheet = this.refChordsheet.current;
-    let scrollContainer;
+    const chordsheet: HTMLDivElement = this.refChordsheet.current!;
+    let scrollContainer: Element;
     if (chordsheet.scrollHeight > chordsheet.clientHeight) {
       // div#chordsheet is overflowing (on Desktop/Tablet)
       scrollContainer = chordsheet;
     } else {
       // body is overflowing (on Phone)
-      scrollContainer = window.document.scrollingElement;
+      scrollContainer = window.document.scrollingElement!;
     }
 
     this.setState( state => {
@@ -194,13 +191,17 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
         keym={key}
       />
       <Button onClick={this.toggleAutoScroll}>
-        {this.state.autoscroll ? <ConveyorActive /> : <Conveyor />}
+        {this.state.autoscroll ?
+          <ReactSVG src='svg/conveyor_active.svg'/>
+          :
+          <ReactSVG src='svg/conveyor.svg'/>
+        }
       </Button>
       <Button onClick={this.props.toggleTheme}>
-        {this.props.themeDark ? <Day /> : <Night />}
+        {this.props.themeDark ? <ReactSVG src='/svg/sun.svg'/> : <ReactSVG src='/svg/moon.svg' />}
       </Button>
       <Button onClick={this.toggleColumns}>
-        {this.state.columns ? <LayoutH /> : <LayoutV />}
+        {this.state.columns ? <ReactSVG src='/layout_horizontal.svg' /> : <ReactSVG src='/svg/layout_vertical.svg'/>}
       </Button>
     </aside>;
 
@@ -220,14 +221,14 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
 
       <>
         <MobileMenuShallow>
-          <span onClick={ _ => this.increaseTranspose()} id="plus"><Sharp /></span>
-          <span onClick={ _ => this.decreaseTranspose()} id="minus"><Flat /></span>
+          <span onClick={ _ => this.increaseTranspose()} id="plus"><ReactSVG src={'svg/sharp.svg'} /></span>
+          <span onClick={ _ => this.decreaseTranspose()} id="minus"><ReactSVG src={'svg/flat.svg'} /></span>
           <span onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
-            <Conveyor />
+            <ReactSVG src='svg/conveyor.svg' />
           </span>
 
           <span onClick={ _ => this.props.toggleTheme(undefined)} id="theme-toggler">
-            {this.props.themeDark ? <Day /> : <Night />}
+            {this.props.themeDark ? <ReactSVG src='svg/sun.svg' /> : <ReactSVG src='svg/moon.svg' />}
           </span>
         </MobileMenuShallow>
 

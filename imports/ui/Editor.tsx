@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Component} from 'react';
+import {Component, MouseEventHandler} from 'react';
 import {withRouter, Prompt, RouteComponentProps} from 'react-router-dom';
 
 import Source from './Source';
@@ -32,7 +32,7 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, {
     this.mdServer = props.song.text;
   }
 
-  handleContextMenu = (event) => {
+  handleContextMenu: MouseEventHandler = (event) => {
     if (this.state.versionTab) {
       this.toggleRevTab();
       event.preventDefault();
@@ -41,9 +41,9 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, {
 
     this.props.song.parse(this.state.md);
 
-    Meteor.call('saveSong', this.props.song, (error, isValid) => {
+    Meteor.call('saveSong', this.props.song, (error: any, isValid: boolean) => {
       if (error !== undefined) {
-        console.log(error);
+        console.error(error);
       } else {
         this.setState({
           dirty: false,

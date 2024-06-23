@@ -213,7 +213,7 @@ export class Song {
   }
 }
 
-export class Revision {
+export interface Revision {
   text: string;
   of: string;
   _id: string;
@@ -250,6 +250,7 @@ export class RmdHelpers {
     return Array.from(dom.getElementsByTagName('i'))
       .filter(chord_dom => chord_dom.hasAttribute(DATACHORD))
       .map(chord_dom => chord_dom.getAttribute(DATACHORD))
+      .filter(chord => chord !== null)
   }
 }
 

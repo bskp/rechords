@@ -1,10 +1,12 @@
-import Songs, {Song, Revisions, rmd_version} from '../imports/api/collections';
+import Songs, {Song, Revisions, rmd_version} from './collections';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Mongo } from 'meteor/mongo';
+import OptionalId = Mongo.OptionalId;
 
 Meteor.methods({
-  async saveUser(user: Meteor.User, new_secret : string) {
+  saveUser(user: Meteor.User, new_secret : string) {
     const syncUpdate = Meteor.wrapAsync(Meteor.users.update, Meteor.users);
 
     try {
@@ -33,7 +35,7 @@ Meteor.methods({
     Accounts.setPassword(id, secret_words.join('-'));
   },
 
-  saveSong(remoteObject: Partial<Song>) {
+  saveSong(remoteObject: OptionalId<Song>) {
     //  Attach helpers
     const song : Song = new Song(remoteObject);
 
@@ -53,17 +55,17 @@ Meteor.methods({
     const storedSong = Songs.findOne(song._id);
     if (storedSong != undefined && storedSong.text == song.text) {
       // Content has not changed. 
-      if (storedSong?.parsed_rmd_version != rmd_version) {
+      if (storedSong?.parsed_rmd_version != rmd_version && song._id !== undefined) {
         Songs.update(song._id, song);
       }
       return true; // early return, don't create revision
     } 
 
-    const user_id = Meteor.userId();
+    const user_id = Meteor.userId() ?? undefined;
     song.last_editor = user_id;
 
     // Save Song
-    if ('_id' in song) {
+    if ('_id' in song && song._id !== undefined) {
       if (song.isEmpty()) {
         Songs.remove(song._id);
 
@@ -74,6 +76,7 @@ Meteor.methods({
       }
     } 
     else {
+      delete song._id;
       song._id = Songs.insert(song);
     }
 
@@ -81,7 +84,7 @@ Meteor.methods({
     // Create Revision
     const rev = {
       timestamp: new Date(),
-      ip: this.connection.clientAddress,
+      ip: this.connection?.clientAddress ?? 'Unknown',
       of: song._id,
       text: song.text,
       editor: user_id
