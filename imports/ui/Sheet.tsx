@@ -1,32 +1,31 @@
 import * as React from 'react';
-import parse, { DOMNode, domToReact } from 'html-react-parser';
+import parse, {DOMNode, domToReact} from 'html-react-parser';
 import ChrodLib from '../api/libchrod';
-import { Song } from '../api/collections';
-import { Abcjs } from './Abcjs';
+import {Song} from '../api/collections';
+import {Abcjs} from './Abcjs';
 import Kord from './Kord';
-import { userMayWrite } from '../api/helpers';
+import {userMayWrite} from '../api/helpers';
 import * as DH from 'domhandler';
-import { SheetSplit } from './SheetSplit';
+import {SheetSplit} from './SheetSplit';
+import {CSSProperties, useState} from "react";
 
-type DomOut = JSX.Element | object | void | undefined | null | false
+type DomOut = React.JSX.Element | object | void | undefined | null | false
 
-type SheetProps = {
-    song: Song,
-    transpose?: number,
-    hideChords?: boolean,
-    processVdom?: (vdom: any) => any,
-    style?: unknown
-    multicolumns?: boolean
-}
+const Sheet: React.FC<{
+  song: Song,
+  transpose?: number,
+  hideChords?: boolean,
+  processVdom?: (vdom: any) => any,
+  style?: CSSProperties,
+  multicolumns?: boolean
+}> = ({song, transpose, hideChords, processVdom, style, multicolumns}) => {
 
-const Sheet = ({ song, transpose, hideChords, processVdom, style, multicolumns }: SheetProps) => {
-
-  const [inlineRefs, setInlineRefs] = React.useState(true);
+  const [inlineRefs, setInlineRefs] = useState(true);
 
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
   const enrichReferences = (vdom: JSX.Element[]) => {
-    const sections_dict = new Map<string, JSX.Element>();
+    const sections_dict = new Map<string, React.JSX.Element>();
     for (let i = 0; i < vdom.length; i++) {
       const elem = vdom[i];
       if (elem.props) {

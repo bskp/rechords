@@ -103,8 +103,8 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, {
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
           <MobileMenuShallow>
-            <span onClick={this.handleContextMenu} id="plus"><ReactSVG src='svg/ok.svg'/></span>
-            <span onClick={this.props.history.goBack} id="minus"><ReactSVG src={'svg/cancel.svg'}/></span>
+            <span onClick={this.handleContextMenu} id="plus"><ReactSVG src='/svg/ok.svg'/></span>
+            <span onClick={this.props.history.goBack} id="minus"><ReactSVG src={'/svg/cancel.svg'}/></span>
           </MobileMenuShallow>
 
           <Drawer onClick={this.handleContextMenu} className="list-colors">

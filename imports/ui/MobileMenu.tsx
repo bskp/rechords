@@ -16,7 +16,7 @@ interface MobileMenuProps extends React.HTMLProps<HTMLElement> {
 
 export const MobileMenu: FC<MobileMenuProps> = (p) => {
 
-  const toggle = ev => p.toggleSongList(ev);
+  const toggle: MouseEventHandler = ev => p.toggleSongList(ev);
 
   const classes = classNames(
     'mobilemenu', 
@@ -36,7 +36,7 @@ export const MobileMenu: FC<MobileMenuProps> = (p) => {
 
 export const MobileMenuShallow: FC<{children: ReactElementLike[]}> = ({children}) => {
 
-  const ref = useRef();
+  const ref = useRef(null);
   
   useScrollHideEffectRef(ref, 64);
 

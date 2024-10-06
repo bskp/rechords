@@ -90,7 +90,7 @@ export default class Login extends React.Component<any, { one: string, two: stri
 
     return (
       <section className="content" id="home">
-        <ReactSVG src='svg/header.svg' />
+        <ReactSVG src='/svg/header.svg' />
 
         <p>Das Lieder-Wiki für Jublanerinnen und Jublaner. Logge dich erst mal ein mit…</p>
         <div className="fourWords">

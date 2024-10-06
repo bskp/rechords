@@ -98,7 +98,7 @@ class App extends React.Component<AppProps, AppStates> {
     });
   };
 
-  hideSongList = (hide) => {
+  hideSongList = (hide: boolean) => {
     this.setState({
       songListHidden: hide
     });
@@ -287,7 +287,7 @@ class App extends React.Component<AppProps, AppStates> {
               }}/>
 
               <Route path="/user" render={() => {
-                const user = Meteor.user();
+                const user = Meteor.user()!;
                 return (
                   <>
                     <TrackingDocumentTitle title={'Hölibu | ' + user.profile.name}/>

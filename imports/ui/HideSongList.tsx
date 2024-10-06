@@ -1,23 +1,17 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 
-interface HProps {
-    handle: (hideSongList: boolean) => void,
+const HideSongList: React.FC<{
+  handle: (hideSongList: boolean) => void,
+}> = ({ handle }) => {
+
+  useEffect(() => {
+    handle(true);
+    return () => {
+      handle(false);
+    };
+  }, [handle]);
+
+  return <></>;
 }
 
-export default class HideSongList extends React.Component<HProps, never> {
-  constructor(props: Readonly<HProps>) {
-    super(props);
-  }
-
-  componentDidMount() {
-    this.props.handle(true);
-  }
-
-  componentWillUnmount() {
-    this.props.handle(false);
-  }
-
-  render() {
-    return <></>;
-  }
-}
+export default HideSongList;

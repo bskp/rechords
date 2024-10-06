@@ -1,12 +1,10 @@
 const matchchord = /^\(?([a-h](#|b)?)(-|\+|m?(?!aj))([^a-z](.*))?$/i;
 
 export function convertToHoelibuSyntax(text: string) {
-
   const out = [];
-
   const lines: string[] = text.split(/\r?\n/);
 
-  let lastChordMap: Map<number, string> = null;
+  let lastChordMap: Map<number, string> | null = null;
   for (const line of lines) {
     if (isChordLine(line)) {
       lastChordMap = parseChords(line);
@@ -23,13 +21,10 @@ export function convertToHoelibuSyntax(text: string) {
 }
 
 function isChordLine(str: string) {
-
   const parts = str.trim().split(/\s+/);
-
   let numChords = 0, numNonChords = 0;
 
   for (const part of parts) {
-    // console.log(matchchord.exec(part))
     if (matchchord.test(part)) {
       numChords++;
     } else {

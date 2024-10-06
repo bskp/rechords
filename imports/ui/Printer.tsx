@@ -35,7 +35,7 @@ const Printer = ({song, history}: PrinterProps & RouteComponentProps) => {
 
   const settings = <aside id="rightSettings">
     <Button onClick={navigateCallback(history, View.view, song)}>
-      <ReactSVG src='svg/cancel.svg' />
+      <ReactSVG src='/svg/cancel.svg' />
     </Button>
   </aside>;
 
