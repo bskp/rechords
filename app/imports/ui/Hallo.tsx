@@ -8,6 +8,7 @@ import './halloStyle.less';
 
 import 'moment/locale/de';
 import MetaContent from './MetaContent';
+import {ReactSVG} from "react-svg";
 
 interface HalloProps extends RouteComponentProps<any> {
     songs: Array<Song>;
@@ -18,6 +19,7 @@ const Hallo: FunctionComponent<HalloProps> = (props) =>
   (
     <div className="content" id="hallo">
       <p><em>Hölibu und Wikipedia hatten ein Kind zusammen – herausgekommen ist das…</em></p>
+      <ReactSVG src='/svg/header.svg' />
       <MetaContent songs={props.songs} title="Hallo" />
     </div>
   );
