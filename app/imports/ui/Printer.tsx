@@ -1,12 +1,11 @@
 import * as React from 'react';
 import {Song} from '../api/collections';
 
-
 import Sheet from './Sheet';
 import {navigateCallback, View} from '../api/helpers';
 import {Button} from './Button';
-import {Cancel} from './Icons';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
+import {ReactSVG} from "react-svg";
 
 type PrinterProps = {
   song: Song,
@@ -36,7 +35,7 @@ const Printer = ({song, history}: PrinterProps & RouteComponentProps) => {
 
   const settings = <aside id="rightSettings">
     <Button onClick={navigateCallback(history, View.view, song)}>
-      <Cancel />
+      <ReactSVG src='/svg/cancel.svg' />
     </Button>
   </aside>;
 

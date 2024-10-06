@@ -261,7 +261,7 @@ export default class ChrodLib {
      * @param {Array<String>} chordsList 
      * @returns { {scale: string, key: string}}
      */
-  static guessKey(chordsList) {
+  static guessKey(chordsList: string[]) {
     // just test every key (i mean its only 11)
     // and for every one make a penalty for every
     // "Tonart Fremde Chord"
@@ -271,7 +271,6 @@ export default class ChrodLib {
     // However, it should work already like that
     // Pitches are relative to c=0
 
-    // Haha, this comment is completely not understandable by me myself after 2 days...
     const keyss = ChrodLib.covarianceWithScales(chordsList);
     return ChrodLib.selectBest(keyss);
   }
@@ -323,7 +322,7 @@ export default class ChrodLib {
    * @param {Array<String>} chordsList 
    * @returns {*} penalties
    */
-  static covarianceWithScales(chordsList) {
+  static covarianceWithScales(chordsList: string[]) {
     let chords: Chord[] = chordsList.map(chstr =>
       Chord.parseChordString(chstr)
     );
@@ -332,7 +331,6 @@ export default class ChrodLib {
     //console.debug(pitches);
 
     const penalties_byScale = {};
-    const pitch_match_byScale = {};
     for (const scalename of Object.getOwnPropertyNames(Scales)) {
       const scale = Scales[scalename];
 

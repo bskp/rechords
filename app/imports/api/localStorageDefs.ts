@@ -8,7 +8,7 @@ export interface ISettingsStorage {
      * Retrieves a setting for a certain document
      * with a default value for this type
      * 
-     * Example: UseDarkBackGround can be set per doucent
+     * Example: UseDarkBackGround can be set per document
      * but there is also a default value per user
      * 
      * 
@@ -77,7 +77,7 @@ export class DefaultSettingsStorage implements ISettingsStorage {
     // @ts-ignore
       return value;
 
-    throw new Error('Illegal Default VAlue');
+    throw new Error('Illegal Default Value');
   }
 
   private getStorageKey( groupKey: string, documentKey: string ): string

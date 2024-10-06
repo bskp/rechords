@@ -155,7 +155,7 @@
     display: inline-block;
     font-family: "Input Mono", Courier New, Courier, monospace;
     font-size: 0.9em;
-    font-weight: 300;
+    font-weight: 400;
     padding: 0 0.5em;
     border-radius: 0.4em;
     line-height: 1.5em;
@@ -181,6 +181,7 @@
       .abcjs-note,
       .abcjs-slur,
       .abcjs-rest,
+      .abcjs-ledger,
       .abcjs-beam-elem {
         fill: var(--text);
 
@@ -276,6 +277,10 @@
       margin-top: -2px;
     }
 
+    &.hasChord:hover span {
+      color: var(--text);
+    }
+
     text-indent: 0 !important;
     padding-left: 0 !important;
 
@@ -345,6 +350,10 @@
       margin-bottom: -0.3em;
 
       // sup is formatted above.
+
+      font-family: "Shantell Sans";
+      transform: rotate(-3deg);
+      transform-origin: left;
 
       &:focus {
         background-color: var(--bg-filter-opaque);

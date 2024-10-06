@@ -1,5 +1,7 @@
 @import "./responsive.import.less";
 @import "./variables.import.less";
+@import "./fonts.less";
+
 // Resets
 ul {
   padding-left: 0;
@@ -64,14 +66,16 @@ body {
 
   -webkit-tap-highlight-color: transparent;
 
-  font-family: "Roboto", "Cardo", "Last Resort", Helvetica, Arial, sans-serif;
+  font-family: "Bricolage Grotesque", "Roboto", "Cardo", "Last Resort", Helvetica, Arial, sans-serif;
   font-size: 18px;
+  font-variation-settings: "wdth" 97;
+
   background-color: var(--bg-sheet);
   display: flex;
   flex-flow: column nowrap;
-  .phone( {
-        height    : unset;
-    });
+  .phone({
+    height: unset;
+  });
 }
 
 #app {
@@ -79,7 +83,6 @@ body {
 }
 
 #body {
-
   flex: 1;
 
   display: flex;
@@ -109,7 +112,7 @@ body {
   }
 
   .phone({
-    font-size: 0.9em; 
+    font-size: 0.9em;
     padding: 2em 1em !important;
   });
 
@@ -230,8 +233,8 @@ aside.drawer {
   }
 
   .phone({
-    width: 100%; 
-    min-height: 100%; 
+    width: 100%;
+    min-height: 100%;
 
     &.closed {
       display: none;
@@ -251,6 +254,11 @@ aside.drawer {
   h1, h2, h3 {
     font-size: 2em;
     font-weight: 600;
+    font-variation-settings: "wdth" 85;
+  }
+
+  p {
+    font-variation-settings: "wdth" 90;
   }
 
   h1:first-child {
@@ -263,7 +271,6 @@ aside.drawer {
     color: var(--accent);
   }
 }
-
 
 
 // Special content
@@ -308,7 +315,9 @@ aside.drawer {
 div.mobile-footer {
   display: none;
 
-  .phone({display: block;});
+  .phone({
+    display: block;
+  });
 }
 
 
@@ -363,5 +372,7 @@ hr {
 }
 
 .hideInMobile {
-  .phone-tablet({display: none;})
+  .phone-tablet({
+    display: none;
+  })
 }

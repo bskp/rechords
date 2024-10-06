@@ -1,4 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base'
 import Songs, {Revisions} from '../imports/api/collections';
+import '../imports/api/methods.ts';
 
 Meteor.publish('songs', function () {
   return Songs.find({});
@@ -8,7 +11,7 @@ Meteor.publish('revisions', function () {
   return Revisions.find({});
 });
 
-Meteor.startup(()=>{
+Meteor.startup(async ()=>{
   if (Meteor.users.find().count() === 0) {
     Accounts.createUser({
       username: 'le', 
@@ -32,7 +35,7 @@ Meteor.publish(null, function () {
     'profile': 1
   }};
 
-  if (Meteor.user().profile.role == 'admin') 
+  if (Meteor.user()?.profile.role == 'admin')
     return Meteor.users.find({}, fields);
 
   return Meteor.users.find({ _id: this.userId }, fields);

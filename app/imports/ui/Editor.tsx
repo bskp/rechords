@@ -1,20 +1,24 @@
 import * as React from 'react';
-import { Component } from 'react';
-import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
+import {Component, MouseEventHandler} from 'react';
+import {withRouter, Prompt, RouteComponentProps} from 'react-router-dom';
 
 import Source from './Source';
 import RevBrowser from './RevBrowser';
 import Preview from './Preview';
 import Drawer from './Drawer';
-import { Ok, Cancel } from './Icons.jsx';
-import { Song } from '../api/collections';
-import { Meteor } from 'meteor/meteor';
-import { navigateTo, View } from '../api/helpers';
-import { MobileMenuShallow } from './MobileMenu';
-import { convertToHoelibuSyntax } from '../api/ascii-importer';
+import {Song} from '../api/collections';
+import {Meteor} from 'meteor/meteor';
+import {navigateTo, View} from '../api/helpers';
+import {MobileMenuShallow} from './MobileMenu';
+import {convertToHoelibuSyntax} from '../api/ascii-importer';
+import {ReactSVG} from "react-svg";
 
 
-class Editor extends Component<{ song: Song } & RouteComponentProps, { md: string, versionTab: boolean, dirty: boolean }> {
+class Editor extends Component<{ song: Song } & RouteComponentProps, {
+  md: string,
+  versionTab: boolean,
+  dirty: boolean
+}> {
   mdServer: string;
 
   constructor(props) {
@@ -28,7 +32,7 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, { md: strin
     this.mdServer = props.song.text;
   }
 
-  handleContextMenu = (event) => {
+  handleContextMenu: MouseEventHandler = (event) => {
     if (this.state.versionTab) {
       this.toggleRevTab();
       event.preventDefault();
@@ -37,9 +41,9 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, { md: strin
 
     this.props.song.parse(this.state.md);
 
-    Meteor.call('saveSong', this.props.song, (error, isValid) => {
+    Meteor.call('saveSong', this.props.song, (error: any, isValid: boolean) => {
       if (error !== undefined) {
-        console.log(error);
+        console.error(error);
       } else {
         this.setState({
           dirty: false,
@@ -99,17 +103,17 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, { md: strin
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
           <MobileMenuShallow>
-            <span onClick={this.handleContextMenu} id="plus"><Ok /></span>
-            <span onClick={this.props.history.goBack} id="minus"><Cancel /></span>
+            <span onClick={this.handleContextMenu} id="plus"><ReactSVG src='/svg/ok.svg'/></span>
+            <span onClick={this.props.history.goBack} id="minus"><ReactSVG src={'/svg/cancel.svg'}/></span>
           </MobileMenuShallow>
 
           <Drawer onClick={this.handleContextMenu} className="list-colors">
-            <h1>sichern<br />&amp; zurück</h1>
+            <h1>sichern<br/>&amp; zurück</h1>
             <p>Schneller: Rechtsklick!</p>
           </Drawer>
 
           {dirtyLabel}
-          <Preview md={this.state.md} song={this.props.song} updateHandler={this.update} />
+          <Preview md={this.state.md} song={this.props.song} updateHandler={this.update}/>
           <Source
             md={this.state.md}
             updateHandler={this.update}
@@ -140,7 +144,7 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, { md: strin
           >
             <span className="label">Version in Bearbeitung</span>
           </Source>
-          <RevBrowser song={this.props.song} />
+          <RevBrowser song={this.props.song}/>
           {prompt}
         </div>
       );

@@ -7,6 +7,9 @@ aside.drawer#list {
   overflow-y: scroll; 
   .list-colors;
 
+  font-weight: 450;
+  font-variation-settings: "wdth" 91;
+
   .phone({
     position: fixed;
     z-index: 6;
@@ -48,8 +51,8 @@ aside.drawer#list {
   }
 
   .filter {
-    position: absolute;
-    left: 0;
+    font-family: "Shantell Sans";
+    position: fixed;
     top: 0;
     width: @drawer-open;
 
@@ -64,8 +67,7 @@ aside.drawer#list {
     });
 
     display: flex;
-
-    color: var(--text-inverted);
+    color: var(--accent);
     background-color: var(--bg-list);
 
     .reset {
@@ -77,13 +79,18 @@ aside.drawer#list {
       line-height: 2em;
 
       display: none;
+      font-family: "Bricolage Grotesque";
 
       &.filled {
         display: block;
       }
+      &:hover {
+        color: var(--text);
+      }
     }
 
     .open-tags {
+      font-family: "Bricolage Grotesque";
       cursor: pointer;
       margin-left: 0.7rem;
       .not-phone({
@@ -96,6 +103,8 @@ aside.drawer#list {
       margin-top: 0;
       padding-left: 0.5em;
       height: 3em;
+      width: 100%;
+      font-weight: 600;
 
       display: block;
       flex: 1 1 auto;
@@ -105,28 +114,19 @@ aside.drawer#list {
         margin: 0;
       });
 
-
       .noFocusBorder;
+      transition: color 0.5s, background-color 0.5s;
 
-      transition: color, background-color 0.5s;
-
-      background-color: var(--gray);
+      background-color: var(--bg-list);
       &::placeholder {
         color: transparent;
+        font-family: "Bricolage Grotesque";
       }
 
       &[value=""] {
         background-color: var(--bg-list);
         &::placeholder {
           color: var(--text-sidebar);
-        }
-      }
-
-      &:focus {
-        background-color: var(--gray);
-        &::placeholder {
-          //color: fade(@text-inverted, 50%);
-          color: var(--text-inverted);
         }
       }
     }
@@ -155,12 +155,6 @@ aside.drawer#list {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     background-color: var(--bg-filter-translucent);
-
-    @media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
-      // non-webkit-browsers
-      background-color: var(--bg-filter-opaque);
-    }
-
 
     & > h4 {
       display: none !important;
@@ -261,7 +255,7 @@ aside.drawer#list {
       .noFocusBorder;
 
       padding-top: 0.1em;
-      padding-bottom: 0.2em;
+      padding-bottom: 0.1em;
       padding-left: 0.5em;
       padding-right: 1em;
       margin-left: -0.5em;

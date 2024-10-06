@@ -1,6 +1,5 @@
 import { Song } from '../api/collections';
 import * as React from 'react';
-import { DetailedReactHTMLElement } from 'react';
 import parse, { DOMNode, domToReact } from 'html-react-parser';
 
 
