@@ -359,6 +359,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
           songs={this.props.songs}
         />
         <ul>
+          <h2>aabb</h2>
           {Array.from(groups, ([group, songs]) => {
                 return <ListGroup user={this.props.user} label={group} songs={songs} key={group}
                                   onClickHandler={this.props.hideOnMobile}/>;
@@ -367,6 +368,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
           {addSong}
         </ul>
         {userLink}
+        <MdFace />
       </Drawer>
     );
   }
