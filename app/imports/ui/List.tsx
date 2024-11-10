@@ -300,7 +300,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
     const filled = this.state.filter == '' ? '' : 'filled';
 
     const process_filtermenu = () => {
-      let bucket;
+      let bucket: string;
 
       return (node) => {
         if (node.name == 'li') {
@@ -358,7 +358,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
           title="Schlagwortverzeichnis"
           songs={this.props.songs}
         />
-        <ul>
+        <ul className="scroll">
           {Array.from(groups, ([group, songs]) => {
                 return <ListGroup user={this.props.user} label={group} songs={songs} key={group}
                                   onClickHandler={this.props.hideOnMobile}/>;

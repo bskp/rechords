@@ -26,7 +26,7 @@ class Drawer extends React.Component<DrawerProps> {
       onClick={this.props.onClick}
     >
       <div>
-        {this.props.children}&nbsp;
+        {this.props.children}
       </div>
     </aside>;
   }
