@@ -20,6 +20,7 @@ import TrackingDocumentTitle from './TrackingDocumentTitle';
 import {MobileMenu} from './MobileMenu';
 import {Meteor} from 'meteor/meteor';
 import Printer from "/imports/ui/Printer";
+import { PdfViewer } from './PdfViewer/PdfViewer';
 
 const empty_song = {
   title: 'Neues Lied',
@@ -209,6 +210,25 @@ class App extends React.Component<AppProps, AppStates> {
                   </>
                 );
               }}/>
+
+            <Route path='/pdf/:author/:title' render={(routerProps) => {
+              let song = getSong(routerProps.match.params);
+
+              if (song === undefined) {
+                return nA404;
+              }
+
+              return (
+                <>
+                  <TrackingDocumentTitle title={"Hölibu | " + song.author + ": " + song.title} />
+                  {/* Lift state of transpose after all? Make it fully controlled */}
+                  <PdfViewer 
+                      toggleTheme={this.toggleTheme}
+                      themeDark={theme.includes('dark')}
+                  song={song} {...routerProps} />
+                </>
+              )
+            }} />
 
               <Route path='/view/:author/:title' render={(routerProps) => {
                 const song = getSong(routerProps.match.params);

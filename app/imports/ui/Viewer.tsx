@@ -17,7 +17,7 @@ export interface SongRouteParams {
   author: string
   title: string
 }
-interface ViewerProps extends RouteComponentProps<Partial<SongRouteParams>> {
+export interface ViewerProps extends RouteComponentProps<Partial<SongRouteParams>> {
   song: Song,
   toggleTheme: React.MouseEventHandler<HTMLDivElement>,
   themeDark: boolean
