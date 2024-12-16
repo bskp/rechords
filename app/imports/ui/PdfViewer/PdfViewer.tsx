@@ -9,8 +9,6 @@ import Drawer from '../Drawer'
 import { NavLink } from 'react-router-dom'
 import './PdfViewerStyle.less'
 import classNames from 'classnames'
-import { useState } from 'react'
-import { ReactSVG } from 'react-svg'
 export class PdfViewer extends React.Component<ViewerProps, { loading: boolean, urls: string[] }> {
   first: boolean = false
   constructor(props: ViewerProps) {
@@ -66,7 +64,6 @@ export class PdfViewer extends React.Component<ViewerProps, { loading: boolean, 
       </Drawer>
       <div className={classNames({ pdfgrid: true, loading: this.state.loading })} >
         {this.state.urls.map(u => <PdfObject key={u} url={u}></PdfObject>)}
-        <PdfSpinner />
       </div>
     </>
     }
@@ -84,18 +81,4 @@ export class PdfViewer extends React.Component<ViewerProps, { loading: boolean, 
 
 
 
-const icons = [<ReactSVG src='/svg/pdf.svg' key={1} />, <ReactSVG src='/svg/clef.svg' key={2} />]
-const PdfSpinner: React.FunctionComponent<Record<string, never>> = () => {
-
-  const [idx, setIdx] = useState(0)
-
-  const icon = icons[idx]
-
-  const handleAnimationEnd = () => {
-    setIdx((idx + 1) % 2)
-  }
-
-  return <div className="spinner"
-    onAnimationIteration={handleAnimationEnd}> {icon} </div>
-}
 
