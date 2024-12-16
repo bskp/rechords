@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { useState } from 'react'
-import {PDF} from '../Icons.jsx'
 
-import './ClickIndicator.css'
+import './ClickIndicatorStyle.css'
+import { ReactSVG } from 'react-svg'
 
 
 const width=100, height=100
@@ -32,7 +32,7 @@ export const useClickIndicator: () => [React.MouseEventHandler, React.FunctionCo
     <div style={{...style, left:clicked[0]-width/2, right:clicked[1]-height/2}}
       onAnimationEnd={()=> setClick([])}
     >
-      <PDF />
+      <ReactSVG src='/svg/pdf.svg' />
     </div>
 
     : <></>

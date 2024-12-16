@@ -1,5 +1,5 @@
 import {generatePath} from 'react-router-dom';
-import {Song} from './collections';
+import {ParsedSong, Song} from './collections';
 import {History} from 'history';
 
 export const userMayWrite = () => {
@@ -43,6 +43,7 @@ import { Ref, RefObject, useEffect, useRef, useState } from 'react';
  */
 import { refPrefix } from './showdown-rechords';
 import { Meteor } from 'meteor/meteor';
+import ChrodLib, { KeyAndScale } from './libchrod';
 export const isRefId = (id: string): boolean => id && id.startsWith(refPrefix);
 
 
@@ -144,3 +145,15 @@ export const useScrollHideEffectRef = (ref: RefObject<HTMLElement>,maxheight: nu
     return () => document.removeEventListener('scroll',handler);
   },[]);
 };
+
+
+export function extractOrGuessKey(song: ParsedSong): KeyAndScale {
+  const chords = song.getChords()
+  const key_tag = song.getTag('tonart')
+  let key = key_tag && ChrodLib.parseTag(key_tag)
+  if (key == null) {
+    key = ChrodLib.guessKey(chords)
+  }
+  return key
+}
+

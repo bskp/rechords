@@ -4,9 +4,9 @@ import { useEffect } from 'react'
 import { FunctionComponent, ReactElement, useState } from 'react'
 import { useClickIndicator } from './ClickIndicator'
 import { Columns, Landscape, Portrait } from './SettingIcons'
-import * as I from '../Icons.jsx'
 import { SliderWithInput } from './SliderWithInput'
 import { Meteor } from 'meteor/meteor'
+import { ReactSVG } from 'react-svg'
 
 // Using provider in order to guarantee
 // new properties each time
@@ -139,6 +139,8 @@ export const PdfSettings: FunctionComponent<{ songId: string, consumer: (s: IPdf
     <line className="cross" x1="4" y1="4" x2="16px" y2="16px" /> 
     <line className="cross" x1="4" y2="4" x2="16px" y1="16px" /> 
   </svg>
+  const ok = <ReactSVG src='/svg/ok.svg' />
+  const cancel = <ReactSVG src='/svg/cancel.svg' />
 
   return <div className="pdfSettings">
     <div className="grid">
@@ -193,23 +195,23 @@ export const PdfSettings: FunctionComponent<{ songId: string, consumer: (s: IPdf
       </div>
 
       <div className="save-row">
-        <div className="icon"><I.Note /></div>
+        <div className="icon"><ReactSVG src='/svg/note.svg' /></div>
         <div className="buttons">
-          <button onClick={()=>saveSettings(songId)} className="icon"><I.Ok /></button>
-          <button onClick={loadSongDefaults} className="icon"><I.Cancel /></button>
+          <button onClick={()=>saveSettings(songId)} className="icon">{ok}</button>
+          <button onClick={loadSongDefaults} className="icon">{cancel}</button>
         </div>
       </div>
       <div className="save-row">
-        <div className="icon"><I.User /></div>
+        <div className="icon"><ReactSVG src='/svg/user.svg' /></div>
         <div className="buttons">
-          <button onClick={()=>saveSettings('___')} className="icon"><I.Ok /></button>
-          <button onClick={loadUserDefaults} className="icon"><I.Cancel /></button>
+          <button onClick={()=>saveSettings('___')} className="icon">{ok}</button>
+          <button onClick={loadUserDefaults} className="icon">{cancel}</button>
         </div>
       </div>
       <div className="save-row">
-        <div className="icon"><I.Globe /></div>
+        <div className="icon"><ReactSVG src='/svg/globe.svg' /></div>
         <div className="buttons">
-          <button onClick={loadStaticDefaults} className="icon"><I.Cancel /></button>
+          <button onClick={loadStaticDefaults} className="icon">{cancel}</button>
         </div>
       </div>
     </div>

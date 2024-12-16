@@ -257,3 +257,9 @@ export class RmdHelpers {
 export {Revisions};
 
 export default Songs;
+export interface ParsedSong {
+  getHtml(): string 
+  getChords(): string[]
+  getTags(): string[]
+  getTag(tag_name : string): string 
+}
