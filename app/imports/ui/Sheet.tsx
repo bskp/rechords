@@ -8,6 +8,7 @@ import {userMayWrite} from '../api/helpers';
 import * as DH from 'domhandler';
 import {SheetSplit} from './SheetSplit';
 import {CSSProperties, useState} from "react";
+import { Tablature } from 'abcjs';
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false
 
@@ -135,10 +136,15 @@ const Sheet: React.FC<{
 
       if (hideChords) {
         return <></>;
+      
 
       } else {
+        const tablature: Tablature[] = []
+        if(classes.includes('tab')) {
+          tablature.push({instrument: 'guitar'})
+        }
         const abc = (code.firstChild as DH.DataNode)?.data;
-        return <Abcjs abcNotation={abc} params={{ visualTranspose: transpose, }} />;
+        return <Abcjs abcNotation={abc} params={{ visualTranspose: transpose, tablature}} />;
 
       }
     }
