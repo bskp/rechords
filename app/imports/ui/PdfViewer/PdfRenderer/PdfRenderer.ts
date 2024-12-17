@@ -76,12 +76,12 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
   let x0 = cdoc.margins.left
 
   await Promise.all([
-    cdoc.addFontXhr('/fonts/Alegreya-Regular.ttf', 'Al', 'normal'),
-    cdoc.addFontXhr('/fonts/Alegreya-Bold.ttf', 'Al', 'bold'),
-    cdoc.addFontXhr('/fonts/Alegreya-Italic.ttf', 'Al', 'italic'),
-    cdoc.addFontXhr('/fonts/Roboto_Condensed/RobotoCondensed-Light.ttf', 'RoCo', 'light'),
-    cdoc.addFontXhr('/fonts/Roboto_Condensed/RobotoCondensed-Bold.ttf', 'RoCo', 'bold'),
-    cdoc.addFontXhr('/fonts/Roboto_Condensed/RobotoCondensed-Regular.ttf', 'RoCo', 'normal')
+    cdoc.addFontXhr('/fonts/Alegreya-Regular.ttf', 'Al', 'normal', 'regular'),
+    cdoc.addFontXhr('/fonts/Alegreya-Bold.ttf', 'Al', 'normal', 'bold'),
+    cdoc.addFontXhr('/fonts/Alegreya-Italic.ttf', 'Al', 'italic', 'regular'),
+    cdoc.addFontXhr('/fonts/Roboto_Condensed/RobotoCondensed-Light.ttf', 'RoCo', 'normal', 'light'),
+    cdoc.addFontXhr('/fonts/Roboto_Condensed/RobotoCondensed-Bold.ttf', 'RoCo','normal', 'bold'),
+    cdoc.addFontXhr('/fonts/Roboto_Condensed/RobotoCondensed-Regular.ttf', 'RoCo', 'normal', 'regular')
   ])
 
   cdoc.chordFont = ['RoCo', 'bold', fos.chord]
@@ -89,7 +89,7 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
 
 
   const songArtist = mdHtml.querySelector('.sd-header>h2')
-  cdoc.setFont('RoCo', 'normal', fos.section)
+  cdoc.setFont('RoCo', 'bold', fos.section)
   const dima = cdoc.textLine(songArtist.textContent)
   cdoc.cursor.y += fos.section / doc.internal.scaleFactor
 

@@ -60,11 +60,11 @@ export class PdfViewer extends React.Component<ViewerProps, { loading: boolean, 
     return <>
       <Drawer open={true} id="pdfsettings" className={''}>
         <NavLink to={`/view/${s.author_}/${s.title_}`} >x</NavLink>
-        <PdfSettings consumer={this.setSettings} songId={s._id} />
       </Drawer>
       <div className={classNames({ pdfgrid: true, loading: this.state.loading })} >
         {this.state.urls.map(u => <PdfObject key={u} url={u}></PdfObject>)}
       </div>
+        <PdfSettings consumer={this.setSettings} songId={s._id} />
     </>
     }
     return <div>No Song</div>

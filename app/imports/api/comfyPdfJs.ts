@@ -71,7 +71,7 @@ export class ComfyPdfJs {
 
     isTop = () => this.cursor.y *.999 < this.margins.top  
 
-    async addFontXhr(p, fontname, type) {
+    async addFontXhr(p, fontname, style, weight) {
       const filename = basename(p)
       const blob = await fetch(p).then( response =>  response.blob()  )
 
@@ -82,7 +82,7 @@ export class ComfyPdfJs {
         fr.readAsDataURL(blob)
       }).then(font => {
         this.doc.addFileToVFS(filename, font)
-        this.doc.addFont(filename, fontname, type)
+        this.doc.addFont(filename, fontname, style,weight)
         return fontname
       })
     }
