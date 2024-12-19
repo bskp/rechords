@@ -8,6 +8,7 @@ import * as DH from 'domhandler';
 import {DataNode} from 'domhandler';
 
 import {verseRegex} from '../api/showdown-rechords';
+import { Tablature } from 'abcjs';
 
 const nodeText = (node) => {
   return node.children.reduce( (out, child) => out += child.type == 'text' ? child.data : nodeText(child), '' );
@@ -381,11 +382,15 @@ export default class Preview extends React.Component<P, never> {
           const classes = code.attribs['class'];
           if (!(classes.includes('language-abc'))) return node;
           if (code.children.length != 1) return node;
+          let tablature: Tablature[] = []
+          if(classes.includes('tab')) {
+            tablature.push({instrument: 'guitar'})
+          }
           const abc = (code.children[0] as DH.DataNode).data;
 
           return <Abcjs
             abcNotation={abc}
-            params={{ responsive: 'resize' }}
+            params={{ responsive: 'resize', tablature }}
           />;
         }
         else if (node.name == 'abbr') {

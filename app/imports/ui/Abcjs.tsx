@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useEffect} from 'react';
-import abcjs, {AbcVisualParams} from 'abcjs';
+import abcjs, {AbcVisualParams, Tablature} from 'abcjs';
 
 const regular = 'Roboto 12';
 const bold = regular + ' bold';
@@ -16,7 +16,7 @@ interface AbcTabParams {
 const defaults: AbcVisualParams & AbcTabParams = {
   add_classes       : true,
   paddingtop        : 0,
-  paddingbottom     : 0,
+  paddingbottom     : 50,
   paddingright      : 0,
   paddingleft       : 0,
   viewportHorizontal: true,

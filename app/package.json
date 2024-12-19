@@ -8,13 +8,14 @@
     "lint": "eslint imports/** --fix",
     "test": "meteor test --once --driver-package meteortesting:mocha",
     "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
-    "visualize": "meteor --production --extra-packages bundle-visualizer"
+    "visualize": "meteor --production --extra-packages bundle-visualizer",
+    "test-showdown": "mocha imports/api/showdown-rechords.spec.ts"
   },
   "dependencies": {
     "@babel/runtime": "^7.23.5",
     "@datapunt/matomo-tracker-react": "~0.5",
     "@tombatossals/chords-db": "^0.5.1",
-    "abcjs": "^6.1.9",
+    "abcjs": "^6.4.4",
     "awesome-debounce-promise": "^2.1.0",
     "bcrypt": "^5.0.0",
     "blame-ts": "github:akkurat/blame-ts",
@@ -45,7 +46,9 @@
     "slug": "^8.2.2",
     "source-map-support": "^0.5.19",
     "sshpk": "^1.16.1",
+    "ts-node": "^10.9.2",
     "tslib": "^2.3.1",
+    "tsx": "^4.19.2",
     "xmldom": "^0.6.0",
     "xss": "^1.0.14"
   },
