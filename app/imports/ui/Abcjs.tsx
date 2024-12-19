@@ -16,7 +16,7 @@ interface AbcTabParams {
 const defaults: AbcVisualParams & AbcTabParams = {
   add_classes       : true,
   paddingtop        : 0,
-  paddingbottom     : 0,
+  paddingbottom     : 50,
   paddingright      : 0,
   paddingleft       : 0,
   viewportHorizontal: true,
