@@ -75,32 +75,31 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
 
   let x0 = cdoc.margins.left
 
-  await Promise.all([
-    cdoc.addFontXhr('/fonts/Alegreya-Regular.ttf', 'Al', 'normal', 'regular'),
-    cdoc.addFontXhr('/fonts/Alegreya-Bold.ttf', 'Al', 'normal', 'bold'),
-    cdoc.addFontXhr('/fonts/Alegreya-Italic.ttf', 'Al', 'italic', 'regular'),
-    cdoc.addFontXhr('/fonts/Roboto_Condensed/RobotoCondensed-Light.ttf', 'RoCo', 'normal', 'light'),
-    cdoc.addFontXhr('/fonts/Roboto_Condensed/RobotoCondensed-Bold.ttf', 'RoCo','normal', 'bold'),
-    cdoc.addFontXhr('/fonts/Roboto_Condensed/RobotoCondensed-Regular.ttf', 'RoCo', 'normal', 'regular')
+  const [Coo,Sh, Bric] = await Promise.all([
+    cdoc.addFontXhr('/fonts/CooperK-Black-w.ttf', 'Coo', 'normal', 'light'),
+    cdoc.addFontXhr('/fonts/Shantell_Sans/static/ShantellSans-SemiBold.ttf', 'Sh', 'normal', 'light'),
+    cdoc.addFontXhr('/fonts/Bricolage_Grotesque/static/BricolageGrotesque_Condensed-Regular.ttf', 'Bric', 'normal', 'regular')
   ])
 
-  cdoc.chordFont = ['RoCo', 'bold', fos.chord]
-  cdoc.textFont = ['Al', 'normal', fos.text]
+  cdoc.chordFont = [...Sh, fos.chord]
+  cdoc.textFont = [...Bric, fos.text]
 
 
   const songArtist = mdHtml.querySelector('.sd-header>h2')
-  cdoc.setFont('RoCo', 'bold', fos.section)
+  cdoc.setFont(...Coo, fos.section)
   const dima = cdoc.textLine(songArtist.textContent)
   cdoc.cursor.y += fos.section / doc.internal.scaleFactor
 
   const songTitle = mdHtml.querySelector('.sd-header>h1')
-  cdoc.setFont('RoCo', 'light', fos.header)
+  cdoc.setFont(...Coo, fos.header)
+  cdoc.doc.setTextColor('rgb(221, 68, 7)')
   const dimt = cdoc.textLine(songTitle.textContent)
+  cdoc.doc.setTextColor(0)
 
   const header = { y: cdoc.cursor.y, x: x0 + Math.max(dima.w, dimt.w) }
 
   function placeFooter() {
-    cdoc.setFont('RoCo', 'bold', fos.chord)
+    cdoc.setFont(...Coo, fos.chord)
     doc.text(songTitle.textContent + ' - ' + songArtist.textContent, cdoc.margins.left + cdoc.mediaWidth() / 2, cdoc.maxY(), { align: 'center', baseline: 'top' })
   }
   placeFooter()
@@ -158,9 +157,9 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
         cdoc.cursor.y += lineHeight // fonts are in point... 
     }
 
-    cdoc.setFont('RoCo', 'bold', fos.section)
+    cdoc.setFont(...Bric, fos.section)
     advance_y += cdoc.textLine(section.querySelector('h3')?.innerText, simulate).h
-    cdoc.setFont('RoCo', 'bold', fos.text)
+    cdoc.setFont(...Bric, fos.text)
     advance_y += cdoc.textLine(section.querySelector('h4')?.innerText, simulate).h
 
     for (const line of lines) {
@@ -176,7 +175,7 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
 
     if( settings.includeComments && section.tagName == 'P')
     {
-      cdoc.setFont('Al', 'italic', fos.text)
+      cdoc.setFont(...Bric, fos.text)
       const texts: string[] = cdoc.doc.splitTextToSize(section.textContent, colWidth)
       advance_y += texts.map( l => cdoc.textLine(l, simulate).h )
         .reduce( (sum, current) => sum+current, 0 ) 
@@ -197,7 +196,7 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
 
     for (let i = 1; i <= total; i++) {
       doc.setPage(i)
-      cdoc.setFont('RoCo', 'bold', fos.chord)
+      cdoc.setFont(...Coo, fos.chord)
       doc.text(i + ' / ' + total, cdoc.margins.left + cdoc.mediaWidth(), cdoc.maxY(), { align: 'right', baseline: 'top' })
     }
   }

@@ -32,8 +32,8 @@ export class ComfyPdfJs {
       Object.assign( this.cursor,  {x: this.margins.top, y: this.margins.left} )
     }
 
-    setFont(name: string, type: string, size: number) {
-      this.doc.setFont(name, 'normal', type).setFontSize(size)
+    setFont(name: string,type:string, weight: string, size: number) {
+      this.doc.setFont(name, type, weight).setFontSize(size)
     }
 
     /**
@@ -71,7 +71,7 @@ export class ComfyPdfJs {
 
     isTop = () => this.cursor.y *.999 < this.margins.top  
 
-    async addFontXhr(p, fontname, style, weight) {
+    async addFontXhr(p, fontname, style, weight):Promise<[string,string,string]> {
       const filename = basename(p)
       const blob = await fetch(p).then( response =>  response.blob()  )
 
@@ -83,7 +83,7 @@ export class ComfyPdfJs {
       }).then(font => {
         this.doc.addFileToVFS(filename, font)
         this.doc.addFont(filename, fontname, style,weight)
-        return fontname
+        return [fontname,style,weight]
       })
     }
 }
@@ -96,15 +96,15 @@ type ChordBaseSuff = {
 }
 
 export class ChordPdfJs extends ComfyPdfJs {
-    chordFont: [string,string,number] = ['RoCo', 'bold', 9] 
-    textFont:[string,string,number] = ['RoCo', 'normal', 12] 
+    chordFont: [string,string,string,number] = ['RoCo', 'regular','bold', 9] 
+    textFont:[string,string,string,number] = ['RoCo','regular', 'normal', 12] 
     placeChord(text: string, chord:ChordBaseSuff) {
       let wchord = 0
       if (chord) {
         this.setFont(...this.chordFont)
-        const wbase = this.doc.getTextWidth(chord.base) + this.chordFont[2]/this.doc.internal.scaleFactor
-        const wsuff = this.doc.getTextWidth(chord.suff) + this.chordFont[2]/this.doc.internal.scaleFactor
-        this.doc.text(chord.base, this.cursor.x, this.cursor.y - this.textFont[2]/this.doc.internal.scaleFactor)
+        const wbase = this.doc.getTextWidth(chord.base) + this.chordFont[3]/this.doc.internal.scaleFactor
+        const wsuff = this.doc.getTextWidth(chord.suff) + this.chordFont[3]/this.doc.internal.scaleFactor
+        this.doc.text(chord.base, this.cursor.x, this.cursor.y - this.textFont[3]/this.doc.internal.scaleFactor)
         this.doc.text(chord.suff, this.cursor.x+wbase, this.cursor.y )
         wchord = wbase+wsuff
       }
@@ -131,8 +131,8 @@ export class ChordPdfJs extends ComfyPdfJs {
 
       const intCursor = new Cursor(this.cursor.x, this.cursor.y)
         
-      const tfs = this.textFont[2] / this.doc.internal.scaleFactor
-      const cfs = this.chordFont[2] / this.doc.internal.scaleFactor
+      const tfs = this.textFont[3] / this.doc.internal.scaleFactor
+      const cfs = this.chordFont[3] / this.doc.internal.scaleFactor
       const einzug = 1.5 * tfs
 
       const chordMap = new Map<number, ChordBaseSuff>()
@@ -189,9 +189,11 @@ export class ChordPdfJs extends ComfyPdfJs {
           const wbase = this.doc.getTextWidth(chord.base)
           xpos += firstChord ? wtext : Math.max(wtext, this.doc.getTextWidth(chord_) + 0.5*tfs ) 
           if(!simulate) {
+          this.doc.setTextColor('rgb(221, 68, 7)')
             this.doc.text(chord.base, xpos, intCursor.y - tfs) 
-            this.doc.setFontSize(this.chordFont[2]*.7)
-            this.doc.text(chord.suff, xpos + wbase, intCursor.y - tfs - this.chordFont[2]/this.doc.internal.scaleFactor*0.3) 
+            this.doc.setFontSize(this.chordFont[3]*.7)
+            this.doc.text(chord.suff, xpos + wbase, intCursor.y - tfs - this.chordFont[3]/this.doc.internal.scaleFactor*0.3) 
+          this.doc.setTextColor(0)
           }
           lastidx = idx
           firstChord = false

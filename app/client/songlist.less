@@ -1,21 +1,10 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
 
-aside.drawer#list.open + .content,
-aside.drawer#list.open + div.mobilemenu + .content {
-  margin-left: @drawer-open;
-}
-
 aside.drawer#list {
-  position: fixed;
-  height: 100vh;
+  padding-left: 0; // undo left padding, since this box contains no immediate content
 
-  display: flex;
-  flex-direction: column;
-
-  padding: 0;
-
-  overflow-y: hidden;
+  overflow-y: scroll; 
   .list-colors;
 
   font-weight: 450;
@@ -41,26 +30,20 @@ aside.drawer#list {
   });
 
   > div {
-    display: contents;
+    padding-top: 1em;
+    width: auto;
 
     .phone({
       padding-top: 0;
     });
 
-  }
+    > ul {
+      padding-left: 0.5em;
 
-  ul.scroll {
-    padding: 0.5em;
-    margin: 0;
-    flex-shrink: 1;
-    flex-grow: 1;
-    overflow-y: scroll;
-
-    .prettyScrollbars(var(--bg-list));
-
-    .phone({
-      margin-top: 0;
-    });
+      .phone({
+        margin-top: 0;
+      });
+    }
   }
 
   &.hidden .filter {
@@ -69,7 +52,9 @@ aside.drawer#list {
 
   .filter {
     font-family: "Shantell Sans";
-    flex-shrink: 0;
+    position: fixed;
+    top: 0;
+    width: @drawer-open;
 
     .phone({
       position: fixed; 
@@ -148,7 +133,7 @@ aside.drawer#list {
   }
 
   div.filterMenu {
-    position: fixed;
+    position: absolute;
     left: @drawer-open;
     right: 0;
     top: 0;
@@ -379,9 +364,11 @@ aside.drawer#list {
   }
 
   .username {
+    position: absolute;
+    bottom: 0;
+    width: @drawer-open;
     box-sizing: border-box;
     padding: 0.5em;
-    flex-shrink: 0;
 
     background-color: var(--bg-list);
     display: flex;
