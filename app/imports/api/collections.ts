@@ -7,36 +7,9 @@ import slug from 'slug';
 import {FilterXSS} from 'xss';
 import {showdownRechords} from './showdown-rechords';
 import {Meteor} from 'meteor/meteor';
+import { options } from './xss-filter-options';
 
 const DATACHORD = 'data-chord';
-
-const options: XSS.IFilterXSSOptions = {
-  whiteList: {
-    a: ['href', 'title'],
-    span: ['class'],
-    div: ['class', 'id'],
-    i: ['class', 'data-chord'],
-    b: [],
-    h1: [],
-    h2: [],
-    h3: [],
-    h4: [],
-    section: ['class', 'id'],
-    ul: ['class'],
-    u: [],
-    ol: [],
-    li: [],
-    p: ['class', 'id'],
-    br: [],
-    strong: [],
-    em: [],
-    code: ['class'],
-    s: [],
-    pre: [],
-    img: ['src', 'alt'],
-    abbr: ['class', 'title', 'data-fingers']
-  }
-};
 
 const converter = new showdown.Converter({
   extensions: [showdownRechords],
@@ -173,8 +146,7 @@ export class Song {
 
     if (this.isEmpty()) return;  // delete song upon next save.
 
-    const dom = new DOMParser().parseFromString(
-      `<div id="wrapper">${this.html}</div>`, 'text/html');
+    const dom = new DOMParser().parseFromString(this.html, 'text/html');
 
     const h1 = dom.getElementsByTagName('h1');
     if (h1.length > 0) {
