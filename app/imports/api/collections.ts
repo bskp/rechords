@@ -103,7 +103,7 @@ export class Song {
     // A field is missing or bad parser version. Re-parse and store!
     this.parse(this.text);
 
-    Meteor.call('saveSong', this, (error, isValid) => {
+    Meteor.call('saveSong', this, (error: any) => {
       if (error !== undefined) {
         console.log(error);
       }

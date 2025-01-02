@@ -31,8 +31,8 @@ Meteor.methods({
     if (chunks.length != 4) throw new Meteor.Error('users.invalid_secret', '', 'Gib vier Wörter an, getrennt durch Leerschläge');
 
     const [new_first_word, ...secret_words] = chunks;
-    Accounts.setUsername(id, new_first_word);
-    Accounts.setPassword(id, secret_words.join('-'));
+    Accounts.setUsername(id!, new_first_word);
+    Accounts.setPassword(id!, secret_words.join('-'));
   },
 
   saveSong(remoteObject: OptionalId<Song>) {
