@@ -1,7 +1,7 @@
 import {Mongo} from 'meteor/mongo';
 
 import * as showdown from 'showdown';
-import {DOMParser} from 'xmldom';
+import {DOMParser} from '@xmldom/xmldom';
 import Parser from 'html-react-parser';
 import slug from 'slug';
 import {FilterXSS} from 'xss';
