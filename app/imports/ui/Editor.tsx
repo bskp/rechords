@@ -13,19 +13,21 @@ import {MobileMenuShallow} from './MobileMenu';
 import {convertToHoelibuSyntax} from '../api/ascii-importer';
 import {ReactSVG} from "react-svg";
 
-
-class Editor extends Component<{ song: Song } & RouteComponentProps, {
+type EditorProps = { song: Song } & RouteComponentProps
+type EditorState = {
   md: string,
-  versionTab: boolean,
+  revisionsTab: boolean,
   dirty: boolean
-}> {
+}
+
+class Editor extends Component<EditorProps, EditorState> {
   mdServer: string;
 
-  constructor(props) {
+  constructor(props: EditorProps) {
     super(props);
     this.state = {
       md: props.song.text,
-      versionTab: false,
+      revisionsTab: false,
       dirty: false
     };
 
@@ -33,7 +35,7 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, {
   }
 
   handleContextMenu: MouseEventHandler = (event) => {
-    if (this.state.versionTab) {
+    if (this.state.revisionsTab) {
       this.toggleRevTab();
       event.preventDefault();
       return;
@@ -72,9 +74,9 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, {
   };
 
   toggleRevTab = () => {
-    this.setState((prevState, props) => {
+    this.setState((prevState) => {
       return {
-        versionTab: !prevState.versionTab
+        revisionsTab: !prevState.revisionsTab
       };
     });
   };
@@ -88,7 +90,7 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, {
       message={'Du hast noch ungespeicherte Änderungen. Verwerfen?'}
     />;
 
-    if (this.state.versionTab == false) {
+    if (!this.state.revisionsTab) {
 
       const versions = revs ? (
         <Drawer id="revs" className="revision-colors" onClick={this.toggleRevTab}>

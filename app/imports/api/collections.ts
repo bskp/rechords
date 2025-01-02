@@ -173,7 +173,8 @@ export class Song {
 
     if (this.isEmpty()) return;  // delete song upon next save.
 
-    const dom = new DOMParser().parseFromString(this.html, 'text/html');
+    const dom = new DOMParser().parseFromString(
+      `<div id="wrapper">${this.html}</div>`, 'text/html');
 
     const h1 = dom.getElementsByTagName('h1');
     if (h1.length > 0) {
