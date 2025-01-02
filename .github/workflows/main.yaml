@@ -24,8 +24,8 @@ jobs:
 
       - uses: actions/checkout@v2
 
-      - name: Get dependencies
-        run: cd ./app && npm install
+      - name: Get production dependencies only
+        run: cd ./app && npm install --production
 
       - name: (Hack) Remove malformed package
         run: find ./app/node_modules -name malformed_package_json -type d -prune -exec rm -rf "{}" \;

@@ -16,10 +16,11 @@ jobs:
         with:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
+          name: id_rsa_github_actor
 
       # Test SSH connectivity (fail fast)
       - name: Test ssh key to fail fast
-        run: ssh ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} -t "pwd"
+        run: ssh ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} -i ~/.ssh/id_rsa_github_actor -t "pwd"
 
       - uses: actions/checkout@v2
 
@@ -29,14 +30,11 @@ jobs:
       - name: (Hack) Remove malformed package
         run: find ./app/node_modules -name malformed_package_json -type d -prune -exec rm -rf "{}" \;
 
-      - name: Install mup locally
-        run: npm install mup
-
       - name: Install meteor
         run: curl https://install.meteor.com/ | sh
 
       - name: Bundle the app and upload to Hoster
-        run: cd ./deploy && npx mup deploy
+        run: cd ./deploy && npm i && npx mup deploy
         env:
           SSH_USER: ${{ vars.SSH_USER }}
           SSH_HOST: ${{ vars.SSH_HOST }}
