@@ -201,7 +201,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
         {this.props.themeDark ? <ReactSVG src='/svg/sun.svg'/> : <ReactSVG src='/svg/moon.svg' />}
       </Button>
       <Button onClick={this.toggleColumns}>
-        {this.state.columns ? <ReactSVG src='/layout_horizontal.svg' /> : <ReactSVG src='/svg/layout_vertical.svg'/>}
+        {this.state.columns ? <ReactSVG src='/svg/layout_horizontal.svg' /> : <ReactSVG src='/svg/layout_vertical.svg'/>}
       </Button>
     </aside>;
 

@@ -5,7 +5,7 @@ import {Prompt, RouteComponentProps, withRouter} from 'react-router-dom';
 import {RevBrowserAdvanced} from './RevBrowserAdvanced';
 import Preview from '../Preview';
 import Drawer from '../Drawer';
-import {Cancel, Ok} from '../Icons.jsx';
+import {ReactSVG} from "react-svg";
 import {ISourceOptions, SourceAdvanced} from './SourceAdvanced';
 import {IModule} from 'redux-dynamic-modules';
 import {connect, ConnectedProps} from 'react-redux';
@@ -110,12 +110,12 @@ class EditorAdvanced_ extends Component<EditorAdvancedProps & RouteComponentProp
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
           <MobileMenuShallow>
-            <span onClick={this.handleContextMenu} id="plus"><Ok /></span>
-            <span onClick={this.props.history.goBack} id="minus"><Cancel /></span>
+            <span onClick={this.handleContextMenu} id="plus"><ReactSVG src='/svg/ok.svg'/></span>
+            <span onClick={this.props.history.goBack} id="minus"><ReactSVG src={'/svg/cancel.svg'}/></span>
           </MobileMenuShallow>
 
           <Drawer onClick={this.handleContextMenu} className="list-colors">
-            <h1>sichern<br />&amp; zurück</h1>
+            <h1>sichern<br/>&amp; zurück</h1>
             <p>Schneller: Rechtsklick!</p>
           </Drawer>
 
