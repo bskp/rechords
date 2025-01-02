@@ -17,8 +17,8 @@ const PdfViewerStates:() => IPdfViewerSettings = () => ({
   includeComments: false,
   transpose: 0,
   sizes: {
-    header: 50,
-    section: 20,
+    header: 25,
+    section: 16,
     text: 16,
     chord: 11,
     gap: 3

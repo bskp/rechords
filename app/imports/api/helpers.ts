@@ -11,6 +11,7 @@ export enum View {
   view = 'view',
   edit = 'edit',
   print = 'print',
+  pdf = 'pdf',
   home = '/'
 }
 
@@ -150,7 +151,7 @@ export const useScrollHideEffectRef = (ref: RefObject<HTMLElement>,maxheight: nu
 export function extractOrGuessKey(song: ParsedSong): KeyAndScale {
   const chords = song.getChords()
   const key_tag = song.getTag('tonart')
-  let key = key_tag && ChrodLib.parseTag(key_tag)
+  let key = key_tag && ChrodLib.parseKeyScaleTag(key_tag)
   if (key == null) {
     key = ChrodLib.guessKey(chords)
   }

@@ -1,5 +1,5 @@
 import React, {Component, MouseEventHandler} from 'react';
-import ChrodLib from '../api/libchrod';
+import ChrodLib, { KeyAndScale } from '../api/libchrod';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import 'rc-tooltip/assets/bootstrap.css';
@@ -28,28 +28,28 @@ const intervals = new Map([
 type TransposeSetterProps = {
   transposeSetter: (halfTones: number) => void,
   transpose: number,
-  keym: {key: string, scale: string},
+  keym: KeyAndScale,
   onDoubleClick: MouseEventHandler
 }
 
 export default class TransposeSetter extends Component<TransposeSetterProps, never> {
-  constructor(props) {
+  constructor(props: TransposeSetterProps) {
     super(props);
   }
 
-  handleSlider = value => {
-    this.props.transposeSetter(Number.parseInt(value));
+  handleSlider = (value: number) => {
+    this.props.transposeSetter(value);
   };
 
   render() {
-    const keys = {};
+    const keys: Record<number,string> = {};
     if ( this.props.keym ) {
       const key = this.props.keym;
       const libChrod = new ChrodLib();
       for (let i=-7; i<=7; i++) {
         const keyobj = libChrod.shift(key, i);
         keys[i] = keyobj.key;  
-        if (i==0) { keys[i]+=' '+key.scale;}
+        if (i==0) { keys[i]+=' '+key.scaleName;}
       }
     }
     return (
@@ -58,6 +58,7 @@ export default class TransposeSetter extends Component<TransposeSetterProps, nev
           min={-7}
           max={7}
           value={this.props.transpose}
+          // @ts-ignore can only be number for single value slider, not array
           onChange={this.handleSlider}
           marks={keys}
           step={1}

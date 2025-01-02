@@ -39,8 +39,10 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
   for( const el of sections_ ) {
     if (el.tagName == 'SECTION') {
       lookupMap.set( el.id, el )
-      sections.push(el); continue
-    } if( el.classList.contains('ref') ) {
+      sections.push(el) 
+      continue
+    } 
+    if( el.classList.contains('ref') ) {
 
       const uuid = refPrefix + el.querySelector('strong').textContent.trim()
       const otherContent = el.childNodes[1]
@@ -56,7 +58,7 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
       } else {
         const section = document.createElement('section')
         const h3 = document.createElement('h3')
-        h3.textContent = '|:'+el.textContent
+        h3.textContent = '|: '+el.textContent + ' :|'
         section.appendChild(h3)
         sections.push( section )
       }
@@ -75,10 +77,11 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
 
   let x0 = cdoc.margins.left
 
-  const [Coo,Sh, Bric] = await Promise.all([
+  const [Coo,Sh, Bric, BricBold] = await Promise.all([
     cdoc.addFontXhr('/fonts/CooperK-Black-w.ttf', 'Coo', 'normal', 'light'),
     cdoc.addFontXhr('/fonts/Shantell_Sans/static/ShantellSans-SemiBold.ttf', 'Sh', 'normal', 'light'),
-    cdoc.addFontXhr('/fonts/Bricolage_Grotesque/static/BricolageGrotesque_Condensed-Regular.ttf', 'Bric', 'normal', 'regular')
+    cdoc.addFontXhr('/fonts/Bricolage_Grotesque/static/BricolageGrotesque_Condensed-Regular.ttf', 'Bric', 'normal', 'regular'),
+    cdoc.addFontXhr('/fonts/Bricolage_Grotesque/static/BricolageGrotesque_Condensed-Bold.ttf', 'Bric', 'normal', 'bold')
   ])
 
   cdoc.chordFont = [...Sh, fos.chord]
@@ -104,9 +107,15 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
   }
   placeFooter()
 
-  for (const section of sections.values()) {
-    // IDEA set Text without chords (not happeining now)
-    // by deselecting chords
+
+  const splitSections = sections.flatMap( s => [...s.children])
+
+
+
+
+  for( const section of splitSections) {
+
+
 
 
     const simHeight = placeSection(section, true)
@@ -148,7 +157,6 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
 
     let advance_y = 0
 
-    const lines = section.querySelectorAll('span.line')
     resetX()
     const lineHeight = fos.section * 2 / doc.internal.scaleFactor
     if (!cdoc.isTop()) {
@@ -157,10 +165,12 @@ export async function jsPdfGenerator(song: ParsedSong, settings: IPdfViewerSetti
         cdoc.cursor.y += lineHeight // fonts are in point... 
     }
 
-    cdoc.setFont(...Bric, fos.section)
+    cdoc.setFont(...BricBold, fos.section)
     advance_y += cdoc.textLine(section.querySelector('h3')?.innerText, simulate).h
     cdoc.setFont(...Bric, fos.text)
     advance_y += cdoc.textLine(section.querySelector('h4')?.innerText, simulate).h
+
+    const lines = section.querySelectorAll('span.line')
 
     for (const line of lines) {
       resetX()

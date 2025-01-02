@@ -33,9 +33,17 @@ class Key {
     }
     // todo: neutral, flat or sharp?
   }
-  static parseName(name: string): Key {
-    const key = forwardMapObj.get(<KeyLetter>name.toUpperCase())
+  // debatable
+  static parseName(name: string): Key|undefined {
+    const key = forwardMapObj.get(this.normalizeKey(name))
     return key
+  }
+  static normalizeKey(keyStringRaw: string) {
+    let keystr = keyStringRaw.charAt(0).toUpperCase();
+    if (keyStringRaw.length > 1) {
+      keystr += keyStringRaw.charAt(1);
+    }
+    return keystr;
   }
 }
 
@@ -92,7 +100,7 @@ const keys: Array<Key> = [
 const forwardMap: Map<KeyLetter, number> = new Map()
 keys.forEach(k => forwardMap.set(k.name, k.idx))
 
-const forwardMapObj: Map<KeyLetter, Key> = new Map(keys.map(k => [k.name, k]))
+const forwardMapObj: Map<string, Key> = new Map(keys.map(k => [k.name, k]))
 
 const bMap: Map<number, KeyLetter> = new Map()
 keys
@@ -233,10 +241,7 @@ class Chord {
 
     if (parsedChordString == null) return
 
-    let keystr = parsedChordString[2].charAt(0).toUpperCase()
-    if (parsedChordString[2].length > 1) {
-      keystr += parsedChordString[2].charAt(1)
-    }
+    let keystr =  Key.normalizeKey(parsedChordString[2]);
 
     const key = forwardMapObj.get(<KeyLetter>keystr)
     if (key === undefined) return  // The chord could not be parsed.
@@ -385,10 +390,6 @@ export default class ChrodLib {
     const pitchmap = bornot == ToBorSharp.Sharp ? shMap : bMap
 
     let base: string = pitchmap.get((ch.idx + 48 + shift) % 12)
-    // Create pitchmap class to 
-    if (ch.str[0] == 'm') {
-      base = base.toLowerCase()
-    }
 
     const suff = this.shiftSuffix(ch.suff, shift, pitchmap)
 
@@ -476,4 +477,6 @@ export default class ChrodLib {
   }
 }
 
+
 export { Key, Chord, Scale, KeyLetter, KeyAndScale }
+

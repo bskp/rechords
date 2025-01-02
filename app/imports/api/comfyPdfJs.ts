@@ -98,25 +98,6 @@ type ChordBaseSuff = {
 export class ChordPdfJs extends ComfyPdfJs {
     chordFont: [string,string,string,number] = ['RoCo', 'regular','bold', 9] 
     textFont:[string,string,string,number] = ['RoCo','regular', 'normal', 12] 
-    placeChord(text: string, chord:ChordBaseSuff) {
-      let wchord = 0
-      if (chord) {
-        this.setFont(...this.chordFont)
-        const wbase = this.doc.getTextWidth(chord.base) + this.chordFont[3]/this.doc.internal.scaleFactor
-        const wsuff = this.doc.getTextWidth(chord.suff) + this.chordFont[3]/this.doc.internal.scaleFactor
-        this.doc.text(chord.base, this.cursor.x, this.cursor.y - this.textFont[3]/this.doc.internal.scaleFactor)
-        this.doc.text(chord.suff, this.cursor.x+wbase, this.cursor.y )
-        wchord = wbase+wsuff
-      }
-      this.setFont(...this.textFont)
-      // this.textFragment(text)
-      const wtext = this.doc.getTextWidth(text)
-      this.doc.text(text, this.cursor.x, this.cursor.y )
-      this.cursor.x += wtext > wchord ? wtext : wchord
-
-    }
-
-    
 
     /**
      * 
@@ -135,6 +116,7 @@ export class ChordPdfJs extends ComfyPdfJs {
       const cfs = this.chordFont[3] / this.doc.internal.scaleFactor
       const einzug = 1.5 * tfs
 
+      // character position in line
       const chordMap = new Map<number, ChordBaseSuff>()
       let charCnt = 0
       let accText = ''
@@ -181,7 +163,7 @@ export class ChordPdfJs extends ComfyPdfJs {
         let xpos = intCursor.x, lastidx = 0
         let firstChord = true
         for( const [idx,chord] of chords ) {
-          const text = line.substr(lastidx, idx-lastidx) || ''
+          const text = line.substring(lastidx, idx-lastidx) || ''
           this.setFont(...this.textFont)
           const wtext = this.doc.getTextWidth(text)
           this.setFont(...this.chordFont)
@@ -189,7 +171,7 @@ export class ChordPdfJs extends ComfyPdfJs {
           const wbase = this.doc.getTextWidth(chord.base)
           xpos += firstChord ? wtext : Math.max(wtext, this.doc.getTextWidth(chord_) + 0.5*tfs ) 
           if(!simulate) {
-          this.doc.setTextColor('rgb(221, 68, 7)')
+            this.doc.setTextColor('rgb(221, 68, 7)')
             this.doc.text(chord.base, xpos, intCursor.y - tfs) 
             this.doc.setFontSize(this.chordFont[3]*.7)
             this.doc.text(chord.suff, xpos + wbase, intCursor.y - tfs - this.chordFont[3]/this.doc.internal.scaleFactor*0.3) 

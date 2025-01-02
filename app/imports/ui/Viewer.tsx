@@ -177,7 +177,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
     // Establish this songs' key
 
     const key_tag = this.props.song.getTag('tonart');
-    let key = key_tag && ChrodLib.parseTag(key_tag);
+    let key = key_tag && ChrodLib.parseKeyScaleTag(key_tag);
 
     if (!key) {
       key = ChrodLib.guessKey(this.props.song.getChords());
