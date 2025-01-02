@@ -1,0 +1,77 @@
+@import (reference) "./responsive.import.less";
+@import (reference) "./variables.import.less";
+
+aside.drawer {
+  box-sizing: border-box;
+  width: @drawer-open;
+  position: fixed;
+  height: 100vh;
+
+  .scroll-vertical;
+  overflow-x: hidden;
+
+  padding-top: 1em;
+  padding-right: 0;
+  padding-bottom: 2em;
+  padding-left: 0.5em;
+
+  &:last-child {
+    right: 0;
+  }
+
+  &.hidden {
+    display: none;
+  }
+
+  &.closed {
+    width: @drawer-closed;
+    padding-left: @drawer-closed;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      width: @drawer-open;
+      padding-left: 0.8em;
+    }
+  }
+
+  .phone({
+    width: 100%;
+    min-height: 100%;
+
+    &.closed {
+      display: none;
+    }
+
+    &.hidden {
+      display: inherit;
+    }
+  });
+
+  // Content-width blocker:
+  & > div {
+    width: @drawer-open - @drawer-closed; //ie. width - padding
+  }
+
+  // Drawer Contents:
+  h1, h2, h3 {
+    font-size: 2em;
+    font-weight: 600;
+    font-variation-settings: "wdth" 85;
+  }
+
+  p {
+    font-variation-settings: "wdth" 90;
+  }
+
+  h1:first-child {
+    margin-top: 0;
+  }
+
+  h2 {
+    font-size: 1em;
+    margin-bottom: 0;
+    color: var(--accent);
+  }
+}
+
