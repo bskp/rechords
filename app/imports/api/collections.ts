@@ -7,7 +7,7 @@ import slug from 'slug';
 import {FilterXSS} from 'xss';
 import {showdownRechords} from './showdown-rechords';
 import {Meteor} from 'meteor/meteor';
-import { options } from './xss-filter-options';
+import {options} from './xss-filter-options';
 
 const DATACHORD = 'data-chord';
 
@@ -146,7 +146,7 @@ export class Song {
 
     if (this.isEmpty()) return;  // delete song upon next save.
 
-    const dom = new DOMParser().parseFromString(this.html, 'text/html');
+    const dom = new DOMParser().parseFromString(`<div id="wrapper">${this.html}</div>`, 'text/html');
 
     const h1 = dom.getElementsByTagName('h1');
     if (h1.length > 0) {
