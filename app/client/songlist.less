@@ -7,12 +7,8 @@ aside.drawer#list.open + div.mobilemenu + .content {
 }
 
 aside.drawer#list {
-  position: fixed;
-  height: 100vh;
-
   display: flex;
   flex-direction: column;
-
   padding: 0;
 
   overflow-y: hidden;
@@ -20,6 +16,10 @@ aside.drawer#list {
 
   font-weight: 450;
   font-variation-settings: "wdth" 91;
+
+  &.hidden {
+    display: none;
+  }
 
   .phone({
     position: fixed;
