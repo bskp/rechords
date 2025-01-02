@@ -3,13 +3,12 @@
 name: Deploy Meteor App to Server
 on:
   push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-    environment: prod
+    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
     steps:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
