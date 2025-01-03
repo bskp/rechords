@@ -4,6 +4,10 @@
 aside.drawer#list.open + .content,
 aside.drawer#list.open + div.mobilemenu + .content {
   margin-left: @drawer-open;
+
+  .phone({
+    margin-left: 0;
+  })
 }
 
 aside.drawer#list {
@@ -50,7 +54,7 @@ aside.drawer#list {
   }
 
   ul.scroll {
-    padding: 0.5em;
+    padding: 0.5em 0 0.5em 0.5em;
     margin: 0;
     flex-shrink: 1;
     flex-grow: 1;

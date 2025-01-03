@@ -79,9 +79,8 @@ interface AppProps extends RouteComponentProps {
 
 // App component - represents the whole app
 class App extends React.Component<AppProps, AppStates> {
-  store: any;
 
-  constructor(props) {
+  constructor(props: AppProps) {
     super(props);
 
     this.state = {
@@ -135,12 +134,9 @@ class App extends React.Component<AppProps, AppStates> {
     const list_key = this.props.songs.map(s => s.title).join('-');
 
     if (!this.props.user) {
-
-      const aside = window.innerWidth > 900 ? <aside className="drawer open list-colors">&nbsp;</aside> : undefined;
       return (
         <div id="body" className="light">
           <TrackingDocumentTitle title="Hölibu" track_as="/no-login"/>
-          {aside}
           <Login/>
         </div>
       );
@@ -155,7 +151,7 @@ class App extends React.Component<AppProps, AppStates> {
       );
     }
 
-    const getSong = (params) => {
+    const getSong = (params: {title: string, author: string}) => {
       if (params.author == '-') {
         return Songs.findOne({
           title_: params.title

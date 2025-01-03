@@ -1,8 +1,7 @@
 import {Mongo} from 'meteor/mongo';
 
 import * as showdown from 'showdown';
-import {DOMParser} from '@xmldom/xmldom';
-import Parser from 'html-react-parser';
+import {Document, DOMParser} from '@xmldom/xmldom';
 import slug from 'slug';
 import {FilterXSS} from 'xss';
 import {showdownRechords} from './showdown-rechords';
@@ -33,25 +32,27 @@ export const rmd_version = 7;
 export class Song {
   _id?: string;
 
-  text: string;
+  text!: string;
 
-  title: string;
-  author: string;
+  title!: string;
+  author!: string;
 
   tags: Array<string> = [];
   chords: Array<string> = [];
   html?: string;
   parsed_rmd_version?: number;
 
-  title_: string;
-  author_: string;
+  title_!: string;
+  author_!: string;
 
   last_editor?: string;
 
   revision_cache?: Array<Revision>;
 
 
-  constructor(doc: any) {
+  constructor(doc: {
+    text: string,
+  }) {
     Object.assign(this, doc);
   }
 
@@ -114,15 +115,11 @@ export class Song {
 
   }
 
-  getVirtualDom() {
-    return Parser(this.html);
-  }
-
   isEmpty() {
     return this.text.match(/^\s*$/) != null;
   }
 
-  parse(md) {
+  parse(md: string) {
     this.text = md;
 
     // Create HTML
@@ -150,7 +147,7 @@ export class Song {
 
     const h1 = dom.getElementsByTagName('h1');
     if (h1.length > 0) {
-      this.title = h1[0].textContent;
+      this.title = h1[0].textContent!;
     } else {
       this.title = '(Ohne Titel)';
     }
@@ -158,7 +155,7 @@ export class Song {
 
     const h2 = dom.getElementsByTagName('h2');
     if (h2.length > 0) {
-      this.author = h2[0].textContent;
+      this.author = h2[0].textContent!;
     } else {
       this.author = '-';
     }
@@ -223,7 +220,7 @@ export class RmdHelpers {
     return Array.from(dom.getElementsByTagName('i'))
       .filter(chord_dom => chord_dom.hasAttribute(DATACHORD))
       .map(chord_dom => chord_dom.getAttribute(DATACHORD))
-      .filter(chord => chord !== null)
+      .filter((c: string | null): c is string => c !== null)
   }
 }
 
