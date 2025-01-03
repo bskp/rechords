@@ -27,7 +27,6 @@ interface ViewerStates {
   relTranspose: number,
   inlineReferences: boolean,
   showChords: boolean,
-  columns: boolean,
   autoscroll: any
 }
 
@@ -39,7 +38,6 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
       relTranspose: this.getInitialTranspose(),
       inlineReferences: false,
       showChords: true,
-      columns: false,
       autoscroll: undefined
     };
 
@@ -164,10 +162,6 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
     this.setState( state => ({ showChords: !state.showChords }));
   };
 
-  toggleColumns = () => {
-    this.setState( state => ({ columns: !state.columns }));
-  };
-
   toggleInlineReferences = () => {
     this.setState(state => ({ inlineReferences: !state.inlineReferences }));
   };
@@ -200,9 +194,6 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
       <Button onClick={this.props.toggleTheme}>
         {this.props.themeDark ? <ReactSVG src='/svg/sun.svg'/> : <ReactSVG src='/svg/moon.svg' />}
       </Button>
-      <Button onClick={this.toggleColumns}>
-        {this.state.columns ? <ReactSVG src='/svg/layout_horizontal.svg' /> : <ReactSVG src='/svg/layout_vertical.svg'/>}
-      </Button>
     </aside>;
 
 
@@ -233,13 +224,11 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
         </MobileMenuShallow>
 
         <div
-          className={'content' + (this.showMultiColumns() ? ' multicolumns':'')}
+          className={'content'}
           id="chordsheet" ref={this.refChordsheet}
           onContextMenu={this.handleContextMenu}
         >
           <Sheet
-
-            multicolumns={this.showMultiColumns()}
             song={this.props.song}
             transpose={this.state.relTranspose}
             hideChords={!this.state.showChords} />
@@ -251,8 +240,5 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
     );
   }
 
-  private showMultiColumns() {
-    return this.state.columns;
-  }
 }
 

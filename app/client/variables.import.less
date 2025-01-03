@@ -182,8 +182,6 @@ html.light {
             user-select: @mode; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
-
-
 .scroll-vertical {
   overflow-y: auto;
   overflow-x: hidden;
@@ -196,15 +194,9 @@ html.light {
   .prettyScrollbars(var(--bg-sheet));
 }
 
-
 .noFocusBorder {
   &:focus {
     outline: none;
   }
 
-  &::selection,
-  &::-moz-selection {
-    //color: hsv(hsvhue(@accent), 0.4, 0.8);
-    //background-color: hsva(hsvhue(@accent), 0.3, 0.3, 1);
-  }
 }
