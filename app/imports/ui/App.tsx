@@ -21,6 +21,8 @@ import {MobileMenu} from './MobileMenu';
 import {Meteor} from 'meteor/meteor';
 import Printer from "/imports/ui/Printer";
 
+export const ThemeContext = React.createContext<{ toggleTheme: () => void, themeDark: boolean }>({ toggleTheme: () => { }, themeDark: true })
+
 const empty_song = {
   title: 'Neues Lied',
   text: 'Titel\nInterpret\n========\n\n#Schlagwort\n\n1:\nDas ist die [A]erste Strophe\nHat zum Teil auch [em]Akkorde\n\n\nNach zwei leeren Zeilen gilt jeglicher Text als Kommentar.\n\nRefrain:\nTra la lalala\nla la lala la la\n\n2:\nUnd noch eine weil\'s so schön ist',
@@ -130,6 +132,7 @@ class App extends React.Component<AppProps, AppStates> {
     // Setting class on body -> used for background color of body
     document.documentElement.classList.value = theme;
 
+
     // If any song's title changes, the key for the <List /> changes and flushes all states.
     // This is a hack to easily update all internal "caching states" (matches etc.)
     const list_key = this.props.songs.map(s => s.title).join('-');
@@ -167,6 +170,10 @@ class App extends React.Component<AppProps, AppStates> {
 
 
     return (
+      <ThemeContext.Provider value={{
+        toggleTheme: () => this.toggleTheme(),
+        themeDark: theme.includes('dark')}} >
+
       <BrowserRouter>
           <MobileMenu toggleSongList={this.toggleSongList} songListHidden={this.state.songListHidden}/>
 
@@ -199,8 +206,6 @@ class App extends React.Component<AppProps, AppStates> {
                     <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title}/>
                     <Printer
                       song={song}
-                      toggleTheme={this.toggleTheme}
-                      themeDark={theme.includes('dark')}
                       {...routerProps}
                     />
                   </>
@@ -219,8 +224,6 @@ class App extends React.Component<AppProps, AppStates> {
                     <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title}/>
                     <Viewer
                       song={song}
-                      toggleTheme={this.toggleTheme}
-                      themeDark={theme.includes('dark')}
                       {...routerProps}
                     />
                   </>
@@ -299,6 +302,7 @@ class App extends React.Component<AppProps, AppStates> {
             </Switch>
           </div>
       </BrowserRouter>
+      </ThemeContext.Provider>
     );
   }
 }

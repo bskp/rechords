@@ -7,11 +7,7 @@ import {Button} from './Button';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {ReactSVG} from "react-svg";
 
-type PrinterProps = {
-  song: Song,
-  toggleTheme: () => void
-  themeDark: boolean
-}
+type PrinterProps = { song: Song }
 
 const Printer = ({song, history}: PrinterProps & RouteComponentProps) => {
 

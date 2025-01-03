@@ -11,6 +11,7 @@ import Sheet from './Sheet';
 import {Button} from './Button';
 import {ReactSVG} from "react-svg";
 import { Meteor } from 'meteor/meteor';
+import { ThemeContext } from './App';
 
 
 export interface SongRouteParams {
@@ -19,8 +20,6 @@ export interface SongRouteParams {
 }
 interface ViewerProps extends RouteComponentProps<Partial<SongRouteParams>> {
   song: Song,
-  toggleTheme: React.MouseEventHandler<HTMLDivElement>,
-  themeDark: boolean
 }
 
 interface ViewerStates {
@@ -168,6 +167,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
 
   render() {
 
+
     // Establish this songs' key
 
     const key_tag = this.props.song.getTag('tonart');
@@ -191,9 +191,13 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
           <ReactSVG src='/svg/conveyor.svg'/>
         }
       </Button>
-      <Button onClick={this.props.toggleTheme}>
-        {this.props.themeDark ? <ReactSVG src='/svg/sun.svg'/> : <ReactSVG src='/svg/moon.svg' />}
-      </Button>
+      
+      <ThemeContext.Consumer >
+       { ({themeDark,toggleTheme}) =>  
+      <Button onClick={toggleTheme}>
+        {themeDark ? <ReactSVG src='/svg/sun.svg'/> : <ReactSVG src='/svg/moon.svg' />}
+      </Button>}
+      </ThemeContext.Consumer>
     </aside>;
 
 
@@ -210,7 +214,8 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
 
     return (
 
-      <>
+      <ThemeContext.Consumer >
+       { ({themeDark,toggleTheme}) => <> 
         <MobileMenuShallow>
           <span onClick={ _ => this.increaseTranspose()} id="plus"><ReactSVG src={'/svg/sharp.svg'} /></span>
           <span onClick={ _ => this.decreaseTranspose()} id="minus"><ReactSVG src={'/svg/flat.svg'} /></span>
@@ -218,8 +223,8 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
             <ReactSVG src='/svg/conveyor.svg' />
           </span>
 
-          <span onClick={ _ => this.props.toggleTheme(undefined)} id="theme-toggler">
-            {this.props.themeDark ? <ReactSVG src='/svg/sun.svg' /> : <ReactSVG src='/svg/moon.svg' />}
+          <span onClick={ _ => toggleTheme()} id="theme-toggler">
+            {themeDark ? <ReactSVG src='/svg/sun.svg' /> : <ReactSVG src='/svg/moon.svg' />}
           </span>
         </MobileMenuShallow>
 
@@ -236,7 +241,8 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
         </div>
         {settings}
         {drawer}
-      </>
+       </>}
+      </ThemeContext.Consumer>
     );
   }
 
