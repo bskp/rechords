@@ -1,17 +1,17 @@
 import * as React from 'react';
-import {Component, MouseEventHandler} from 'react';
-import {withRouter, Prompt, RouteComponentProps} from 'react-router-dom';
+import { Component, MouseEventHandler } from 'react';
+import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
 
 import Source from './Source';
 import RevBrowser from './RevBrowser';
 import Preview from './Preview';
 import Drawer from './Drawer';
-import {Song} from '../api/collections';
-import {Meteor} from 'meteor/meteor';
-import {navigateTo, View} from '../api/helpers';
-import {MobileMenuShallow} from './MobileMenu';
-import {convertToHoelibuSyntax} from '../api/ascii-importer';
-import {ReactSVG} from "react-svg";
+import { Song } from '../api/collections';
+import { Meteor } from 'meteor/meteor';
+import { navigateTo, View } from '../api/helpers';
+import { MobileMenuShallow } from './MobileMenu';
+import { convertToHoelibuSyntax } from '../api/ascii-importer';
+import { ReactSVG } from "react-svg";
 
 type EditorProps = { song: Song } & RouteComponentProps
 type EditorState = {
@@ -49,14 +49,16 @@ class Editor extends Component<EditorProps, EditorState> {
       } else {
         this.setState({
           dirty: false,
-        });
+        }, () => {
+          if (isValid) {
+            navigateTo(this.props.history, View.view, this.props.song);
+          } else {
+            navigateTo(this.props.history, View.home);
+          }
+        }
+        );
       }
 
-      if (isValid) {
-        navigateTo(this.props.history, View.view, this.props.song);
-      } else {
-        navigateTo(this.props.history, View.home);
-      }
     });
 
     event.preventDefault();
@@ -146,7 +148,7 @@ class Editor extends Component<EditorProps, EditorState> {
           >
             <span className="label">Version in Bearbeitung</span>
           </Source>
-          <RevBrowser song={this.props.song}/>
+          <RevBrowser song={this.props.song} />
           {prompt}
         </div>
       );
