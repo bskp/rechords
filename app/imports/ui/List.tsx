@@ -1,184 +1,56 @@
 import * as React from 'react';
 import {MouseEventHandler} from 'react';
-import {Link, NavLink, RouteComponentProps, withRouter} from 'react-router-dom';
+import {NavLink, RouteComponentProps, withRouter} from 'react-router-dom';
 import MetaContent from './MetaContent';
 import {Song} from '../api/collections';
 
 import Drawer from './Drawer';
-import {navigateTo, routePath, userMayWrite, View} from '../api/helpers';
+import {navigateTo, userMayWrite, View} from '../api/helpers';
 import classNames from 'classnames';
 
-import {MdFace, MdFavorite, MdFavoriteBorder, MdSell, MdStyle} from 'react-icons/md';
+import {MdSell} from 'react-icons/md';
+import {Meteor} from 'meteor/meteor';
+import {Menu} from "/imports/ui/Menu";
+import {ListGroup} from "/imports/ui/ListGroup";
 
-interface ListItemProps {
-    song: Song;
-    onClickHandler: MouseEventHandler<HTMLAnchorElement>;
-    user: Meteor.User | null;
-}
-class ListItem extends React.Component<ListItemProps> {
-  constructor(props) {
-    super(props);
-  }
-
-  toggleDarling = e => {
-    const u = this.props.user;
-    const id = this.props.song._id;
-
-    if (u.profile.darlings.includes(id)) {
-      u.profile.darlings = u.profile.darlings.filter( i => i != id );
-    }
-    else {
-      u.profile.darlings.push(id);
-    }
-
-    Meteor.call('saveUser', u, (error) => {
-      console.log(error);
-    });
-
-    e.preventDefault();
-  };
-
-  render() {
-    const u = this.props.user;
-
-    if (u && (!('darlings' in u.profile) || !(u.profile.darlings instanceof Array))) {
-      u.profile.darlings = [];
-      Meteor.call('saveUser', u, (error) => {
-        console.log(error);
-      });
-    }
-
-    const darlings = u?.profile?.darlings ?? [];
-
-    const is_darling = darlings.includes(this.props.song._id);
-
-    const toggler = is_darling ?
-        <span onClick={this.toggleDarling} className='darling is_darling'><MdFavorite/></span> :
-        <span onClick={this.toggleDarling} className='darling'><MdFavoriteBorder/></span>
-    const darling_or_not = u ? toggler : undefined;
-
-    return (
-      <li><NavLink onClick={this.props.onClickHandler} to={routePath(View.view, this.props.song)}
-        activeClassName="selected">
-        <span className="title">{this.props.song.title}</span>
-        <span className="author">{this.props.song.author}</span>
-        {darling_or_not}
-      </NavLink>
-      </li>
-    );
-  }
-}
-
-interface ListGroupProps {
-  songs: Array<Song>;
-  user: Meteor.User;
-  label: string;
-  onClickHandler: MouseEventHandler<HTMLElement>
-
-}
-class ListGroup extends React.Component<ListGroupProps, never> {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    const classes = classNames(
-      'huge',
-      {'wordy': this.props.label.length > 5}
-    );
-
-    return (
-      <li key={this.props.label}>
-        <h2 className={classes}>{this.props.label}</h2>
-        <ul>
-          {this.props.songs.map((song) =>
-            <ListItem song={song} user={this.props.user} key={song._id} onClickHandler={this.props.onClickHandler}/>
-          )}
-        </ul>
-      </li>
-    );
-  }
-}
-
-
-interface ListProps {
+interface ListProps extends RouteComponentProps {
   songs: Array<Song>;
   user: Meteor.User | null;
   filter?: string;
   hidden: boolean;
   hideOnMobile: MouseEventHandler<HTMLElement>
-
 }
+
 interface ListState {
     filter: string;
-    /**
-     * Focus is in filter input
-     */
-    active: boolean;
-    /**
-     * Tag menu manually open (mobile)
-     */
-    tagsopen: boolean;
+    active: boolean; // Focus is in filter input
+    tags_open: boolean; // Tag menu opened manually (mobile)
     fuzzy_matches: Array<Song>;
     exact_matches: Array<Song>;
 }
 
-class List extends React.Component<ListProps & RouteComponentProps, ListState> {
+class List extends React.Component<ListProps, ListState> {
   refFilter: React.RefObject<HTMLInputElement>;
 
-  constructor(props) {
+  constructor(props: ListProps) {
     super(props);
     this.state = {
       filter: props.filter || '',
       active: false,
-      tagsopen: false,
+      tags_open: false,
       fuzzy_matches: [],
       exact_matches: []
     };
     this.refFilter = React.createRef();
-
-  }
-
-  keyHandler = (e : KeyboardEvent) => {
-    if (this.props.hidden) return;
-
-    if (e.key == 'Escape') {
-      this.setFilter('');
-      this.refFilter.current?.blur();
-
-      e.preventDefault();
-      return;
-    }
-
-    // Do not steal focus if on <input>
-    if( (e.target as Element)?.tagName == 'INPUT' ) return;
-
-    // Ignore special keys
-    if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
-
-    // Check if the pressed key has a printable representation
-    if (e.key && e.key.length === 1) {
-      this.refFilter.current?.focus();
-
-    }
   };
-
-  componentDidMount() {
-    document.addEventListener('keydown', this.keyHandler);
-    this.setFilter('');
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.keyHandler);
-  }
 
   onChange = (event : React.ChangeEvent<HTMLInputElement>) => {
     this.setFilter(event.currentTarget.value);
   };
 
-  setFilter = (new_filter) => {
-    const fuzzy = Array<Song>();
-    const exact = Array<Song>();
+  setFilter = (new_filter: string) => {
+    const fuzzy : Song[] = [];
+    const exact : Song[] = [];
 
     nextSong:
     for (const song of this.props.songs) {
@@ -208,7 +80,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
     }
 
     this.setState({
-      'filter': new_filter,
+      filter: new_filter,
       fuzzy_matches: fuzzy,
       exact_matches: exact
     });
@@ -228,7 +100,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
         this.setFilter('');
       }
 
-      this.refFilter?.current.blur();
+      this.refFilter?.current?.blur();
     }
   };
 
@@ -239,18 +111,17 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
   };
 
   onBlur = () => {
-
     this.setState({
       active: false
     });
   };
 
   toggleTagsOpen = () => {
-    this.setState( s => ({tagsopen: !s.tagsopen}));
+    this.setState( s => ({tags_open: !s.tags_open}));
   };
 
   onTagClick = (event : React.MouseEvent) => {
-    const tag = ' #' + event.currentTarget.childNodes[0].textContent.toLowerCase();
+    const tag = ' #' + event.currentTarget?.childNodes?.[0]?.textContent?.toLowerCase();
 
     let newFilter;
     if (this.state.filter.includes(tag)) {
@@ -262,7 +133,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
 
     // compromise: close overlay after selecting one tag
     // is probably the most common case
-    this.setState({tagsopen: false});
+    this.setState({tags_open: false});
 
     event.preventDefault();
   };
@@ -294,7 +165,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
       if (!groups.has(cat_label)) {
         groups.set(cat_label, new Array<Song>());
       }
-      groups.get(cat_label).push(song);
+      groups.get(cat_label)?.push(song);
     }
 
     const filled = this.state.filter == '' ? '' : 'filled';
@@ -302,7 +173,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
     const process_filtermenu = () => {
       let bucket: string;
 
-      return (node) => {
+      return (node: any) => {
         if (node.name == 'li') {
           const b = node.children.length > 1 ? <b>…</b> : null;
           return <li onMouseDown={this.onTagClick.bind(this)}>{node.children[0].data}{b}</li>;
@@ -321,7 +192,6 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
     };
 
 
-    const userLink = this.props.user ? <Link to="/user" className="username">{this.props.user.profile.name}</Link> : undefined;
     const addSong = userMayWrite() ? <li>
       <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
     </li> : undefined;
@@ -330,8 +200,9 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
       <Drawer id="list" open={true} className={classNames(
         'songlist',
         {hidden: this.props.hidden},
-        {noscroll: this.state.tagsopen}
+        {noscroll: this.state.tags_open}
       )}>
+        <Menu filter={this.state.filter} setFilter={this.setFilter.bind(this)}/>
         <div className="filter">
           <input type="text"
                  placeholder="Lieder suchen…"
@@ -353,7 +224,7 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
           className={classNames('filterMenu',
             {
               hidden: !this.state.active,
-              open  : !this.props.hidden && this.state.tagsopen
+              open  : !this.props.hidden && this.state.tags_open
             })} // tag menu is fix positioned and would stay on top otherwise
           title="Schlagwortverzeichnis"
           songs={this.props.songs}
@@ -366,8 +237,6 @@ class List extends React.Component<ListProps & RouteComponentProps, ListState> {
           )}
           {addSong}
         </ul>
-        {userLink}
-        <MdFace />
       </Drawer>
     );
   }

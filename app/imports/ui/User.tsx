@@ -7,6 +7,8 @@ import 'moment/locale/de';
 
 import { Select } from './Users';
 import {routePath, View} from '../api/helpers';
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 
 class User extends React.Component<{user: Meteor.User, revisionsLoading: boolean}, { user : Meteor.User, msg : string}> {
 
@@ -66,7 +68,7 @@ class User extends React.Component<{user: Meteor.User, revisionsLoading: boolean
 
   render() {
     let stats = <p>Lade…</p>;
-    let song_ids = [];
+    let song_ids: string[] = [];
 
     const u = this.state.user;
     const admin = this.props.user.profile.role == 'admin';
@@ -91,7 +93,7 @@ class User extends React.Component<{user: Meteor.User, revisionsLoading: boolean
     if (darlings === undefined || darlings.length == 0) {
       darlings = <>
         <li>Du hast noch keine Lieblingslieder!</li>
-        <li>Klick in der Liederliste links beim ausgewählten Lied auf den <strong>roten Punkt</strong>, um dir dieses zu merken.</li>
+        <li>Klick in der Liederliste links beim ausgewählten Lied auf das <strong>Herz</strong>, um dir dieses zu merken.</li>
       </>;
     }
 
@@ -142,14 +144,29 @@ class User extends React.Component<{user: Meteor.User, revisionsLoading: boolean
         <h1>Benutzer</h1>
         <h2>{u.profile.name}<em>{this.state.msg}</em></h2>
 
-
         <p>
-          <Link to="/" className="btn">Begrüssungs-Seite</Link>
           <Link to="progress" className="btn">Lieder-Übersicht</Link>
-          { admin ? <Link to="users" className="btn">Benutzerverwaltung</Link> : undefined}
-          <a onClick={ e => Accounts.logout()} className="btn">Abmelden</a>
+          {admin ? <Link to="users" className="btn">Benutzerverwaltung</Link> : undefined}
+          <a onClick={e => Accounts.logout()} className="btn">Abmelden</a>
         </p>
-        <br />
+        <br/>
+
+        <h2>Einstellungen</h2>
+
+        <form onSubmit={this.handleSubmit}>
+          <label>Name</label><input type="text" value={u.profile.name} onChange={this.updateName}
+                                    placeholder="Name"/><br/>
+          <label>Email-Adresse</label><input type="text" value={u.emails?.[0].address} onChange={this.updateEmail}
+                                             placeholder="Email"/><br/>
+          <label>Farbschema</label><Select value={u.profile?.theme ?? 'auto'} options={options}
+                                           onChange={this.updateTheme}/>
+          <br/>
+          <br/>
+          <label></label><input type="submit" value="Sichern"/>
+        </form>
+
+        <h2>Statistik</h2>
+        {stats_text}
 
         <h2>Lieblingslieder</h2>
         <ul>
@@ -163,21 +180,6 @@ class User extends React.Component<{user: Meteor.User, revisionsLoading: boolean
         <ul>
           {song_links}
         </ul>
-
-        <h2>Statistik</h2>
-        {stats_text}
-
-
-        <h2>Einstellungen</h2>
-
-        <form onSubmit={this.handleSubmit}>
-          <label>Name</label><input type="text" value={u.profile.name} onChange={this.updateName} placeholder="Name"/><br />
-          <label>Email-Adresse</label><input type="text" value={u.emails[0].address} onChange={this.updateEmail} placeholder="Email"/><br />
-          <label>Farbschema</label><Select value={u.profile?.theme ?? 'auto'} options={options} onChange={this.updateTheme} />
-          <br />
-          <br />
-          <label></label><input type="submit" value="Sichern" />
-        </form>
 
       </div>
     );

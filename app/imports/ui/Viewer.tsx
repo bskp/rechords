@@ -191,13 +191,6 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
           <ReactSVG src='/svg/conveyor.svg'/>
         }
       </Button>
-      
-      <ThemeContext.Consumer >
-       { ({themeDark,toggleTheme}) =>  
-      <Button onClick={toggleTheme}>
-        {themeDark ? <ReactSVG src='/svg/sun.svg'/> : <ReactSVG src='/svg/moon.svg' />}
-      </Button>}
-      </ThemeContext.Consumer>
     </aside>;
 
 
@@ -213,18 +206,12 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
     ) : undefined;
 
     return (
-
-      <ThemeContext.Consumer >
-       { ({themeDark,toggleTheme}) => <> 
+       <>
         <MobileMenuShallow>
           <span onClick={ _ => this.increaseTranspose()} id="plus"><ReactSVG src={'/svg/sharp.svg'} /></span>
           <span onClick={ _ => this.decreaseTranspose()} id="minus"><ReactSVG src={'/svg/flat.svg'} /></span>
           <span onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
             <ReactSVG src='/svg/conveyor.svg' />
-          </span>
-
-          <span onClick={ _ => toggleTheme()} id="theme-toggler">
-            {themeDark ? <ReactSVG src='/svg/sun.svg' /> : <ReactSVG src='/svg/moon.svg' />}
           </span>
         </MobileMenuShallow>
 
@@ -241,8 +228,7 @@ export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
         </div>
         {settings}
         {drawer}
-       </>}
-      </ThemeContext.Consumer>
+       </>
     );
   }
 

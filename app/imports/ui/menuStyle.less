@@ -1,0 +1,54 @@
+@import (reference) "../../client/responsive.import.less";
+@import (reference) "../../client/variables.import.less";
+
+menu {
+  display: flex;
+  padding: 0 0.2em;
+  gap: 0.5em;
+
+  li {
+    display: block;
+    padding: 0;
+
+    cursor: pointer;
+    color: var(--gray);
+
+    &:hover {
+      color: var(--accent);
+    }
+
+    &.search {
+      flex-grow: 1;
+      cursor: text;
+    }
+  }
+
+  svg {
+    width: 1.4em;
+    height: 1.4em;
+  }
+
+  input {
+    font-family: "Shantell Sans";
+
+    color: var(--accent);
+    background-color: var(--bg-list);
+
+    padding-left: 0.5em;
+    height: 2em;
+    font-weight: 600;
+    width: 2em;
+    flex-grow: 1;
+
+    .noFocusBorder;
+    transition: color 0.5s, background-color 0.5s;
+
+    background-color: var(--bg-list);
+
+    &::placeholder {
+      color: var(--gray);
+      font-family: "Bricolage Grotesque";
+    }
+
+  }
+}
