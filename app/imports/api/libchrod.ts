@@ -63,7 +63,7 @@ const B = new Key('B', 11),
   Des = new Key('Db', 1),
   Cis = new Key('C#', 1),
   C = new Key('C', 0);
-const keys: Array<Key> = [
+const keys: Key[] = [
   C,
   Cis,
   Des,
@@ -99,15 +99,10 @@ keys
 
 // TODO: move to another file
 class Scale {
-  /**
-     * 
-     * @param {string} name 
-     * @param {Array<number>} pitches 
-     */
   public bmap: Map<number, ToBorSharp>;
   constructor(
     public name: string,
-    public pitches: Array<number>,
+    public pitches: number[],
     bmap: Map<Key, ToBorSharp>
   ) {
     this.bmap = new Map();
@@ -175,7 +170,7 @@ const Scales:{major: Scale, harmonic: Scale} = {
 
 class Chord {
   idx: number;
-  constructor(public key: Key, public keys: Array<number>, public str: string,
+  constructor(public key: Key, public keys: number[], public str: string,
      public suff: string = '', public optional: boolean = false) {
     this.idx = key.idx;
   }
@@ -214,7 +209,7 @@ class Chord {
      */
   static parseChordString(chordString) : Chord {
 
-    const checkOptional:Array<string> = chordString.match(/(^\(?)([^)]*)(\)?)/);
+    const checkOptional: string[] = chordString.match(/(^\(?)([^)]*)(\)?)/);
     const content = checkOptional[2];
     let optional = false;
     if (checkOptional[1] && checkOptional[3]) {
@@ -257,8 +252,8 @@ export default class ChrodLib {
   //
 
   /**
-     * 
-     * @param {Array<String>} chordsList 
+     *
+     * @param {Array<String>} chordsList
      * @returns { {scale: string, key: string}}
      */
   static guessKey(chordsList: string[]) {

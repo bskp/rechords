@@ -1,26 +1,44 @@
-@import (reference) "../../client/responsive.import.less";
-@import (reference) "../../client/variables.import.less";
+@import (reference) "../../../client/responsive.import.less";
+@import (reference) "../../../client/variables.import.less";
 
 menu {
   display: flex;
-  padding: 0 0.2em;
+  padding: 0 0.4em;
   gap: 0.5em;
+  margin: 0.4em 0;
 
-  li {
-    display: block;
-    padding: 0;
+  .phone({
+    font-size: 1.2em;
+  });
 
+  li, svg.interactive {
     cursor: pointer;
     color: var(--gray);
 
     &:hover {
       color: var(--accent);
     }
+  }
+
+  li {
+    display: block;
+    padding: 0;
 
     &.search {
       flex-grow: 1;
       cursor: text;
     }
+
+    transition: margin-right 0.2s;
+  }
+
+  &.searching li {
+    margin-right: -1.9em;
+  }
+
+
+  li svg, li span {
+    vertical-align: middle;
   }
 
   svg {
@@ -34,10 +52,8 @@ menu {
     color: var(--accent);
     background-color: var(--bg-list);
 
-    padding-left: 0.5em;
-    height: 2em;
     font-weight: 600;
-    width: 2em;
+    width: 50%;
     flex-grow: 1;
 
     .noFocusBorder;
@@ -49,6 +65,9 @@ menu {
       color: var(--gray);
       font-family: "Bricolage Grotesque";
     }
+  }
 
+  input + svg {
+    cursor: pointer;
   }
 }

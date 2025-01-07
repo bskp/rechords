@@ -6,14 +6,17 @@
   display: flex;
   width  : 100%;
 
-  textarea {
-  }
-
   >.content {
     padding-left: 2em;
+    z-index: 1;
+
     .content {
       padding: unset;
     }
+  }
+
+  aside {
+    z-index: 2;
   }
 
   #chordsheet {
@@ -60,79 +63,6 @@ aside.drawer#revs {
   );
 }
 
-.bubble {
-  li {
-    display         : inline-block;
-    font-size       : 0.75em;
-    line-height     : 1.8em !important;
-    font-weight     : 600;
-    text-transform  : uppercase;
-    background-color: var(--gray);
-    color           : var(--text-inverted);
-
-    &::before {
-      content: none !important;
-    }
-
-    b {
-      display                   : inline-block;
-      font-weight               : inherit;
-      padding                   : 0 0.8em;
-      padding-left              : 0.3em;
-      margin                    : 0 -0.9em;
-      margin-left               : 0.3em;
-      background-color          : var(--accent);
-      border-top-right-radius   : inherit;
-      border-bottom-right-radius: inherit;
-    }
-  }
-}
-
-#bubble {
-  border-radius: 0.6em;
-  padding-right: 0.2rem;
-  padding-left : 0.2rem;
-  margin-right : 0.1rem;
-  margin-left  : 0.1rem;
-  white-space  : nowrap;
-}
-
-.source-font {
-  .textareafonts();
-}
-
-.diff {
-  display: inline;
-
-  &.added {
-    #bubble();
-    background-color: var(--text-inverted);
-    color           : var(--text);
-    filter          : unset;
-  }
-
-  &.removed {
-    #bubble();
-    text-decoration-line     : line-through;
-    text-decoration-color    : var(--text);
-    text-decoration-thickness: 0.1rem;
-    background-color         : var(--text-inverted);
-    color                    : var(--accent);
-    filter                   : unset;
-    position                 : relative;
-    z-index                  : 2;
-
-    +.diff.added {
-      position                 : relative;
-      margin-left              : -.6rem;
-      padding-left             : .6rem;
-      z-index                  : 1;
-      border-top-left-radius   : 0;
-      border-bottom-left-radius: 0;
-    }
-  }
-}
-
 .settings {
   display      : flex;
   flex-flow    : row nowrap;
@@ -147,128 +77,5 @@ aside.drawer#revs {
 
   input {
     margin-right: 0.4rem;
-  }
-}
-
-.blameColumn {
-  white-space: nowrap;
-  .textareafonts();
-
-  margin-right: 0.2rem;
-
-  .annotation-group {
-
-    text-align: right;
-    cursor    : pointer;
-
-    display  : flex;
-    flex-flow: row nowrap;
-
-    @glowDist: 0;
-    @glowRad : 3rem;
-
-    @grayscaleStrong: 0.8;
-    @grayscaleWeak  : 0.3;
-
-
-    &:nth-child(even) {
-      >* {
-        background-color: var(--accent);
-        border-color    : var(--accent);
-      }
-
-      .annotation {
-        filter: grayscale(@grayscaleStrong);
-
-        &.hovering {
-          filter: grayscale(@grayscaleWeak)
-        }
-
-        &:hover {
-          position: relative;
-          z-index : 100;
-          filter  : drop-shadow(@glowDist @glowDist @glowRad var(--accent));
-        }
-      }
-    }
-
-    &:nth-child(odd) {
-      >* {
-        background-color: var(--bg-rev);
-        border-color    : var(--bg-rev);
-      }
-
-
-
-      &:hover {
-        filter: none;
-      }
-
-
-      .annotation {
-        filter: grayscale(@grayscaleStrong);
-
-        &.hovering {
-          filter: grayscale(@grayscaleWeak)
-        }
-
-        &:hover {
-          position: relative;
-          z-index : 100;
-          filter  : drop-shadow(@glowDist @glowDist @glowRad var(--bg-rev));
-        }
-      }
-    }
-
-    .annotation {
-      padding     : 0 0.2rem;
-      margin-right: 0.2rem;
-      width       : 100%;
-    }
-
-    .hover-container {
-      width   : 0px;
-      order   : 1;
-      position: relative;
-
-      .hover {
-        text-align      : left;
-        border          : 1rem solid;
-        border-radius   : 1rem;
-        position        : absolute;
-        padding         : 10px;
-        margin-top      : -10px;
-        background-color: inherit;
-        border-color    : inherit;
-        opacity         : 0.9;
-        overflow-x      : scroll;
-        width           : 36vw;
-
-        .info {
-
-          font-family   : 'Roboto';
-          text-transform: uppercase;
-          font-weight   : 600;
-          font-size     : 0.9rem;
-          margin-bottom : 0.6rem;
-        }
-      }
-    }
-
-    .hidden {
-      display: none;
-    }
-  }
-}
-
-.source-adv {
-  display  : flex;
-  flex-flow: row nowrap;
-
-  // >* {
-  //   height: 100%;
-  // }
-  textarea {
-    width: 100%;
   }
 }

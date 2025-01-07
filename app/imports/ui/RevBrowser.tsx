@@ -38,7 +38,7 @@ export default class RevBrowser extends React.Component<RevBrowserProps, { revis
     if (e.target?.tagName == 'INPUT') return;
 
     const rev = this.state?.revision;
-    const revs: Array<Revision> = this.props.song.getRevisions();
+    const revs: Revision[] = this.props.song.getRevisions();
 
     const n = revs.length;
 

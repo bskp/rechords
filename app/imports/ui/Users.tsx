@@ -7,6 +7,7 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import moment from 'moment';
 import 'moment/locale/de';
 import { Meteor } from 'meteor/meteor';
+import {MdEdit} from "react-icons/md";
 
 export function Select( {options, ...rest} ) {
     
@@ -118,7 +119,7 @@ class EditUser extends React.Component<{ user? : Meteor.User }, { user : Meteor.
 
 
 type UsersProps = {
-    users: Array<Meteor.User>;
+    users: Meteor.User[];
 } & RouteComponentProps;
 
 class Users extends React.Component<UsersProps, { user? : Meteor.User }> {
@@ -180,7 +181,7 @@ class Users extends React.Component<UsersProps, { user? : Meteor.User }> {
       id: 'edit',
       Cell: ({row: {original: u}}) => {
         return <a onClick={ () => { this.setState( {user: u} ); } }>
-          <img src="/icons/edit.svg" />
+          <MdEdit />
         </a>;
       },
     },

@@ -49,12 +49,12 @@ export default class Preview extends React.Component<P, never> {
   }
 
   private chordProgressions(md : string) {
-    const chords = new Array<Array<string>>();
-    const verseNames = new Array<string>();
-    md.replace(verseRegex, (match:string, title:string, v:string) => {
-      const progression = new Array<string>();
+    const chords: string[][] = [];
+    const verseNames: string[] = []
+    md.replace(verseRegex, (_match: string, title: string, v: string) => {
+      const progression: string[] = [];
 
-      v.replace(/\[([^\]]*)]/g, (match, chord) => {
+      v.replace(/\[([^\]]*)]/g, (_match, chord) => {
         progression.push(chord);
         return '';
       });

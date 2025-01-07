@@ -6,23 +6,22 @@ import {Abcjs} from './Abcjs';
 import Kord from './Kord';
 import {userMayWrite} from '../api/helpers';
 import * as DH from 'domhandler';
-import {SheetSplit} from './SheetSplit';
 import {CSSProperties, useState} from "react";
-import { Tablature } from 'abcjs';
+import {Tablature} from 'abcjs';
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false
 
-const Sheet: React.FC<{
+type SheetProps = {
   song: Song,
   transpose?: number,
   hideChords?: boolean,
   processVdom?: (vdom: any) => any,
   style?: CSSProperties,
   multicolumns?: boolean
-}> = ({song, transpose, hideChords, processVdom, style, multicolumns}) => {
+};
+const Sheet = ({song, transpose, hideChords, processVdom, style}: SheetProps) => {
 
   const [inlineRefs, setInlineRefs] = useState(true);
-
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
   const enrichReferences = (vdom: JSX.Element[]) => {
@@ -55,7 +54,10 @@ const Sheet: React.FC<{
           if (!definition) {
             vdom[i] = React.cloneElement(elem,
               {
-                'onClick': () => {console.log('sf'); toggleInlineRefs();},
+                'onClick': () => {
+                  console.log('sf');
+                  toggleInlineRefs();
+                },
                 className: 'ref collapsed',
                 key: key,
                 id: key
@@ -94,10 +96,9 @@ const Sheet: React.FC<{
     key = ChrodLib.guessKey(chords);
   }
 
-
   // Postprocessing on each node from the dom-to-react parser
-  const populate_react_nodes = (node: DOMNode): DomOut => {  
-      
+  const populateReactNodes = (node: DOMNode): DomOut => {
+
     if (!(node instanceof DH.Element && node.attribs)) return node;
 
     // <i>
@@ -105,7 +106,7 @@ const Sheet: React.FC<{
       if (hideChords) return;  // swallow the chord
 
       let chord_ = null;
-      if ('data-chord' in node.attribs){
+      if ('data-chord' in node.attribs) {
         const chord = node.attribs['data-chord'];
         const t = chrodlib.transpose(chord, key, transpose);
         if (t == null) {
@@ -120,7 +121,7 @@ const Sheet: React.FC<{
     // Abcjs
     else if (node.name == 'pre') {
 
-      if (node.children.length != 1) 
+      if (node.children.length != 1)
         return node;
 
       const code = node.firstChild as DH.Element;
@@ -131,20 +132,20 @@ const Sheet: React.FC<{
       if (!(classes.includes('language-abc')))
         return node;
 
-      if (code.children.length != 1) 
+      if (code.children.length != 1)
         return node;
 
       if (hideChords) {
         return <></>;
-      
+
 
       } else {
         const tablature: Tablature[] = []
-        if(classes.includes('tab')) {
+        if (classes.includes('tab')) {
           tablature.push({instrument: 'guitar'})
         }
         const abc = (code.firstChild as DH.DataNode)?.data;
-        return <Abcjs abcNotation={abc} params={{ visualTranspose: transpose, tablature}} />;
+        return <Abcjs abcNotation={abc} params={{visualTranspose: transpose, tablature}}/>;
 
       }
     }
@@ -156,7 +157,7 @@ const Sheet: React.FC<{
 
       return <span className='chord-container'>
         <strong>{c.base}<sup>{c.suff}</sup></strong>
-        <Kord frets={node.attribs.title} fingers={node.attribs['data-fingers']} />
+        <Kord frets={node.attribs.title} fingers={node.attribs['data-fingers']}/>
       </span>;
     }
 
@@ -164,29 +165,25 @@ const Sheet: React.FC<{
     else if (node.name == 'ul' && node.attribs?.['class'] == 'tags' && !userMayWrite()) {
       const hide: string[] = ['fini', '+', 'check', 'wip'];
       node.children = node.children.filter((child) => {
-        if ((child as DH.Element) ?.name == 'li' && hide.includes(((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data)) return false;
+        if ((child as DH.Element)?.name == 'li' && hide.includes(((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data)) return false;
         return true;
       });
     }
   };
 
-  let postprocess = (vdom) => populate_react_nodes( vdom );
+  let postprocess = (vdom: DOMNode) => populateReactNodes(vdom);
 
   if (processVdom !== undefined) {
-    postprocess = (vdom) => processVdom( populate_react_nodes(vdom) );
+    postprocess = (vdom) => processVdom(populateReactNodes(vdom));
   }
 
   let vdom = parse(rmd_html, {replace: postprocess}) as JSX.Element[];
 
   vdom = enrichReferences(vdom);
 
-
   return (
-    <section id="chordsheetContent" style={style}>
-      {multicolumns ? <SheetSplit song={song}>{vdom}</SheetSplit> : vdom}
-    </section>
+    <section id="chordsheetContent" style={style}>{vdom}</section>
   );
-
 };
 
 export default Sheet;

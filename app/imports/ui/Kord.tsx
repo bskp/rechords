@@ -24,7 +24,7 @@ export default function Kord(props: ChordProps) {
     const i = parseInt(n, 10);
     return isNaN(i) ? -1 : i;
   });
-  if (frets.length != 6) return 'Chord with invalid frets.';
+  if (frets.length != 6) return <span>'Chord with invalid frets.'</span>;
 
   const minFret = Math.min(...frets.filter(f => f > -1));
   const maxFret = Math.max(...frets);

@@ -37,8 +37,8 @@ export class Song {
   title!: string;
   author!: string;
 
-  tags: Array<string> = [];
-  chords: Array<string> = [];
+  tags: string[] = [];
+  chords: string[] = [];
   html?: string;
   parsed_rmd_version?: number;
 
@@ -47,7 +47,7 @@ export class Song {
 
   last_editor?: string;
 
-  revision_cache?: Array<Revision>;
+  revision_cache?: Revision[];
 
 
   constructor(doc: {
@@ -58,17 +58,17 @@ export class Song {
 
   getHtml() {
     this.validateField('html');
-    return this.html;
+    return this.html!;
   }
 
   getChords() {
     this.validateField('chords');
-    return this.chords;
+    return this.chords!;
   }
 
   getTags() {
     this.validateField('tags');
-    return this.tags;
+    return this.tags!;
   }
 
   validateField(field: string) {
@@ -82,8 +82,6 @@ export class Song {
         console.log(error);
       }
     });
-
-
   }
 
   checkTag(needle: string) {
