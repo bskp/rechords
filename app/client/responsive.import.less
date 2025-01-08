@@ -9,6 +9,11 @@
     display: none !important;
   })
 }
+.hideUnlessMobile {
+  .not-phone({
+    display: none !important;
+  })
+}
 
 .phone(@rules) {
   @media only screen and (max-width: @width-s) {
