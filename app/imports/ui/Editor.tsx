@@ -9,9 +9,7 @@ import Drawer from './Drawer';
 import { Song } from '../api/collections';
 import { Meteor } from 'meteor/meteor';
 import { navigateTo, View } from '../api/helpers';
-import { MobileMenuShallow } from './MobileMenu';
 import { convertToHoelibuSyntax } from '../api/ascii-importer';
-import { ReactSVG } from "react-svg";
 
 type EditorProps = { song: Song } & RouteComponentProps
 type EditorState = {
@@ -68,7 +66,7 @@ class Editor extends Component<EditorProps, EditorState> {
     return convertToHoelibuSyntax(text);
   };
 
-  update = (md_) => {
+  update = (md_: string) => {
     this.setState({
       md: md_,
       dirty: md_ != this.mdServer
@@ -106,11 +104,6 @@ class Editor extends Component<EditorProps, EditorState> {
       // Bearbeiten mit Echtzeit-Vorschau
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
-          <MobileMenuShallow>
-            <span onClick={this.handleContextMenu} id="plus"><ReactSVG src='/svg/ok.svg'/></span>
-            <span onClick={this.props.history.goBack} id="minus"><ReactSVG src={'/svg/cancel.svg'}/></span>
-          </MobileMenuShallow>
-
           <Drawer onClick={this.handleContextMenu} className="list-colors">
             <h1>sichern<br/>&amp; zurück</h1>
             <p>Schneller: Rechtsklick!</p>

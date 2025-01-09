@@ -6,6 +6,8 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import moment from 'moment';
 import 'moment/locale/de';
+import { Meteor } from 'meteor/meteor';
+import {MdEdit} from "react-icons/md";
 
 export function Select( {options, ...rest} ) {
     
@@ -104,7 +106,7 @@ class EditUser extends React.Component<{ user? : Meteor.User }, { user : Meteor.
         <h2>Bearbeite "{u.profile.name || 'Neuer Benutzer'}"<em>{this.state.msg}</em></h2>
         <form onSubmit={this.handleSubmit} className="row">
           <input type="text" value={u.profile.name} onChange={this.updateName} placeholder="Name"/>
-          <input type="text" value={u.emails[0].address} onChange={this.updateEmail} placeholder="Email"/>
+          <input type="text" value={u.emails?.[0].address} onChange={this.updateEmail} placeholder="Email"/>
           <input type="text" value={this.state.secret} placeholder="vier neue geheime Wörter" onChange={this.updateSecret} />
           <Select options={roles} value={u.profile.role} onChange={this.updateRole} />
           <input type="submit" value="Sichern"/>
@@ -116,18 +118,13 @@ class EditUser extends React.Component<{ user? : Meteor.User }, { user : Meteor.
 }
 
 
-function mark(checkOutput) {
-  if (checkOutput === true) return '✔︎';
-  return checkOutput;
-}
-
 type UsersProps = {
-    users: Array<Meteor.User>;
+    users: Meteor.User[];
 } & RouteComponentProps;
 
-class Users extends React.Component<UsersProps, { user : Meteor.User }> {
+class Users extends React.Component<UsersProps, { user? : Meteor.User }> {
 
-  constructor(props) {
+  constructor(props: UsersProps) {
     super(props);
     this.state = {
       user: undefined
@@ -136,7 +133,7 @@ class Users extends React.Component<UsersProps, { user : Meteor.User }> {
 
   newUser = () => {
     this.setState({
-      // @ts-ignore id_ will be added by meteor
+      // @ts-ignore _id will be added by meteor
       user: {
         _id: undefined,
         username: '',
@@ -158,7 +155,7 @@ class Users extends React.Component<UsersProps, { user : Meteor.User }> {
     },
     {
       Header: 'Email-Adresse',
-      accessor: (u : Meteor.User) => u.emails[0].address,
+      accessor: (u : Meteor.User) => u.emails?.[0].address,
     },
     {
       Header: '1. Wort',
@@ -184,7 +181,7 @@ class Users extends React.Component<UsersProps, { user : Meteor.User }> {
       id: 'edit',
       Cell: ({row: {original: u}}) => {
         return <a onClick={ () => { this.setState( {user: u} ); } }>
-          <img src="/icons/edit.svg" />
+          <MdEdit />
         </a>;
       },
     },

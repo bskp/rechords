@@ -4,6 +4,17 @@
 @width-m : 900px;
 @width-s : 700px;
 
+.hideOnMobile {
+  .phone({
+    display: none !important;
+  })
+}
+.hideUnlessMobile {
+  .not-phone({
+    display: none !important;
+  })
+}
+
 .phone(@rules) {
   @media only screen and (max-width: @width-s) {
       @rules();

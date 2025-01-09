@@ -1,8 +1,7 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
 
-aside.drawer#list.open + .content,
-aside.drawer#list.open + div.mobilemenu + .content {
+aside.drawer#list.open + .content {
   margin-left: @drawer-open;
 
   .phone({
@@ -26,31 +25,11 @@ aside.drawer#list {
   }
 
   .phone({
-    position: fixed;
-    z-index: 6;
-
-    top: 4rem;
-    padding-top: 0;
-
-    height: calc(~"100vh - 4rem");
-    min-height: unset;
-
     font-size: 1.2em;
-    transition: all 0.5s ease-in-out;
-
-    &.hidden {
-      padding: 0;
-      height: 0;
-    }
   });
 
   > div {
     display: contents;
-
-    .phone({
-      padding-top: 0;
-    });
-
   }
 
   ul.scroll {
@@ -61,94 +40,6 @@ aside.drawer#list {
     overflow-y: scroll;
 
     .prettyScrollbars(var(--bg-list));
-
-    .phone({
-      margin-top: 0;
-    });
-  }
-
-  &.hidden .filter {
-    display: none;
-  }
-
-  .filter {
-    font-family: "Shantell Sans";
-    flex-shrink: 0;
-
-    .phone({
-      position: fixed; 
-      width: ~"calc(100vw - 5.4rem)"; // 4rem MenuIcon + 0.7 + 0.7 Rem Margin Left/Right
-      height: 4rem;
-      z-index: 10;
-      align-items: center;
-      justify-content: center;
-      background: none;
-    });
-
-    display: flex;
-    color: var(--accent);
-    background-color: var(--bg-list);
-
-    .reset {
-      flex: 0 0 1.2em;
-      font-size: 1.4em;
-      margin-left: -1.2em;
-      cursor: pointer;
-      margin-top: 0;
-      line-height: 2em;
-
-      display: none;
-      font-family: "Bricolage Grotesque";
-
-      &.filled {
-        display: block;
-      }
-      &:hover {
-        color: var(--text);
-      }
-    }
-
-    .open-tags {
-      font-family: "Bricolage Grotesque";
-      cursor: pointer;
-      margin-left: 0.7rem;
-      .not-phone({
-        display: none;
-      })
-    }
-
-    // Suchfeld
-    input {
-      margin-top: 0;
-      padding-left: 0.5em;
-      height: 3em;
-      width: 100%;
-      font-weight: 600;
-
-      display: block;
-      flex: 1 1 auto;
-
-      .phone({
-        height: 4rem;
-        margin: 0;
-      });
-
-      .noFocusBorder;
-      transition: color 0.5s, background-color 0.5s;
-
-      background-color: var(--bg-list);
-      &::placeholder {
-        color: transparent;
-        font-family: "Bricolage Grotesque";
-      }
-
-      &[value=""] {
-        background-color: var(--bg-list);
-        &::placeholder {
-          color: var(--text-sidebar);
-        }
-      }
-    }
   }
 
   div.filterMenu {
@@ -159,10 +50,7 @@ aside.drawer#list {
 
     overflow: hidden;
 
-    padding-top: 0.5em;
-    padding-left: 1em;
-    padding-right: @drawer-closed;
-    padding-bottom: 1.5em;
+    padding: 0.5em @drawer-closed 1.5em 1em;
 
     display: flex;
     flex-direction: row;
@@ -190,6 +78,7 @@ aside.drawer#list {
       font-weight: 600;
       transform: rotate(-14deg);
       margin-left: -0.5em;
+      margin-bottom: 0.5em;
     }
 
     ul {
@@ -224,22 +113,14 @@ aside.drawer#list {
     }
 
     .phone({
-      position: fixed; 
-      top: 4rem;
+      top: 3rem;
       left:0;
-      height: calc(~"100vh - 4rem"); // -menuheight - padding
+      height: calc(~"100vh - 3rem"); // -menuheight - padding
       padding-left: 0.5em;
       overflow-y: scroll;
       visibility: visible;
-      max-height: 0;
       padding-top: 0;
       padding-bottom: 0;
-      &.open {
-        max-height: unset;
-        visibility: visible;
-        opacity: initial;
-
-      }
     });
 
     opacity: 1;
@@ -247,7 +128,7 @@ aside.drawer#list {
 
   } //filtermenu
 
-  li {
+  ul.scroll li {
     // Stick to one row per li
     white-space: nowrap;
     overflow: hidden;
@@ -273,10 +154,7 @@ aside.drawer#list {
 
       .noFocusBorder;
 
-      padding-top: 0.1em;
-      padding-bottom: 0.1em;
-      padding-left: 0.5em;
-      padding-right: 1em;
+      padding: 0.1em 1em 0.1em 0.5em;
       margin-left: -0.5em;
       margin-right: -0.5em;
 
@@ -317,7 +195,6 @@ aside.drawer#list {
           stroke-width: 2px;
           fill: transparent;
         }
-
       }
 
       &.selected .darling {
@@ -381,30 +258,4 @@ aside.drawer#list {
 
     }
   }
-
-  .username {
-    box-sizing: border-box;
-    padding: 0.5em;
-    flex-shrink: 0;
-
-    background-color: var(--bg-list);
-    display: flex;
-
-    cursor: pointer;
-    color: var(--gray);
-
-    &:hover {
-      color: var(--accent);
-    }
-
-    text-transform: uppercase;
-    font-weight: 900;
-    font-size: 0.9em;
-    text-align: right;
-
-    .phone({
-      display: none;
-    })
-  }
-
-} // .drawer#list
+}

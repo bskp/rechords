@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useEffect} from 'react';
-import abcjs, {AbcVisualParams, Tablature} from 'abcjs';
+import abcjs, {AbcVisualParams} from 'abcjs';
 
 const regular = 'Roboto 12';
 const bold = regular + ' bold';

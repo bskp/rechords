@@ -2,26 +2,36 @@ import * as React from 'react';
 import {withTracker} from 'meteor/react-meteor-data';
 import {ErrorBoundary} from 'react-error-boundary';
 
-
 import Songs, {Song} from '../api/collections';
 
-import List from './List';
+import List from './Songlist/List';
 import Viewer from './Viewer';
 import Editor from './Editor';
 import Progress from './Progress';
 import Users from './Users';
 import User from './User';
-import HideSongList from './HideSongList';
 import Login from './Login';
 import Hallo from './Hallo';
 
 import {BrowserRouter, Route, RouteComponentProps, Switch} from 'react-router-dom';
 import TrackingDocumentTitle from './TrackingDocumentTitle';
-import {MobileMenu} from './MobileMenu';
 import {Meteor} from 'meteor/meteor';
 import Printer from "/imports/ui/Printer";
+import {Button} from "/imports/ui/Button";
+import {ReactSVG} from "react-svg";
+import {useContext} from "react";
 
-export const ThemeContext = React.createContext<{ toggleTheme: () => void, themeDark: boolean }>({ toggleTheme: () => { }, themeDark: true })
+export const ThemeContext = React.createContext<{ toggleTheme: () => void, themeDark: boolean }>({
+  toggleTheme: () => {
+  },
+  themeDark: true
+})
+
+export const MenuContext = React.createContext<{ showMenu: boolean, setShowMenu: (show: boolean) => void }>({
+  showMenu: false,
+  setShowMenu: () => {
+  }
+})
 
 const empty_song = {
   title: 'Neues Lied',
@@ -71,13 +81,21 @@ interface AppProps extends RouteComponentProps {
   songsLoading: boolean,
   revisionsLoading: boolean,
 
-  songs: Array<Song>,
+  songs: Song[],
   user: Meteor.User | null,
 
   toggleSongList: () => void,
   toggleTheme: () => void,
 }
 
+
+function MenuBurger() {
+  const {setShowMenu} = useContext(MenuContext);
+  return <aside id="rightSettings"><Button onClick={() => setShowMenu(true)} phoneOnly>
+    <ReactSVG src="/svg/menu.svg"/>
+  </Button>
+  </aside>
+}
 
 // App component - represents the whole app
 class App extends React.Component<AppProps, AppStates> {
@@ -120,7 +138,6 @@ class App extends React.Component<AppProps, AppStates> {
   };
 
 
-
   render() {
     const ut = this.props.user?.profile.theme ?? 'auto';
     let themeDark = false;
@@ -155,7 +172,7 @@ class App extends React.Component<AppProps, AppStates> {
       );
     }
 
-    const getSong = (params: {title: string, author: string}) => {
+    const getSong = (params: { title: string, author: string }) => {
       if (params.author == '-') {
         return Songs.findOne({
           title_: params.title
@@ -172,136 +189,138 @@ class App extends React.Component<AppProps, AppStates> {
     return (
       <ThemeContext.Provider value={{
         toggleTheme: () => this.toggleTheme(),
-        themeDark: theme.includes('dark')}} >
+        themeDark: theme.includes('dark')
+      }}>
 
-      <BrowserRouter>
-          <MobileMenu toggleSongList={this.toggleSongList} songListHidden={this.state.songListHidden}/>
 
-          <div id="body">
-            <List
-              songs={this.props.songs}
-              key={list_key}
-              hidden={this.state.songListHidden}
-              hideOnMobile={this.hideSongListOnMobile}
-              user={this.props.user}
-            />
-            <Switch>
-              <Route exact={true} path='/'>
-                <TrackingDocumentTitle title="Hölibu 3000"/>
-                <ErrorBoundary fallback={<NA400/>}>
-                  <Hallo user={this.props.user} songs={this.props.songs}
-                         revisionsLoading={this.props.revisionsLoading}/>
-                </ErrorBoundary>
-              </Route>
+        <MenuContext.Provider
+          value={{showMenu: !this.state.songListHidden, setShowMenu: (show => this.setState({songListHidden: !show}))}}>
+          <BrowserRouter>
+            <div id="body">
+              <List
+                songs={this.props.songs}
+                key={list_key}
+                user={this.props.user}
+              />
+              <Switch>
+                <Route exact={true} path='/'>
+                  <TrackingDocumentTitle title="Hölibu 3000"/>
+                  <ErrorBoundary fallback={<NA400/>}>
+                    <Hallo />
+                    <MenuBurger />
+                  </ErrorBoundary>
+                </Route>
 
-              <Route path='/print/:author/:title' render={(routerProps) => {
-                const song = getSong(routerProps.match.params);
+                <Route path='/print/:author/:title' render={(routerProps) => {
+                  const song = getSong(routerProps.match.params);
 
-                if (song === undefined) {
-                  return nA404;
-                }
+                  if (song === undefined) {
+                    return nA404;
+                  }
 
-                return (
-                  <>
-                    <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title}/>
-                    <Printer
-                      song={song}
-                      {...routerProps}
-                    />
-                  </>
-                );
-              }}/>
+                  return (
+                    <>
+                      <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title}/>
+                      <Printer
+                        song={song}
+                        {...routerProps}
+                      />
+                    </>
+                  );
+                }}/>
 
-              <Route path='/view/:author/:title' render={(routerProps) => {
-                const song = getSong(routerProps.match.params);
+                <Route path='/view/:author/:title' render={(routerProps) => {
+                  const song = getSong(routerProps.match.params);
 
-                if (song === undefined) {
-                  return nA404;
-                }
+                  if (song === undefined) {
+                    return nA404;
+                  }
 
-                return (
-                  <>
-                    <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title}/>
-                    <Viewer
-                      song={song}
-                      {...routerProps}
-                    />
-                  </>
-                );
-              }}/>
+                  return (
+                    <>
+                      <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title}/>
+                      <Viewer
+                        song={song}
+                        {...routerProps}
+                      />
+                    </>
+                  );
+                }}/>
 
-              <WriterRoute path='/edit/:author/:title' render={(match) => {
-                const song = getSong(match.match.params);
+                <WriterRoute path='/edit/:author/:title' render={(match) => {
+                  const song = getSong(match.match.params);
 
-                if (song === undefined) {
-                  return nA404;
-                }
+                  if (song === undefined) {
+                    return nA404;
+                  }
 
-                let editor;
-                // In any case, the editor is rendered. However, a rerender is triggered after the song's
-                // revisions have been loaded.
-                editor = this.props.revisionsLoading ? <Editor song={song}/> : <Editor song={song}/>;
+                  let editor;
+                  // In any case, the editor is rendered. However, a rerender is triggered after the song's
+                  // revisions have been loaded.
+                  editor = this.props.revisionsLoading ? <Editor song={song}/> : <Editor song={song}/>;
 
-                return (
-                  <>
-                    <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title + ' (bearbeiten)'}/>
-                    <HideSongList handle={this.hideSongList}/>
-                    {editor}
-                  </>
-                );
-              }}/>
+                  return (
+                    <>
+                      <TrackingDocumentTitle title={'Hölibu | ' + song.author + ': ' + song.title + ' (bearbeiten)'}/>
+                      {editor}
+                    </>
+                  );
+                }}/>
 
-              <WriterRoute path="/new" render={() => {
-                const song = new Song(empty_song);
+                <WriterRoute path="/new" render={() => {
+                  const song = new Song(empty_song);
 
-                return (
-                  <>
-                    <TrackingDocumentTitle title="Hölibu | Neues Lied"/>
-                    <HideSongList handle={this.hideSongList}/>
-                    <Editor song={song}/>
-                  </>
-                );
-              }}/>
+                  return (
+                    <>
+                      <TrackingDocumentTitle title="Hölibu | Neues Lied"/>
+                      <Editor song={song}/>
+                    </>
+                  );
+                }}/>
 
-              <Route path="/progress" render={() => {
-                const content = this.props.revisionsLoading ? (
-                  <div className="content chordsheet-colors">Lade Lieder-Fortschritt…</div>
-                ) : <Progress songs={this.props.songs}/>;
+                <Route path="/progress" render={() => {
+                  const content = this.props.revisionsLoading ? (
+                    <div className="content chordsheet-colors">Lade Lieder-Fortschritt…</div>
+                  ) : <Progress songs={this.props.songs}/>;
 
-                return (
-                  <>
-                    <TrackingDocumentTitle title="Hölibu | Lieder-Fortschritt"/>
-                    {content}
-                  </>
-                );
-              }}/>
+                  return (
+                    <>
+                      <TrackingDocumentTitle title="Hölibu | Lieder-Fortschritt"/>
+                      {content}
+                      <MenuBurger />
+                    </>
+                  );
+                }}/>
 
-              <AdminRoute path="/users" render={() => {
-                const users = Meteor.users.find().fetch();
-                return (
-                  <>
-                    <TrackingDocumentTitle title="Hölibu | Alle Benutzer"/>
-                    <Users users={users}/>
-                  </>
-                );
-              }}/>
+                <AdminRoute path="/users" render={() => {
+                  const users = Meteor.users.find().fetch();
+                  return (
+                    <>
+                      <TrackingDocumentTitle title="Hölibu | Alle Benutzer"/>
+                      <Users users={users}/>
+                      <MenuBurger />
+                    </>
+                  );
+                }}/>
 
-              <Route path="/user" render={() => {
-                const user = Meteor.user()!;
-                return (
-                  <>
-                    <TrackingDocumentTitle title={'Hölibu | ' + user.profile.name}/>
-                    <User user={user} key={user._id} revisionsLoading={this.props.revisionsLoading}/>
-                  </>
-                );
-              }}/>
+                <Route path="/user" render={() => {
+                  const user = Meteor.user()!;
+                  return (
+                    <>
+                      <TrackingDocumentTitle title={'Hölibu | ' + user.profile.name}/>
+                      <User user={user} key={user._id} revisionsLoading={this.props.revisionsLoading}/>
+                      <MenuBurger />
+                    </>
+                  );
+                }}/>
 
-              <Route>
-                {nA404}
-              </Route>
-            </Switch>
-          </div>
-      </BrowserRouter>
+                <Route>
+                  {nA404}
+                </Route>
+              </Switch>
+            </div>
+          </BrowserRouter>
+        </MenuContext.Provider>
       </ThemeContext.Provider>
     );
   }
