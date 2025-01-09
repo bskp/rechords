@@ -34,7 +34,7 @@ function parseLine(_match: any, content: string) {
 export const title = {
   type: 'lang',
   regex: /([^\n]+)\n([^\n]+\n)?=+\s*\n/,
-  replace: function (match: string, song: string, artist: string): string {
+  replace: function (_match: string, song: string, artist: string): string {
     artist = artist?.trim();
     const h2 = artist ? '<h2>' + artist + '</h2>\n' : '';
     return '<div class="sd-header">\n<h1>' + song + '</h1>\n' + h2 + '</div>\n\n';
@@ -65,7 +65,7 @@ export const verses = {
   type: 'lang',
   regex: verseRegex,
 
-  replace: (match: string, id: string, content: string): string => {
+  replace: (_match: string, id: string, content: string): string => {
 
     let h3 = '';
     if (id) {
@@ -86,7 +86,7 @@ export const verses = {
 export const references = {
   type: 'lang',
   regex: /-> *(.*?)(?:: *(.*))?\n/gm,
-  replace: (match: string, ref: string, annotation: string): string => {
+  replace: (_match: string, ref: string, annotation: string): string => {
 
     annotation = annotation ? annotation : '';
     return `<div class="ref"><strong>${ref}</strong>${annotation}</div>`;
@@ -96,7 +96,7 @@ export const references = {
 export const chordFrets = {
   type: 'lang',
   regex: /\n\[([^\]]*)\]: +([0-9a-dx-]{6})\n( *[0-4-x ]{6}\n)?/gm,
-  replace: (match: string, label: string, frets: string, fingers: string): string => {
+  replace: (_match: string, label: string, frets: string, fingers: string): string => {
 
     const df = fingers ? ` data-fingers="${fingers.trim()}"` : '';
     return `<abbr class="chord" title="${frets}"${df}>${label}</abbr>`;

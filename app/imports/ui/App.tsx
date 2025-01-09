@@ -22,15 +22,13 @@ import {ReactSVG} from "react-svg";
 import {useContext} from "react";
 
 export const ThemeContext = React.createContext<{ toggleTheme: () => void, themeDark: boolean }>({
-  toggleTheme: () => {
-  },
+  toggleTheme: () => {},
   themeDark: true
 })
 
 export const MenuContext = React.createContext<{ showMenu: boolean, setShowMenu: (show: boolean) => void }>({
   showMenu: false,
-  setShowMenu: () => {
-  }
+  setShowMenu: () => {}
 })
 
 const empty_song = {
@@ -175,14 +173,13 @@ class App extends React.Component<AppProps, AppStates> {
     const getSong = (params: { title: string, author: string }) => {
       if (params.author == '-') {
         return Songs.findOne({
-          title_: params.title
+          title_: params.title.toLowerCase()
         });
       }
       return Songs.findOne({
-        author_: params.author,
-        title_: params.title
+        author_: params.author.toLowerCase(),
+        title_: params.title.toLowerCase()
       });
-
     };
 
 
@@ -191,7 +188,6 @@ class App extends React.Component<AppProps, AppStates> {
         toggleTheme: () => this.toggleTheme(),
         themeDark: theme.includes('dark')
       }}>
-
 
         <MenuContext.Provider
           value={{showMenu: !this.state.songListHidden, setShowMenu: (show => this.setState({songListHidden: !show}))}}>
