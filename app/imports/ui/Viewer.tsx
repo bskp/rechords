@@ -1,257 +1,160 @@
-import * as React from 'react';
-import {NavLink, RouteComponentProps} from 'react-router-dom';
-import TransposeSetter from './TransposeSetter';
-import ChrodLib from '../api/libchrod';
-import {Song} from '../api/collections';
-import Drawer from './Drawer';
-import {routePath, userMayWrite, View} from '../api/helpers';
-import { MobileMenuShallow } from './MobileMenu';
-import Sheet from './Sheet';
+import React, {useCallback, useContext, useEffect, useState} from "react";
+import {NavLink, useHistory, useParams} from "react-router-dom";
+import TransposeSetter from "./TransposeSetter";
+import ChrodLib from "../api/libchrod";
+import {Song} from "../api/collections";
+import Drawer from "./Drawer";
+import {routePath, userMayWrite, View} from "../api/helpers";
+import Sheet from "./Sheet";
+import {Button} from "./Button";
+import {ReactSVG} from "react-svg";
+import {Meteor} from "meteor/meteor";
+import {MenuContext} from "/imports/ui/App";
 
-import {Conveyor, ConveyorActive, Day, Flat, LayoutH, LayoutV, Night, Sharp} from './Icons.jsx';
-import {Button} from './Button';
-
-
-export interface SongRouteParams {
-  author: string
-  title: string
-}
-interface ViewerProps extends RouteComponentProps<Partial<SongRouteParams>> {
-  song: Song,
-  toggleTheme: React.MouseEventHandler<HTMLDivElement>,
-  themeDark: boolean
+interface SongRouteParams {
+  author?: string;
+  title?: string;
 }
 
-interface ViewerStates {
-  relTranspose: number,
-  inlineReferences: boolean,
-  showChords: boolean,
-  columns: boolean,
-  autoscroll: any
+interface ViewerProps {
+  song: Song;
 }
 
-export default class Viewer extends React.Component<ViewerProps, ViewerStates> {
-  constructor(props) {
-    super(props);
+const Viewer: React.FC<ViewerProps> = ({song}) => {
+  const [relTranspose, setRelTranspose] = useState<number>(getInitialTranspose());
+  const [inlineReferences, setInlineReferences] = useState<boolean>(false);
+  const [showChords, setShowChords] = useState<boolean>(true);
+  const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
 
-    this.state = {
-      relTranspose: this.getInitialTranspose(),
-      inlineReferences: false,
-      showChords: true,
-      columns: false,
-      autoscroll: undefined
-    };
+  const history = useHistory();
+  const {author, title} = useParams<SongRouteParams>();
 
-  }
+  let duration_s: number | undefined;
 
-  refChordsheet = React.createRef<HTMLDivElement>();
-  duration_s = undefined;
-
-  updateDuration() {
-    const duration : string = this.props.song.getTag('dauer');
+  const updateDuration = useCallback(() => {
+    const duration = song.getTag("dauer");
     if (duration) {
-      const chunks = duration.split(':');
-      this.duration_s = 60*Number(chunks[0]) + Number(chunks[1]);
+      const chunks = duration.split(":");
+      duration_s = 60 * Number(chunks[0]) + Number(chunks[1]);
     } else {
-      this.duration_s = undefined;
+      duration_s = undefined;
     }
+  }, [song]);
+
+  useEffect(() => {
+    updateDuration();
+    document.scrollingElement?.scrollTo(0, 0);
+    setRelTranspose(getInitialTranspose())
+    stopAutoScroll();
+    return () => stopAutoScroll();
+  }, [song]);
+
+  function getInitialTranspose(): number {
+    const transposeTag = song.getTags().find(tag => tag.startsWith('transponierung:'));
+    if (!transposeTag) return 0;
+    let dt = parseInt(transposeTag.split(':')[1], 10);
+    return isNaN(dt) ? 0 : dt;
   }
 
-  componentDidMount() {
-    this.updateDuration();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.song._id == prevProps.song._id) return;
-
-    // Song has changed.
-    this.refChordsheet.current?.scrollTo(0, 0);
-    this.setState({
-      relTranspose: this.getInitialTranspose(),
-    });
-    this.setAutoScroll(false);
-    this.updateDuration();
-  }
-
-  componentWillUnmount() {
-    this.setAutoScroll(false);
-  }
-
-  getInitialTranspose() {
-    for (const tag of this.props.song.getTags()) {
-      if (!tag.startsWith('transponierung:')) continue;
-      const dT = parseInt(tag.split(':')[1], 10);
-      return isNaN(dT) ? 0 : dT;
-    }
-    return 0;
-  }
-
-  handleContextMenu: React.MouseEventHandler<HTMLElement> = event => {
+  const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
     if (userMayWrite()) {
-      const m = this.props.match.params;
-      this.props.history.push('/edit/' + m.author + '/' + m.title);
+      history.push(`/edit/${author}/${title}`);
     }
     event.preventDefault();
   };
 
-  transposeSetter = pitch => {
-    this.setState({ relTranspose: pitch });
+  const toggleAutoScroll = () => {
+    autoScroll ? stopAutoScroll() : startAutoScroll();
   };
 
-  increaseTranspose = () => {
-    this.setState(function (state, props) {
-      return { relTranspose: state.relTranspose + 1 };
-    });
-  };
+  const startAutoScroll = () => {
+    const scrollContainer = document.scrollingElement!;
 
-  decreaseTranspose = () => {
-    this.setState(function (state, props) {
-      return { relTranspose: state.relTranspose - 1 };
-    });
-  };
+    let delay_ms = 133;
+    let step_pixels = 1;
 
-  toggleAutoScroll = () => {
-    this.setAutoScroll( this.state.autoscroll == undefined );
-  };
-
-  setAutoScroll = (target_state) => {
-    // Determine the correct content-scrolling container
-    const chordsheet = this.refChordsheet.current;
-    let scrollContainer;
-    if (chordsheet.scrollHeight > chordsheet.clientHeight) {
-      // div#chordsheet is overflowing (on Desktop/Tablet)
-      scrollContainer = chordsheet;
-    } else {
-      // body is overflowing (on Phone)
-      scrollContainer = window.document.scrollingElement;
+    if (duration_s) {
+      const scrollDistance = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+      delay_ms = (duration_s * 1000) / scrollDistance;
     }
 
-    this.setState( state => {
-      // Start autoscroll
-      if (state.autoscroll == undefined && target_state == true) {
-        // default values
-        let delay_ms = 133;
-        let step_pixels = 1;
-
-        // use custom values, if a "dauer"-tag is present for the song.
-        // duration_s is set in #updateDuration
-        if (this.duration_s) {
-          const scroll_distance = scrollContainer.scrollHeight - scrollContainer.clientHeight;
-          delay_ms = this.duration_s*1000/scroll_distance;
-        }
-
-        if (delay_ms < 50) {
-          // Most browser/devices cannot keep up with scroll events over 20fps.
-          // For faster scrolling, we therefore take bigger steps.
-          step_pixels = Math.ceil(50/delay_ms);
-          delay_ms = delay_ms*step_pixels;
-        }
-
-        const callback = () => {
-          scrollContainer?.scrollBy(0, step_pixels);
-        };
-
-        return { autoscroll: Meteor.setInterval(callback, delay_ms) };
-      }
-
-      // Stop autoscroll
-      if (state.autoscroll != undefined && target_state == false) {
-        Meteor.clearInterval(state.autoscroll);
-        return { autoscroll: undefined };
-      }
-    });
-
-  };
-
-  toggleChords = () => {
-    this.setState( state => ({ showChords: !state.showChords }));
-  };
-
-  toggleColumns = () => {
-    this.setState( state => ({ columns: !state.columns }));
-  };
-
-  toggleInlineReferences = () => {
-    this.setState(state => ({ inlineReferences: !state.inlineReferences }));
-  };
-
-  render() {
-
-    // Establish this songs' key
-
-    const key_tag = this.props.song.getTag('tonart');
-    let key = key_tag && ChrodLib.parseTag(key_tag);
-
-    if (!key) {
-      key = ChrodLib.guessKey(this.props.song.getChords());
+    if (delay_ms < 50) {
+      step_pixels = Math.ceil(50 / delay_ms);
+      delay_ms = delay_ms * step_pixels;
     }
 
-    const settings = <aside id="rightSettings">
-      <TransposeSetter
-        onDoubleClick={this.toggleChords}
-        transposeSetter={this.transposeSetter}
-        transpose={this.state.relTranspose}
-        keym={key}
-      />
-      <Button onClick={this.toggleAutoScroll}>
-        {this.state.autoscroll ? <ConveyorActive /> : <Conveyor />}
-      </Button>
-      <Button onClick={this.props.toggleTheme}>
-        {this.props.themeDark ? <Day /> : <Night />}
-      </Button>
-      <Button onClick={this.toggleColumns}>
-        {this.state.columns ? <LayoutH /> : <LayoutV />}
-      </Button>
-    </aside>;
+    const intervalId = Meteor.setInterval(() => {
+      scrollContainer.scrollBy(0, step_pixels);
+    }, delay_ms);
 
+    setAutoScroll(intervalId);
+  };
 
-    const drawer = userMayWrite() ? (
-      <Drawer className="source-colors" onClick={this.handleContextMenu}>
-        <h1>bearbeiten</h1>
-        <p>Schneller:&nbsp;Rechtsklick!</p>
-      </Drawer>
-    ) : undefined;
+  const stopAutoScroll = () => {
+    if (autoScroll) {
+      Meteor.clearInterval(autoScroll);
+      setAutoScroll(undefined);
+    }
+  };
 
-    const footer = userMayWrite() ? (
-      <div className="mobile-footer"><NavLink to={routePath(View.edit, this.props.song)} id="edit">Bearbeiten…</NavLink></div>
-    ) : undefined;
-
-    return (
-
-      <>
-        <MobileMenuShallow>
-          <span onClick={ _ => this.increaseTranspose()} id="plus"><Sharp /></span>
-          <span onClick={ _ => this.decreaseTranspose()} id="minus"><Flat /></span>
-          <span onClick={this.toggleAutoScroll} id={'scroll-toggler'} className={this.state.autoscroll ? 'active' : ''}>
-            <Conveyor />
-          </span>
-
-          <span onClick={ _ => this.props.toggleTheme(undefined)} id="theme-toggler">
-            {this.props.themeDark ? <Day /> : <Night />}
-          </span>
-        </MobileMenuShallow>
-
-        <div
-          className={'content' + (this.showMultiColumns() ? ' multicolumns':'')}
-          id="chordsheet" ref={this.refChordsheet}
-          onContextMenu={this.handleContextMenu}
-        >
-          <Sheet
-
-            multicolumns={this.showMultiColumns()}
-            song={this.props.song}
-            transpose={this.state.relTranspose}
-            hideChords={!this.state.showChords} />
-          {footer}
-        </div>
-        {settings}
-        {drawer}
-      </>
-    );
+  const keyTag = song.getTag("tonart");
+  let key = keyTag && ChrodLib.parseTag(keyTag);
+  if (!key) {
+    key = ChrodLib.guessKey(song.getChords());
   }
 
-  private showMultiColumns() {
-    return this.state.columns;
-  }
-}
+  const drawer = userMayWrite() ? (
+    <Drawer className="source-colors" onClick={handleContextMenu}>
+      <h1>bearbeiten</h1>
+      <p>Schneller:&nbsp;Rechtsklick!</p>
+    </Drawer>
+  ) : null;
 
+  const footer = userMayWrite() ? (
+    <div className="mobile-footer">
+      <NavLink to={routePath(View.edit, song)} id="edit">
+        Bearbeiten…
+      </NavLink>
+    </div>
+  ) : null;
+
+  const {setShowMenu} = useContext(MenuContext);
+
+  return (
+    <>
+      <div
+        className="content"
+        id="chordsheet"
+        onContextMenu={handleContextMenu}
+      >
+        <Sheet
+          song={song}
+          transpose={relTranspose}
+          hideChords={!showChords}
+        />
+        {footer}
+      </div>
+      <aside id="rightSettings">
+        <Button onClick={() => setShowMenu(true)} phoneOnly>
+          <ReactSVG src="/svg/menu.svg"/>
+        </Button>
+        <TransposeSetter
+          onDoubleClick={() => setShowChords((prev) => !prev)}
+          transposeSetter={setRelTranspose}
+          transpose={relTranspose}
+          keym={key}
+        />
+        <Button onClick={toggleAutoScroll}>
+          {autoScroll ? (
+            <ReactSVG src="/svg/conveyor_active.svg"/>
+          ) : (
+            <ReactSVG src="/svg/conveyor.svg"/>
+          )}
+        </Button>
+      </aside>
+      {drawer}
+    </>
+  );
+};
+
+export default Viewer;

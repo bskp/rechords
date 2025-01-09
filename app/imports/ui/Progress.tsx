@@ -7,6 +7,7 @@ import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import 'moment/locale/de';
 import {routePath, View} from '../api/helpers';
+import { Meteor } from 'meteor/meteor';
 
 function Progress(props: {songs: Song[]}) {
 
@@ -98,7 +99,7 @@ function Progress(props: {songs: Song[]}) {
   // the Table component has to be memoized.
   songs.forEach(song => song.getRevisions());
 
-  const data = React.useMemo(() => songs, []);
+  const data = React.useMemo(() => songs, [songs]);
 
   return (
     <>

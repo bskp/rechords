@@ -10,67 +10,6 @@
     margin-bottom: 10em;
   }
 
-  &.multicolumns {
-    height: 100%;
-    .scroll-horizontal;
-
-    .sd-header {
-      margin-bottom: .3em;
-    }
-
-    // comments are not (yet?) wrapped in a div...
-    > p {
-      margin-bottom: 1.5em;
-    }
-
-    section {
-      clear: both;
-    }
-
-    section > div {
-      margin-bottom: .5em;
-
-      &:last-child { // section is "display:contents" therefore we must add margin here...
-        margin-bottom: 2.5em;
-      }
-    }
-
-    .ref, .ref.open, h3 {
-      margin: 0; // No Margin (otherwise also first items of a column have gap)
-      margin-bottom: 1em;
-      width: auto; 
-      height: auto; 
-      line-height: 1em; 
-      text-align: left;
-    }
-
-    p {
-      margin: 0
-    }
-
-    #chordsheetContent {
-      height: 100%;
-      width: unset;
-      >* {
-        width: 30vw;
-      }
-      >.sd-header,>.tags {
-        width: 60vw;
-        position: absolute;
-      }
-      display: flex;
-      flex-flow: column wrap ;
-    }
-
-    * {
-      overflow: visible;
-    }
-
-    .abc-notation {
-      display: none;
-    }
-  }
-
   h2 {
     color: var(--gray);
   }

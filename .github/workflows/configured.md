@@ -18,3 +18,8 @@ Prod Env Config
 ---------------
 - `DOMAIN` hoelibu.ch
 - `PROXY_PORT` 3000
+
+Dev Env Config
+---------------
+- `DOMAIN` testing.hoelibu.ch
+- `PROXY_PORT` 3001

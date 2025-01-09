@@ -63,7 +63,7 @@ const B = new Key('B', 11),
   Des = new Key('Db', 1),
   Cis = new Key('C#', 1),
   C = new Key('C', 0);
-const keys: Array<Key> = [
+const keys: Key[] = [
   C,
   Cis,
   Des,
@@ -99,15 +99,10 @@ keys
 
 // TODO: move to another file
 class Scale {
-  /**
-     * 
-     * @param {string} name 
-     * @param {Array<number>} pitches 
-     */
   public bmap: Map<number, ToBorSharp>;
   constructor(
     public name: string,
-    public pitches: Array<number>,
+    public pitches: number[],
     bmap: Map<Key, ToBorSharp>
   ) {
     this.bmap = new Map();
@@ -175,7 +170,7 @@ const Scales:{major: Scale, harmonic: Scale} = {
 
 class Chord {
   idx: number;
-  constructor(public key: Key, public keys: Array<number>, public str: string,
+  constructor(public key: Key, public keys: number[], public str: string,
      public suff: string = '', public optional: boolean = false) {
     this.idx = key.idx;
   }
@@ -214,7 +209,7 @@ class Chord {
      */
   static parseChordString(chordString) : Chord {
 
-    const checkOptional:Array<string> = chordString.match(/(^\(?)([^)]*)(\)?)/);
+    const checkOptional: string[] = chordString.match(/(^\(?)([^)]*)(\)?)/);
     const content = checkOptional[2];
     let optional = false;
     if (checkOptional[1] && checkOptional[3]) {
@@ -257,11 +252,11 @@ export default class ChrodLib {
   //
 
   /**
-     * 
-     * @param {Array<String>} chordsList 
+     *
+     * @param {Array<String>} chordsList
      * @returns { {scale: string, key: string}}
      */
-  static guessKey(chordsList) {
+  static guessKey(chordsList: string[]) {
     // just test every key (i mean its only 11)
     // and for every one make a penalty for every
     // "Tonart Fremde Chord"
@@ -271,7 +266,6 @@ export default class ChrodLib {
     // However, it should work already like that
     // Pitches are relative to c=0
 
-    // Haha, this comment is completely not understandable by me myself after 2 days...
     const keyss = ChrodLib.covarianceWithScales(chordsList);
     return ChrodLib.selectBest(keyss);
   }
@@ -323,7 +317,7 @@ export default class ChrodLib {
    * @param {Array<String>} chordsList 
    * @returns {*} penalties
    */
-  static covarianceWithScales(chordsList) {
+  static covarianceWithScales(chordsList: string[]) {
     let chords: Chord[] = chordsList.map(chstr =>
       Chord.parseChordString(chstr)
     );
@@ -332,7 +326,6 @@ export default class ChrodLib {
     //console.debug(pitches);
 
     const penalties_byScale = {};
-    const pitch_match_byScale = {};
     for (const scalename of Object.getOwnPropertyNames(Scales)) {
       const scale = Scales[scalename];
 

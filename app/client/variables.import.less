@@ -109,6 +109,7 @@ html.light {
 .prettyScrollbars(@bg) {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
+  scrollbar-color: var(--gray) (@bg);
 
   &::-webkit-scrollbar {
     width: 12px;
@@ -124,7 +125,6 @@ html.light {
     border: 3px solid @bg;
   }
 }
-
 
 // Color Schemes
 
@@ -182,25 +182,6 @@ html.light {
             user-select: @mode; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
-.prettyScrollbars {
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-
-  &::-webkit-scrollbar {
-    width: 12px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: var(--bg-sheet);
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--text-sidebar);
-    border-radius: 20px;
-    border: 3px solid var(--bg-sheet);
-  }
-}
-
 .scroll-vertical {
   overflow-y: auto;
   overflow-x: hidden;
@@ -213,15 +194,9 @@ html.light {
   .prettyScrollbars(var(--bg-sheet));
 }
 
-
 .noFocusBorder {
   &:focus {
     outline: none;
   }
 
-  &::selection,
-  &::-moz-selection {
-    //color: hsv(hsvhue(@accent), 0.4, 0.8);
-    //background-color: hsva(hsvhue(@accent), 0.3, 0.3, 1);
-  }
 }

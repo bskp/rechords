@@ -25,6 +25,7 @@ export const routePath = (view: View, song: Song) => {
 export const navigateTo = (history: History, view: View, song?: Song) => {
   if (song === undefined) {
     history.push(view);
+    return;
   }
 
   history.push(routePath(view, song));
@@ -41,6 +42,7 @@ import { Ref, RefObject, useEffect, useRef, useState } from 'react';
  * @returns false, if id is undefined or not starting with ref-prefix
  */
 import { refPrefix } from './showdown-rechords';
+import { Meteor } from 'meteor/meteor';
 export const isRefId = (id: string): boolean => id && id.startsWith(refPrefix);
 
 
@@ -117,7 +119,8 @@ export const useScrollHideEffectRef = (ref: RefObject<HTMLElement>,maxheight: nu
           const dY = -(max(0,y1)-max(0,y0)), dT = t1-t0;
 
           const newHeight = min(maxheight, max(height+ dY, 0) ); 
-          console.log(y0,y1,newHeight, dY, height);
+          //console.log(y0,y1,newHeight, dY, height);
+
           if(height !== newHeight ) {
             height = newHeight;
 

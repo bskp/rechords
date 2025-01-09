@@ -1,7 +1,7 @@
-import React, { ClipboardEventHandler, Component } from 'react';
+import React, {Component, PropsWithChildren} from 'react';
 
 
-type SourceProps = {
+type SourceProps = PropsWithChildren & {
   md: string,
   updateHandler?: (md: string) => void;
   readOnly?: boolean,
@@ -12,13 +12,13 @@ type SourceProps = {
 export default class Source extends Component<SourceProps, never> {
   private readonly source: React.RefObject<HTMLTextAreaElement>;
 
-  constructor(props) {
+  constructor(props: SourceProps) {
     super(props);
     this.source = React.createRef();
   }
 
   callUpdateHandler = () => {
-    if ('updateHandler' in this.props) {
+    if (this.props.updateHandler && this.source.current) {
       this.props.updateHandler(this.source.current.value);
     }
   };

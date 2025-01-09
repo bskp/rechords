@@ -1,44 +1,16 @@
-import { Mongo } from 'meteor/mongo';
-import { _ } from 'meteor/underscore';
+import {Mongo} from 'meteor/mongo';
 
 import * as showdown from 'showdown';
+import {Document, DOMParser} from '@xmldom/xmldom';
+import slug from 'slug';
+import {FilterXSS} from 'xss';
+import {showdownRechords} from './showdown-rechords';
+import {Meteor} from 'meteor/meteor';
+import {options} from './xss-filter-options';
 
 const DATACHORD = 'data-chord';
-import { DOMParser } from 'xmldom';
-import Parser from 'html-react-parser';
-import slug from 'slug';
-import { FilterXSS } from 'xss';
-import {showdownRechords} from './showdown-rechords';
 
-const options: XSS.IFilterXSSOptions = {
-  whiteList: {
-    a: ['href', 'title'],
-    span: ['class'],
-    div: ['class', 'id'],
-    i: ['class', 'data-chord'],
-    b: [],
-    h1: [],
-    h2: [],
-    h3: [],
-    h4: [],
-    section: ['class', 'id'],
-    ul: ['class'],
-    u: [],
-    ol: [],
-    li: [],
-    p: ['class', 'id'],
-    br: [],
-    strong: [],
-    em: [],
-    code: ['class'],
-    s: [],
-    pre: [],
-    img: ['src', 'alt'],
-    abbr: ['class', 'title', 'data-fingers']
-  }
-};
-
-const converter = new showdown.Converter({ 
+const converter = new showdown.Converter({
   extensions: [showdownRechords],
   striketrough: true,
   ghCodeBlocks: true,
@@ -56,62 +28,63 @@ function isDefined<T>(a: T | null | undefined): a is T {
 }
 
 export const rmd_version = 7;
+
 export class Song {
   _id?: string;
 
-  text: string;
+  text!: string;
 
-  title: string;
-  author: string;
+  title!: string;
+  author!: string;
 
-  tags?: Array<string>;
-  chords?: Array<string>;
+  tags: string[] = [];
+  chords: string[] = [];
   html?: string;
   parsed_rmd_version?: number;
 
-  title_: string;
-  author_:string;
+  title_!: string;
+  author_!: string;
 
   last_editor?: string;
 
-  revision_cache?: Array<Revision>;
+  revision_cache?: Revision[];
 
 
-  constructor (doc) {
-    _.extend(this, doc);
+  constructor(doc: {
+    text: string,
+  }) {
+    Object.assign(this, doc);
   }
 
   getHtml() {
     this.validateField('html');
-    return this.html;
+    return this.html!;
   }
 
   getChords() {
     this.validateField('chords');
-    return this.chords;
+    return this.chords!;
   }
 
   getTags() {
     this.validateField('tags');
-    return this.tags;
+    return this.tags!;
   }
 
-  validateField(field : string) {
+  validateField(field: string) {
     if (field in this && this?.parsed_rmd_version == rmd_version) return;
 
     // A field is missing or bad parser version. Re-parse and store!
     this.parse(this.text);
 
-    Meteor.call('saveSong', this, (error, isValid) => {
+    Meteor.call('saveSong', this, (error: any) => {
       if (error !== undefined) {
         console.log(error);
       }
     });
-
-
   }
 
-  checkTag(needle : string) {
+  checkTag(needle: string) {
     for (const tag of this.getTags()) {
       if (!(tag.toLowerCase().startsWith(needle.toLowerCase()))) continue;
 
@@ -126,7 +99,7 @@ export class Song {
     return null; // Tag not present
   }
 
-  getTag(tag_name : string) {
+  getTag(tag_name: string) {
     for (const tag of this.getTags()) {
       if (!(tag.toLowerCase().startsWith(tag_name.toLowerCase()))) continue;
 
@@ -140,15 +113,11 @@ export class Song {
 
   }
 
-  getVirtualDom() {
-    return Parser(this.html);
-  }
-
   isEmpty() {
     return this.text.match(/^\s*$/) != null;
   }
 
-  parse(md) {
+  parse(md: string) {
     this.text = md;
 
     // Create HTML
@@ -172,11 +141,11 @@ export class Song {
 
     if (this.isEmpty()) return;  // delete song upon next save.
 
-    const dom = new DOMParser().parseFromString(this.html, 'text/html');
+    const dom = new DOMParser().parseFromString(`<div id="wrapper">${this.html}</div>`, 'text/html');
 
     const h1 = dom.getElementsByTagName('h1');
     if (h1.length > 0) {
-      this.title = h1[0].textContent;
+      this.title = h1[0].textContent!;
     } else {
       this.title = '(Ohne Titel)';
     }
@@ -184,7 +153,7 @@ export class Song {
 
     const h2 = dom.getElementsByTagName('h2');
     if (h2.length > 0) {
-      this.author = h2[0].textContent;
+      this.author = h2[0].textContent!;
     } else {
       this.author = '-';
     }
@@ -199,8 +168,9 @@ export class Song {
   getRevisions() {
     if (!isDefined(this.revision_cache)) {
       this.revision_cache = Revisions.find(
-        { of: this._id }, 
-        { sort: {timestamp: -1} 
+        {of: this._id},
+        {
+          sort: {timestamp: -1}
         }).fetch();
     }
     return this.revision_cache;
@@ -211,7 +181,7 @@ export class Song {
   }
 }
 
-export class Revision {
+export interface Revision {
   text: string;
   of: string;
   _id: string;
@@ -225,44 +195,33 @@ export class Revision {
 const Revisions = new Mongo.Collection<Revision>('revisions');
 
 const Songs = new Mongo.Collection<Song>('songs', {
-  transform (doc) {
+  transform(doc) {
     return new Song(doc);
   }
 });
 
 
 export class RmdHelpers {
-  static collectTags(dom) {
-    const tags = [];
-    const uls = dom.getElementsByTagName('ul');
-    for (const ul of uls) {
-      if (ul.getAttribute('class') != 'tags') continue;
-
-      const lis : Array<HTMLElement> = ul.getElementsByTagName('li');
-      for (const li of lis) {
-        const contents = Array.from(li.childNodes).map(child => child.textContent);
-        tags.push( contents.join(':') );
-      }
-    }
-    return tags;
+  static collectTags(dom: Document) {
+    return Array.from(dom.getElementsByTagName('ul'))
+      .filter(ul => ul.getAttribute('class') == 'tags')
+      .flatMap(ul => Array.from(ul.getElementsByTagName('li')))
+      .map(li => Array.from(li.childNodes).map(child => child.textContent).join(':')
+      )
   }
-  static collectChords(dom) {
+
+  static collectChords(dom: Document) {
     return this.collectChordsDom(dom);
   }
-  static collectChordsDom(dom) {
-    const chords = [];
 
-    const uls = dom.getElementsByTagName('i');
-    for (const chord_dom of uls) {
-      if (chord_dom.hasAttribute(DATACHORD)) {
-        const chord = chord_dom.getAttribute(DATACHORD);
-        chords.push(chord);
-      }
-    }
-    return chords;
+  static collectChordsDom(dom: Document) {
+    return Array.from(dom.getElementsByTagName('i'))
+      .filter(chord_dom => chord_dom.hasAttribute(DATACHORD))
+      .map(chord_dom => chord_dom.getAttribute(DATACHORD))
+      .filter((c: string | null): c is string => c !== null)
   }
 }
 
-export { Revisions };
+export {Revisions};
 
 export default Songs;

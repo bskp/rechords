@@ -51,7 +51,7 @@ textarea {
 html {
   height: 100%;
   width: 100%;
-  background-color: var(--bg-list);
+  background-color: var(--bg-sheet);
 }
 
 .noscroll {
@@ -112,13 +112,11 @@ body {
   }
 
   .phone({
-    font-size: 0.9em;
     padding: 2em 1em !important;
   });
 
   .sd-header {
     margin-left: -0.1em;
-
   }
 
   h1:first-child, h1:first-child + h2,
@@ -197,86 +195,9 @@ body {
 }
 
 
-aside.drawer {
-  flex-grow: 0;
-  flex-shrink: 0;
-  box-sizing: border-box;
-  width: @drawer-open;
-
-  .scroll-vertical;
-  overflow-x: hidden;
-
-  padding-top: 1em;
-  padding-right: 0;
-  padding-bottom: 2em;
-  padding-left: 0.5em;
-
-  &.hidden {
-    display: none;
-  }
-
-  &.closed {
-    width: @drawer-closed;
-    padding-left: @drawer-closed;
-    cursor: pointer;
-    transition: all 0.3s;
-    z-index: 100;
-    box-sizing: border-box;
-
-    // Mitigates the rendering bug of the contained .label
-    position: relative;
-
-    &:hover {
-      width: @drawer-open;
-      padding-left: 0.8em;
-    }
-  }
-
-  .phone({
-    width: 100%;
-    min-height: 100%;
-
-    &.closed {
-      display: none;
-    }
-
-    &.hidden {
-      display: inherit;
-    }
-  });
-
-  // Content-width blocker:
-  & > div {
-    width: @drawer-open - @drawer-closed; //ie. width - padding
-  }
-
-  // Drawer Contents:
-  h1, h2, h3 {
-    font-size: 2em;
-    font-weight: 600;
-    font-variation-settings: "wdth" 85;
-  }
-
-  p {
-    font-variation-settings: "wdth" 90;
-  }
-
-  h1:first-child {
-    margin-top: 0;
-  }
-
-  h2 {
-    font-size: 1em;
-    margin-bottom: 0;
-    color: var(--accent);
-  }
-}
-
-
 // Special content
 
 .tags {
-
   &:last-of-type {
     margin-bottom: 3rem;
   }

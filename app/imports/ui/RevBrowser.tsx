@@ -4,10 +4,15 @@ import Source from './Source';
 import Drawer from '../ui/Drawer';
 import moment from 'moment';
 import 'moment/locale/de';
+import { Meteor } from 'meteor/meteor';
 
-export default class RevBrowser extends React.Component<{ song: Song }, { revision: Revision }> {
+type RevBrowserProps = {
+  song: Song;
+}
 
-  constructor(props) {
+export default class RevBrowser extends React.Component<RevBrowserProps, { revision: Revision | undefined }> {
+
+  constructor(props: RevBrowserProps) {
     super(props);
     this.state = {
       revision: undefined,
@@ -33,7 +38,7 @@ export default class RevBrowser extends React.Component<{ song: Song }, { revisi
     if (e.target?.tagName == 'INPUT') return;
 
     const rev = this.state?.revision;
-    const revs: Array<Revision> = this.props.song.getRevisions();
+    const revs: Revision[] = this.props.song.getRevisions();
 
     const n = revs.length;
 
@@ -80,7 +85,7 @@ export default class RevBrowser extends React.Component<{ song: Song }, { revisi
         <Source md={this.state.revision?.text || ''} readOnly={true} className="revision-colors">
           {label}
         </Source>
-        <Drawer id="revs" className="revisions-colors">
+        <Drawer id="revs" className="revisions-colors" open={this.state.revision === undefined}>
           <h1>Versionen</h1>
           <ol>
             {revs.map((rev, idx) =>
@@ -101,15 +106,17 @@ export default class RevBrowser extends React.Component<{ song: Song }, { revisi
   }
 }
 
-class RevLink extends Component<{
-    rev: Revision,
-    idx: number,
-    key: string,
-    showRevision: (rev: Revision) => void,
-    active: boolean
-},
+type RevLinkProps = {
+  rev: Revision,
+  idx: number,
+  key: string,
+  showRevision: (rev: Revision) => void,
+  active: boolean
+};
+
+class RevLink extends Component<RevLinkProps,
     never> {
-  constructor(props) {
+  constructor(props: RevLinkProps) {
     super(props);
   }
 

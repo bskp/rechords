@@ -1,35 +1,39 @@
 import * as React from 'react';
-import { Component } from 'react';
+import { Component, MouseEventHandler } from 'react';
 import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
 
 import Source from './Source';
 import RevBrowser from './RevBrowser';
 import Preview from './Preview';
 import Drawer from './Drawer';
-import { Ok, Cancel } from './Icons.jsx';
 import { Song } from '../api/collections';
 import { Meteor } from 'meteor/meteor';
 import { navigateTo, View } from '../api/helpers';
-import { MobileMenuShallow } from './MobileMenu';
 import { convertToHoelibuSyntax } from '../api/ascii-importer';
 
+type EditorProps = { song: Song } & RouteComponentProps
+type EditorState = {
+  md: string,
+  revisionsTab: boolean,
+  dirty: boolean
+}
 
-class Editor extends Component<{ song: Song } & RouteComponentProps, { md: string, versionTab: boolean, dirty: boolean }> {
+class Editor extends Component<EditorProps, EditorState> {
   mdServer: string;
 
-  constructor(props) {
+  constructor(props: EditorProps) {
     super(props);
     this.state = {
       md: props.song.text,
-      versionTab: false,
+      revisionsTab: false,
       dirty: false
     };
 
     this.mdServer = props.song.text;
   }
 
-  handleContextMenu = (event) => {
-    if (this.state.versionTab) {
+  handleContextMenu: MouseEventHandler = (event) => {
+    if (this.state.revisionsTab) {
       this.toggleRevTab();
       event.preventDefault();
       return;
@@ -37,20 +41,22 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, { md: strin
 
     this.props.song.parse(this.state.md);
 
-    Meteor.call('saveSong', this.props.song, (error, isValid) => {
+    Meteor.call('saveSong', this.props.song, (error: any, isValid: boolean) => {
       if (error !== undefined) {
-        console.log(error);
+        console.error(error);
       } else {
         this.setState({
           dirty: false,
-        });
+        }, () => {
+          if (isValid) {
+            navigateTo(this.props.history, View.view, this.props.song);
+          } else {
+            navigateTo(this.props.history, View.home);
+          }
+        }
+        );
       }
 
-      if (isValid) {
-        navigateTo(this.props.history, View.view, this.props.song);
-      } else {
-        navigateTo(this.props.history, View.home);
-      }
     });
 
     event.preventDefault();
@@ -60,7 +66,7 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, { md: strin
     return convertToHoelibuSyntax(text);
   };
 
-  update = (md_) => {
+  update = (md_: string) => {
     this.setState({
       md: md_,
       dirty: md_ != this.mdServer
@@ -68,9 +74,9 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, { md: strin
   };
 
   toggleRevTab = () => {
-    this.setState((prevState, props) => {
+    this.setState((prevState) => {
       return {
-        versionTab: !prevState.versionTab
+        revisionsTab: !prevState.revisionsTab
       };
     });
   };
@@ -84,7 +90,7 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, { md: strin
       message={'Du hast noch ungespeicherte Änderungen. Verwerfen?'}
     />;
 
-    if (this.state.versionTab == false) {
+    if (!this.state.revisionsTab) {
 
       const versions = revs ? (
         <Drawer id="revs" className="revision-colors" onClick={this.toggleRevTab}>
@@ -98,18 +104,13 @@ class Editor extends Component<{ song: Song } & RouteComponentProps, { md: strin
       // Bearbeiten mit Echtzeit-Vorschau
       return (
         <div id="editor" onContextMenu={this.handleContextMenu}>
-          <MobileMenuShallow>
-            <span onClick={this.handleContextMenu} id="plus"><Ok /></span>
-            <span onClick={this.props.history.goBack} id="minus"><Cancel /></span>
-          </MobileMenuShallow>
-
           <Drawer onClick={this.handleContextMenu} className="list-colors">
-            <h1>sichern<br />&amp; zurück</h1>
+            <h1>sichern<br/>&amp; zurück</h1>
             <p>Schneller: Rechtsklick!</p>
           </Drawer>
 
           {dirtyLabel}
-          <Preview md={this.state.md} song={this.props.song} updateHandler={this.update} />
+          <Preview md={this.state.md} song={this.props.song} updateHandler={this.update}/>
           <Source
             md={this.state.md}
             updateHandler={this.update}

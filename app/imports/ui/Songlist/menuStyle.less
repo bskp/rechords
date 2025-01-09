@@ -1,0 +1,74 @@
+@import (reference) "../../../client/responsive.import.less";
+@import (reference) "../../../client/variables.import.less";
+
+menu {
+  display: flex;
+  padding: 0 0.4em;
+  gap: 0.5em;
+  margin: 0.4em 0;
+
+  .phone({
+    font-size: 1.2em;
+  });
+
+  li, svg.interactive {
+    cursor: pointer;
+    color: var(--gray);
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  li {
+    display: block;
+    padding: 0;
+
+    &.search {
+      flex-grow: 1;
+      cursor: text;
+      .select(none);
+    }
+
+    transition: margin-right 0.2s;
+  }
+
+  &.searching li {
+    margin-right: -1.9em;
+  }
+
+
+  li svg, li span {
+    vertical-align: middle;
+  }
+
+  svg {
+    width: 1.4em;
+    height: 1.4em;
+  }
+
+  input {
+    font-family: "Shantell Sans";
+
+    color: var(--accent);
+    background-color: var(--bg-list);
+
+    font-weight: 600;
+    width: 50%;
+    flex-grow: 1;
+
+    .noFocusBorder;
+    transition: color 0.5s, background-color 0.5s;
+
+    background-color: var(--bg-list);
+
+    &::placeholder {
+      color: var(--gray);
+      font-family: "Bricolage Grotesque";
+    }
+  }
+
+  input + svg {
+    cursor: pointer;
+  }
+}

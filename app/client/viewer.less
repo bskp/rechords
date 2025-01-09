@@ -69,14 +69,21 @@ a.iconbutton {
     width: 4em;
     .applySchemeColors;
   }
+
+  &.phoneOnly{
+    .not-phone({
+      display: none;
+    })
+  }
 }
 
 #rightSettings {
-  .phone({display: none;});
-
   height: 100%;
   position: fixed;
   right: @drawer-closed;
+  .phone({
+    right: 0;
+  });
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -90,47 +97,7 @@ a.iconbutton {
     }
   }
 
-  #layout-toggler {
-    padding-right: 0.5em;
-    cursor: pointer;
-    flex-grow: 0;
-  }
-
-  #theme-toggler {
-    padding-right: 0.5em;
-    margin-bottom: 1em;
-    cursor: pointer;
-    flex-grow: 0;
-
-    svg {
-      width: 4em;
-    }
-  }
-
   &:last-child {  // If no "edit"-Aside is shown…
     right: 0;  // …pull it flush to the right edge.
-  }
-}
-
-.rightSettingsButton
-{
-  text-align: center;
-  padding: 1em 0.3em;
-  margin: 2px 0;
-  width: 40px;
-  background-color: var(--gray);
-  border-radius: 5% 0 0 5%;
-  color: var(--text-inverted);
-
-  &.active {
-    .source-colors;
-  }
-  
-
-  > *{
-    display: inline-block;
-    cursor: pointer;
-    writing-mode:vertical-rl;
-    transform: rotate(180deg);
   }
 }

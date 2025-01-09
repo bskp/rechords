@@ -3,6 +3,8 @@ import {showdownRechords} from './showdown-rechords';
 import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
+import { FilterXSS } from 'xss';
+import { options } from './xss-filter-options';
 
 const converter = new showdown.Converter({ extensions: [showdownRechords] });
 
@@ -32,7 +34,9 @@ describe('showdown-rechords', () => {
 
   cases.forEach( mdPath => {
     it('Case: ' + mdPath.replace(/^.*\//, ''), () => {
-      const actual = converter.makeHtml( fs.readFileSync(mdPath, 'utf8') );
+      const _actual = converter.makeHtml( fs.readFileSync(mdPath, 'utf8') );
+      const filter = new FilterXSS(options);
+      const actual = filter.process(_actual);
       const expected = fs.readFileSync(mdPath.replace('.md', '.html'), 'utf8');
 
       assert.equal( normalize(actual), normalize(expected) );

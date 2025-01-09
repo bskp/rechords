@@ -9,7 +9,7 @@ function parseProsody(text: string) {
   return text;
 }
 
-function parseLine(match: any, content: string) {
+function parseLine(_match: any, content: string) {
   if (content.match(/^\s*$/g))
     return '</p>\n</div>\n<div>\n<p>';
   // Match bis zum Einsatz des ersten Akkords:
