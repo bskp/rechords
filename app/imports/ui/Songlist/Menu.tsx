@@ -19,12 +19,11 @@ export function Menu(props: { filter: string, filterChanged: (filter: string) =>
   const globalKeyHandler = (e : KeyboardEvent) => {
     const tagName = (e.target as Element)?.tagName;
     // Do not steal focus if already on <input>
-    if( ['INPUT', 'TEXTAREA'].includes(tagName)  ) return;
+    if (['INPUT', 'TEXTAREA'].includes(tagName)) return;
 
     // Ignore special keys
     if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
 
-    // Check if the pressed key has a printable representation
     if (e.key === '/') {
       e.preventDefault()
       setHasFocus(true)
@@ -33,7 +32,7 @@ export function Menu(props: { filter: string, filterChanged: (filter: string) =>
 
   React.useEffect(() => {
     document.addEventListener('keydown', globalKeyHandler);
-    return ()=>document.removeEventListener('keydown', globalKeyHandler)
+    return () => document.removeEventListener('keydown', globalKeyHandler)
   })
 
   const onTagClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -101,11 +100,8 @@ export function Menu(props: { filter: string, filterChanged: (filter: string) =>
                     removeFocusAction()
                    }
     else if(event.key === 'Enter') {
-
       removeFocusAction()
-
-
-      props?.onEnter()
+      props.onEnter()
     }
                  }}
                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {

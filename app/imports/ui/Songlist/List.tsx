@@ -9,7 +9,7 @@ import classNames from 'classnames';
 
 import {Meteor} from 'meteor/meteor';
 import {Menu} from "./Menu";
-import {ListGroupItem} from "./ListGroup";
+import {ListGroupItem} from "./ListGroupItem";
 import {MenuContext} from "/imports/ui/App";
 
 interface ListProps extends RouteComponentProps {
@@ -59,18 +59,18 @@ const List = (props: ListProps) => {
   }
 
   const navigateToFirstMatch = () => {
-      let song
-      if(exactMatches.length>0) {
-        song = exactMatches[0] 
-      }else if(fuzzyMatches.length>0) {
-        song = fuzzyMatches[0]
-      }
-      if(song) {
-        const newUrl = routePath(View.view, song)
-        showMenu
-        history.push(newUrl)
-      }
+    let song
+    if (exactMatches.length > 0) {
+      song = exactMatches[0]
+    } else if (fuzzyMatches.length > 0) {
+      song = fuzzyMatches[0]
     }
+    if (song) {
+      const newUrl = routePath(View.view, song)
+      showMenu
+      history.push(newUrl)
+    }
+  }
 
   // Add and group fuzzy matches
   for (const song of fuzzyMatches) {
@@ -89,7 +89,6 @@ const List = (props: ListProps) => {
   </li> : undefined;
 
   return (
-    
     <Drawer id="list" open={true} className={classNames(
       'songlist',
       {hideOnMobile: !showMenu},
