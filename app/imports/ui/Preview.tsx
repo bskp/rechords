@@ -9,6 +9,7 @@ import {DataNode} from 'domhandler';
 
 import {verseRegex} from '../api/showdown-rechords';
 import { Tablature } from 'abcjs';
+import { useEffect, useRef } from 'react';
 
 const nodeText = (node) => {
   return node.children.reduce( (out, child) => out += child.type == 'text' ? child.data : nodeText(child), '' );
@@ -20,15 +21,11 @@ interface P {
   updateHandler?: (md: string) => void;
 }
 
-export default class Preview extends React.Component<P, never> {
-  private html: React.RefObject<HTMLElement>;
+export default (props: P) => {
+  const html = useRef<HTMLSelectElement>(null)
 
-  constructor(props: P) {
-    super(props);
-    this.html = React.createRef();
-  }
 
-  componentDidUpdate() {
+  useEffect(()=> {
     const traverse = (node : HTMLElement): void => {
       for (const child of node.children) {
         if (child.innerHTML.endsWith('|')) {
@@ -45,10 +42,10 @@ export default class Preview extends React.Component<P, never> {
       }
     };
 
-    traverse(this.html.current);
-  }
+    if(html?.current) traverse(html.current);
+  })
 
-  private chordProgressions(md : string) {
+  const  chordProgressions = (md : string) =>{
     const chords: string[][] = [];
     const verseNames: string[] = []
     md.replace(verseRegex, (_match: string, title: string, v: string) => {
@@ -66,26 +63,25 @@ export default class Preview extends React.Component<P, never> {
     return {verseNames, chords};
   }
 
-  public handleClick(event: React.MouseEvent<HTMLElement>) {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     const node: Element = event.target as Element;
     if (!(node instanceof HTMLElement) || node.tagName != 'I') return;
 
     let offset = 0;
     for (const child of node.children) {
       offset += 2;
-      offset += this.textLen((child as HTMLElement)?.innerText);
+      offset += textLen((child as HTMLElement)?.innerText);
     }
 
     let skipWhitespace = true;
-    if (this.textLen(node.lastChild.textContent) == 0) {
+    if (textLen(node.lastChild.textContent) == 0) {
       // if a last-of-line, fake-syllable was clicked, attach chord _before_ whitespace (ie. newline)
       offset = 0;
       skipWhitespace = false;
     }
 
-
-    const {verse, letter, chord} = this.locate(node);
-    const {verseNames, chords} = this.chordProgressions(this.props.md);
+    const {verse, letter, chord} = locate(node);
+    const {verseNames, chords} = chordProgressions(props.md);
     const current_verse = verseNames[verse];
 
     let guessedChord;
@@ -110,25 +106,25 @@ export default class Preview extends React.Component<P, never> {
 
     if (guessedChord === undefined) guessedChord = '';
 
-    const md = this.prependChord(this.props.md, node, guessedChord + '|', offset, skipWhitespace);
-    this.props.updateHandler(md);
+    const md = prependChord(props.md, node, guessedChord + '|', offset, skipWhitespace);
+    props.updateHandler(md);
   }
 
 
-  public handleChordBlur(event : React.SyntheticEvent<HTMLElement>) {
+  const handleChordBlur = (event : React.SyntheticEvent<HTMLElement>) => {
     event.currentTarget.removeAttribute('data-initial');
     const chord = event.currentTarget.innerText;
 
     const i = event.currentTarget.parentElement;
 
-    let md_ = this.removeChord(this.props.md, i);
+    let md_ = removeChord(props.md, i);
 
 
-    if (this.textLen(chord) > 0) {
-      const skipWhitespace = this.textLen(event.currentTarget.nextSibling.textContent) > 0; // ie. a fakey chord
-      md_ = this.prependChord(md_, i, chord, 0, skipWhitespace);
+    if (textLen(chord) > 0) {
+      const skipWhitespace = textLen(event.currentTarget.nextSibling.textContent) > 0; // ie. a fakey chord
+      md_ = prependChord(md_, i, chord, 0, skipWhitespace);
     }
-    this.props.updateHandler(md_);
+    props.updateHandler(md_);
 
     // Remove any selections.
     if (window.getSelection) {
@@ -141,19 +137,19 @@ export default class Preview extends React.Component<P, never> {
     }
   }
 
-  public offsetChordPosition(event : React.SyntheticEvent<HTMLElement>, offset : number) {
+  const  offsetChordPosition = (event : React.SyntheticEvent<HTMLElement>, offset : number) => {
     event.currentTarget.removeAttribute('data-initial');
     const chord = event.currentTarget.innerText;
 
     const i = event.currentTarget.parentElement;
 
-    let md_ = this.removeChord(this.props.md, i);
+    let md_ = removeChord(props.md, i);
 
-    md_ = this.prependChord(md_, i, chord, offset, true);
-    this.props.updateHandler(md_);
+    md_ = prependChord(md_, i, chord, offset, true);
+    props.updateHandler(md_);
   }
 
-  public handleChordKey(event : React.KeyboardEvent<HTMLElement>): void {
+  const handleChordKey = (event : React.KeyboardEvent<HTMLElement>)=> {
     const n = event.currentTarget;
     if (event.key == 'Enter') {
       event.preventDefault();
@@ -169,12 +165,12 @@ export default class Preview extends React.Component<P, never> {
     }
 
     if (event.shiftKey && event.key == 'ArrowRight') {
-      this.offsetChordPosition(event, 1);
+      offsetChordPosition(event, 1);
       event.preventDefault();
     }
 
     if (event.shiftKey && event.key == 'ArrowLeft') {
-      this.offsetChordPosition(event, -1);
+      offsetChordPosition(event, -1);
       event.preventDefault();
     }
 
@@ -188,14 +184,14 @@ export default class Preview extends React.Component<P, never> {
   /*  Return the string's length omitting all whitespace.
    *  
    */
-  private textLen(str : string) {
+  function textLen(str : string) {
     if (str === undefined) return 0;
     return str.replace(/\s/g, '').length;
   }
 
 
-  public removeChord(md : string, node : Element) : string {
-    const pos = this.locate(node);
+   const removeChord = (md : string, node : Element)=>{
+    const pos = locate(node);
     // "pos" specifies where the chord to remove _begins_, expressed as "nth verse and mth letter".
 
     // Iterate over verses
@@ -206,7 +202,7 @@ export default class Preview extends React.Component<P, never> {
         // Iterate over letters
         let countedLetters = 0;
         v = v.replace(/(\[[^\]]*])|([^[]*)/gm, (match, chord, lyrics) => {
-          const adding = this.textLen(match);
+          const adding = textLen(match);
           if (countedLetters == pos.letter) match = lyrics || '';  // retains line breaks.
           countedLetters += adding;
           return match;
@@ -220,14 +216,16 @@ export default class Preview extends React.Component<P, never> {
   }
 
 
-  public prependChord(
+  // pre in relation to syllable
+  // but actually inserts the chord in markdown
+  const prependChord = (
     md: string,
     segment: Element,
     chord: string,
     offset = 0,
-    skipWhitespace = true) : string {
+    skipWhitespace = true) => {
 
-    const pos = this.locate(segment);
+    const pos = locate(segment);
 
     // Apply patch to markdown
     // Iterate over verses
@@ -259,7 +257,7 @@ export default class Preview extends React.Component<P, never> {
   }
 
 
-  locate(segment : Element) {
+  const locate = (segment : Element) =>{
     if (segment.tagName != 'I') {
       throw('Illegal argument: invoke locate() with a <i>-element');
     }
@@ -304,7 +302,7 @@ export default class Preview extends React.Component<P, never> {
         }
         if (node.nodeName == 'SPAN' && (node as HTMLSpanElement).className == 'before') {
           letter += 2;
-          letter += this.textLen(node.textContent);
+          letter += textLen(node.textContent);
           chord += 1;
 
         }
@@ -327,10 +325,9 @@ export default class Preview extends React.Component<P, never> {
   }
 
 
-  render() {
-    this.props.song.parse(this.props.md);
+    props.song.parse(props.md);
 
-    const vdom = parse(this.props.song.getHtml(), {replace: (domNode) => {
+    const vdom = parse(props.song.getHtml(), {replace: (domNode) => {
       if(DH.isTag(domNode)) {
         const node = domNode as DH.Element;
         if (node.name == 'i') {
@@ -340,8 +337,8 @@ export default class Preview extends React.Component<P, never> {
               className="before"
               contentEditable={true}
               suppressContentEditableWarning
-              onBlur={this.handleChordBlur.bind(this)}
-              onKeyDown={this.handleChordKey.bind(this)}
+              onBlur={handleChordBlur.bind(this)}
+              onKeyDown={handleChordKey.bind(this)}
             >{node.attribs['data-chord']}</span>;
           }
           if (!('data' in node.children[0])) return node;
@@ -373,7 +370,6 @@ export default class Preview extends React.Component<P, never> {
         else if (node.name == 'span' && 'attribs' in node && 'class' in node.attribs && 'line' == node.attribs.class) {
           // Fakey syllable to allow appended chords
           node.children.push(<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>);
-
         }
         else if (node.name == 'pre') {
           if (node.children.length != 1) return node;
@@ -408,11 +404,10 @@ export default class Preview extends React.Component<P, never> {
         <section
           className="interactive"
           id="chordsheetContent"
-          onClick={this.handleClick.bind(this)}
-          ref={this.html}>
+          onClick={handleClick.bind(this)}
+          ref={html}>
           {vdom}
         </section>
       </div>
     );
-  }
 }
