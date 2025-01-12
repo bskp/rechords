@@ -1,32 +1,17 @@
 import { Mongo } from "meteor/mongo";
 
-import * as showdown from "showdown";
-import { Document, DOMParser } from "@xmldom/xmldom";
+import { parse, HTMLElement } from "node-html-parser";
 import slug from "slug";
-import { FilterXSS } from "xss";
-import { showdownRechords } from "./showdown-rechords";
 import { Meteor } from "meteor/meteor";
-import { options } from "./xss-filter-options";
+import { parseRechordsDown } from "./parseRechordsDown";
 
 const DATACHORD = "data-chord";
-
-const converter = new showdown.Converter({
-  extensions: [showdownRechords],
-  striketrough: true,
-  ghCodeBlocks: true,
-  smoothLivePreview: true,
-});
-
-showdown.setOption("simpleLineBreaks", true);
-showdown.setOption("smoothLivePreview", true);
-showdown.setOption("simplifiedAutoLink", true);
-showdown.setOption("openLinksInNewWindow", true);
 
 function isDefined<T>(a: T | null | undefined): a is T {
   return a !== null && a !== undefined;
 }
 
-export const rmd_version = 8;
+export const rmd_version = 9;
 
 export class Song {
   _id?: string;
@@ -118,8 +103,7 @@ export class Song {
     // Create HTML
     // only member that exist in the mongo db are published
     // to the outside.
-    const filter = new FilterXSS(options);
-    this.html = filter.process(converter.makeHtml(this.text));
+    this.html = parseRechordsDown(md);
     this.title = "";
     this.author = "";
 
@@ -136,10 +120,7 @@ export class Song {
 
     if (this.isEmpty()) return; // delete song upon next save.
 
-    const dom = new DOMParser().parseFromString(
-      `<div id="wrapper">${this.html}</div>`,
-      "text/html",
-    );
+    const dom = parse(this.html)
 
     const h1 = dom.getElementsByTagName("h1");
     if (h1.length > 0) {
@@ -198,7 +179,7 @@ const Songs = new Mongo.Collection<Song>("songs", {
 });
 
 export class RmdHelpers {
-  static collectTags(dom: Document) {
+  static collectTags(dom: HTMLElement) {
     return Array.from(dom.getElementsByTagName("ul"))
       .filter((ul) => ul.getAttribute("class") == "tags")
       .flatMap((ul) => Array.from(ul.getElementsByTagName("li")))
@@ -209,15 +190,15 @@ export class RmdHelpers {
       );
   }
 
-  static collectChords(dom: Document) {
+  static collectChords(dom: HTMLElement) {
     return this.collectChordsDom(dom);
   }
 
-  static collectChordsDom(dom: Document) {
+  static collectChordsDom(dom: HTMLElement) {
     return Array.from(dom.getElementsByTagName("i"))
       .filter((chord_dom) => chord_dom.hasAttribute(DATACHORD))
       .map((chord_dom) => chord_dom.getAttribute(DATACHORD))
-      .filter((c: string | null): c is string => c !== null);
+      .filter((c?: string ): c is string => c !== null);
   }
 }
 
