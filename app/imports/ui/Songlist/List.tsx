@@ -1,15 +1,15 @@
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
-import {NavLink, RouteComponentProps, withRouter} from 'react-router-dom';
+import {NavLink, RouteComponentProps, useHistory, withRouter} from 'react-router-dom';
 import {Song} from '../../api/collections';
 
 import Drawer from '../Drawer';
-import {userMayWrite} from '../../api/helpers';
+import {routePath, userMayWrite, View} from '../../api/helpers';
 import classNames from 'classnames';
 
 import {Meteor} from 'meteor/meteor';
 import {Menu} from "./Menu";
-import {ListGroup} from "./ListGroup";
+import {ListGroupItem} from "./ListGroup";
 import {MenuContext} from "/imports/ui/App";
 
 interface ListProps extends RouteComponentProps {
@@ -20,6 +20,9 @@ interface ListProps extends RouteComponentProps {
 
 const List = (props: ListProps) => {
   const [filter, setFilter] = useState('')
+
+  // todo: upgrade to new react-router -> useNavigate can be used
+  const history = useHistory()
 
   const [fuzzyMatches, exactMatches] = useMemo(() => {
     let visibleSongs = props.songs
@@ -55,6 +58,20 @@ const List = (props: ListProps) => {
     groups.set('im Titel', exactMatches);
   }
 
+  const navigateToFirstMatch = () => {
+      let song
+      if(exactMatches.length>0) {
+        song = exactMatches[0] 
+      }else if(fuzzyMatches.length>0) {
+        song = fuzzyMatches[0]
+      }
+      if(song) {
+        const newUrl = routePath(View.view, song)
+        showMenu
+        history.push(newUrl)
+      }
+    }
+
   // Add and group fuzzy matches
   for (const song of fuzzyMatches) {
     const group = grouper(song);
@@ -68,21 +85,22 @@ const List = (props: ListProps) => {
   const {showMenu} = useContext(MenuContext);
 
   const addSong = userMayWrite() ? <li>
-    <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
+    <NavLink className='newSong' to="/new">+ Neues Lied</NavLink>
   </li> : undefined;
 
   return (
+    
     <Drawer id="list" open={true} className={classNames(
       'songlist',
       {hideOnMobile: !showMenu},
     )}>
-      <Menu filter={filter} setFilter={setFilter.bind(this)}/>
+      <Menu onEnter={navigateToFirstMatch} filter={filter} filterChanged={e=>setFilter(e)}/>
       <ul className="scroll">
+        {addSong}
         {Array.from(groups, ([group, songs]) => {
-            return <ListGroup user={props.user} label={group} songs={songs} key={group}/>;
+            return <ListGroupItem user={props.user} label={group} songs={songs} key={group}/>;
           }
         )}
-        {addSong}
       </ul>
     </Drawer>
   );
