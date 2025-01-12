@@ -10,10 +10,30 @@ import classNames from "classnames";
 import classnames from "classnames";
 import {Tooltip} from "react-tooltip";
 
-export function Menu(props: { filter: string, setFilter: (filter: string) => void }) {
+
+export function Menu(props: { filter: string, filterChanged: (filter: string) => void, onEnter: Function}) {
   const [showTags, setShowTags] = useState(false);
   const [hasFocus, setHasFocus] = useState(false);
   const [skipBlurCheck, setSkipBlurCheck] = useState(false);
+
+  const globalKeyHandler = (e : KeyboardEvent) => {
+    const tagName = (e.target as Element)?.tagName;
+    // Do not steal focus if already on <input>
+    if (['INPUT', 'TEXTAREA'].includes(tagName)) return;
+
+    // Ignore special keys
+    if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
+
+    if (e.key === '/') {
+      e.preventDefault()
+      setHasFocus(true)
+    }
+  };
+
+  React.useEffect(() => {
+    document.addEventListener('keydown', globalKeyHandler);
+    return () => document.removeEventListener('keydown', globalKeyHandler)
+  })
 
   const onTagClick = (event: React.MouseEvent<HTMLElement>) => {
     const tag = '#' + event.currentTarget?.childNodes?.[0]?.textContent?.toLowerCase();
@@ -24,7 +44,7 @@ export function Menu(props: { filter: string, setFilter: (filter: string) => voi
     } else {
       newFilter = props.filter + ' ' + tag;
     }
-    props.setFilter(newFilter.replace('  ', ' ').trim());
+    props.filterChanged(newFilter.replace('  ', ' ').trim());
     setShowTags(false);
 
     event.preventDefault();
@@ -55,11 +75,20 @@ export function Menu(props: { filter: string, setFilter: (filter: string) => voi
   const {themeDark, toggleTheme} = useContext(ThemeContext);
   const {setShowMenu} = useContext(MenuContext);
 
+  const removeFocusAction = () => {
+    props.filterChanged('');
+    setShowTags(false);
+    // escape fires no blur event (that's why it worked with 'X' icon)
+    setHasFocus(false);
+  }
+
   return <>
     <menu className={classnames(
       'iconmenu',
       {searching: showSearch}
-    )}>
+    )}
+    onKeyDown={props.onKeyDown}
+    >
       {showSearch ? <>
           <input type="text"
                  placeholder="Lieder suchen…"
@@ -68,19 +97,23 @@ export function Menu(props: { filter: string, setFilter: (filter: string) => voi
                  onFocus={() => setHasFocus(true)}
                  onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
                    if (event.key === 'Escape') {
-                     props.setFilter('');
-                     setShowTags(false);
+                    removeFocusAction()
                    }
+    else if(event.key === 'Enter') {
+      removeFocusAction()
+      props.onEnter()
+    }
                  }}
-                 onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                   props.setFilter(event.currentTarget.value)
+                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                   props.filterChanged(event.currentTarget.value)
+                 }
                  }
                  ref={r => {
                    r && r.focus()
                  }}
           />
           <MdClose className="interactive" onMouseDown={() => {
-            props.setFilter('');
+            props.filterChanged('');
             setShowTags(false)
           }}/>
           <MdSell className="interactive hideUnlessMobile"
@@ -91,7 +124,7 @@ export function Menu(props: { filter: string, setFilter: (filter: string) => voi
                   }}
           />
         </>
-        : <li className="search" onClick={() => setHasFocus(true)}><MdSearch/><span>Suche…</span></li>
+        : <li className="search" onClick={() => setHasFocus(true)} data-tooltip-content="Shortcut: /" data-tooltip-id="tt" ><MdSearch /><span>Suche…</span></li>
       }
       <li><Link to="/" onClick={() => setShowMenu(false)} data-tooltip-content="Zur Startseite"
                 data-tooltip-id="tt"><MdHome/></Link></li>

@@ -89,6 +89,7 @@ export const references = {
   replace: (_match: string, ref: string, annotation: string): string => {
 
     annotation = annotation ? annotation : '';
+    // todo: inline reference html here
     return `<div class="ref"><strong>${ref}</strong>${annotation}</div>`;
   }
 };

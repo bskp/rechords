@@ -4,7 +4,7 @@ import classNames from "classnames";
 import {Meteor} from "meteor/meteor";
 import ListItem from "/imports/ui/Songlist/ListItem";
 
-export function ListGroup(props: {
+export function ListGroupItem(props: {
   songs: Song[];
   user: Meteor.User | null;
   label: string;
