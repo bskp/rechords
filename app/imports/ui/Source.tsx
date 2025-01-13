@@ -1,12 +1,11 @@
-import React, {Component, PropsWithChildren} from 'react';
-
+import React, { Component, PropsWithChildren } from "react";
 
 type SourceProps = PropsWithChildren & {
-  md: string,
+  md: string;
   updateHandler?: (md: string) => void;
-  readOnly?: boolean,
-  className: string,
-  onPasteInterceptor?: (v: string) => string
+  readOnly?: boolean;
+  className: string;
+  onPasteInterceptor?: (v: string) => string;
 };
 
 export default class Source extends Component<SourceProps, never> {
@@ -25,13 +24,13 @@ export default class Source extends Component<SourceProps, never> {
 
   onPasteHandler = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     if (this.props.onPasteInterceptor) {
-      const inText = e.clipboardData.getData('Text');
+      const inText = e.clipboardData.getData("Text");
       const newText = this.props.onPasteInterceptor(inText);
       if (inText != newText) {
         e.preventDefault();
         // The working way (preserving undo)
         // officially deprecated but with no replacement
-        document.execCommand('insertText', false, newText);
+        document.execCommand("insertText", false, newText);
 
         // The "new" way -- clumsy and breaking undo...
         /*         const start = this.source.current.selectionStart
@@ -43,7 +42,6 @@ export default class Source extends Component<SourceProps, never> {
         // const selectionText = valueBefore.substring(start, end);
         const afterSelection = valueBefore.substring(end);
         this.props.updateHandler(inFrontSelection + newText + afterSelection) */
-
       }
     }
   };
@@ -60,11 +58,11 @@ export default class Source extends Component<SourceProps, never> {
     rows = Math.max(50, rows);
 
     const style = {
-      minHeight: rows + 'em',
+      minHeight: rows + "em",
     };
 
     return (
-      <div className={'content ' + this.props.className}>
+      <div className={"content " + this.props.className}>
         {this.props.children}
         <textarea
           ref={this.source}
@@ -78,4 +76,3 @@ export default class Source extends Component<SourceProps, never> {
     );
   }
 }
-

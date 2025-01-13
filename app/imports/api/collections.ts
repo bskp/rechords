@@ -1,27 +1,26 @@
-import {Mongo} from 'meteor/mongo';
+import { Mongo } from "meteor/mongo";
 
-import * as showdown from 'showdown';
-import {Document, DOMParser} from '@xmldom/xmldom';
-import slug from 'slug';
-import {FilterXSS} from 'xss';
-import {showdownRechords} from './showdown-rechords';
-import {Meteor} from 'meteor/meteor';
-import {options} from './xss-filter-options';
+import * as showdown from "showdown";
+import { Document, DOMParser } from "@xmldom/xmldom";
+import slug from "slug";
+import { FilterXSS } from "xss";
+import { showdownRechords } from "./showdown-rechords";
+import { Meteor } from "meteor/meteor";
+import { options } from "./xss-filter-options";
 
-const DATACHORD = 'data-chord';
+const DATACHORD = "data-chord";
 
 const converter = new showdown.Converter({
   extensions: [showdownRechords],
   striketrough: true,
   ghCodeBlocks: true,
-  smoothLivePreview: true
+  smoothLivePreview: true,
 });
 
-showdown.setOption('simpleLineBreaks', true);
-showdown.setOption('smoothLivePreview', true);
-showdown.setOption('simplifiedAutoLink', true);
-showdown.setOption('openLinksInNewWindow', true);
-
+showdown.setOption("simpleLineBreaks", true);
+showdown.setOption("smoothLivePreview", true);
+showdown.setOption("simplifiedAutoLink", true);
+showdown.setOption("openLinksInNewWindow", true);
 
 function isDefined<T>(a: T | null | undefined): a is T {
   return a !== null && a !== undefined;
@@ -49,25 +48,22 @@ export class Song {
 
   revision_cache?: Revision[];
 
-
-  constructor(doc: {
-    text: string,
-  }) {
+  constructor(doc: { text: string }) {
     Object.assign(this, doc);
   }
 
   getHtml() {
-    this.validateField('html');
+    this.validateField("html");
     return this.html!;
   }
 
   getChords() {
-    this.validateField('chords');
+    this.validateField("chords");
     return this.chords!;
   }
 
   getTags() {
-    this.validateField('tags');
+    this.validateField("tags");
     return this.tags!;
   }
 
@@ -77,7 +73,7 @@ export class Song {
     // A field is missing or bad parser version. Re-parse and store!
     this.parse(this.text);
 
-    Meteor.call('saveSong', this, (error: any) => {
+    Meteor.call("saveSong", this, (error: any) => {
       if (error !== undefined) {
         console.log(error);
       }
@@ -86,31 +82,30 @@ export class Song {
 
   checkTag(needle: string) {
     for (const tag of this.getTags()) {
-      if (!(tag.toLowerCase().startsWith(needle.toLowerCase()))) continue;
+      if (!tag.toLowerCase().startsWith(needle.toLowerCase())) continue;
 
-      let chunks = tag.split(':');
+      let chunks = tag.split(":");
       if (chunks.length == 1) {
         // Tags without "value" (ie. colon)
         chunks = tag.split(needle);
-        if (chunks[1] == '') return true;
+        if (chunks[1] == "") return true;
       }
-      return chunks.splice(1).join(':');
+      return chunks.splice(1).join(":");
     }
     return null; // Tag not present
   }
 
   getTag(tag_name: string) {
     for (const tag of this.getTags()) {
-      if (!(tag.toLowerCase().startsWith(tag_name.toLowerCase()))) continue;
+      if (!tag.toLowerCase().startsWith(tag_name.toLowerCase())) continue;
 
-      const chunks = tag.split(':');
+      const chunks = tag.split(":");
       if (chunks.length == 1) {
-        return undefined;  // no colon in tag
+        return undefined; // no colon in tag
       }
-      return chunks.splice(1).join(':');
+      return chunks.splice(1).join(":");
     }
     return undefined; // Tag not present
-
   }
 
   isEmpty() {
@@ -125,53 +120,56 @@ export class Song {
     // to the outside.
     const filter = new FilterXSS(options);
     this.html = filter.process(converter.makeHtml(this.text));
-    this.title = '';
-    this.author = '';
+    this.title = "";
+    this.author = "";
 
     this.tags = [];
     this.chords = [];
 
     // URL-compatible strings
-    this.title_ = '';
-    this.author_ = '';
+    this.title_ = "";
+    this.author_ = "";
 
     // this._id may be present or not, but is, most importantly: unaffected!
 
     // Set Metadata
 
-    if (this.isEmpty()) return;  // delete song upon next save.
+    if (this.isEmpty()) return; // delete song upon next save.
 
-    const dom = new DOMParser().parseFromString(`<div id="wrapper">${this.html}</div>`, 'text/html');
+    const dom = new DOMParser().parseFromString(
+      `<div id="wrapper">${this.html}</div>`,
+      "text/html",
+    );
 
-    const h1 = dom.getElementsByTagName('h1');
+    const h1 = dom.getElementsByTagName("h1");
     if (h1.length > 0) {
       this.title = h1[0].textContent!;
     } else {
-      this.title = '(Ohne Titel)';
+      this.title = "(Ohne Titel)";
     }
-    this.title_ = slug(this.title, {lower: true});
+    this.title_ = slug(this.title, { lower: true });
 
-    const h2 = dom.getElementsByTagName('h2');
+    const h2 = dom.getElementsByTagName("h2");
     if (h2.length > 0) {
       this.author = h2[0].textContent!;
     } else {
-      this.author = '-';
+      this.author = "-";
     }
-    this.author_ = slug(this.author, {lower: true});
+    this.author_ = slug(this.author, { lower: true });
 
     this.tags = RmdHelpers.collectTags(dom);
     this.chords = RmdHelpers.collectChords(dom);
     this.parsed_rmd_version = rmd_version;
   }
 
-
   getRevisions() {
     if (!isDefined(this.revision_cache)) {
       this.revision_cache = Revisions.find(
-        {of: this._id},
+        { of: this._id },
         {
-          sort: {timestamp: -1}
-        }).fetch();
+          sort: { timestamp: -1 },
+        },
+      ).fetch();
     }
     return this.revision_cache;
   }
@@ -191,23 +189,24 @@ export interface Revision {
   editor?: string;
 }
 
+const Revisions = new Mongo.Collection<Revision>("revisions");
 
-const Revisions = new Mongo.Collection<Revision>('revisions');
-
-const Songs = new Mongo.Collection<Song>('songs', {
+const Songs = new Mongo.Collection<Song>("songs", {
   transform(doc) {
     return new Song(doc);
-  }
+  },
 });
-
 
 export class RmdHelpers {
   static collectTags(dom: Document) {
-    return Array.from(dom.getElementsByTagName('ul'))
-      .filter(ul => ul.getAttribute('class') == 'tags')
-      .flatMap(ul => Array.from(ul.getElementsByTagName('li')))
-      .map(li => Array.from(li.childNodes).map(child => child.textContent).join(':')
-      )
+    return Array.from(dom.getElementsByTagName("ul"))
+      .filter((ul) => ul.getAttribute("class") == "tags")
+      .flatMap((ul) => Array.from(ul.getElementsByTagName("li")))
+      .map((li) =>
+        Array.from(li.childNodes)
+          .map((child) => child.textContent)
+          .join(":"),
+      );
   }
 
   static collectChords(dom: Document) {
@@ -215,13 +214,13 @@ export class RmdHelpers {
   }
 
   static collectChordsDom(dom: Document) {
-    return Array.from(dom.getElementsByTagName('i'))
-      .filter(chord_dom => chord_dom.hasAttribute(DATACHORD))
-      .map(chord_dom => chord_dom.getAttribute(DATACHORD))
-      .filter((c: string | null): c is string => c !== null)
+    return Array.from(dom.getElementsByTagName("i"))
+      .filter((chord_dom) => chord_dom.hasAttribute(DATACHORD))
+      .map((chord_dom) => chord_dom.getAttribute(DATACHORD))
+      .filter((c: string | null): c is string => c !== null);
   }
 }
 
-export {Revisions};
+export { Revisions };
 
 export default Songs;

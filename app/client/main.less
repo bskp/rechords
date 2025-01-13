@@ -42,11 +42,15 @@ textarea {
 }
 
 .transition * {
-  transition: background-color 1s, color 1s, fill 1s, stroke 1s, border-color 1s !important;
+  transition:
+    background-color 1s,
+    color 1s,
+    fill 1s,
+    stroke 1s,
+    border-color 1s !important;
 }
 
 // Base Layout
-
 
 html {
   height: 100%;
@@ -66,7 +70,8 @@ body {
 
   -webkit-tap-highlight-color: transparent;
 
-  font-family: "Bricolage Grotesque", "Roboto", "Cardo", "Last Resort", Helvetica, Arial, sans-serif;
+  font-family: "Bricolage Grotesque", "Roboto", "Cardo", "Last Resort",
+    Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-variation-settings: "wdth" 97;
 
@@ -92,7 +97,7 @@ body {
   .phone({
     flex-flow: row wrap;
     overflow-y: scroll;
-  })
+  });
 }
 
 // Generic content pages
@@ -119,15 +124,17 @@ body {
     margin-left: -0.1em;
   }
 
-  h1:first-child, h1:first-child + h2,
-  .sd-header h1, .sd-header h2 {
+  h1:first-child,
+  h1:first-child + h2,
+  .sd-header h1,
+  .sd-header h2 {
     .cooperate();
     font-size: 3em;
     line-height: 1em;
 
     display: inline-block;
 
-    margin-bottom: 0.0em;
+    margin-bottom: 0em;
     margin-top: 0;
   }
 
@@ -194,7 +201,6 @@ body {
   }
 }
 
-
 // Special content
 
 .tags {
@@ -241,7 +247,6 @@ div.mobile-footer {
   });
 }
 
-
 #progress {
   .chordsheet-colors;
   padding-left: 1em;
@@ -250,7 +255,11 @@ div.mobile-footer {
 // Content elements
 
 .textareafonts {
-  font-family: "Plex Mono", Courier New, Courier, monospace;
+  font-family:
+    "Plex Mono",
+    Courier New,
+    Courier,
+    monospace;
   font-weight: 300;
   font-size: 0.9em;
 }
@@ -281,19 +290,16 @@ hr {
   z-index: 10;
 }
 
-
 .keyboard {
   border: 0.1rem solid currentColor;
   border-radius: 0.4rem;
-  font-family: 'Plex Mono', monospace;
+  font-family: "Plex Mono", monospace;
   padding-left: 0.4rem;
   padding-right: 0.4rem;
-
-
 }
 
 .hideInMobile {
   .phone-tablet({
     display: none;
-  })
+  });
 }

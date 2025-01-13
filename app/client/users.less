@@ -1,87 +1,88 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
 
+#users,
+#user {
+  .chordsheet-colors;
 
-#users, #user {
-    .chordsheet-colors;
-    
-    form.row {
-        display: flex;
+  form.row {
+    display: flex;
+  }
+
+  input,
+  select {
+    border-bottom: 3px solid var(--gray-light);
+    color: var(--accent);
+
+    margin-right: 1em;
+    flex-grow: 1;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  label {
+    width: 10em;
+    display: inline-block;
+    line-height: 2.5em;
+  }
+
+  label + input[type="text"] {
+    width: 20em;
+    display: inline-block;
+  }
+
+  ul {
+    padding-left: 1.5em;
+  }
+
+  li:before {
+    content: "–";
+    display: inline-block;
+    position: relative;
+    width: 0;
+    left: -1.2em;
+  }
+
+  li a:hover {
+    color: var(--accent);
+  }
+
+  a.btn,
+  input[type="submit"] {
+    border: 3px solid var(--gray);
+    background-color: transparent;
+    color: var(--gray);
+    cursor: pointer;
+    padding: 0 0.7em;
+    flex-grow: 0.5;
+    border-radius: 1em;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: inline-block;
+    line-height: 1.8em;
+    margin-right: 1em;
+    margin-left: -0.2em;
+    margin-bottom: 0.5em;
+
+    &:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+  }
+
+  h2 em {
+    font-weight: 400;
+    font-style: italic;
+
+    &:before {
+      content: " – ";
     }
 
-    input, select {
-        border-bottom: 3px solid var(--gray-light);
-        color: var(--accent);
-
-        margin-right: 1em;
-        flex-grow: 1;
-
-        &:focus {
-            outline: none;
-        }
+    &:empty {
+      display: none;
     }
-
-    label {
-        width: 10em;
-        display: inline-block;
-        line-height: 2.5em;
-    }
-
-    label + input[type="text"] {
-        width: 20em;
-        display: inline-block;
-    }
-
-    ul {
-        padding-left: 1.5em;
-    }
-
-    li:before {
-        content: "–";
-        display: inline-block;
-        position: relative;
-        width: 0;
-        left: -1.2em;
-    }
-
-    li a:hover{
-        color: var(--accent);
-    }
-
-    a.btn, 
-    input[type="submit"] {
-        border: 3px solid var(--gray);
-        background-color: transparent;
-        color: var(--gray);
-        cursor: pointer;
-        padding: 0 0.7em;
-        flex-grow: 0.5;
-        border-radius: 1em;
-        font-size: 0.8em;
-        text-transform: uppercase;
-        font-weight: 600;
-        display: inline-block;
-        line-height: 1.8em;
-        margin-right: 1em;
-        margin-left: -0.2em;
-        margin-bottom: 0.5em;
-
-        &:hover {
-            color: var(--accent);
-            border-color: var(--accent);
-        }
-    }
-
-    h2 em {
-        font-weight: 400;
-        font-style: italic;
-
-        &:before {
-            content: ' – '
-        }
-
-        &:empty {
-            display: none;
-        }
-    }
+  }
 }

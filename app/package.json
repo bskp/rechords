@@ -3,9 +3,8 @@
   "private": true,
   "scripts": {
     "start": "meteor --settings settings.json --exclude-archs web.browser.legacy --port 0:3000",
-    "startAdvanced": "meteor --settings settings.advanced.json --exclude-archs web.browser.legacy --port 0:3000",
+    "pretty": "prettier . --write",
     "debug": "meteor run --inspect",
-    "lint": "eslint imports/** --fix",
     "test": "meteor test --once --driver-package meteortesting:mocha",
     "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
@@ -67,6 +66,7 @@
     "@types/slug": "^5.0.2",
     "@types/xmldom": "^0.1.31",
     "mocha": "^11.0.1",
+    "prettier": "^3.4.2",
     "tsx": "^4.19.2",
     "typescript": "^4.9.5"
   },

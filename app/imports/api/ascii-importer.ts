@@ -10,19 +10,20 @@ export function convertToHoelibuSyntax(text: string) {
       lastChordMap = parseChords(line);
     } else {
       if (lastChordMap) {
-        out.push( pair(lastChordMap, line) );
+        out.push(pair(lastChordMap, line));
         lastChordMap = null;
       } else {
         out.push(line);
       }
     }
   }
-  return out.join('\n');
+  return out.join("\n");
 }
 
 function isChordLine(str: string) {
   const parts = str.trim().split(/\s+/);
-  let numChords = 0, numNonChords = 0;
+  let numChords = 0,
+    numNonChords = 0;
 
   for (const part of parts) {
     if (matchchord.test(part)) {
@@ -32,7 +33,6 @@ function isChordLine(str: string) {
     }
   }
   return numChords > numNonChords;
-
 }
 
 function parseChords(str: string) {
@@ -46,11 +46,11 @@ function parseChords(str: string) {
 }
 
 function pair(map: Map<number, string>, str: string) {
-  let output = '';
+  let output = "";
   if (map.size > str.length) {
     return Array.from(map.values())
-      .map(c => `[${c}]`)
-      .join('');
+      .map((c) => `[${c}]`)
+      .join("");
   }
   for (let i = 0; i < str.length; i++) {
     if (map.has(i)) {
@@ -60,4 +60,3 @@ function pair(map: Map<number, string>, str: string) {
   }
   return output;
 }
-

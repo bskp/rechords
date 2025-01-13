@@ -2,23 +2,25 @@
 @drawer-closed: 30px;
 
 .cooperate {
-  font-family: 'Cooper';
+  font-family: "Cooper";
   font-weight: normal;
 }
 
 // Dark color scheme
 html.dark {
-
   // Color swatches
-  @accent: #ffcb00;                   // for text.
+  @accent: #ffcb00; // for text.
   @h: hsvhue(@accent);
-  @accent-flat: hsv(@h - 5, 0.8, 0.85); // duller and lighter variant of @accent for big areas
+  @accent-flat: hsv(
+    @h - 5,
+    0.8,
+    0.85
+  ); // duller and lighter variant of @accent for big areas
 
-  @ink: white;                        // for text.
-  @void: black;                       // for big areas.
-  @dirt: hsv(@h, 0, 0.1);               // a shaded @void, for areas
-  @gray: hsv(@h - 10, 0.2, 0.6);        // perceptively neutral gray
-
+  @ink: white; // for text.
+  @void: black; // for big areas.
+  @dirt: hsv(@h, 0, 0.1); // a shaded @void, for areas
+  @gray: hsv(@h - 10, 0.2, 0.6); // perceptively neutral gray
 
   // Derived color variables
 
@@ -46,7 +48,6 @@ html.dark {
   --bg-filter-translucent: fade(@void, 40%);
   --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
 
-
   // Theme variations
   aside.drawer#list li a.selected {
     background-color: inherit;
@@ -60,23 +61,24 @@ html.dark {
       stroke: var(--accent);
     }
   }
-
 }
 
 // Light color scheme
 html.light {
-
   // Color swatches
 
-  @accent: rgb(221, 68, 7);          // for text.
+  @accent: rgb(221, 68, 7); // for text.
   @h: hsvhue(@accent);
-  @accent-flat: hsv(@h, 0.7, 0.8); // duller and lighter variant of @accent for big areas
+  @accent-flat: hsv(
+    @h,
+    0.7,
+    0.8
+  ); // duller and lighter variant of @accent for big areas
 
-  @ink: black;                        // for text.
-  @void: white;                       // for big areas.
-  @dirt: hsv(@h, 0.05, 0.9);               // a shaded @void, for areas
-  @gray: hsv(@h, 0.2, 0.6);        // perceptively neutral gray
-
+  @ink: black; // for text.
+  @void: white; // for big areas.
+  @dirt: hsv(@h, 0.05, 0.9); // a shaded @void, for areas
+  @gray: hsv(@h, 0.2, 0.6); // perceptively neutral gray
 
   // Derived color variables
 
@@ -105,7 +107,6 @@ html.light {
   --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
 }
 
-
 .prettyScrollbars(@bg) {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
@@ -114,11 +115,11 @@ html.light {
   &::-webkit-scrollbar {
     width: 12px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: @bg;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background-color: var(--gray);
     border-radius: 20px;
@@ -152,7 +153,7 @@ html.light {
   h1 {
     color: var(--text-inverted);
   }
-  color: var(--text-inverted);  // fade probably?
+  color: var(--text-inverted); // fade probably?
   background-color: var(--accent-flat);
   .prettyScrollbars(var(--bg-accent-flat));
 
@@ -175,11 +176,11 @@ html.light {
 
 .select(@mode: none;) {
   -webkit-touch-callout: @mode; /* iOS Safari */
-    -webkit-user-select: @mode; /* Safari */
-     -khtml-user-select: @mode; /* Konqueror HTML */
-       -moz-user-select: @mode; /* Firefox */
-        -ms-user-select: @mode; /* Internet Explorer/Edge */
-            user-select: @mode; /* Non-prefixed version, currently supported by Chrome and Opera */
+  -webkit-user-select: @mode; /* Safari */
+  -khtml-user-select: @mode; /* Konqueror HTML */
+  -moz-user-select: @mode; /* Firefox */
+  -ms-user-select: @mode; /* Internet Explorer/Edge */
+  user-select: @mode; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
 .scroll-vertical {
@@ -198,5 +199,4 @@ html.light {
   &:focus {
     outline: none;
   }
-
 }

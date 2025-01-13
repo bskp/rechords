@@ -1,9 +1,8 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from "react";
 
 const HideSongList: React.FC<{
-  handle: (hideSongList: boolean) => void,
+  handle: (hideSongList: boolean) => void;
 }> = ({ handle }) => {
-
   useEffect(() => {
     handle(true);
     return () => {
@@ -12,6 +11,6 @@ const HideSongList: React.FC<{
   }, [handle]);
 
   return <></>;
-}
+};
 
 export default HideSongList;

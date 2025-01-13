@@ -4,9 +4,9 @@
 
 #editor {
   display: flex;
-  width  : 100%;
+  width: 100%;
 
-  >.content {
+  > .content {
     padding-left: 2em;
     z-index: 1;
 
@@ -27,18 +27,18 @@
 aside.drawer#revs {
   ol {
     list-style-type: lower-greek;
-    padding-left   : 1.8em;
+    padding-left: 1.8em;
 
     li {
       font-size: 0.8em;
-      padding  : 0.3em;
+      padding: 0.3em;
 
       &:hover {
         background-color: white; //fade(@text, 30%);
       }
 
       &.active {
-        background-color: white //fade(@text, 50%);;
+        background-color: white; //fade(@text, 50%);
       }
     }
   }
@@ -46,16 +46,16 @@ aside.drawer#revs {
 
 // dot. wohin?
 #dirty {
-  display         : block;
-  position        : absolute;
-  font-size       : 1.6em;
-  width           : 1em;
-  height          : 1em;
-  border-radius   : 1em;
+  display: block;
+  position: absolute;
+  font-size: 1.6em;
+  width: 1em;
+  height: 1em;
+  border-radius: 1em;
   background-color: var(--accent);
-  left            : 4rem;
-  top             : 2.5rem;
-  z-index         : 2;
+  left: 4rem;
+  top: 2.5rem;
+  z-index: 2;
 
   .phone( {
       display: none;
@@ -65,15 +65,15 @@ aside.drawer#revs {
 }
 
 .settings {
-  display      : flex;
-  flex-flow    : row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
   margin-bottom: 1.5rem;
 
   label {
-    font-size     : 0.8rem;
-    font-weight   : 500;
+    font-size: 0.8rem;
+    font-weight: 500;
     text-transform: capitalize;
-    margin-right  : 0.4rem;
+    margin-right: 0.4rem;
   }
 
   input {

@@ -1,5 +1,4 @@
-.printify{
-
+.printify {
   .tags {
     display: none !important;
   }
@@ -14,7 +13,8 @@
 
     margin-bottom: 0 !important;
 
-    .ref.open, h3 {
+    .ref.open,
+    h3 {
       width: 3em;
       margin-left: -4em;
       overflow: hidden;
@@ -27,7 +27,6 @@
     .chord-container .kord .chord-diag {
       width: 50pt;
     }
-
   }
 
   #chordsheet.content {
@@ -42,7 +41,8 @@
       margin-top: 0.3em; // Für die Umlautzeichen
       margin-left: -3pt;
 
-      h1, h2 {
+      h1,
+      h2 {
         font-size: 2.5em !important;
       }
 
@@ -60,12 +60,13 @@
       margin-left: -50pt;
     }
 
-    .ref.open, h3 {
+    .ref.open,
+    h3 {
       width: 4em;
       margin-left: -5em;
     }
   }
-  
+
   .chord-container {
     color: var(--text);
   }
@@ -73,14 +74,18 @@
 
 .override-colors {
   // Color swatches
-  @accent: rgb(221, 68, 7);          // for text.
+  @accent: rgb(221, 68, 7); // for text.
   @h: hsvhue(@accent);
-  @accent-flat: hsv(@h, 0.7, 0.8); // duller and lighter variant of @accent for big areas
+  @accent-flat: hsv(
+    @h,
+    0.7,
+    0.8
+  ); // duller and lighter variant of @accent for big areas
 
-  @ink: black;                        // for text.
-  @void: white;                       // for big areas.
-  @dirt: hsv(@h, 0.05, 0.9);               // a shaded @void, for areas
-  @gray: hsv(@h, 0.0, 0.5);        // perceptively neutral gray
+  @ink: black; // for text.
+  @void: white; // for big areas.
+  @dirt: hsv(@h, 0.05, 0.9); // a shaded @void, for areas
+  @gray: hsv(@h, 0, 0.5); // perceptively neutral gray
 
   // Derived color variables
 
@@ -112,14 +117,15 @@
 @media print {
   .printify;
 
-  aside, #transposer {
+  aside,
+  #transposer {
     display: none !important;
   }
 
-  #app div.dark, #app div.light {
+  #app div.dark,
+  #app div.light {
     .override-colors;
   }
-
 }
 
 @media screen {
