@@ -6,8 +6,9 @@ import { Abcjs } from "./Abcjs";
 import Kord from "./Kord";
 import { userMayWrite } from "../api/helpers";
 import * as DH from "domhandler";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import { Tablature } from "abcjs";
+import classNames from "classnames";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
 
@@ -28,6 +29,15 @@ const Sheet = ({
 }: SheetProps) => {
   const [inlineRefs, setInlineRefs] = useState(true);
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
+
+  const chordsheetContent = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const elements = chordsheetContent.current?.querySelectorAll('h3')
+    // alternatively: matches() on clicked target
+    elements?.forEach(() => addEventListener('click', toggleInlineRefs))
+    return () => elements?.forEach(()=>removeEventListener('click', toggleInlineRefs))
+  })
 
   const chords = song.getChords();
   const chrodlib = new ChrodLib();
@@ -135,7 +145,7 @@ const Sheet = ({
           return false;
         return true;
       });
-    }
+    } 
   };
 
   let postprocess = (vdom: DOMNode) => populateReactNodes(vdom);
@@ -147,7 +157,8 @@ const Sheet = ({
   let vdom = parse(rmd_html, { replace: postprocess }) as JSX.Element[];
 
   return (
-    <section id="chordsheetContent" style={style}>
+    <section ref={chordsheetContent} id="chordsheetContent" style={style} className={classNames({inlineRefs, hideRefs: !inlineRefs})}>
+      <div onClick={toggleInlineRefs}>{inlineRefs ? 'Hide' : 'Inline' } Repetitions</div>
       {vdom}
     </section>
   );
