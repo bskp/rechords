@@ -1,23 +1,23 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base'
-import Songs, {Revisions} from '../imports/api/collections';
-import '../imports/api/methods.ts';
+import { Meteor } from "meteor/meteor";
+import { Accounts } from "meteor/accounts-base";
+import Songs, { Revisions } from "../imports/api/collections";
+import "../imports/api/methods.ts";
 
-Meteor.publish('songs', function () {
+Meteor.publish("songs", function () {
   return Songs.find({});
 });
 
-Meteor.publish('revisions', function () {
+Meteor.publish("revisions", function () {
   return Revisions.find({});
 });
 
-Meteor.startup(async ()=>{
+Meteor.startup(async () => {
   if (Meteor.users.find().count() === 0) {
     Accounts.createUser({
-      username: 'le', 
-      email:'bitte_noch_anpassen@chabis.ruebli', 
-      password: 'coq-est-mort', 
-      profile: {name: 'Housi', role:'admin'}
+      username: "le",
+      email: "bitte_noch_anpassen@chabis.ruebli",
+      password: "coq-est-mort",
+      profile: { name: "Housi", role: "admin" },
     });
   }
 });
@@ -28,14 +28,16 @@ Meteor.publish(null, function () {
     return;
   }
 
-  const fields = {fields: {
-    'createdAt': 1,
-    'emails': 1,
-    'username': 1,
-    'profile': 1
-  }};
+  const fields = {
+    fields: {
+      createdAt: 1,
+      emails: 1,
+      username: 1,
+      profile: 1,
+    },
+  };
 
-  if (Meteor.user()?.profile.role == 'admin')
+  if (Meteor.user()?.profile.role == "admin")
     return Meteor.users.find({}, fields);
 
   return Meteor.users.find({ _id: this.userId }, fields);

@@ -2,9 +2,8 @@
 @import (reference) "./variables.import.less";
 @import (reference) "./icons.less";
 
-
 #transposer {
-    flex-grow: 1;
+  flex-grow: 1;
 
   .phone({
     display: none;
@@ -14,7 +13,7 @@
 
   height: 400px;
   width: 50px;
-  >* {
+  > * {
     position: relative;
     right: -40px;
   }
@@ -45,7 +44,6 @@
   .rc-slider-rail {
     background-color: var(--gray);
     border-color: var(--gray);
-
   }
 
   .rc-slider-track {
@@ -70,10 +68,10 @@ a.iconbutton {
     .applySchemeColors;
   }
 
-  &.phoneOnly{
+  &.phoneOnly {
     .not-phone({
       display: none;
-    })
+    });
   }
 }
 
@@ -97,7 +95,8 @@ a.iconbutton {
     }
   }
 
-  &:last-child {  // If no "edit"-Aside is shown…
-    right: 0;  // …pull it flush to the right edge.
+  &:last-child {
+    // If no "edit"-Aside is shown…
+    right: 0; // …pull it flush to the right edge.
   }
 }

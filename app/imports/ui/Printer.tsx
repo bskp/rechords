@@ -1,20 +1,19 @@
-import * as React from 'react';
-import {Song} from '../api/collections';
+import * as React from "react";
+import { Song } from "../api/collections";
 
-import Sheet from './Sheet';
-import {navigateCallback, View} from '../api/helpers';
-import {Button} from './Button';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {ReactSVG} from "react-svg";
+import Sheet from "./Sheet";
+import { navigateCallback, View } from "../api/helpers";
+import { Button } from "./Button";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { ReactSVG } from "react-svg";
 
-type PrinterProps = { song: Song }
+type PrinterProps = { song: Song };
 
-const Printer = ({song, history}: PrinterProps & RouteComponentProps) => {
-
+const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
   const initial_transpose = () => {
     for (const tag of song.getTags()) {
-      if (!tag.startsWith('transponierung:')) continue;
-      const dT = parseInt(tag.split(':')[1], 10);
+      if (!tag.startsWith("transponierung:")) continue;
+      const dT = parseInt(tag.split(":")[1], 10);
       return isNaN(dT) ? 0 : dT;
     }
     return 0;
@@ -29,26 +28,32 @@ const Printer = ({song, history}: PrinterProps & RouteComponentProps) => {
 
   const refChordsheet = React.createRef<HTMLDivElement>();
 
-  const settings = <aside id="rightSettings">
-    <Button onClick={navigateCallback(history, View.view, song)}>
-      <ReactSVG src='/svg/cancel.svg' />
-    </Button>
-  </aside>;
-
+  const settings = (
+    <aside id="rightSettings">
+      <Button onClick={navigateCallback(history, View.view, song)}>
+        <ReactSVG src="/svg/cancel.svg" />
+      </Button>
+    </aside>
+  );
 
   const sheetStyle = {
     columns: cols,
-    fontSize: scale + '%',
-    lineHeight: lineHeight
+    fontSize: scale + "%",
+    lineHeight: lineHeight,
   };
 
-  const colMode = cols == 1 ? ' singleCol' : '';
+  const colMode = cols == 1 ? " singleCol" : "";
 
   return (
     <>
       <div className="simulate-print">
-        <div className={'content' + colMode} id="chordsheet">
-          <Sheet song={song} transpose={transpose} hideChords={hideChords} style={sheetStyle} />
+        <div className={"content" + colMode} id="chordsheet">
+          <Sheet
+            song={song}
+            transpose={transpose}
+            hideChords={hideChords}
+            style={sheetStyle}
+          />
         </div>
       </div>
       {settings}

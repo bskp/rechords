@@ -1,55 +1,54 @@
 @import (reference) "./variables.import.less";
 
 svg.chord-diag {
+  text {
+    text-anchor: middle;
+    font-size: 0.5rem;
+    stroke-width: 0;
+  }
+
+  .fret {
+    stroke-width: 0.7;
+    stroke: var(--gray);
+
+    rect {
+      fill: var(--gray);
+    }
+
+    .basefret {
+      font-size: 0.8rem;
+      fill: var(--gray);
+    }
+  }
+
+  .barre {
+    fill: var(--accent);
+
+    .capo {
+      fill: var(--gray);
+      fill-opacity: 0.3;
+    }
 
     text {
-        text-anchor: middle;
-        font-size: 0.5rem;
-        stroke-width: 0;
+      fill: var(--text-inverted);
+      font-weight: 700;
+    }
+  }
+
+  .dot {
+    fill: var(--accent);
+    stroke-width: 1;
+    stroke: transparent;
+
+    text {
+      fill: var(--text-inverted);
+      font-weight: 700;
     }
 
-    .fret {
-        stroke-width: 0.7;
-        stroke: var(--gray);
-
-        rect {
-            fill: var(--gray);
-        }
-
-        .basefret {
-            font-size: 0.8rem;
-            fill: var(--gray);
-        }
+    &.open circle,
+    &.muted line {
+      fill: transparent;
+      stroke: var(--accent);
     }
-
-    .barre {
-        fill: var(--accent);
-
-        .capo {
-            fill: var(--gray);
-            fill-opacity: 0.3;
-        }
-
-        text {
-            fill: var(--text-inverted);
-            font-weight: 700;
-        }
-    }
-
-    .dot {
-        fill: var(--accent);
-        stroke-width: 1;
-        stroke: transparent;
-
-        text {
-            fill: var(--text-inverted);
-            font-weight: 700;
-        }
- 
-        &.open circle, &.muted line {
-            fill: transparent;
-            stroke: var(--accent);
-        }
-    }
-
+  }
 }

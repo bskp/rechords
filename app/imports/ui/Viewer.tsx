@@ -1,15 +1,15 @@
-import React, {useCallback, useContext, useEffect, useState} from "react";
-import {NavLink, useHistory, useParams} from "react-router-dom";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { NavLink, useHistory, useParams } from "react-router-dom";
 import TransposeSetter from "./TransposeSetter";
 import ChrodLib from "../api/libchrod";
-import {Song} from "../api/collections";
+import { Song } from "../api/collections";
 import Drawer from "./Drawer";
-import {routePath, userMayWrite, View} from "../api/helpers";
+import { routePath, userMayWrite, View } from "../api/helpers";
 import Sheet from "./Sheet";
-import {Button} from "./Button";
-import {ReactSVG} from "react-svg";
-import {Meteor} from "meteor/meteor";
-import {MenuContext} from "/imports/ui/App";
+import { Button } from "./Button";
+import { ReactSVG } from "react-svg";
+import { Meteor } from "meteor/meteor";
+import { MenuContext } from "/imports/ui/App";
 
 interface SongRouteParams {
   author?: string;
@@ -20,14 +20,16 @@ interface ViewerProps {
   song: Song;
 }
 
-const Viewer: React.FC<ViewerProps> = ({song}) => {
-  const [relTranspose, setRelTranspose] = useState<number>(getInitialTranspose());
+const Viewer: React.FC<ViewerProps> = ({ song }) => {
+  const [relTranspose, setRelTranspose] = useState<number>(
+    getInitialTranspose(),
+  );
   const [inlineReferences, setInlineReferences] = useState<boolean>(false);
   const [showChords, setShowChords] = useState<boolean>(true);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
 
   const history = useHistory();
-  const {author, title} = useParams<SongRouteParams>();
+  const { author, title } = useParams<SongRouteParams>();
 
   let duration_s: number | undefined;
 
@@ -44,15 +46,17 @@ const Viewer: React.FC<ViewerProps> = ({song}) => {
   useEffect(() => {
     updateDuration();
     document.scrollingElement?.scrollTo(0, 0);
-    setRelTranspose(getInitialTranspose())
+    setRelTranspose(getInitialTranspose());
     stopAutoScroll();
     return () => stopAutoScroll();
   }, [song]);
 
   function getInitialTranspose(): number {
-    const transposeTag = song.getTags().find(tag => tag.startsWith('transponierung:'));
+    const transposeTag = song
+      .getTags()
+      .find((tag) => tag.startsWith("transponierung:"));
     if (!transposeTag) return 0;
-    let dt = parseInt(transposeTag.split(':')[1], 10);
+    let dt = parseInt(transposeTag.split(":")[1], 10);
     return isNaN(dt) ? 0 : dt;
   }
 
@@ -74,7 +78,8 @@ const Viewer: React.FC<ViewerProps> = ({song}) => {
     let step_pixels = 1;
 
     if (duration_s) {
-      const scrollDistance = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+      const scrollDistance =
+        scrollContainer.scrollHeight - scrollContainer.clientHeight;
       delay_ms = (duration_s * 1000) / scrollDistance;
     }
 
@@ -118,7 +123,7 @@ const Viewer: React.FC<ViewerProps> = ({song}) => {
     </div>
   ) : null;
 
-  const {setShowMenu} = useContext(MenuContext);
+  const { setShowMenu } = useContext(MenuContext);
 
   return (
     <>
@@ -127,16 +132,12 @@ const Viewer: React.FC<ViewerProps> = ({song}) => {
         id="chordsheet"
         onContextMenu={handleContextMenu}
       >
-        <Sheet
-          song={song}
-          transpose={relTranspose}
-          hideChords={!showChords}
-        />
+        <Sheet song={song} transpose={relTranspose} hideChords={!showChords} />
         {footer}
       </div>
       <aside id="rightSettings">
         <Button onClick={() => setShowMenu(true)} phoneOnly>
-          <ReactSVG src="/svg/menu.svg"/>
+          <ReactSVG src="/svg/menu.svg" />
         </Button>
         <TransposeSetter
           onDoubleClick={() => setShowChords((prev) => !prev)}
@@ -146,9 +147,9 @@ const Viewer: React.FC<ViewerProps> = ({song}) => {
         />
         <Button onClick={toggleAutoScroll}>
           {autoScroll ? (
-            <ReactSVG src="/svg/conveyor_active.svg"/>
+            <ReactSVG src="/svg/conveyor_active.svg" />
           ) : (
-            <ReactSVG src="/svg/conveyor.svg"/>
+            <ReactSVG src="/svg/conveyor.svg" />
           )}
         </Button>
       </aside>

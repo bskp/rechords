@@ -1,95 +1,101 @@
-import * as React from 'react';
-import { withTracker } from 'meteor/react-meteor-data';
+import * as React from "react";
+import { withTracker } from "meteor/react-meteor-data";
 
-import Table from './Table';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import Table from "./Table";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import moment from 'moment';
-import 'moment/locale/de';
-import { Meteor } from 'meteor/meteor';
-import {MdEdit} from "react-icons/md";
+import moment from "moment";
+import "moment/locale/de";
+import { Meteor } from "meteor/meteor";
+import { MdEdit } from "react-icons/md";
 
-export function Select( {options, ...rest} ) {
-    
-  const option_elements = options.map( data => {
-    return <option value={data.value} key={data.value} >{data.label}</option>;
+export function Select({ options, ...rest }) {
+  const option_elements = options.map((data) => {
+    return (
+      <option value={data.value} key={data.value}>
+        {data.label}
+      </option>
+    );
   });
 
   return <select {...rest}>{option_elements}</select>;
 }
 
-
 const roles = [
-  { value: 'user', label: 'Lieder anzeigen' },
-  { value: 'writer', label: 'Lieder ändern' },
-  { value: 'admin', label: 'Lieder + Benutzer ändern' },
+  { value: "user", label: "Lieder anzeigen" },
+  { value: "writer", label: "Lieder ändern" },
+  { value: "admin", label: "Lieder + Benutzer ändern" },
 ];
 
-class EditUser extends React.Component<{ user? : Meteor.User }, { user : Meteor.User, secret : string, msg : string }> {
-
+class EditUser extends React.Component<
+  { user?: Meteor.User },
+  { user: Meteor.User; secret: string; msg: string }
+> {
   constructor(props) {
     super(props);
     this.state = {
       user: this.props.user,
-      secret: '',
-      msg: ''
+      secret: "",
+      msg: "",
     };
   }
 
-  updateName = (e : React.ChangeEvent<HTMLInputElement>) => {
+  updateName = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    this.setState( prevState => ({ user: { ...prevState.user,
-      profile: { ...prevState.user.profile,
-        name: val
-      }
-    },
-    msg: ''
+    this.setState((prevState) => ({
+      user: {
+        ...prevState.user,
+        profile: { ...prevState.user.profile, name: val },
+      },
+      msg: "",
     }));
   };
 
-  updateEmail = (e : React.ChangeEvent<HTMLInputElement>) => {
+  updateEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    this.setState( prevState => ({ user: { ...prevState.user,
-      emails: [
-        { address: val, verified: false }
-      ]
-    },
-    msg: ''
+    this.setState((prevState) => ({
+      user: { ...prevState.user, emails: [{ address: val, verified: false }] },
+      msg: "",
     }));
   };
 
-  updateRole = (e : React.ChangeEvent<HTMLInputElement>) => {
+  updateRole = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    if (this.state.user?._id == Meteor.userId() && val == 'user') {
+    if (this.state.user?._id == Meteor.userId() && val == "user") {
       this.setState({
-        msg: 'Du kannst dir nicht selbst Rechte wegnehmen!'
+        msg: "Du kannst dir nicht selbst Rechte wegnehmen!",
       });
       return;
     }
 
-    this.setState( prevState => ({ user: { ...prevState.user,
-      profile: { ...prevState.user.profile,
-        role: val
-      }
-    },
-    msg: ''
+    this.setState((prevState) => ({
+      user: {
+        ...prevState.user,
+        profile: { ...prevState.user.profile, role: val },
+      },
+      msg: "",
     }));
   };
 
-  updateSecret = (e : React.ChangeEvent<HTMLInputElement>) => {
+  updateSecret = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       secret: e.target.value,
-      msg: ''
+      msg: "",
     });
   };
 
-  handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
-    Meteor.call('saveUser', this.state.user, this.state.secret, (error) => {
+  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    Meteor.call("saveUser", this.state.user, this.state.secret, (error) => {
       console.log(error);
 
       this.setState({
-        msg: error == undefined ? 'gesichert.' : error?.details || error?.message || 'Es ist ein Fehler aufgetreten.',
-        secret: ''
+        msg:
+          error == undefined
+            ? "gesichert."
+            : error?.details ||
+              error?.message ||
+              "Es ist ein Fehler aufgetreten.",
+        secret: "",
       });
     });
 
@@ -103,31 +109,50 @@ class EditUser extends React.Component<{ user? : Meteor.User }, { user : Meteor.
 
     return (
       <>
-        <h2>Bearbeite "{u.profile.name || 'Neuer Benutzer'}"<em>{this.state.msg}</em></h2>
+        <h2>
+          Bearbeite "{u.profile.name || "Neuer Benutzer"}"
+          <em>{this.state.msg}</em>
+        </h2>
         <form onSubmit={this.handleSubmit} className="row">
-          <input type="text" value={u.profile.name} onChange={this.updateName} placeholder="Name"/>
-          <input type="text" value={u.emails?.[0].address} onChange={this.updateEmail} placeholder="Email"/>
-          <input type="text" value={this.state.secret} placeholder="vier neue geheime Wörter" onChange={this.updateSecret} />
-          <Select options={roles} value={u.profile.role} onChange={this.updateRole} />
-          <input type="submit" value="Sichern"/>
+          <input
+            type="text"
+            value={u.profile.name}
+            onChange={this.updateName}
+            placeholder="Name"
+          />
+          <input
+            type="text"
+            value={u.emails?.[0].address}
+            onChange={this.updateEmail}
+            placeholder="Email"
+          />
+          <input
+            type="text"
+            value={this.state.secret}
+            placeholder="vier neue geheime Wörter"
+            onChange={this.updateSecret}
+          />
+          <Select
+            options={roles}
+            value={u.profile.role}
+            onChange={this.updateRole}
+          />
+          <input type="submit" value="Sichern" />
         </form>
       </>
     );
   }
-
 }
 
-
 type UsersProps = {
-    users: Meteor.User[];
+  users: Meteor.User[];
 } & RouteComponentProps;
 
-class Users extends React.Component<UsersProps, { user? : Meteor.User }> {
-
+class Users extends React.Component<UsersProps, { user?: Meteor.User }> {
   constructor(props: UsersProps) {
     super(props);
     this.state = {
-      user: undefined
+      user: undefined,
     };
   }
 
@@ -136,34 +161,35 @@ class Users extends React.Component<UsersProps, { user? : Meteor.User }> {
       // @ts-ignore _id will be added by meteor
       user: {
         _id: undefined,
-        username: '',
-        emails: [ { address: '', verified: false} ],
+        username: "",
+        emails: [{ address: "", verified: false }],
         createdAt: new Date(),
 
         profile: {
-          role: 'user',
-          name: '',
-        }
-      }
+          role: "user",
+          name: "",
+        },
+      },
     });
   };
 
   private columns = [
     {
-      Header: 'Name',
-      accessor: 'profile.name',
+      Header: "Name",
+      accessor: "profile.name",
     },
     {
-      Header: 'Email-Adresse',
-      accessor: (u : Meteor.User) => u.emails?.[0].address,
+      Header: "Email-Adresse",
+      accessor: (u: Meteor.User) => u.emails?.[0].address,
     },
     {
-      Header: '1. Wort',
-      accessor: 'username',
+      Header: "1. Wort",
+      accessor: "username",
     },
     {
-      Header: 'Rechte',
-      accessor: (u : Meteor.User) => roles.filter(d => d.value == u.profile.role)[0].label,
+      Header: "Rechte",
+      accessor: (u: Meteor.User) =>
+        roles.filter((d) => d.value == u.profile.role)[0].label,
     },
     /*
         {
@@ -172,39 +198,47 @@ class Users extends React.Component<UsersProps, { user? : Meteor.User }> {
         },
         */
     {
-      Header: 'Erstellt am',
-      accessor: (u : Meteor.User) => u.createdAt,
-      Cell: ({ cell: { value } }) => String(value && moment(value).format('L')),
+      Header: "Erstellt am",
+      accessor: (u: Meteor.User) => u.createdAt,
+      Cell: ({ cell: { value } }) => String(value && moment(value).format("L")),
     },
     {
-      Header: '',
-      id: 'edit',
-      Cell: ({row: {original: u}}) => {
-        return <a onClick={ () => { this.setState( {user: u} ); } }>
-          <MdEdit />
-        </a>;
+      Header: "",
+      id: "edit",
+      Cell: ({ row: { original: u } }) => {
+        return (
+          <a
+            onClick={() => {
+              this.setState({ user: u });
+            }}
+          >
+            <MdEdit />
+          </a>
+        );
       },
     },
   ];
 
   render() {
     let id = this.state.user?._id;
-    if (id === undefined && this.state.user !== undefined) id = 'draft';
+    if (id === undefined && this.state.user !== undefined) id = "draft";
 
     return (
       <div className="content" id="users">
         <h1>Alle</h1>
         <h2>Benutzer</h2>
         <Table columns={this.columns} data={this.props.users} />
-        <a onClick={this.newUser} className="btn">Hinzufügen</a>
+        <a onClick={this.newUser} className="btn">
+          Hinzufügen
+        </a>
         <EditUser user={this.state.user} key={id} />
       </div>
     );
   }
 }
-const wrapped = withTracker( (props: UsersProps)=> {
+const wrapped = withTracker((props: UsersProps) => {
   return {
-    users: Meteor.users.find().fetch()
+    users: Meteor.users.find().fetch(),
   };
 })(Users);
 export default withRouter(wrapped);
