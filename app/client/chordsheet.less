@@ -253,6 +253,9 @@
     padding-left: @continuation_pad;
     white-space: pre-wrap;
   }
+  .line::after {
+    content: attr(data-line-cnt);
+  }
 
   .line i {
     font-style: normal;

@@ -9,6 +9,8 @@ import * as DH from "domhandler";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { Tablature } from "abcjs";
 import classNames from "classnames";
+import YouTube from "react-youtube";
+import { YtInter } from "./YtInter";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
 
@@ -30,16 +32,34 @@ const Sheet = ({
   const [inlineRefs, setInlineRefs] = useState(true);
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
+  const [selectLine, setSelectLine] = useState<{ time: number }>();
+
+  const handleLineClick = (e: MouseEvent) => {
+    const lineCnt = e?.currentTarget?.dataset.lineCnt;
+    if (lineCnt) {
+      setSelectLine({ time: lineCnt });
+    }
+  };
   const chordsheetContent = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const elements = chordsheetContent.current?.querySelectorAll("div.ref");
+    // alternatively: matches() on clicked target and click listener
+    // on surrounding sheetcontent
     elements?.forEach((e) => e.addEventListener("click", toggleInlineRefs));
     return () =>
       elements?.forEach((e) =>
         e.removeEventListener("click", toggleInlineRefs),
       );
-  });
+  }, []);
+  useEffect(() => {
+    const elements = chordsheetContent.current?.querySelectorAll("span.line");
+    // alternatively: matches() on clicked target and click listener
+    // on surrounding sheetcontent
+    elements?.forEach((e) => e.addEventListener("click", handleLineClick));
+    return () =>
+      elements?.forEach((e) => e.removeEventListener("click", handleLineClick));
+  }, []);
 
   const chords = song.getChords();
 
@@ -91,6 +111,11 @@ const Sheet = ({
       if (!("class" in code.attribs)) return node;
 
       const classes = code.attribs["class"];
+      if (classes.includes("language-yt")) {
+        const data = code.firstChild.data as string;
+        return <YtInter data={data} lineAction={selectLine} />;
+      }
+
       if (!classes.includes("language-abc")) return node;
 
       if (code.children.length != 1) return node;

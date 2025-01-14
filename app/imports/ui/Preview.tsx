@@ -9,7 +9,9 @@ import { DataNode } from "domhandler";
 
 import { verseRegex } from "../api/showdown-rechords";
 import { Tablature } from "abcjs";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import YouTube from "react-youtube";
+import { appendTime, YtInter } from "./YtInter";
 
 const nodeText = (node) => {
   return node.children.reduce(
@@ -27,6 +29,7 @@ interface P {
 
 export default (props: P) => {
   const html = useRef<HTMLSelectElement>(null);
+  const lastTime = useRef(0);
 
   useEffect(() => {
     const traverse = (node: HTMLElement): void => {
@@ -65,8 +68,25 @@ export default (props: P) => {
     });
     return { verseNames, chords };
   };
+  // using wrapped number triggers prop change on every set
+  const [selectLine, setSelectLine] = useState({ time: 0 });
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
+      const line = event.target.closest("span.line");
+      console.log(line);
+      const lineCnt = line.dataset.lineCnt;
+      if (event.shiftKey) {
+        setSelectLine({ time: lineCnt });
+      } else {
+        const md = props.md;
+        const newMd = appendTime(md, lastTime.current, lineCnt);
+        if (newMd) {
+          props.updateHandler(newMd);
+        }
+      }
+      return;
+    }
     const node: Element = event.target as Element;
     if (!(node instanceof HTMLElement) || node.tagName != "I") return;
 
@@ -396,6 +416,24 @@ export default (props: P) => {
           const code = node.children[0] as DH.Element;
           if (!("class" in code.attribs)) return node;
           const classes = code.attribs["class"];
+          if (classes.includes("language-yt")) {
+            const data = code.firstChild.data as string;
+            return (
+              <div>
+                <YtInter
+                  data={data}
+                  lineAction={selectLine}
+                  onTimeChange={(v) => (lastTime.current = v)}
+                />
+                <dl>
+                  <dt>Recall</dt>
+                  <dd>shift + click</dd>
+                  <dt>Add Anchor</dt>
+                  <dd>ctrl + click</dd>
+                </dl>
+              </div>
+            );
+          }
           if (!classes.includes("language-abc")) return node;
           if (code.children.length != 1) return node;
           let tablature: Tablature[] = [];
@@ -431,7 +469,7 @@ export default (props: P) => {
       <section
         className="interactive"
         id="chordsheetContent"
-        onClick={handleClick.bind(this)}
+        onClick={(e) => handleClick(e)}
         ref={html}
       >
         {vdom}
