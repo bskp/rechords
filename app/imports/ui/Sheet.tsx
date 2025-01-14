@@ -33,13 +33,14 @@ const Sheet = ({
   const chordsheetContent = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    const elements = chordsheetContent.current?.querySelectorAll('h3')
+    const elements = chordsheetContent.current?.querySelectorAll('div.ref')
     // alternatively: matches() on clicked target
-    elements?.forEach(() => addEventListener('click', toggleInlineRefs))
-    return () => elements?.forEach(()=>removeEventListener('click', toggleInlineRefs))
+    elements?.forEach(e => e.addEventListener('click', toggleInlineRefs))
+    return () => elements?.forEach(e=>e.removeEventListener('click', toggleInlineRefs))
   })
 
   const chords = song.getChords();
+
   const chrodlib = new ChrodLib();
   const rmd_html = song.getHtml();
 
@@ -158,7 +159,6 @@ const Sheet = ({
 
   return (
     <section ref={chordsheetContent} id="chordsheetContent" style={style} className={classNames({inlineRefs, hideRefs: !inlineRefs})}>
-      <div onClick={toggleInlineRefs}>{inlineRefs ? 'Hide' : 'Inline' } Repetitions</div>
       {vdom}
     </section>
   );
