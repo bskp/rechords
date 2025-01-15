@@ -1,12 +1,12 @@
-import * as React from 'react';
-import parse, {DOMNode, domToReact} from 'html-react-parser';
-import {Song} from '../api/collections';
-import {Abcjs} from './Abcjs';
-import Kord from './Kord';
-import {userMayWrite} from '../api/helpers';
-import * as DH from 'domhandler';
-import {CSSProperties, useEffect, useState} from "react";
-import {Tablature} from 'abcjs';
+import * as React from "react";
+import parse, { DOMNode, domToReact } from "html-react-parser";
+import { Song } from "../api/collections";
+import { Abcjs } from "./Abcjs";
+import Kord from "./Kord";
+import { userMayWrite } from "../api/helpers";
+import * as DH from "domhandler";
+import { CSSProperties, useEffect, useState } from "react";
+import { Tablature } from "abcjs";
 import Chord_ from "/imports/api/libchr0d/chord";
 import classNames from "classnames";
 
@@ -43,7 +43,7 @@ const Sheet = ({
 
   const rmd_html = song.getHtml();
 
-  const key_tag = song.getTag('tonart');
+  const key_tag = song.getTag("tonart");
 
   // Postprocessing on each node from the dom-to-react parser
   const populateReactNodes = (node: DOMNode): DomOut => {
@@ -54,13 +54,18 @@ const Sheet = ({
       if (hideChords) return; // swallow the chord
 
       let chord_ = null;
-      if ('data-chord' in node.attribs) {
-        const chord = node.attribs['data-chord'];
+      if ("data-chord" in node.attribs) {
+        const chord = node.attribs["data-chord"];
         const t = Chord_.from(chord)?.transposed(transpose ?? 0);
         if (t === undefined) {
           chord_ = <span className="before">{chord}</span>;
         } else {
-          chord_ = <span className={'before ' + t.toStringClasses()}>{t.toStringKey()}<sup>{t.toStringTensionsAndSlash()}</sup></span>;
+          chord_ = (
+            <span className={"before " + t.toStringClasses()}>
+              {t.toStringKey()}
+              <sup>{t.toStringTensionsAndSlash()}</sup>
+            </span>
+          );
         }
       }
       return (
@@ -103,7 +108,7 @@ const Sheet = ({
     // Fret diagrams
     else if (node.name == "abbr") {
       const chord = (node.firstChild as DH.DataNode).data;
-      const c = Chord_.from(chord)
+      const c = Chord_.from(chord);
 
       return (
         <span className="chord-container">

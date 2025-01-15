@@ -110,15 +110,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     key = ChrodLib.guessKey(song.getChords());
   }
 
-  const chordFrequencies = new Map<string, number>();
-  song.getChords()
-    .map(chord => Chord_.from(chord)?.asCode())
-    .filter((c: string | undefined): c is string => c !== undefined)
-    .forEach(chord => {
-      const current = chordFrequencies.get(chord) ?? 0;
-      chordFrequencies.set(chord, current + 1);
-    });
-
   const drawer = userMayWrite() ? (
     <Drawer className="source-colors" onClick={handleContextMenu}>
       <h1>bearbeiten</h1>
@@ -151,15 +142,23 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
           <ReactSVG src="/svg/menu.svg" />
         </Button>
         <Button onClick={() => setShowTransposer(true)}>
-          <ReactSVG src="/svg/sharp.svg"/>
+          <ReactSVG src="/svg/sharp.svg" />
         </Button>
-        {showTransposer ? <Transposer
-          onDoubleClick={() => setShowChords((prev) => !prev)}
-          transposeSetter={setRelTranspose}
-          transpose={relTranspose}
-          close={() => setShowTransposer(false)}
-          chords={song.getChords().map(chord => Chord_.from(chord)).filter((chord: Chord_ | undefined): chord is Chord_ => chord !== undefined)}
-        /> : null}
+        {showTransposer ? (
+          <Transposer
+            onDoubleClick={() => setShowChords((prev) => !prev)}
+            transposeSetter={setRelTranspose}
+            transpose={relTranspose}
+            close={() => setShowTransposer(false)}
+            chords={song
+              .getChords()
+              .map((chord) => Chord_.from(chord))
+              .filter(
+                (chord: Chord_ | undefined): chord is Chord_ =>
+                  chord !== undefined,
+              )}
+          />
+        ) : null}
         <Button onClick={toggleAutoScroll}>
           {autoScroll ? (
             <ReactSVG src="/svg/conveyor_active.svg" />

@@ -1,16 +1,14 @@
-type Notation = 'bee' | 'sharp' | 'undetermined';
+type Notation = "bee" | "sharp" | "undetermined";
 
 export default class Note {
-
   public constructor(
     public readonly value: number,
-    public readonly notation: Notation
-  ) {
-  }
+    public readonly notation: Notation,
+  ) {}
 
   static from(name: string) {
     if (!name) {
-      return undefined
+      return undefined;
     }
 
     const match = name.match(/([a-hA-H])(b|#|)/);
@@ -22,49 +20,87 @@ export default class Note {
 
     let value = ((v: string) => {
       switch (v.toLowerCase()) {
-        case 'c':
+        case "c":
           return 0;
-        case 'd':
+        case "d":
           return 2;
-        case 'e':
+        case "e":
           return 4;
-        case 'f':
+        case "f":
           return 5;
-        case 'g':
+        case "g":
           return 7;
-        case 'a':
+        case "a":
           return 9;
         default:
           return 11;
       }
     })(valueStr);
 
-    let notation: Notation = 'undetermined';
+    let notation: Notation = "undetermined";
 
-    if (accidental === 'b') {
-      notation = 'bee';
+    if (accidental === "b") {
+      notation = "bee";
       value += -1;
-    } else if (accidental === '#') {
-      notation = 'sharp';
+    } else if (accidental === "#") {
+      notation = "sharp";
       value += 1;
     }
 
-    return new Note(value, notation)
+    return new Note(value, notation);
   }
 
   public transposed(semitones: number) {
-    return new Note((this.value + 12 + semitones%12)%12, this.notation);
+    return new Note((this.value + 12 + (semitones % 12)) % 12, this.notation);
   }
 
   public toString() {
     switch (this.notation) {
       case "bee":
-        return ['c', 'db', 'd', 'eb', 'e', 'f', 'gb', 'g', 'ab', 'a', 'bb', 'b'][this.value];
+        return [
+          "c",
+          "db",
+          "d",
+          "eb",
+          "e",
+          "f",
+          "gb",
+          "g",
+          "ab",
+          "a",
+          "bb",
+          "b",
+        ][this.value];
       case "undetermined":
-        return ['c', 'c#', 'd', 'eb', 'e', 'f', 'f#', 'g', 'g#', 'a', 'bb', 'b'][this.value];
+        return [
+          "c",
+          "c#",
+          "d",
+          "eb",
+          "e",
+          "f",
+          "f#",
+          "g",
+          "g#",
+          "a",
+          "bb",
+          "b",
+        ][this.value];
       case "sharp":
-        return ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'][this.value];
+        return [
+          "c",
+          "c#",
+          "d",
+          "d#",
+          "e",
+          "f",
+          "f#",
+          "g",
+          "g#",
+          "a",
+          "a#",
+          "b",
+        ][this.value];
     }
   }
 }
-
