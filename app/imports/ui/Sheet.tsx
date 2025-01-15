@@ -6,8 +6,9 @@ import { Abcjs } from "./Abcjs";
 import Kord from "./Kord";
 import { userMayWrite } from "../api/helpers";
 import * as DH from "domhandler";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import { Tablature } from "abcjs";
+import classNames from "classnames";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
 
@@ -29,69 +30,19 @@ const Sheet = ({
   const [inlineRefs, setInlineRefs] = useState(true);
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
-  const enrichReferences = (vdom: JSX.Element[]) => {
-    const sections_dict = new Map<string, React.JSX.Element>();
-    for (let i = 0; i < vdom.length; i++) {
-      const elem = vdom[i];
-      if (elem.props) {
-        const id = elem.props.id;
-        if (id && id.startsWith("sd-ref")) {
-          sections_dict.set(id, elem); // add section to dictionary
-        }
-      }
-    }
+  const chordsheetContent = useRef<HTMLElement>(null);
 
-    for (let i = 0; i < vdom.length; i++) {
-      const elem = vdom[i];
-      {
-        if (elem?.props?.className == "ref") {
-          const key = "ref_" + i;
-          const visible = inlineRefs ? " shown" : " hidden";
-
-          const firstChild = React.Children.toArray(
-            elem.props.children,
-          )[0] as Partial<React.ReactElement>;
-          const refName = firstChild?.props?.children;
-          if (typeof refName != "string") continue;
-
-          // TODO: merge reference an content into one section so they don't break apart in column view
-          const ref = "sd-ref-" + refName.trim();
-          const definition = sections_dict.get(ref);
-          if (!definition) {
-            vdom[i] = React.cloneElement(elem, {
-              onClick: () => {
-                console.log("sf");
-                toggleInlineRefs();
-              },
-              className: "ref collapsed",
-              key: key,
-              id: key,
-            });
-          } else {
-            vdom[i] = React.cloneElement(elem, {
-              onClick: toggleInlineRefs,
-              className: "ref" + (inlineRefs ? " open" : " collapsed"),
-              key: key,
-              id: key,
-            });
-
-            vdom.splice(
-              i + 1,
-              0,
-              React.cloneElement(definition, {
-                id: null,
-                key: definition.key + "-clone-" + i,
-                className: "inlineReference" + visible,
-              }),
-            );
-          }
-        }
-      }
-    }
-    return vdom;
-  }; // enrichReferences
+  useEffect(() => {
+    const elements = chordsheetContent.current?.querySelectorAll("div.ref");
+    elements?.forEach((e) => e.addEventListener("click", toggleInlineRefs));
+    return () =>
+      elements?.forEach((e) =>
+        e.removeEventListener("click", toggleInlineRefs),
+      );
+  });
 
   const chords = song.getChords();
+
   const chrodlib = new ChrodLib();
   const rmd_html = song.getHtml();
 
@@ -208,10 +159,13 @@ const Sheet = ({
 
   let vdom = parse(rmd_html, { replace: postprocess }) as JSX.Element[];
 
-  vdom = enrichReferences(vdom);
-
   return (
-    <section id="chordsheetContent" style={style}>
+    <section
+      ref={chordsheetContent}
+      id="chordsheetContent"
+      style={style}
+      className={classNames({ inlineRefs, hideRefs: !inlineRefs })}
+    >
       {vdom}
     </section>
   );

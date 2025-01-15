@@ -19,7 +19,7 @@
     color: var(--text);
   }
 
-  .ref {
+  .hideRefs .ref {
     color: var(--text);
     padding-left: 8px;
     margin-left: -12px;
@@ -33,16 +33,17 @@
     }
   }
 
-  .ref.open {
+  .inlineRefs .ref {
     color: var(--gray);
 
     strong {
+      cursor: pointer;
       display: block;
       margin-right: 0;
     }
   }
 
-  .ref.open,
+  .inlineRefs .ref,
   h3 {
     font-size: 1em;
     margin: 0;
@@ -76,14 +77,15 @@
     clear: both; // for the floated chord-diagrams
   }
 
-  .inlineReference {
-    &.shown {
+  .inlineRefs {
+    .inlineReference {
       h3 {
         display: none;
       }
     }
-
-    &.hidden {
+  }
+  .hideRefs {
+    .inlineReference {
       display: none;
     }
   }
@@ -206,6 +208,10 @@
 
   .interactive {
     .select(none);
+    .ref,
+    .inlineReference {
+      display: none;
+    }
   }
 
   .interactive i {
