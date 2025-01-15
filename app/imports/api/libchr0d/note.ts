@@ -55,5 +55,16 @@ export default class Note {
   public transposed(semitones: number) {
     return new Note((this.value + 12 + semitones%12)%12, this.notation);
   }
+
+  public toString() {
+    switch (this.notation) {
+      case "bee":
+        return ['c', 'db', 'd', 'eb', 'e', 'f', 'gb', 'g', 'ab', 'a', 'bb', 'b'][this.value];
+      case "undetermined":
+        return ['c', 'c#', 'd', 'eb', 'e', 'f', 'f#', 'g', 'g#', 'a', 'bb', 'b'][this.value];
+      case "sharp":
+        return ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'][this.value];
+    }
+  }
 }
 

@@ -2,10 +2,13 @@ import Note from "/imports/api/libchr0d/note";
 
 type Quality = 'major' | 'minor' | 'diminished' | 'augmented';
 
+const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1)
+
 export default class Chord_ {
 
   public constructor(
     public readonly key: Note,
+    public readonly isOptional: boolean,
     public readonly quality: Quality,
     public readonly tensions: string,
     public readonly slash?: Note,
@@ -19,24 +22,20 @@ export default class Chord_ {
       chordString = chordString.substring(1, chordString.length - 2);
     }
 
-    const match = chordString.match(/([a-h][#b]?)(maj7|m|\+|-|°|dim|aug|)([^\s\/]*)(?:\/([a-h][#b]?))?/i);
+    const match = chordString.match(/([a-h][#b]?)(maj7|m|)([^\s\/]*)(?:\/([a-h][#b]?))?/i);
     if (!match) {
       return undefined;
     }
 
-    const [_, keystr, qualityStr, schmuck, slash] = match;
+    let [_, keystr, qualityStr, tensions, slash] = match;
 
     const quality = ((q: string): Quality => {
       switch (q) {
         case 'm':
-        case '-':
           return 'minor';
-        case 'aug':
-        case '+':
-          return 'augmented';
-        case '°':
-        case 'dim':
-          return 'diminished';
+        case 'maj7':
+          tensions = 'maj7' + tensions
+          return 'major';
         default:
           return 'major';
       }
@@ -45,11 +44,11 @@ export default class Chord_ {
     const key = Note.from(keystr);
     if (key === undefined) return undefined;
 
-    return new Chord_(key, quality, schmuck, Note.from(slash))
+    return new Chord_(key, isOptional, quality, tensions, Note.from(slash))
   }
 
   public transposed(semitones: number) {
-    return new Chord_(this.key.transposed(semitones), this.quality, this.tensions, this.slash?.transposed(semitones));
+    return new Chord_(this.key.transposed(semitones), this.isOptional, this.quality, this.tensions, this.slash?.transposed(semitones));
   }
 
   public asCode() {
@@ -57,9 +56,25 @@ export default class Chord_ {
     return (this.quality === 'minor' ? 'm' : 'M') + (this.key.value);
   }
 
-  public asAngle() {
-    const offset = (this.quality === 'minor') ? 3 : 0;
-    const lookup = [0, -5, 2, -3, 4, -1, 6, 1, -4, 3, -2, 5];
-    return 360 - lookup[this.key.value + offset]*30;
+  public toStringKey() {
+    let base = this.key.toString()
+    if (this.quality === 'major') {
+      base = capitalize(base);
+    } else {
+      base = base + 'm';
+    }
+    return base;
+  }
+
+  public toStringTensionsAndSlash() {
+    return this.tensions ?? '' + (this.slash ? '/' + this.slash.toString() : '');
+  }
+
+  public toString() {
+    return this.toStringKey() + this.toStringTensionsAndSlash()
+  }
+
+  public toStringClasses() {
+    return 'chord' + (this.isOptional ? ' optional' : '');
   }
 }

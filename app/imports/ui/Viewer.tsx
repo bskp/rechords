@@ -152,12 +152,13 @@ const Viewer: React.FC<ViewerProps> = ({song}) => {
         <Button onClick={() => setShowTransposer(true)}>
           <ReactSVG src="/svg/sharp.svg"/>
         </Button>
-        <Transposer
+        {showTransposer ? <Transposer
           onDoubleClick={() => setShowChords((prev) => !prev)}
           transposeSetter={setRelTranspose}
           transpose={relTranspose}
+          close={() => setShowTransposer(false)}
           chords={song.getChords().map(chord => Chord_.from(chord)).filter((chord: Chord_ | undefined): chord is Chord_ => chord !== undefined)}
-        />
+        /> : null}
         <Button onClick={toggleAutoScroll}>
           {autoScroll ? (
             <ReactSVG src="/svg/conveyor_active.svg"/>

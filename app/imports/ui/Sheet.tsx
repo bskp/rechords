@@ -1,6 +1,5 @@
 import * as React from 'react';
 import parse, {DOMNode, domToReact} from 'html-react-parser';
-import ChrodLib from '../api/libchrod';
 import {Song} from '../api/collections';
 import {Abcjs} from './Abcjs';
 import Kord from './Kord';
@@ -8,6 +7,7 @@ import {userMayWrite} from '../api/helpers';
 import * as DH from 'domhandler';
 import {CSSProperties, useState} from "react";
 import {Tablature} from 'abcjs';
+import Chord_ from "/imports/api/libchr0d/chord";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false
 
@@ -86,15 +86,9 @@ const Sheet = ({song, transpose, hideChords, processVdom, style}: SheetProps) =>
   };  // enrichReferences
 
 
-  const chords = song.getChords();
-  const chrodlib = new ChrodLib();
   const rmd_html = song.getHtml();
 
   const key_tag = song.getTag('tonart');
-  let key = key_tag && ChrodLib.parseTag(key_tag);
-  if (key == null) {
-    key = ChrodLib.guessKey(chords);
-  }
 
   // Postprocessing on each node from the dom-to-react parser
   const populateReactNodes = (node: DOMNode): DomOut => {
@@ -108,11 +102,11 @@ const Sheet = ({song, transpose, hideChords, processVdom, style}: SheetProps) =>
       let chord_ = null;
       if ('data-chord' in node.attribs) {
         const chord = node.attribs['data-chord'];
-        const t = chrodlib.transpose(chord, key, transpose);
-        if (t == null) {
+        const t = Chord_.from(chord)?.transposed(transpose ?? 0);
+        if (t === undefined) {
           chord_ = <span className="before">{chord}</span>;
         } else {
-          chord_ = <span className={'before ' + t.className}>{t.base}<sup>{t.suff}</sup></span>;
+          chord_ = <span className={'before ' + t.toStringClasses()}>{t.toStringKey()}<sup>{t.toStringTensionsAndSlash()}</sup></span>;
         }
       }
       return <i>{chord_}<span>{domToReact(node.children)}</span></i>;
@@ -153,10 +147,10 @@ const Sheet = ({song, transpose, hideChords, processVdom, style}: SheetProps) =>
     // Fret diagrams
     else if (node.name == 'abbr') {
       const chord = (node.firstChild as DH.DataNode).data;
-      const c = chrodlib.transpose(chord, key, 0);
+      const c = Chord_.from(chord)
 
       return <span className='chord-container'>
-        <strong>{c.base}<sup>{c.suff}</sup></strong>
+        <strong>{c?.toStringKey()}<sup>{c?.toStringTensionsAndSlash()}</sup></strong>
         <Kord frets={node.attribs.title} fingers={node.attribs['data-fingers']}/>
       </span>;
     }

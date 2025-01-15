@@ -5,6 +5,7 @@ import path from 'path';
 import assert from 'assert';
 import { FilterXSS } from 'xss';
 import { options } from './xss-filter-options';
+import {describe, it} from "node:test";
 
 const converter = new showdown.Converter({ extensions: [showdownRechords] });
 
