@@ -9,7 +9,6 @@ import * as DH from "domhandler";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { Tablature } from "abcjs";
 import classNames from "classnames";
-import YouTube from "react-youtube";
 import { YtInter } from "./YtInter";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
@@ -51,7 +50,7 @@ const Sheet = ({
       elements?.forEach((e) =>
         e.removeEventListener("click", toggleInlineRefs),
       );
-  }, []);
+  });
   useEffect(() => {
     const elements = chordsheetContent.current?.querySelectorAll("span.line");
     // alternatively: matches() on clicked target and click listener
@@ -59,7 +58,7 @@ const Sheet = ({
     elements?.forEach((e) => e.addEventListener("click", handleLineClick));
     return () =>
       elements?.forEach((e) => e.removeEventListener("click", handleLineClick));
-  }, []);
+  });
 
   const chords = song.getChords();
 
