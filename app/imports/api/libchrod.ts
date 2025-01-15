@@ -1,7 +1,7 @@
 enum ToBorSharp {
   None,
   Flat,
-  Sharp
+  Sharp,
 }
 
 /*
@@ -20,25 +20,26 @@ class Key {
   idx: number;
   beOrNot: ToBorSharp;
 
-  constructor(public name: string, idx: number) {
+  constructor(
+    public name: string,
+    idx: number,
+  ) {
     this.idx = (idx + 48) % 12;
 
-    if (name.endsWith('b')) {
+    if (name.endsWith("b")) {
       this.beOrNot = ToBorSharp.Flat;
-    } else if (name.endsWith('#')) {
+    } else if (name.endsWith("#")) {
       this.beOrNot = ToBorSharp.Sharp;
     } else {
       this.beOrNot = ToBorSharp.None;
     }
     // todo: neutral, flat or sharp?
   }
-
   static parseName(name: string) {
     const idx = forwardMap.get(name.toUpperCase());
     return new Key(name, idx);
   }
 }
-
 
 /* Since the number of notes is limited
 and will not be extended, it is legit
@@ -46,24 +47,24 @@ to hardcode the notes and makes things
 easier in this class.
 */
 
-const B = new Key('B', 11),
-  H = new Key('H', 11),
-  Bes = new Key('Bb', 10),
-  Ais = new Key('A#', 10),
-  A = new Key('A', 9),
-  As = new Key('Ab', 8),
-  Gis = new Key('G#', 8),
-  G = new Key('G', 7),
-  Ges = new Key('Gb', 6),
-  Fis = new Key('F#', 6),
-  F = new Key('F', 5),
-  E = new Key('E', 4),
-  Es = new Key('Eb', 3),
-  Dis = new Key('D#', 3),
-  D = new Key('D', 2),
-  Des = new Key('Db', 1),
-  Cis = new Key('C#', 1),
-  C = new Key('C', 0);
+const B = new Key("B", 11),
+  H = new Key("H", 11),
+  Bes = new Key("Bb", 10),
+  Ais = new Key("A#", 10),
+  A = new Key("A", 9),
+  As = new Key("Ab", 8),
+  Gis = new Key("G#", 8),
+  G = new Key("G", 7),
+  Ges = new Key("Gb", 6),
+  Fis = new Key("F#", 6),
+  F = new Key("F", 5),
+  E = new Key("E", 4),
+  Es = new Key("Eb", 3),
+  Dis = new Key("D#", 3),
+  D = new Key("D", 2),
+  Des = new Key("Db", 1),
+  Cis = new Key("C#", 1),
+  C = new Key("C", 0);
 const keys: Key[] = [
   C,
   Cis,
@@ -86,26 +87,25 @@ const keys: Key[] = [
 ];
 
 const forwardMap: Map<string, number> = new Map();
-keys.forEach(k => forwardMap.set(k.name, k.idx));
+keys.forEach((k) => forwardMap.set(k.name, k.idx));
 
 const bMap: Map<number, string> = new Map();
 keys
-  .filter(k => k.beOrNot != ToBorSharp.Sharp)
-  .forEach(k => bMap.set(k.idx, k.name));
+  .filter((k) => k.beOrNot != ToBorSharp.Sharp)
+  .forEach((k) => bMap.set(k.idx, k.name));
 
 const shMap: Map<number, string> = new Map();
 keys
-  .filter(k => k.beOrNot != ToBorSharp.Flat)
-  .forEach(k => shMap.set(k.idx, k.name));
+  .filter((k) => k.beOrNot != ToBorSharp.Flat)
+  .forEach((k) => shMap.set(k.idx, k.name));
 
 // TODO: move to another file
 class Scale {
   public bmap: Map<number, ToBorSharp>;
-
   constructor(
     public name: string,
     public pitches: number[],
-    bmap: Map<Key, ToBorSharp>
+    bmap: Map<Key, ToBorSharp>,
   ) {
     this.bmap = new Map();
     bmap.forEach((val, key) => this.bmap.set(key.idx, val));
@@ -119,15 +119,14 @@ class Scale {
   // TODO: actually use this function
   test(base, pitch) {
     return this.pitches
-      .map(p_orig => base + p_orig)
-      .some(p_shift => p_shift == pitch);
+      .map((p_orig) => base + p_orig)
+      .some((p_shift) => p_shift == pitch);
   }
 }
-
-const Scales: { major: Scale, harmonic: Scale } = {
+const Scales: { major: Scale; harmonic: Scale } = {
   // Arg, the harmonic depends on which cord is being played
   major: new Scale(
-    'major',
+    "major",
     [0, 2, 4, 5, 7, 9, 11],
     new Map([
       [C, ToBorSharp.None],
@@ -143,12 +142,12 @@ const Scales: { major: Scale, harmonic: Scale } = {
       [A, ToBorSharp.Sharp],
       [E, ToBorSharp.Sharp],
       [B, ToBorSharp.Sharp],
-      [Fis, ToBorSharp.Sharp]
-    ])
+      [Fis, ToBorSharp.Sharp],
+    ]),
   ),
   // harmonic is actually more often than "normal" minor
   harmonic: new Scale(
-    'harmonic',
+    "harmonic",
     [0, 2, 3, 5, 7, 8, 11],
     new Map([
       [A, ToBorSharp.None],
@@ -164,18 +163,22 @@ const Scales: { major: Scale, harmonic: Scale } = {
       [B, ToBorSharp.Sharp],
       [Fis, ToBorSharp.Sharp],
       [Cis, ToBorSharp.Sharp],
-      [Gis, ToBorSharp.Sharp]
+      [Gis, ToBorSharp.Sharp],
       // [Dis, ToBorSharp.Sharp]
-    ])
-  )
+    ]),
+  ),
   // minor: new Scale("Minor", [0, 2, 3, 5, 7, 8, 10])
 };
 
 class Chord {
   idx: number;
-
-  constructor(public key: Key, public keys: number[], public str: string,
-              public suff: string = '', public optional: boolean = false) {
+  constructor(
+    public key: Key,
+    public keys: number[],
+    public str: string,
+    public suff: string = "",
+    public optional: boolean = false,
+  ) {
     this.idx = key.idx;
   }
 
@@ -185,26 +188,25 @@ class Chord {
    */
   static minor(key: Key, suff: string, optional: boolean) {
     const base = key.idx;
-    const keys = [base, base + 3, base + 7].map(p => p % 12);
-    return new Chord(key, keys, 'm', suff, optional);
+    const keys = [base, base + 3, base + 7].map((p) => p % 12);
+    return new Chord(key, keys, "m", suff, optional);
   }
 
   static major(key: Key, suff: string, optional: boolean) {
     const base = key.idx;
-    const keys = [base, base + 4, base + 7].map(p => p % 12);
-    return new Chord(key, keys, '', suff, optional);
+    const keys = [base, base + 4, base + 7].map((p) => p % 12);
+    return new Chord(key, keys, "", suff, optional);
   }
 
   static plus(key: Key, suff: string, optional: boolean) {
     const base = key.idx;
-    const keys = [base, base + 4, base + 8].map(p => p % 12);
-    return new Chord(key, keys, '+', suff, optional);
+    const keys = [base, base + 4, base + 8].map((p) => p % 12);
+    return new Chord(key, keys, "+", suff, optional);
   }
-
   static minus(key: Key, suff: string, optional: boolean) {
     const base = key.idx;
-    const keys = [base, base + 3, base + 6].map(p => p % 12);
-    return new Chord(key, keys, 'dim', suff, optional);
+    const keys = [base, base + 3, base + 6].map((p) => p % 12);
+    return new Chord(key, keys, "dim", suff, optional);
   }
 
   /**
@@ -212,37 +214,40 @@ class Chord {
    * @param {string} chordString
    * @returns {Chord}
    */
-  public static parseChordString(chordString: string): Chord | undefined {
-    const isOptional = chordString.startsWith('(') && chordString.endsWith(')');
-
-    if (isOptional) {
-      chordString = chordString.substring(0, chordString.length - 1);
+  static parseChordString(chordString): Chord {
+    const checkOptional: string[] = chordString.match(/(^\(?)([^)]*)(\)?)/);
+    const content = checkOptional[2];
+    let optional = false;
+    if (checkOptional[1] && checkOptional[3]) {
+      optional = true;
     }
 
-    const match = chordString.match(/([a-h][#b]?)(maj|m|\+|-|°|dim|aug|)(.*)/i);
-    if (!match || match.length != 4) {
-      return undefined;
+    const parsedChordString = content.match(
+      /()([a-h](#|b)?)(-|\+|m?(?!aj))(.*)/i,
+    );
+
+    if (parsedChordString == null) return;
+
+    let keystr = parsedChordString[2].charAt(0).toUpperCase();
+    if (parsedChordString[2].length > 1) {
+      keystr += parsedChordString[2].charAt(1);
     }
 
-    const [_, keystr, quality, suffix] = match;
-    const idx = forwardMap.get(keystr);
-    if (idx === undefined) {
-      return undefined;
-    }
-    const key = new Key(keystr, idx)
+    const keydx = forwardMap.get(keystr);
+    if (keydx === undefined) return; // The chord could not be parsed.
 
-    switch (quality) {
-      case 'm':
-      case '-':
-        return Chord.minor(key, suffix, isOptional);
-      case 'aug':
-      case '+':
-        return Chord.plus(key, suffix, isOptional);
-      case '°':
-      case 'dim':
-        return Chord.minus(key, suffix, isOptional);
-      default:
-        return Chord.major(key, suffix, isOptional);
+    const key = new Key(keystr, keydx);
+
+    const suff = parsedChordString[5];
+
+    if (parsedChordString[4] == "m") {
+      return Chord.minor(key, suff, optional);
+    } else if (parsedChordString[4] == "+") {
+      return Chord.plus(key, suff, optional);
+    } else if (parsedChordString[4] == "-") {
+      return Chord.minus(key, suff, optional);
+    } else {
+      return Chord.major(key, suff, optional);
     }
   }
 }
@@ -271,16 +276,16 @@ export default class ChrodLib {
     return ChrodLib.selectBest(keyss);
   }
 
-  static parseTag(tag: string): { key: string, scale: string } {
+  static parseTag(tag: string): { key: string; scale: string } {
     const res = tag.match(/([A-H]b?#?)-?(\w*)/i);
 
     const fuzzy_scales = new Map([
-      ['m', Scales.harmonic],
-      ['', Scales.major],
-      ['minor', Scales.harmonic],
-      ['dur', Scales.major],
-      ['major', Scales.major],
-      ['moll', Scales.harmonic]
+      ["m", Scales.harmonic],
+      ["", Scales.major],
+      ["minor", Scales.harmonic],
+      ["dur", Scales.major],
+      ["major", Scales.major],
+      ["moll", Scales.harmonic],
     ]);
 
     if (!res) return;
@@ -288,7 +293,7 @@ export default class ChrodLib {
     const scale_str = res[2];
     const scale = fuzzy_scales.get(scale_str.toLowerCase());
     const key = Key.parseName(res[1]);
-    return {key: key.name, scale: scale.name};
+    return { key: key.name, scale: scale.name };
   }
 
   /**
@@ -306,24 +311,23 @@ export default class ChrodLib {
         //console.debug(val);
         if (val > best_val) {
           best_val = val;
-          best = {scale: scalename, key: key};
+          best = { scale: scalename, key: key };
           //console.debug("setting best", best);
         }
       }
     }
     return best;
   }
-
   /**
    *
    * @param {Array<String>} chordsList
    * @returns {*} penalties
    */
   static covarianceWithScales(chordsList: string[]) {
-    let chords: Chord[] = chordsList.map(chstr =>
-      Chord.parseChordString(chstr)
+    let chords: Chord[] = chordsList.map((chstr) =>
+      Chord.parseChordString(chstr),
     );
-    chords = chords.filter(chord => chord !== undefined);
+    chords = chords.filter((chord) => chord !== undefined);
     const pitches = chords.reduce((ar, chord) => ar.concat(chord.keys), []);
     //console.debug(pitches);
 
@@ -335,15 +339,15 @@ export default class ChrodLib {
       const penalties = {};
       const pitchmatch = {};
       for (let i = 0; i < 12; i++) {
-        const shifted_scale = scale.pitches.map(p => (p + i) % 12);
+        const shifted_scale = scale.pitches.map((p) => (p + i) % 12);
         //console.debug(shifted_scale);
         const matches = pitches
           // TODO: use reduce and weight the grundton more
-          .map(shifted => shifted_scale.some(p => p == shifted));
+          .map((shifted) => shifted_scale.some((p) => p == shifted));
 
         const pentalty = matches.reduce(
           (sum, val) => (val ? sum + 2 : sum - 1),
-          0
+          0,
         );
 
         pitchmatch[bMap.get(i)] = matches;
@@ -363,7 +367,11 @@ export default class ChrodLib {
    * @param {number} shift
    */
 
-  transpose(chord: string, meta: { scale: string; key: string }, shift: number) {
+  transpose(
+    chord: string,
+    meta: { scale: string; key: string },
+    shift: number,
+  ) {
     const current_pitch = forwardMap.get(meta.key);
     const current_scale: Scale = Scales[meta.scale];
 
@@ -372,35 +380,41 @@ export default class ChrodLib {
     if (ch === undefined) return null;
 
     let bornot = ch.key.beOrNot;
-    if (bornot == ToBorSharp.None || current_scale.pitches.indexOf(ch.idx) > -1) {
+    if (
+      bornot == ToBorSharp.None ||
+      current_scale.pitches.indexOf(ch.idx) > -1
+    ) {
       bornot = current_scale.bmap.get(transposed_pitch);
     }
     const pitchmap = bornot == ToBorSharp.Sharp ? shMap : bMap;
 
-
     let base = pitchmap.get((ch.idx + 48 + shift) % 12);
-    // Create pitchmap class to 
-    if (ch.str[0] == 'm') {
+    // Create pitchmap class to
+    if (ch.str[0] == "m") {
       base = base.toLowerCase();
     }
 
     const suff = this.shift_suff(ch.suff, shift, pitchmap);
 
-    let clazz = 'chord';
+    let clazz = "chord";
 
     if (ch.optional) {
-      clazz += ' optional';
+      clazz += " optional";
     }
 
     return {
       base: base + ch.str,
       suff: suff,
-      className: clazz
+      className: clazz,
     };
     //return <span className="before {clazz}">{base}{ch.str}<sup>{suff}</sup></span>;
   }
 
-  private shift_suff(suff: string, shift: number, pitchmap: Map<number, string>): string {
+  private shift_suff(
+    suff: string,
+    shift: number,
+    pitchmap: Map<number, string>,
+  ): string {
     const match = suff.match(/[A-H](b|#)?/);
     if (match == null) {
       return suff;
@@ -440,8 +454,8 @@ export default class ChrodLib {
     }
     // Todo: chord should shift itself -> chord.transpose()
     const tr_chords = chordsList
-      .map(ch_str => Chord.parseChordString(ch_str))
-      .map(ch => pitchmap.get((ch.idx + 48 + shift) % 12) + ch.str + ch.suff);
+      .map((ch_str) => Chord.parseChordString(ch_str))
+      .map((ch) => pitchmap.get((ch.idx + 48 + shift) % 12) + ch.str + ch.suff);
 
     const transposed_key = pitchmap.get(transposed_pitch);
     //console.debug("Transposed Key", transposed_key);
@@ -454,8 +468,10 @@ export default class ChrodLib {
    *
    * @param {String} chord
    */
-  shift(scale: { key: string, scale: string }, shift: number):
-    { key: string, scale: string } {
+  shift(
+    scale: { key: string; scale: string },
+    shift: number,
+  ): { key: string; scale: string } {
     const keyobj = Key.parseName(scale.key);
     const scaleobj: Scale = Scales[scale.scale];
 
@@ -468,9 +484,8 @@ export default class ChrodLib {
     } else {
       key = bMap.get(tr_idx);
     }
-    return {key: key, scale: scale.scale};
-
+    return { key: key, scale: scale.scale };
   }
 }
 
-export {Key, Chord, Scale};
+export { Key, Chord, Scale };

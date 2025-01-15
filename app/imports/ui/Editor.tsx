@@ -1,154 +1,151 @@
-import * as React from 'react';
-import { Component, MouseEventHandler } from 'react';
-import { withRouter, Prompt, RouteComponentProps } from 'react-router-dom';
+import * as React from "react";
+import { Component, FC, MouseEventHandler, useEffect, useState } from "react";
+import {
+  withRouter,
+  Prompt,
+  RouteComponentProps,
+  useHistory,
+} from "react-router-dom";
 
-import Source from './Source';
-import RevBrowser from './RevBrowser';
-import Preview from './Preview';
-import Drawer from './Drawer';
-import { Song } from '../api/collections';
-import { Meteor } from 'meteor/meteor';
-import { navigateTo, View } from '../api/helpers';
-import { convertToHoelibuSyntax } from '../api/ascii-importer';
+import Source from "./Source";
+import RevBrowser from "./RevBrowser";
+import Preview from "./Preview";
+import Drawer from "./Drawer";
+import { Song } from "../api/collections";
+import { Meteor } from "meteor/meteor";
+import { navigateTo, View } from "../api/helpers";
+import { convertToHoelibuSyntax } from "../api/ascii-importer";
 
-type EditorProps = { song: Song } & RouteComponentProps
-type EditorState = {
-  md: string,
-  revisionsTab: boolean,
-  dirty: boolean
+enum SaveState {
+  UNSAVED,
+  SUCCESS,
+  FAILED,
 }
 
-class Editor extends Component<EditorProps, EditorState> {
-  mdServer: string;
+type EditorProps = { song: Song };
 
-  constructor(props: EditorProps) {
-    super(props);
-    this.state = {
-      md: props.song.text,
-      revisionsTab: false,
-      dirty: false
-    };
+const Editor: FC<EditorProps> = (props: EditorProps) => {
+  const [md, setMd] = useState(props.song.text);
+  const [revisionsTab, setRevisionsTab] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [saved, setSaved] = useState(SaveState.UNSAVED);
 
-    this.mdServer = props.song.text;
-  }
+  const mdServer = props.song.text;
 
-  handleContextMenu: MouseEventHandler = (event) => {
-    if (this.state.revisionsTab) {
-      this.toggleRevTab();
+  const history = useHistory();
+
+  const handleContextMenu: MouseEventHandler = (event) => {
+    if (revisionsTab) {
+      toggleRevTab();
       event.preventDefault();
       return;
     }
-
-    this.props.song.parse(this.state.md);
-
-    Meteor.call('saveSong', this.props.song, (error: any, isValid: boolean) => {
+    props.song.parse(md);
+    Meteor.call("saveSong", props.song, (error: any, isValid: boolean) => {
       if (error !== undefined) {
         console.error(error);
       } else {
-        this.setState({
-          dirty: false,
-        }, () => {
-          if (isValid) {
-            navigateTo(this.props.history, View.view, this.props.song);
-          } else {
-            navigateTo(this.props.history, View.home);
-          }
+        if (isValid) {
+          setDirty(false);
+          setSaved(SaveState.SUCCESS);
+        } else {
+          setSaved(SaveState.FAILED);
         }
-        );
       }
-
     });
-
     event.preventDefault();
   };
+  // need to wait a rendering cycle, otherwise
+  // RouterPrompt will read the old state
+  useEffect(() => {
+    if (saved == SaveState.SUCCESS) {
+      navigateTo(history, View.view, props.song);
+    } else if (saved == SaveState.FAILED) {
+      navigateTo(history, View.home);
+    }
+  }, [saved]);
 
-  handlePaste = (text: string) => {
+  const handlePaste = (text: string) => {
     return convertToHoelibuSyntax(text);
   };
 
-  update = (md_: string) => {
-    this.setState({
-      md: md_,
-      dirty: md_ != this.mdServer
-    });
+  const update = (md_: string) => {
+    setMd(md_);
+    setDirty(md_ != mdServer);
   };
 
-  toggleRevTab = () => {
-    this.setState((prevState) => {
-      return {
-        revisionsTab: !prevState.revisionsTab
-      };
-    });
+  const toggleRevTab = () => {
+    setRevisionsTab(!revisionsTab);
   };
 
-  render() {
+  {
+    const revs = props.song.getRevisions();
 
-    const revs = this.props.song.getRevisions();
+    const prompt = (
+      <Prompt
+        when={dirty && revs.length > 0}
+        message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
+      />
+    );
 
-    const prompt = <Prompt
-      when={this.state.dirty && revs.length > 0}
-      message={'Du hast noch ungespeicherte Änderungen. Verwerfen?'}
-    />;
-
-    if (!this.state.revisionsTab) {
-
+    if (!revisionsTab) {
       const versions = revs ? (
-        <Drawer id="revs" className="revision-colors" onClick={this.toggleRevTab}>
+        <Drawer id="revs" className="revision-colors" onClick={toggleRevTab}>
           <h1>Verlauf</h1>
-          <p>Es existieren {revs.length} Versionen. Klicke, um diese zu durchstöbern!</p>
+          <p>
+            Es existieren {revs.length} Versionen. Klicke, um diese zu
+            durchstöbern!
+          </p>
         </Drawer>
       ) : undefined;
 
-      const dirtyLabel = this.state.dirty ? <span id="dirty" title="Ungesicherte Änderungen"></span> : undefined;
+      const dirtyLabel = dirty ? (
+        <span id="dirty" title="Ungesicherte Änderungen"></span>
+      ) : undefined;
 
       // Bearbeiten mit Echtzeit-Vorschau
       return (
-        <div id="editor" onContextMenu={this.handleContextMenu}>
-          <Drawer onClick={this.handleContextMenu} className="list-colors">
-            <h1>sichern<br/>&amp; zurück</h1>
+        <div id="editor" onContextMenu={handleContextMenu}>
+          <Drawer onClick={handleContextMenu} className="list-colors">
+            <h1>
+              sichern
+              <br />
+              &amp; zurück
+            </h1>
             <p>Schneller: Rechtsklick!</p>
           </Drawer>
 
           {dirtyLabel}
-          <Preview md={this.state.md} song={this.props.song} updateHandler={this.update}/>
+          <Preview md={md} song={props.song} updateHandler={update} />
           <Source
-            md={this.state.md}
-            updateHandler={this.update}
+            md={md}
+            updateHandler={update}
             className="source-colors"
-
-            onPasteInterceptor={this.handlePaste}
+            onPasteInterceptor={handlePaste}
           />
 
           {versions}
           {prompt}
         </div>
       );
-
     } else {
       // Versionen vergleichen
       return (
-        <div id="editor" onContextMenu={this.handleContextMenu}>
-
-          <Drawer className="chordsheet-colors" onClick={this.toggleRevTab}>
+        <div id="editor" onContextMenu={handleContextMenu}>
+          <Drawer className="chordsheet-colors" onClick={toggleRevTab}>
             <h1>zurück</h1>
             <p>…und weiterbearbeiten!</p>
           </Drawer>
 
-          <Source
-            md={this.state.md}
-            updateHandler={this.update}
-            className="source-colors"
-          >
+          <Source md={md} updateHandler={update} className="source-colors">
             <span className="label">Version in Bearbeitung</span>
           </Source>
-          <RevBrowser song={this.props.song} />
+          <RevBrowser song={props.song} />
           {prompt}
         </div>
       );
-
     }
   }
-}
+};
 
-
-export default withRouter(Editor);  // injects history, location, match
+export default Editor;

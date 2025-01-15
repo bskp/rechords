@@ -6,7 +6,7 @@ aside.drawer#list.open + .content {
 
   .phone({
     margin-left: 0;
-  })
+  });
 }
 
 aside.drawer#list {
@@ -125,7 +125,6 @@ aside.drawer#list {
 
     opacity: 1;
     transition: all 0.5s;
-
   } //filtermenu
 
   ul.scroll li {
@@ -144,7 +143,7 @@ aside.drawer#list {
       margin-bottom: -0.5rem;
 
       &.wordy {
-        font-size:2em;
+        font-size: 2em;
       }
     }
 
@@ -177,7 +176,7 @@ aside.drawer#list {
 
         .phone({
           display: inherit;
-        })
+        });
       }
 
       .darling {
@@ -235,7 +234,7 @@ aside.drawer#list {
         }
       });
 
-      .showAuthor{
+      .showAuthor {
         .title {
           flex: 1 0 0;
         }
@@ -255,7 +254,11 @@ aside.drawer#list {
           display: none;
         }
       }
+    }
 
+    a.newSong {
+      color: var(--accent);
+      font-weight: 600;
     }
   }
 }

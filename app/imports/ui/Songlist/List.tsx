@@ -1,16 +1,21 @@
-import * as React from 'react';
-import {useContext, useMemo, useState} from 'react';
-import {NavLink, RouteComponentProps, withRouter} from 'react-router-dom';
-import {Song} from '../../api/collections';
+import * as React from "react";
+import { useContext, useMemo, useState } from "react";
+import {
+  NavLink,
+  RouteComponentProps,
+  useHistory,
+  withRouter,
+} from "react-router-dom";
+import { Song } from "../../api/collections";
 
-import Drawer from '../Drawer';
-import {userMayWrite} from '../../api/helpers';
-import classNames from 'classnames';
+import Drawer from "../Drawer";
+import { routePath, userMayWrite, View } from "../../api/helpers";
+import classNames from "classnames";
 
-import {Meteor} from 'meteor/meteor';
-import {Menu} from "./Menu";
-import {ListGroup} from "./ListGroup";
-import {MenuContext} from "/imports/ui/App";
+import { Meteor } from "meteor/meteor";
+import { Menu } from "./Menu";
+import { ListGroupItem } from "./ListGroupItem";
+import { MenuContext } from "/imports/ui/App";
 
 interface ListProps extends RouteComponentProps {
   songs: Song[];
@@ -19,41 +24,63 @@ interface ListProps extends RouteComponentProps {
 }
 
 const List = (props: ListProps) => {
-  const [filter, setFilter] = useState('')
+  const [filter, setFilter] = useState("");
+
+  // todo: upgrade to new react-router -> useNavigate can be used
+  const history = useHistory();
 
   const [fuzzyMatches, exactMatches] = useMemo(() => {
-    let visibleSongs = props.songs
+    let visibleSongs = props.songs;
 
     if (props.user === null) {
-      visibleSongs = visibleSongs.filter(song => song.checkTag('frei'));
-    } else if (props.user.profile.role == 'user') {
-      visibleSongs = visibleSongs.filter(song => props.user?.profile.role == 'user' && !song.checkTag('fini'));
+      visibleSongs = visibleSongs.filter((song) => song.checkTag("frei"));
+    } else if (props.user.profile.role == "user") {
+      visibleSongs = visibleSongs.filter(
+        (song) => props.user?.profile.role == "user" && !song.checkTag("fini"),
+      );
     }
 
-    if (!filter.includes('#privat')) {
-      visibleSongs = visibleSongs.filter(song => !song.checkTag('privat'));
+    if (!filter.includes("#privat")) {
+      visibleSongs = visibleSongs.filter((song) => !song.checkTag("privat"));
     }
 
-    const exactMatches = visibleSongs.filter(song => song.title.toLowerCase().includes(filter.toLowerCase()));
+    const exactMatches = visibleSongs.filter((song) =>
+      song.title.toLowerCase().includes(filter.toLowerCase()),
+    );
     const words = filter.toLowerCase().split(/\s+/);
-    const fuzzyMatches = visibleSongs.filter(song => words.every(word =>
-      song.text.toLowerCase().includes(word) || song.author.toLowerCase().includes(word)
-    ));
+    const fuzzyMatches = visibleSongs.filter((song) =>
+      words.every(
+        (word) =>
+          song.text.toLowerCase().includes(word) ||
+          song.author.toLowerCase().includes(word),
+      ),
+    );
 
-    return [fuzzyMatches, exactMatches]
-  }, [props.songs, filter, props.user])
+    return [fuzzyMatches, exactMatches];
+  }, [props.songs, filter, props.user]);
 
   // Split list of filtered songs into groups.
   const grouper = (s: Song) => s.title[0];
   const groups = new Map<string, Song[]>();
 
   // Add exact matches
-  if (filter.length &&
-    exactMatches.length &&
-    fuzzyMatches.length > 1
-  ) {
-    groups.set('im Titel', exactMatches);
+  if (filter.length && exactMatches.length && fuzzyMatches.length > 1) {
+    groups.set("im Titel", exactMatches);
   }
+
+  const navigateToFirstMatch = () => {
+    let song;
+    if (exactMatches.length > 0) {
+      song = exactMatches[0];
+    } else if (fuzzyMatches.length > 0) {
+      song = fuzzyMatches[0];
+    }
+    if (song) {
+      const newUrl = routePath(View.view, song);
+      showMenu;
+      history.push(newUrl);
+    }
+  };
 
   // Add and group fuzzy matches
   for (const song of fuzzyMatches) {
@@ -65,27 +92,42 @@ const List = (props: ListProps) => {
     groups.get(group)?.push(song);
   }
 
-  const {showMenu} = useContext(MenuContext);
+  const { showMenu } = useContext(MenuContext);
 
-  const addSong = userMayWrite() ? <li>
-    <h2><NavLink to="/new">+ Neues Lied</NavLink></h2>
-  </li> : undefined;
+  const addSong = userMayWrite() ? (
+    <li>
+      <NavLink className="newSong" to="/new">
+        + Neues Lied
+      </NavLink>
+    </li>
+  ) : undefined;
 
   return (
-    <Drawer id="list" open={true} className={classNames(
-      'songlist',
-      {hideOnMobile: !showMenu},
-    )}>
-      <Menu filter={filter} setFilter={setFilter.bind(this)}/>
+    <Drawer
+      id="list"
+      open={true}
+      className={classNames("songlist", { hideOnMobile: !showMenu })}
+    >
+      <Menu
+        onEnter={navigateToFirstMatch}
+        filter={filter}
+        filterChanged={(e) => setFilter(e)}
+      />
       <ul className="scroll">
-        {Array.from(groups, ([group, songs]) => {
-            return <ListGroup user={props.user} label={group} songs={songs} key={group}/>;
-          }
-        )}
         {addSong}
+        {Array.from(groups, ([group, songs]) => {
+          return (
+            <ListGroupItem
+              user={props.user}
+              label={group}
+              songs={songs}
+              key={group}
+            />
+          );
+        })}
       </ul>
     </Drawer>
   );
-}
+};
 
-export default withRouter(List);  // injects history, location, match
+export default withRouter(List); // injects history, location, match

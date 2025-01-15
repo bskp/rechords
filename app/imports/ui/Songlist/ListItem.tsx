@@ -1,10 +1,10 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import { routePath, View } from "/imports/api/helpers";
 import { Song } from "/imports/api/collections";
 import { Meteor } from "meteor/meteor";
-import {MenuContext} from "/imports/ui/App";
+import { MenuContext } from "/imports/ui/App";
 
 interface ListItemProps {
   song: Song;
@@ -37,7 +37,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, user }) => {
   };
 
   const isDarling = user?.profile?.darlings?.includes(song._id) ?? false;
-  const {setShowMenu} = useContext(MenuContext);
+  const { setShowMenu } = useContext(MenuContext);
 
   return (
     <li>

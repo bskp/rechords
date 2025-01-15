@@ -2,53 +2,51 @@
 @import (reference) "./variables.import.less";
 
 #home {
+  .chordsheet-colors;
 
-    .chordsheet-colors;
+  margin-right: auto;
+  margin-left: auto;
 
-    margin-right: auto;
-    margin-left: auto;
+  > * {
+    max-width: 45em;
+  }
 
-    > * {
-        max-width: 45em;
-    }
+  p {
+    color: var(--gray);
+    font-size: 1.1em;
+    margin: 2em 0;
+  }
 
-    p {
+  .fourWords {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-right: -2rem;
+
+    input {
+      display: inline-block;
+
+      width: 4em;
+      flex-grow: 1;
+
+      margin-right: 2rem;
+      margin-bottom: 1rem;
+
+      color: var(--accent);
+      border-bottom: 2px solid var(--gray);
+
+      &::placeholder {
         color: var(--gray);
-        font-size: 1.1em;
-        margin: 2em 0;
+        opacity: 1;
+      }
+
+      &:focus {
+        outline: none;
+      }
+
+      text-align: center;
+      font-size: 2em;
+      font-weight: 100;
     }
-
-    .fourWords {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        margin-right: -2rem;
-        
-        input {
-            display: inline-block;
-
-            width: 4em;
-            flex-grow: 1;
-
-            margin-right: 2rem;
-            margin-bottom: 1rem;
-
-            color: var(--accent);
-            border-bottom: 2px solid var(--gray);
-
-            &::placeholder {
-                color: var(--gray);
-                opacity: 1;
-            }
-
-            &:focus {
-                outline: none;
-            }
-
-            text-align: center;
-            font-size: 2em;
-            font-weight: 100;
-
-        }
-    }
+  }
 }

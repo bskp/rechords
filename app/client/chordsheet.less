@@ -14,11 +14,12 @@
     color: var(--gray);
   }
 
-  h4, h3 {
+  h4,
+  h3 {
     color: var(--text);
   }
 
-  .ref {
+  .hideRefs .ref {
     color: var(--text);
     padding-left: 8px;
     margin-left: -12px;
@@ -32,16 +33,17 @@
     }
   }
 
-  .ref.open {
+  .inlineRefs .ref {
     color: var(--gray);
 
     strong {
+      cursor: pointer;
       display: block;
       margin-right: 0;
     }
   }
 
-  .ref.open,
+  .inlineRefs .ref,
   h3 {
     font-size: 1em;
     margin: 0;
@@ -57,7 +59,7 @@
     border: none; // concerns .refs only
     padding-left: 0;
 
-    clear: both;  // Clear floated chords diagrams
+    clear: both; // Clear floated chords diagrams
 
     .phone({
       margin: 2em 0 0; 
@@ -68,7 +70,6 @@
     });
   }
 
-
   // Verse container
   p {
     margin: 1.33em 0;
@@ -76,15 +77,15 @@
     clear: both; // for the floated chord-diagrams
   }
 
-
-  .inlineReference {
-    &.shown {
+  .inlineRefs {
+    .inlineReference {
       h3 {
         display: none;
       }
     }
-
-    &.hidden {
+  }
+  .hideRefs {
+    .inlineReference {
       display: none;
     }
   }
@@ -92,7 +93,11 @@
   code {
     // inline code elements
     display: inline-block;
-    font-family: "Input Mono", Courier New, Courier, monospace;
+    font-family:
+      "Input Mono",
+      Courier New,
+      Courier,
+      monospace;
     font-size: 0.9em;
     font-weight: 400;
     padding: 0 0.5em;
@@ -111,7 +116,6 @@
   }
 
   .abc-notation {
-
     .phone({
       margin-right: 0;
     });
@@ -123,7 +127,6 @@
       .abcjs-ledger,
       .abcjs-beam-elem {
         fill: var(--text);
-
       }
 
       .abcjs-triplet {
@@ -143,8 +146,8 @@
       path.abcjs-ending {
         stroke: var(--gray-dark);
       }
-      
-      text.abcjs-ending, 
+
+      text.abcjs-ending,
       .abcjs-bar {
         fill: var(--gray-dark);
       }
@@ -165,7 +168,6 @@
         font-weight: 600;
       }
     }
-
   }
 
   .chord-container {
@@ -193,7 +195,7 @@
     }
   }
 
-  .chord-container strong, 
+  .chord-container strong,
   .line i .before {
     sup {
       vertical-align: 0.4em;
@@ -206,6 +208,10 @@
 
   .interactive {
     .select(none);
+    .ref,
+    .inlineReference {
+      display: none;
+    }
   }
 
   .interactive i {
@@ -226,9 +232,10 @@
     line-height: 1.4em;
   }
 
-  .line i u {  // prosodic annotations
+  .line i u {
+    // prosodic annotations
     color: var(--accent);
-    font-family: "Cardo", 'Times New Roman', Times, serif;
+    font-family: "Cardo", "Times New Roman", Times, serif;
     font-size: 1.2em;
     line-height: 1em;
     font-weight: bold;
@@ -255,8 +262,7 @@
     flex-direction: column;
     display: flex;
 
-
-    @supports ( -moz-appearance:none ){
+    @supports (-moz-appearance: none) {
       // Only for FF: Hanging indents for rows without chords.
       // Does not work for webkit, as negative first-line indent is handled differently for contained flex-elements.
       text-indent: -@continuation_pad;
