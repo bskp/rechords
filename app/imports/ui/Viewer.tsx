@@ -1,7 +1,8 @@
 import React, {useCallback, useContext, useEffect, useState} from "react";
 import {NavLink, useHistory, useParams} from "react-router-dom";
-import TransposeSetter from "./TransposeSetter";
+import Transposer from "./Transposer";
 import ChrodLib from "../api/libchrod";
+import Chord_ from "../api/libchr0d/chord";
 import {Song} from "../api/collections";
 import Drawer from "./Drawer";
 import {routePath, userMayWrite, View} from "../api/helpers";
@@ -24,6 +25,7 @@ const Viewer: React.FC<ViewerProps> = ({song}) => {
   const [relTranspose, setRelTranspose] = useState<number>(getInitialTranspose());
   const [inlineReferences, setInlineReferences] = useState<boolean>(false);
   const [showChords, setShowChords] = useState<boolean>(true);
+  const [showTransposer, setShowTransposer] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
 
   const history = useHistory();
@@ -34,8 +36,8 @@ const Viewer: React.FC<ViewerProps> = ({song}) => {
   const updateDuration = useCallback(() => {
     const duration = song.getTag("dauer");
     if (duration) {
-      const chunks = duration.split(":");
-      duration_s = 60 * Number(chunks[0]) + Number(chunks[1]);
+      const [minutes, seconds] = duration.split(":");
+      duration_s = 60 * Number(minutes) + Number(seconds);
     } else {
       duration_s = undefined;
     }
@@ -103,6 +105,15 @@ const Viewer: React.FC<ViewerProps> = ({song}) => {
     key = ChrodLib.guessKey(song.getChords());
   }
 
+  const chordFrequencies = new Map<string, number>();
+  song.getChords()
+    .map(chord => Chord_.from(chord)?.asCode())
+    .filter((c: string | undefined): c is string => c !== undefined)
+    .forEach(chord => {
+      const current = chordFrequencies.get(chord) ?? 0;
+      chordFrequencies.set(chord, current + 1);
+    });
+
   const drawer = userMayWrite() ? (
     <Drawer className="source-colors" onClick={handleContextMenu}>
       <h1>bearbeiten</h1>
@@ -138,11 +149,14 @@ const Viewer: React.FC<ViewerProps> = ({song}) => {
         <Button onClick={() => setShowMenu(true)} phoneOnly>
           <ReactSVG src="/svg/menu.svg"/>
         </Button>
-        <TransposeSetter
+        <Button onClick={() => setShowTransposer(true)}>
+          <ReactSVG src="/svg/sharp.svg"/>
+        </Button>
+        <Transposer
           onDoubleClick={() => setShowChords((prev) => !prev)}
           transposeSetter={setRelTranspose}
           transpose={relTranspose}
-          keym={key}
+          chords={song.getChords().map(chord => Chord_.from(chord)).filter((chord: Chord_ | undefined): chord is Chord_ => chord !== undefined)}
         />
         <Button onClick={toggleAutoScroll}>
           {autoScroll ? (

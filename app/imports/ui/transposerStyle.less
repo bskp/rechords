@@ -1,0 +1,76 @@
+@import "../../client/variables.import.less";
+@import "../../client/responsive.import.less";
+
+#transposer {
+  position: fixed;
+  top: 0;
+  left: @drawer-open;
+  right: @drawer-closed;
+  bottom: 0;
+  background-color: #02020278;
+
+  .phone({
+    left: 0;
+    right: 0;
+  });
+
+
+  svg {
+    max-width: 500px;
+    width: 80%;
+    margin: auto;
+    display: block;
+    height: 100vh;
+
+    //transition: --rotTranspose 0.5s;
+
+    .M0 { --v: var(--M0); }
+    .M1 { --v: var(--M1); }
+    .M2 { --v: var(--M2); }
+    .M3 { --v: var(--M3); }
+    .M4 { --v: var(--M4); }
+    .M5 { --v: var(--M5); }
+    .M6 { --v: var(--M6); }
+    .M7 { --v: var(--M7); }
+    .M8 { --v: var(--M8); }
+    .M9 { --v: var(--M9); }
+    .M10 { --v: var(--M10); }
+    .M11 { --v: var(--M11); }
+    .m0 { --v: var(--m0); }
+    .m1 { --v: var(--m1); }
+    .m2 { --v: var(--m2); }
+    .m3 { --v: var(--m3); }
+    .m4 { --v: var(--m4); }
+    .m5 { --v: var(--m5); }
+    .m6 { --v: var(--m6); }
+    .m7 { --v: var(--m7); }
+    .m8 { --v: var(--m8); }
+    .m9 { --v: var(--m9); }
+    .m10 { --v: var(--m10); }
+    .m11 { --v: var(--m11); }
+
+    #fields path {
+      fill: color-mix(in hsl, var(--gray-light), var(--accent) var(--v, 0%));
+    }
+
+    #fields {
+      pointer-events: all;
+      cursor: pointer;
+      :hover {
+        fill: red;
+      }
+    }
+
+    #labels path {
+      fill: white;
+      pointer-events: none;
+    }
+
+    #labels {
+      transform-origin: center;
+      transition: transform 0.5s;
+      transform: rotate(var(--rotTranspose));
+    }
+
+  }
+}
