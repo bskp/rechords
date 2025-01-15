@@ -36,37 +36,38 @@ export const options: XSS.IFilterXSSOptions = {
 export function parseRechordsDown(md: string) {
   const filter = new FilterXSS(options);
   const html = filter.process(converter.makeHtml(md));
-  const testDom = parse(html);
+  const dom = parse(html);
 
-  const lookup = testDom.querySelectorAll("section[id^=sd-ref]");
+  const sections = dom.querySelectorAll("section[id^=sd-ref]");
 
-  const toLookup = testDom.querySelectorAll("div.ref");
+  const sectionReferences = dom.querySelectorAll("div.ref");
 
   const lup: Record<string, HTMLElement> = {};
 
-  for (const l of lookup) {
+  for (const l of sections) {
     lup[l.id.substring(7)] = l;
   }
 
-  for (const [idx, v] of toLookup.entries()) {
+  for (const [idx, v] of sectionReferences.entries()) {
     const key = v.firstChild?.innerText.trim();
     if (key) {
       const found = lup[key];
-      if (found) {
-        const cloned = found.clone() as HTMLElement;
-        v.setAttribute('id', `ref_${idx}`);
-        cloned.removeAttribute('id')
-        cloned.classList.add('inlineReference')
-        v.after(cloned);
+      if (!found) {
+        continue;
       }
+      const cloned = found.clone() as HTMLElement;
+      v.setAttribute("id", `ref_${idx}`);
+      cloned.removeAttribute("id");
+      cloned.classList.add("inlineReference");
+      v.after(cloned);
     }
   }
 
-  for(const [idx,v] of testDom.querySelectorAll('span.line').entries()) {
-    v.setAttribute('data-line-cnt', (idx+1).toString())
+  for (const [idx, v] of dom.querySelectorAll("span.line").entries()) {
+    v.setAttribute("data-line-cnt", (idx + 1).toString());
   }
 
-  return testDom.toString();
+  return dom.toString();
 
   // todo: return metada from dom as well? now it is parsed twice... again in collection.ts
 }

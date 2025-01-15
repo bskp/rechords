@@ -120,7 +120,7 @@ export class Song {
 
     if (this.isEmpty()) return; // delete song upon next save.
 
-    const dom = parse(this.html)
+    const dom = parse(this.html);
 
     const h1 = dom.getElementsByTagName("h1");
     if (h1.length > 0) {
@@ -198,7 +198,7 @@ export class RmdHelpers {
     return Array.from(dom.getElementsByTagName("i"))
       .filter((chord_dom) => chord_dom.hasAttribute(DATACHORD))
       .map((chord_dom) => chord_dom.getAttribute(DATACHORD))
-      .filter((c?: string ): c is string => c !== null);
+      .filter((c?: string): c is string => c !== null);
   }
 }
 
