@@ -7,7 +7,7 @@ describe("Chord", () => {
   it("should parse B7 correctly", () => {
     assert.deepEqual(
       Chord_.from("(B7)"),
-      new Chord_(new Note(11, "undetermined"), true, "major", ""),
+      new Chord_(new Note(11, "undetermined"), true, "major", "7", undefined),
     );
   });
 });

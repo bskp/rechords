@@ -17,7 +17,7 @@ export default class Chord_ {
     const isOptional = chordString.startsWith("(") && chordString.endsWith(")");
 
     if (isOptional) {
-      chordString = chordString.substring(1, chordString.length - 2);
+      chordString = chordString.substring(1, chordString.length - 1);
     }
 
     const match = chordString.match(
@@ -74,7 +74,7 @@ export default class Chord_ {
 
   public toStringTensionsAndSlash() {
     return (
-      this.tensions ?? "" + (this.slash ? "/" + this.slash.toString() : "")
+      this.tensions ?? "" + (this.slash !== undefined ? "/" + this.slash.toString() : "")
     );
   }
 

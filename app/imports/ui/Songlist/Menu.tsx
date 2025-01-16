@@ -5,6 +5,7 @@ import {
   MdDarkMode,
   MdHome,
   MdLightMode,
+  MdMenu,
   MdSearch,
   MdSell,
 } from "react-icons/md";
@@ -101,10 +102,7 @@ export function Menu(props: {
 
   return (
     <>
-      <menu
-        className={classnames("iconmenu", { searching: showSearch })}
-        onKeyDown={props.onKeyDown}
-      >
+      <menu className={classnames("iconmenu", { searching: showSearch })}>
         {showSearch ? (
           <>
             <input
@@ -181,6 +179,17 @@ export function Menu(props: {
           data-tooltip-id="tt"
         >
           {themeDark ? <MdLightMode /> : <MdDarkMode />}
+        </li>
+        <li>
+          <Link
+            to="#"
+            onClick={() => setShowMenu(false)}
+            data-tooltip-content="Zurück zum Lied"
+            data-tooltip-id="tt"
+            className="hideUnlessMobile"
+          >
+            <MdMenu />
+          </Link>
         </li>
       </menu>
       <MetaContent
