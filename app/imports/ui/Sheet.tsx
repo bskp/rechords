@@ -48,7 +48,7 @@ const Sheet = ({
     elements?.forEach((e) => e.addEventListener("click", toggleInlineRefs));
     return () =>
       elements?.forEach((e) =>
-        e.removeEventListener("click", toggleInlineRefs)
+        e.removeEventListener("click", toggleInlineRefs),
       );
   });
 
@@ -167,7 +167,7 @@ const Sheet = ({
         if (
           (child as DH.Element)?.name == "li" &&
           hide.includes(
-            ((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data
+            ((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data,
           )
         )
           return false;
@@ -190,7 +190,7 @@ const Sheet = ({
       elements?.forEach((e) => e.addEventListener("click", handleLineClick));
       return () =>
         elements?.forEach((e) =>
-          e.removeEventListener("click", handleLineClick)
+          e.removeEventListener("click", handleLineClick),
         );
     }
   });
@@ -202,7 +202,12 @@ const Sheet = ({
     }
     for (const line of lines) {
       const lineCnt = parseFloat(line.dataset.lineCnt);
-      line.classList.toggle("passed-line", playedLine > lineCnt);
+      const ratio = clamp(0, playedLine - lineCnt, 0.5);
+
+      const style = `--ratio: ${1 - ratio}`;
+
+      // line.classList.toggle("passed-line", playedLine > lineCnt);
+      line.style = style;
     }
   }, [playedLine]);
 
@@ -219,3 +224,7 @@ const Sheet = ({
 };
 
 export default Sheet;
+
+function clamp(min: number, val: number, max: number) {
+  return Math.max(min, Math.min(max, val));
+}
