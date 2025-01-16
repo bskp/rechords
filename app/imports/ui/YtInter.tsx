@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import * as React from "react";
 import YouTube from "react-youtube";
 import { linInterpolation } from "./time2line";
@@ -9,6 +9,17 @@ export const YtInter: FC<{
   onTimeChange?: (t?: number) => void;
   onLineChange?: (t?: number) => void;
 }> = ({ data, lineAction, onTimeChange, onLineChange }) => {
+  // wrapper for setting items effect hook
+  const [ytOk, setYtOk] = useState(localStorage.getItem("yt-ok") === "true");
+  const revokeYt = () => {
+    localStorage.removeItem("yt-ok");
+    setYtOk(false);
+  };
+  const agreeYt = () => {
+    localStorage.setItem("yt-ok", "true");
+    setYtOk(true);
+  };
+
   const yPlayer = useRef<YouTube>(null);
   const { ytId, anchors } = extractData(data);
 
@@ -23,7 +34,7 @@ export const YtInter: FC<{
           anchors,
           time,
           (l) => l[0],
-          (l) => l[1],
+          (l) => l[1]
         );
         onLineChange(estimatedLine);
       }
@@ -38,11 +49,22 @@ export const YtInter: FC<{
       anchors,
       lineAction.lineCnt,
       (l) => l[1],
-      (l) => l[0],
+      (l) => l[0]
     );
     yPlayer.current?.internalPlayer?.seekTo(estimatedTime, true);
   }, [lineAction]);
-  return <YouTube videoId={ytId} ref={yPlayer} />;
+  if (ytOk) {
+    return (
+      <>
+        <div className="revoke" onClick={revokeYt}>Revoke Youtube</div>
+        <YouTube videoId={ytId} ref={yPlayer} />
+      </>
+    );
+  } else {
+    return <div className='not-agreed' onClick={agreeYt}>
+      Allow Youtube 
+    </div>;
+  }
 };
 
 export function extractData(data: string): {
@@ -57,7 +79,7 @@ export function extractData(data: string): {
 export function appendTime(
   md: string,
   lastTime: number,
-  lineCnt: any,
+  lineCnt: any
 ): string | undefined {
   const rgx = /~~~yt\n(.*)\n~~~/s;
   const match = md.match(rgx);
