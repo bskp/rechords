@@ -2,10 +2,13 @@
 
 export function linInterpolation<T>(
   anchors: T[],
-  x: number,
+  x: number | undefined,
   selectorX: (v: T) => number,
   selectorY: (v: T) => number,
 ) {
+  if (x == null) {
+    return;
+  }
   for (let i = 1; i < anchors.length; i++) {
     const current = anchors[i];
     const currentX = selectorX(current);

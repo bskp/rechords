@@ -212,6 +212,19 @@
     .inlineReference {
       display: none;
     }
+
+    // interim UI for to know which datapoint to delete
+
+    .line::before {
+      content: attr(data-line-cnt);
+      opacity: 0.5;
+      position: absolute;
+      text-align: right;
+      margin-left: -50px;
+    }
+    .line:hover::before {
+      opacity: 1;
+    }
   }
 
   .interactive i {
@@ -244,6 +257,16 @@
 
   @continuation_pad: 0.8em; // indent for wrapping rows
 
+  .hasVideo .line {
+    cursor: pointer;
+    &.passed-line {
+      opacity: 0.3;
+    }
+    // &:hover i {
+    //   background-color: var(--gray-light)
+    // }
+  }
+
   .line {
     display: flex;
     flex-direction: row;
@@ -252,9 +275,6 @@
     min-height: 1em;
     padding-left: @continuation_pad;
     white-space: pre-wrap;
-  }
-  .line::after {
-    content: attr(data-line-cnt);
   }
 
   .line i {
@@ -344,6 +364,16 @@
       position: relative;
       width: 0;
       left: -1.2em;
+    }
+  }
+
+  .song-video {
+    // interim UI: when there is muuuuuch space show it fixed
+    // otherwise one can still use Picture in Picture
+    @media screen and (min-width: 1700px) {
+      position: fixed;
+      top: 200px;
+      right: 200px;
     }
   }
 } // .chordsheet

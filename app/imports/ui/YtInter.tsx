@@ -5,16 +5,28 @@ import { linInterpolation } from "./time2line";
 
 export const YtInter: FC<{
   data: string;
-  lineAction: { time: number };
-  onTimeChange?: (t: number) => void;
-}> = ({ data, lineAction, onTimeChange }) => {
+  lineAction: { lineCnt?: number };
+  onTimeChange?: (t?: number) => void;
+  onLineChange?: (t?: number) => void;
+}> = ({ data, lineAction, onTimeChange, onLineChange }) => {
   const yPlayer = useRef<YouTube>(null);
   const { ytId, anchors } = extractData(data);
 
   useEffect(() => {
     setInterval(async () => {
       const time = await yPlayer.current?.internalPlayer?.getCurrentTime();
-      if (typeof onTimeChange === "function") onTimeChange(time);
+      if (typeof onTimeChange === "function") {
+        onTimeChange(time);
+      }
+      if (typeof onLineChange === "function") {
+        const estimatedLine = linInterpolation(
+          anchors,
+          time,
+          (l) => l[0],
+          (l) => l[1],
+        );
+        onLineChange(estimatedLine);
+      }
     }, 450);
   }, []);
 
@@ -22,13 +34,13 @@ export const YtInter: FC<{
     if (!lineAction) {
       return;
     }
-    const inter = linInterpolation(
+    const estimatedTime = linInterpolation(
       anchors,
-      lineAction.time,
+      lineAction.lineCnt,
       (l) => l[1],
       (l) => l[0],
     );
-    yPlayer.current?.internalPlayer?.seekTo(inter);
+    yPlayer.current?.internalPlayer?.seekTo(estimatedTime, true);
   }, [lineAction]);
   return <YouTube videoId={ytId} ref={yPlayer} />;
 };

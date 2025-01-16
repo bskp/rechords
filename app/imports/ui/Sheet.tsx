@@ -31,33 +31,25 @@ const Sheet = ({
   const [inlineRefs, setInlineRefs] = useState(true);
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
-  const [selectLine, setSelectLine] = useState<{ time: number }>();
+  const [selecedtLine, setSelectedLine] = useState<{ lineCnt?: number }>({});
+  let hasVideo = false;
+  const [playedLine, setPlayedLine] = useState<number>();
 
   const handleLineClick = (e: MouseEvent) => {
     const lineCnt = e?.currentTarget?.dataset.lineCnt;
     if (lineCnt) {
-      setSelectLine({ time: lineCnt });
+      setSelectedLine({ lineCnt });
     }
   };
   const chordsheetContent = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const elements = chordsheetContent.current?.querySelectorAll("div.ref");
-    // alternatively: matches() on clicked target and click listener
-    // on surrounding sheetcontent
     elements?.forEach((e) => e.addEventListener("click", toggleInlineRefs));
     return () =>
       elements?.forEach((e) =>
-        e.removeEventListener("click", toggleInlineRefs),
+        e.removeEventListener("click", toggleInlineRefs)
       );
-  });
-  useEffect(() => {
-    const elements = chordsheetContent.current?.querySelectorAll("span.line");
-    // alternatively: matches() on clicked target and click listener
-    // on surrounding sheetcontent
-    elements?.forEach((e) => e.addEventListener("click", handleLineClick));
-    return () =>
-      elements?.forEach((e) => e.removeEventListener("click", handleLineClick));
   });
 
   const chords = song.getChords();
@@ -112,7 +104,16 @@ const Sheet = ({
       const classes = code.attribs["class"];
       if (classes.includes("language-yt")) {
         const data = code.firstChild.data as string;
-        return <YtInter data={data} lineAction={selectLine} />;
+        hasVideo = true;
+        return (
+          <div className="song-video">
+            <YtInter
+              data={data}
+              lineAction={selecedtLine}
+              onLineChange={setPlayedLine}
+            />
+          </div>
+        );
       }
 
       if (!classes.includes("language-abc")) return node;
@@ -166,7 +167,7 @@ const Sheet = ({
         if (
           (child as DH.Element)?.name == "li" &&
           hide.includes(
-            ((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data,
+            ((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data
           )
         )
           return false;
@@ -183,12 +184,34 @@ const Sheet = ({
 
   let vdom = parse(rmd_html, { replace: postprocess }) as JSX.Element[];
 
+  useEffect(() => {
+    if (hasVideo) {
+      const elements = chordsheetContent.current?.querySelectorAll("span.line");
+      elements?.forEach((e) => e.addEventListener("click", handleLineClick));
+      return () =>
+        elements?.forEach((e) =>
+          e.removeEventListener("click", handleLineClick)
+        );
+    }
+  });
+
+  useEffect(() => {
+    const lines = chordsheetContent.current?.querySelectorAll("span.line");
+    if (lines == null || playedLine == null) {
+      return;
+    }
+    for (const line of lines) {
+      const lineCnt = parseFloat(line.dataset.lineCnt);
+      line.classList.toggle("passed-line", playedLine > lineCnt);
+    }
+  }, [playedLine]);
+
   return (
     <section
       ref={chordsheetContent}
       id="chordsheetContent"
       style={style}
-      className={classNames({ inlineRefs, hideRefs: !inlineRefs })}
+      className={classNames({ inlineRefs, hideRefs: !inlineRefs, hasVideo })}
     >
       {vdom}
     </section>

@@ -69,7 +69,7 @@ export default (props: P) => {
     return { verseNames, chords };
   };
   // using wrapped number triggers prop change on every set
-  const [selectLine, setSelectLine] = useState({ time: 0 });
+  const [selectLine, setSelectLine] = useState({ lineCnt: 0 });
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
@@ -77,7 +77,7 @@ export default (props: P) => {
       console.log(line);
       const lineCnt = line.dataset.lineCnt;
       if (event.shiftKey) {
-        setSelectLine({ time: lineCnt });
+        setSelectLine({ lineCnt });
       } else {
         const md = props.md;
         const newMd = appendTime(md, lastTime.current, lineCnt);
@@ -425,12 +425,14 @@ export default (props: P) => {
                   lineAction={selectLine}
                   onTimeChange={(v) => (lastTime.current = v)}
                 />
-                <dl>
-                  <dt>Recall</dt>
-                  <dd>shift + click</dd>
-                  <dt>Add Anchor</dt>
-                  <dd>ctrl + click</dd>
-                </dl>
+                <div>
+                  <span>
+                    <b>Ctrl + Click: </b>Add{" "}
+                  </span>
+                  <span>
+                    <b>Shift + Click: </b>Recall
+                  </span>
+                </div>
               </div>
             );
           }
