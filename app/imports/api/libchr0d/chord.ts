@@ -1,6 +1,6 @@
-import Note from "/imports/api/libchr0d/note";
+import Note from "./note";
 
-type Quality = "major" | "minor" | "diminished" | "augmented";
+export type Quality = "major" | "minor" | "diminished" | "augmented";
 
 const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);
 

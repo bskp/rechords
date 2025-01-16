@@ -1,4 +1,4 @@
-type Notation = "bee" | "sharp" | "undetermined";
+export type Notation = "bee" | "sharp" | "undetermined";
 
 export default class Note {
   public constructor(
@@ -32,7 +32,7 @@ export default class Note {
           return 7;
         case "a":
           return 9;
-        default:
+        default: // b or h
           return 11;
       }
     })(valueStr);
