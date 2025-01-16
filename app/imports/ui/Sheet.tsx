@@ -5,7 +5,7 @@ import { Abcjs } from "./Abcjs";
 import Kord from "./Kord";
 import { userMayWrite } from "../api/helpers";
 import * as DH from "domhandler";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import { Tablature } from "abcjs";
 import Chord_ from "/imports/api/libchr0d/chord";
 import classNames from "classnames";
