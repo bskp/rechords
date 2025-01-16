@@ -10,13 +10,11 @@ export const YtInter: FC<{
   onLineChange?: (t?: number) => void;
 }> = ({ data, lineAction, onTimeChange, onLineChange }) => {
   // wrapper for setting items effect hook
-  const [ytOk, setYtOk] = useState(localStorage.getItem("yt-ok") === "true");
+  const [ytOk, setYtOk] = useState(false);
   const revokeYt = () => {
-    localStorage.removeItem("yt-ok");
     setYtOk(false);
   };
   const agreeYt = () => {
-    localStorage.setItem("yt-ok", "true");
     setYtOk(true);
   };
 
@@ -56,14 +54,18 @@ export const YtInter: FC<{
   if (ytOk) {
     return (
       <>
-        <div className="revoke" onClick={revokeYt}>Revoke Youtube</div>
+        <div className="revoke" onClick={revokeYt}>
+          Unload Youtube
+        </div>
         <YouTube videoId={ytId} ref={yPlayer} />
       </>
     );
   } else {
-    return <div className='not-agreed' onClick={agreeYt}>
-      Allow Youtube 
-    </div>;
+    return (
+      <div className="not-agreed" onClick={agreeYt}>
+        Load Youtube {ytId}
+      </div>
+    );
   }
 };
 
