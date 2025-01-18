@@ -1,22 +1,16 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useContext, useEffect, useRef } from "react";
 import * as React from "react";
 import YouTube from "react-youtube";
 import { linInterpolation } from "./time2line";
+import { VideoContext } from "/imports/ui/App";
 
 export const YtInter: FC<{
   data: string;
-  lineAction: { lineCnt?: number };
+  currentLine: number;
   onTimeChange?: (t?: number) => void;
   onLineChange?: (t?: number) => void;
-}> = ({ data, lineAction, onTimeChange, onLineChange }) => {
-  // wrapper for setting items effect hook
-  const [ytOk, setYtOk] = useState(false);
-  const revokeYt = () => {
-    setYtOk(false);
-  };
-  const agreeYt = () => {
-    setYtOk(true);
-  };
+}> = ({ data, currentLine, onTimeChange, onLineChange }) => {
+  const { isActive } = useContext(VideoContext);
 
   const yPlayer = useRef<YouTube>(null);
   const { ytId, anchors } = extractData(data);
@@ -32,7 +26,7 @@ export const YtInter: FC<{
           anchors,
           time,
           (l) => l[0],
-          (l) => l[1]
+          (l) => l[1],
         );
         onLineChange(estimatedLine);
       }
@@ -40,32 +34,19 @@ export const YtInter: FC<{
   }, []);
 
   useEffect(() => {
-    if (!lineAction) {
+    if (!currentLine) {
       return;
     }
     const estimatedTime = linInterpolation(
       anchors,
-      lineAction.lineCnt,
+      currentLine,
       (l) => l[1],
-      (l) => l[0]
+      (l) => l[0],
     );
-    yPlayer.current?.internalPlayer?.seekTo(estimatedTime, true);
-  }, [lineAction]);
-  if (ytOk) {
-    return (
-      <>
-        <div className="revoke" onClick={revokeYt}>
-          Unload Youtube
-        </div>
-        <YouTube videoId={ytId} ref={yPlayer} />
-      </>
-    );
-  } else {
-    return (
-      <div className="not-agreed" onClick={agreeYt}>
-        Load Youtube {ytId}
-      </div>
-    );
+    yPlayer.current?.internalPlayer?.seekTo(estimatedTime ?? 0, true);
+  }, [currentLine]);
+  if (isActive) {
+    return <YouTube videoId={ytId} ref={yPlayer} />;
   }
 };
 
@@ -81,12 +62,12 @@ export function extractData(data: string): {
 export function appendTime(
   md: string,
   lastTime: number,
-  lineCnt: any
+  lineCnt: any,
 ): string | undefined {
   const rgx = /~~~yt\n(.*)\n~~~/s;
   const match = md.match(rgx);
-  const data = match[1];
   if (!match) return;
+  const data = match[1];
 
   const { ytId, anchors } = extractData(data);
   anchors.push([Math.round(lastTime * 10) / 10, parseFloat(lineCnt)]);

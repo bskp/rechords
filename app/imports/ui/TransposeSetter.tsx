@@ -41,7 +41,7 @@ export default class TransposeSetter extends Component<
   }
 
   handleSlider = (value) => {
-    this.props.transposeSetter(Number.parseInt(value));
+    this.props.transposeSetter(Number.parseInt(value, 10));
   };
 
   render() {

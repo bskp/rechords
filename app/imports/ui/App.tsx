@@ -42,6 +42,16 @@ export const MenuContext = React.createContext<{
   setShowMenu: () => {},
 });
 
+export const VideoContext = React.createContext<{
+  hasVideo: boolean;
+  setActive: (active: boolean) => void;
+  isActive: boolean;
+}>({
+  hasVideo: false,
+  setActive: () => {},
+  isActive: false,
+});
+
 const empty_song = {
   title: "Neues Lied",
   text: "Titel\nInterpret\n========\n\n#Schlagwort\n\n1:\nDas ist die [A]erste Strophe\nHat zum Teil auch [em]Akkorde\n\n\nNach zwei leeren Zeilen gilt jeglicher Text als Kommentar.\n\nRefrain:\nTra la lalala\nla la lala la la\n\n2:\nUnd noch eine weil's so schön ist",

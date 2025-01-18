@@ -10,8 +10,10 @@ import { DataNode } from "domhandler";
 import { verseRegex } from "../api/showdown-rechords";
 import { Tablature } from "abcjs";
 import { useEffect, useRef, useState } from "react";
-import YouTube from "react-youtube";
 import { appendTime, YtInter } from "./YtInter";
+import { VideoContext } from "./App";
+import {Button} from "/imports/ui/Button";
+import {ReactSVG} from "react-svg";
 
 const nodeText = (node) => {
   return node.children.reduce(
@@ -30,6 +32,8 @@ interface P {
 export default (props: P) => {
   const html = useRef<HTMLSelectElement>(null);
   const lastTime = useRef(0);
+
+  const [isActive, setActive] = useState<boolean>(false);
 
   useEffect(() => {
     const traverse = (node: HTMLElement): void => {
@@ -69,20 +73,20 @@ export default (props: P) => {
     return { verseNames, chords };
   };
   // using wrapped number triggers prop change on every set
-  const [selectLine, setSelectLine] = useState({ lineCnt: 0 });
+  const [selectLine, setSelectLine] = useState(0);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
-      const line = event.target.closest("span.line");
+      const line = (event.target as HTMLElement).closest("span.line") as HTMLSpanElement;
       console.log(line);
-      const lineCnt = line.dataset.lineCnt;
+      const lineCnt = Number.parseInt(line.dataset.lineCnt ?? '', 10);
       if (event.shiftKey) {
-        setSelectLine({ lineCnt });
+        setSelectLine(lineCnt);
       } else {
         const md = props.md;
         const newMd = appendTime(md, lastTime.current, lineCnt);
         if (newMd) {
-          props.updateHandler(newMd);
+          props.updateHandler ? props.updateHandler(newMd) :;
         }
       }
       return;
@@ -416,13 +420,22 @@ export default (props: P) => {
           const code = node.children[0] as DH.Element;
           if (!("class" in code.attribs)) return node;
           const classes = code.attribs["class"];
+
           if (classes.includes("language-yt")) {
-            const data = code.firstChild.data as string;
+            const data = (code.firstChild as DH.DataNode).data as string;
             return (
               <div>
+                {isActive ?
+                  <Button onClick={() => setActive(false)}>
+                    <ReactSVG src="/svg/yt-close.svg"/>
+                  </Button> :
+                  <Button onClick={() => setActive(true)}>
+                    <ReactSVG src="/svg/yt.svg"/>
+                  </Button>
+                }
                 <YtInter
                   data={data}
-                  lineAction={selectLine}
+                  currentLine={selectLine}
                   onTimeChange={(v) => (lastTime.current = v)}
                 />
                 <div>
@@ -467,6 +480,13 @@ export default (props: P) => {
   });
 
   return (
+    <VideoContext.Provider
+      value={{
+        isActive: isActive,
+        setActive: setActive,
+        hasVideo: true,
+      }}
+    >
     <div className="content" id="chordsheet">
       <section
         className="interactive"
@@ -477,5 +497,6 @@ export default (props: P) => {
         {vdom}
       </section>
     </div>
+    </VideoContext.Provider>
   );
 };

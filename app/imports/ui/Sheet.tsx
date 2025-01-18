@@ -6,10 +6,11 @@ import { Abcjs } from "./Abcjs";
 import Kord from "./Kord";
 import { userMayWrite } from "../api/helpers";
 import * as DH from "domhandler";
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import { Tablature } from "abcjs";
 import classNames from "classnames";
 import { YtInter } from "./YtInter";
+import { VideoContext } from "/imports/ui/App";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
 
@@ -31,15 +32,17 @@ const Sheet = ({
   const [inlineRefs, setInlineRefs] = useState(true);
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
-  const [selecedtLine, setSelectedLine] = useState<{ lineCnt?: number }>({});
-  let hasVideo = false;
+  const [selectedLine, setSelectedLine] = useState<number>(0);
   const [playedLine, setPlayedLine] = useState<number>();
 
+  const { hasVideo, isActive } = useContext(VideoContext);
 
   const handleLineClick = (e: MouseEvent) => {
-    const lineCnt = e?.currentTarget?.dataset.lineCnt;
+    const span = e?.currentTarget as HTMLSpanElement;
+    if (!(span instanceof HTMLSpanElement)) return;
+    const lineCnt = Number.parseInt(span.dataset.lineCnt ?? "", 10);
     if (lineCnt) {
-      setSelectedLine({ lineCnt });
+      setSelectedLine(lineCnt);
     }
   };
   const chordsheetContent = useRef<HTMLElement>(null);
@@ -49,7 +52,7 @@ const Sheet = ({
     elements?.forEach((e) => e.addEventListener("click", toggleInlineRefs));
     return () =>
       elements?.forEach((e) =>
-        e.removeEventListener("click", toggleInlineRefs)
+        e.removeEventListener("click", toggleInlineRefs),
       );
   });
 
@@ -95,7 +98,7 @@ const Sheet = ({
       );
     }
 
-    // Abcjs
+    // Abcjs or youtube block
     else if (node.name == "pre") {
       if (node.children.length != 1) return node;
 
@@ -104,13 +107,12 @@ const Sheet = ({
 
       const classes = code.attribs["class"];
       if (classes.includes("language-yt")) {
-        const data = code.firstChild.data as string;
-        hasVideo = true;
+        const data = (code.firstChild as DH.DataNode).data as string;
         return (
           <div className="song-video">
             <YtInter
               data={data}
-              lineAction={selecedtLine}
+              currentLine={selectedLine}
               onLineChange={setPlayedLine}
             />
           </div>
@@ -168,7 +170,7 @@ const Sheet = ({
         if (
           (child as DH.Element)?.name == "li" &&
           hide.includes(
-            ((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data
+            ((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data,
           )
         )
           return false;
@@ -191,7 +193,7 @@ const Sheet = ({
       elements?.forEach((e) => e.addEventListener("click", handleLineClick));
       return () =>
         elements?.forEach((e) =>
-          e.removeEventListener("click", handleLineClick)
+          e.removeEventListener("click", handleLineClick),
         );
     }
   });
@@ -201,13 +203,14 @@ const Sheet = ({
     if (lines == null || playedLine == null) {
       return;
     }
-    for (const line of lines) {
-      const lineCnt = parseFloat(line.dataset.lineCnt);
+    for (const maybeLine of lines) {
+      const line = maybeLine as HTMLSpanElement;
+      if (!(line instanceof HTMLSpanElement)) return;
+      const lineCnt = parseInt(line.dataset.lineCnt ?? "", 10);
       const ratio = clamp(0, playedLine - lineCnt, 0.65);
 
       const style = `--ratio: ${1 - ratio}`;
-
-      // line.classList.toggle("passed-line", playedLine > lineCnt);
+      // @ts-ignore
       line.style = style;
     }
   }, [playedLine]);
@@ -217,7 +220,11 @@ const Sheet = ({
       ref={chordsheetContent}
       id="chordsheetContent"
       style={style}
-      className={classNames({ inlineRefs, hideRefs: !inlineRefs, hasVideo })}
+      className={classNames({
+        inlineRefs,
+        hideRefs: !inlineRefs,
+        hasVideo: isActive,
+      })}
     >
       {vdom}
     </section>

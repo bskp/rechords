@@ -214,13 +214,14 @@
     }
 
     // interim UI for to know which datapoint to delete
-
     .line::before {
       content: attr(data-line-cnt);
       opacity: 0.5;
       position: absolute;
+      margin-left: -3.8em;
       text-align: right;
-      margin-left: -50px;
+      width: 2em;
+      line-height: 1.4em;
     }
     .line:hover::before {
       opacity: 1;
@@ -261,8 +262,16 @@
     cursor: pointer;
     transition-property: opacity, color;
     transition-timing-function: ease-in;
-    transition-duration: .8s;
+    transition-duration: 0.8s;
     opacity: var(--ratio);
+
+    i {
+      transition: color 0.2s;
+    }
+    &:hover i {
+      color: var(--accent);
+      transition: color 0s;
+    }
   }
 
   .line {
@@ -366,31 +375,18 @@
   }
 
   .song-video {
-    // interim UI: when there is muuuuuch space show it fixed
-    // otherwise one can still use Picture in Picture
-    @media screen and (min-width: 1700px) {
-      position: fixed;
-      top: 200px;
-      right: 200px;
-    }
-    .revoke {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
+    position: fixed;
+    top: 0;
+    right: 7em;
 
-    .not-agreed {
-      cursor: pointer;
-      width: 300px;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--gray);
-      color: var(--text);
+    .phone({
+      right: unset;
+      left: 0;
+    });
+
+    iframe {
+      width: 13em;
+      height: 8em;
     }
   }
-
 } // .chordsheet
-
