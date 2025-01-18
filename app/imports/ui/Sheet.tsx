@@ -1,12 +1,12 @@
 import * as React from "react";
-import parse, { DOMNode, domToReact } from "html-react-parser";
-import { Song } from "../api/collections";
-import { Abcjs } from "./Abcjs";
+import parse, {DOMNode, domToReact} from "html-react-parser";
+import {Song} from "../api/collections";
+import {Abcjs} from "./Abcjs";
 import Kord from "./Kord";
-import { userMayWrite } from "../api/helpers";
+import {userMayWrite} from "../api/helpers";
 import * as DH from "domhandler";
-import { CSSProperties, useEffect, useRef, useState } from "react";
-import { Tablature } from "abcjs";
+import {CSSProperties, useEffect, useRef, useState} from "react";
+import {Tablature} from "abcjs";
 import Chord_ from "/imports/api/libchr0d/chord";
 import classNames from "classnames";
 
@@ -21,12 +21,12 @@ type SheetProps = {
   multicolumns?: boolean;
 };
 const Sheet = ({
-  song,
-  transpose,
-  hideChords,
-  processVdom,
-  style,
-}: SheetProps) => {
+                 song,
+                 transpose,
+                 hideChords,
+                 processVdom,
+                 style,
+               }: SheetProps) => {
   const [inlineRefs, setInlineRefs] = useState(true);
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
@@ -93,13 +93,13 @@ const Sheet = ({
       } else {
         const tablature: Tablature[] = [];
         if (classes.includes("tab")) {
-          tablature.push({ instrument: "guitar" });
+          tablature.push({instrument: "guitar"});
         }
         const abc = (code.firstChild as DH.DataNode)?.data;
         return (
           <Abcjs
             abcNotation={abc}
-            params={{ visualTranspose: transpose, tablature }}
+            params={{visualTranspose: transpose, tablature}}
           />
         );
       }
@@ -132,14 +132,10 @@ const Sheet = ({
     ) {
       const hide: string[] = ["fini", "+", "check", "wip"];
       node.children = node.children.filter((child) => {
-        if (
-          (child as DH.Element)?.name == "li" &&
+        return !((child as DH.Element)?.name == "li" &&
           hide.includes(
             ((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data,
-          )
-        )
-          return false;
-        return true;
+          ));
       });
     }
   };
@@ -150,14 +146,14 @@ const Sheet = ({
     postprocess = (vdom) => processVdom(populateReactNodes(vdom));
   }
 
-  let vdom = parse(rmd_html, { replace: postprocess }) as JSX.Element[];
+  let vdom = parse(rmd_html, {replace: postprocess}) as JSX.Element[];
 
   return (
     <section
       ref={chordsheetContent}
       id="chordsheetContent"
       style={style}
-      className={classNames({ inlineRefs, hideRefs: !inlineRefs })}
+      className={classNames({inlineRefs, hideRefs: !inlineRefs})}
     >
       {vdom}
     </section>
