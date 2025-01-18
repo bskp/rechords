@@ -4,7 +4,7 @@ import TransposeSetter from "./TransposeSetter";
 import ChrodLib from "../api/libchrod";
 import { Song } from "../api/collections";
 import Drawer from "./Drawer";
-import { routePath, userMayWrite, View } from "../api/helpers";
+import { navigateTo, routePath, userMayWrite, View } from "../api/helpers";
 import Sheet from "./Sheet";
 import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
@@ -51,6 +51,28 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     return () => stopAutoScroll();
   }, [song]);
 
+  const globalKeyHandler = (e: KeyboardEvent) => {
+    const tagName = (e.target as Element)?.tagName;
+    // Do not steal focus if already on <input>
+    if (["INPUT", "TEXTAREA"].includes(tagName)) return;
+    if(e.target.getAttribute('contenteditable')) return;
+
+
+    // Ignore special keys
+    if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
+
+    if (e.key === "e") {
+      e.preventDefault();
+      navigateTo(history, View.edit, song)
+    }
+ };
+
+  React.useEffect(() => {
+    document.addEventListener("keydown", globalKeyHandler);
+    return () => document.removeEventListener("keydown", globalKeyHandler);
+  });
+
+
   function getInitialTranspose(): number {
     const transposeTag = song
       .getTags()
@@ -62,7 +84,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
     if (userMayWrite()) {
-      history.push(`/edit/${author}/${title}`);
+      navigateTo(history, View.edit, song)
     }
     event.preventDefault();
   };

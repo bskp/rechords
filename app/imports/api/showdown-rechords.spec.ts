@@ -1,9 +1,8 @@
-import showdown from "showdown";
-import { showdownRechords } from "./showdown-rechords";
 import fs from "fs";
 import path from "path";
 import assert from "assert";
 import { parseRechordsDown } from "./parseRechordsDown";
+import {describe, it} from 'node:test'
 
 const normalize = (html: string) => {
   html = html.replace(/\r/g, ""); // Normalize line returns
@@ -31,7 +30,7 @@ const cases = fs
   .filter((f) => f.endsWith(".md"))
   .map((f) => path.join(__dirname, "showdown-cases", f));
 
-describe("showdown-rechords", () => {
+const showdown = describe("showdown-rechords", () => {
   cases.forEach((mdPath) => {
     it("Case: " + mdPath.replace(/^.*\//, ""), () => {
       const markdown = fs.readFileSync(mdPath, "utf8");
@@ -42,3 +41,5 @@ describe("showdown-rechords", () => {
     });
   });
 });
+
+export { showdown };
