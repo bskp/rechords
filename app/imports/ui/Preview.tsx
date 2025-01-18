@@ -86,7 +86,7 @@ export default (props: P) => {
         const md = props.md;
         const newMd = appendTime(md, lastTime.current, lineCnt);
         if (newMd) {
-          props.updateHandler ? props.updateHandler(newMd) :;
+          props.updateHandler ? props.updateHandler(newMd) : null;
         }
       }
       return;
