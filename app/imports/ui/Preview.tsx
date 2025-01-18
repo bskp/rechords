@@ -11,9 +11,12 @@ import { verseRegex } from "../api/showdown-rechords";
 import { Tablature } from "abcjs";
 import { useEffect, useRef, useState } from "react";
 import { appendTime, YtInter } from "./YtInter";
+import classNames from "classnames";
+import { useDocumentListener } from "./Songlist/Menu";
 import { VideoContext } from "./App";
 import { Button } from "/imports/ui/Button";
 import { ReactSVG } from "react-svg";
+import { Tooltip } from "react-tooltip";
 
 const nodeText = (node) => {
   return node.children.reduce(
@@ -177,6 +180,7 @@ export default (props: P) => {
     event: React.SyntheticEvent<HTMLElement>,
     offset: number
   ) => {
+    console.log("offsetchorspos");
     event.currentTarget.removeAttribute("data-initial");
     const chord = event.currentTarget.innerText;
 
@@ -427,9 +431,17 @@ export default (props: P) => {
           if (classes.includes("language-yt")) {
             const data = (code.firstChild as DH.DataNode).data as string;
             return (
-              <div>
+              <div
+                className={classNames("song-video-preview", {
+                  active: isActive,
+                })}
+              >
                 {isActive ? (
-                  <Button onClick={() => setActive(false)}>
+                  <Button
+                    onClick={() => setActive(false)}
+                    data-tooltip-content="Ctrl / Shift"
+                    data-tooltip-id="ts"
+                  >
                     <ReactSVG src="/svg/yt-close.svg" />
                   </Button>
                 ) : (
@@ -437,19 +449,23 @@ export default (props: P) => {
                     <ReactSVG src="/svg/yt.svg" />
                   </Button>
                 )}
+                <Tooltip
+                  globalCloseEvents={{ scroll: true, clickOutsideAnchor: true }}
+                  id="ts"
+                />
                 <YtInter
                   data={data}
-                  selectedLine={selectLine.selectedLine}
+                  selectedLine={selectLine}
                   onTimeChange={(v) => (lastTime.current = v)}
                 />
-                <div>
-                  <span>
+                {/* <div>
+                  <div>
                     <b>Ctrl + Click: </b>Add{" "}
-                  </span>
-                  <span>
-                    <b>Shift + Click: </b>Recall
-                  </span>
-                </div>
+                  </div>
+                  <div>
+                    <b>Shift + Click: </b>Play
+                  </div>
+                </div> */}
               </div>
             );
           }
@@ -483,6 +499,22 @@ export default (props: P) => {
     },
   });
 
+  const handleSpecialKey = (kev: KeyboardEvent) => {
+    console.log(kev);
+    if (kev.ctrlKey || kev.metaKey) {
+      setSpecialKey("ctrl");
+    } else if (kev.shiftKey) {
+      setSpecialKey("shift");
+    } else {
+      setSpecialKey("");
+    }
+  };
+  const [specialKey, setSpecialKey] = useState("");
+
+  useDocumentListener("keydown", handleSpecialKey);
+  useDocumentListener("keyup", handleSpecialKey);
+
+  console.log(specialKey);
   return (
     <VideoContext.Provider
       value={{
@@ -493,7 +525,11 @@ export default (props: P) => {
     >
       <div className="content" id="chordsheet">
         <section
-          className="interactive"
+          className={classNames({
+            interactive: specialKey === "",
+            addanchor: specialKey === "ctrl",
+            playfromline: specialKey === "shift",
+          })}
           id="chordsheetContent"
           onClick={(e) => handleClick(e)}
           ref={html}

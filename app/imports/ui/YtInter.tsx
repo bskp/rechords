@@ -6,7 +6,7 @@ import { VideoContext } from "/imports/ui/App";
 
 export const YtInter: FC<{
   data: string;
-  selectedLine: {selectedLine: number};
+  selectedLine: { selectedLine: number };
   onTimeChange?: (t?: number) => void;
   onLineChange?: (t?: number) => void;
 }> = ({ data, selectedLine: currentLine, onTimeChange, onLineChange }) => {
@@ -34,7 +34,7 @@ export const YtInter: FC<{
   }, []);
 
   useEffect(() => {
-    console.log(currentLine)
+    console.log(currentLine);
     if (!currentLine.selectedLine) {
       return;
     }
@@ -68,7 +68,7 @@ export function extractData(data: string): {
 export function appendTime(
   md: string,
   lastTime: number,
-  lineCnt: any
+  selectedLine: number
 ): string | undefined {
   const rgx = /~~~yt\n(.*)\n~~~/s;
   const match = md.match(rgx);
@@ -76,7 +76,7 @@ export function appendTime(
   const data = match[1];
 
   const { ytId, anchors } = extractData(data);
-  anchors.push([Math.round(lastTime * 10) / 10, parseFloat(lineCnt)]);
+  anchors.push([Math.round(lastTime * 10) / 10, selectedLine]);
 
   anchors.sort(([a, _], [b, __]) => a - b);
 

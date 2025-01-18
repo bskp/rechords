@@ -41,10 +41,8 @@ export function Menu(props: {
     }
   };
 
-  React.useEffect(() => {
-    document.addEventListener("keydown", globalKeyHandler);
-    return () => document.removeEventListener("keydown", globalKeyHandler);
-  });
+  const event = "keydown";
+  useDocumentListener(event, globalKeyHandler);
 
   const onTagClick = (event: React.MouseEvent<HTMLElement>) => {
     const tag =
@@ -197,4 +195,13 @@ export function Menu(props: {
       />
     </>
   );
+}
+export function useDocumentListener<K extends keyof DocumentEventMap>(
+  type: K,
+  listener: (this: Document, ev: DocumentEventMap[K]) => any
+) {
+  React.useEffect(() => {
+    document.addEventListener(type, listener);
+    return () => document.removeEventListener(type, listener);
+  });
 }

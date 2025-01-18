@@ -206,7 +206,7 @@
     }
   }
 
-  .interactive {
+  .interactive,.addanchor,.playfromline {
     .select(none);
     .ref,
     .inlineReference {
@@ -228,6 +228,32 @@
     }
   }
 
+
+
+
+  .addanchor {
+    .line:hover {
+      border-top: 2px solid var(--accent);
+    &::before {
+      content: "+" attr(data-line-cnt);
+    }
+  }
+  }
+  .playfromline {
+    .line {
+      i {
+        transition: color 0.2s;
+      }
+      &:hover i {
+        color: var(--accent);
+        transition: color 0s;
+      }
+    }
+  }
+
+  .interactive,.addanchor,.playfromline i {
+    line-height: 1.4em;
+  }
   .interactive i {
     cursor: pointer;
 
@@ -386,6 +412,27 @@
 
     iframe {
       width: 13em;
+      height: 8em;
+    }
+  }
+  .song-video-preview{
+    position:absolute;
+    top:0;
+    right: 50%;
+  }
+
+  .song-video-preview.active {
+    position: fixed;
+    flex-direction: row-reverse;
+    display: flex;
+
+    .phone({
+      right: unset;
+      left: 0;
+    });
+
+    iframe {
+      width: 30wv;
       height: 8em;
     }
   }
