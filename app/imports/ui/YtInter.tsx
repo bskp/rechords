@@ -6,10 +6,10 @@ import { VideoContext } from "/imports/ui/App";
 
 export const YtInter: FC<{
   data: string;
-  currentLine: number;
+  selectedLine: {selectedLine: number};
   onTimeChange?: (t?: number) => void;
   onLineChange?: (t?: number) => void;
-}> = ({ data, currentLine, onTimeChange, onLineChange }) => {
+}> = ({ data, selectedLine: currentLine, onTimeChange, onLineChange }) => {
   const { isActive } = useContext(VideoContext);
 
   const yPlayer = useRef<YouTube>(null);
@@ -26,7 +26,7 @@ export const YtInter: FC<{
           anchors,
           time,
           (l) => l[0],
-          (l) => l[1],
+          (l) => l[1]
         );
         onLineChange(estimatedLine);
       }
@@ -34,17 +34,23 @@ export const YtInter: FC<{
   }, []);
 
   useEffect(() => {
-    if (!currentLine) {
+    console.log(currentLine)
+    if (!currentLine.selectedLine) {
       return;
     }
     const estimatedTime = linInterpolation(
       anchors,
-      currentLine,
+      currentLine.selectedLine,
       (l) => l[1],
-      (l) => l[0],
+      (l) => l[0]
     );
     yPlayer.current?.internalPlayer?.seekTo(estimatedTime ?? 0, true);
   }, [currentLine]);
+
+  useEffect(() => {
+    yPlayer.current?.internalPlayer?.playVideo();
+  }, [yPlayer.current]);
+
   if (isActive) {
     return <YouTube videoId={ytId} ref={yPlayer} />;
   }
@@ -62,7 +68,7 @@ export function extractData(data: string): {
 export function appendTime(
   md: string,
   lastTime: number,
-  lineCnt: any,
+  lineCnt: any
 ): string | undefined {
   const rgx = /~~~yt\n(.*)\n~~~/s;
   const match = md.match(rgx);

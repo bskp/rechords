@@ -12,14 +12,14 @@ import { Tablature } from "abcjs";
 import { useEffect, useRef, useState } from "react";
 import { appendTime, YtInter } from "./YtInter";
 import { VideoContext } from "./App";
-import {Button} from "/imports/ui/Button";
-import {ReactSVG} from "react-svg";
+import { Button } from "/imports/ui/Button";
+import { ReactSVG } from "react-svg";
 
 const nodeText = (node) => {
   return node.children.reduce(
     (out, child) =>
       (out += child.type == "text" ? child.data : nodeText(child)),
-    "",
+    ""
   );
 };
 
@@ -73,18 +73,21 @@ export default (props: P) => {
     return { verseNames, chords };
   };
   // using wrapped number triggers prop change on every set
-  const [selectLine, setSelectLine] = useState(0);
+  // otherwise same line can't clicked twice
+  const [selectLine, setSelectLine] = useState({ selectedLine: 0 });
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
-      const line = (event.target as HTMLElement).closest("span.line") as HTMLSpanElement;
+      const line = (event.target as HTMLElement).closest(
+        "span.line"
+      ) as HTMLSpanElement;
       console.log(line);
-      const lineCnt = Number.parseInt(line.dataset.lineCnt ?? '', 10);
+      const selectedLine = Number.parseInt(line.dataset.lineCnt ?? "", 10);
       if (event.shiftKey) {
-        setSelectLine(lineCnt);
+        setSelectLine({ selectedLine });
       } else {
         const md = props.md;
-        const newMd = appendTime(md, lastTime.current, lineCnt);
+        const newMd = appendTime(md, lastTime.current, selectedLine);
         if (newMd) {
           props.updateHandler ? props.updateHandler(newMd) : null;
         }
@@ -137,7 +140,7 @@ export default (props: P) => {
       node,
       guessedChord + "|",
       offset,
-      skipWhitespace,
+      skipWhitespace
     );
     props.updateHandler(md);
   };
@@ -172,7 +175,7 @@ export default (props: P) => {
 
   const offsetChordPosition = (
     event: React.SyntheticEvent<HTMLElement>,
-    offset: number,
+    offset: number
   ) => {
     event.currentTarget.removeAttribute("data-initial");
     const chord = event.currentTarget.innerText;
@@ -254,7 +257,7 @@ export default (props: P) => {
     segment: Element,
     chord: string,
     offset = 0,
-    skipWhitespace = true,
+    skipWhitespace = true
   ) => {
     const pos = locate(segment);
 
@@ -425,17 +428,18 @@ export default (props: P) => {
             const data = (code.firstChild as DH.DataNode).data as string;
             return (
               <div>
-                {isActive ?
+                {isActive ? (
                   <Button onClick={() => setActive(false)}>
-                    <ReactSVG src="/svg/yt-close.svg"/>
-                  </Button> :
-                  <Button onClick={() => setActive(true)}>
-                    <ReactSVG src="/svg/yt.svg"/>
+                    <ReactSVG src="/svg/yt-close.svg" />
                   </Button>
-                }
+                ) : (
+                  <Button onClick={() => setActive(true)}>
+                    <ReactSVG src="/svg/yt.svg" />
+                  </Button>
+                )}
                 <YtInter
                   data={data}
-                  currentLine={selectLine}
+                  selectedLine={selectLine.selectedLine}
                   onTimeChange={(v) => (lastTime.current = v)}
                 />
                 <div>
@@ -487,16 +491,16 @@ export default (props: P) => {
         hasVideo: true,
       }}
     >
-    <div className="content" id="chordsheet">
-      <section
-        className="interactive"
-        id="chordsheetContent"
-        onClick={(e) => handleClick(e)}
-        ref={html}
-      >
-        {vdom}
-      </section>
-    </div>
+      <div className="content" id="chordsheet">
+        <section
+          className="interactive"
+          id="chordsheetContent"
+          onClick={(e) => handleClick(e)}
+          ref={html}
+        >
+          {vdom}
+        </section>
+      </div>
     </VideoContext.Provider>
   );
 };

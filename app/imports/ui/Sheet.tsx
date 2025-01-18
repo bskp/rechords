@@ -32,7 +32,9 @@ const Sheet = ({
   const [inlineRefs, setInlineRefs] = useState(true);
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
-  const [selectedLine, setSelectedLine] = useState<number>(0);
+  // from UI
+  const [selectedLine, setSelectedLine] = useState({selectedLine:0});
+  // from time change in video
   const [playedLine, setPlayedLine] = useState<number>();
 
   const { hasVideo, isActive } = useContext(VideoContext);
@@ -40,9 +42,10 @@ const Sheet = ({
   const handleLineClick = (e: MouseEvent) => {
     const span = e?.currentTarget as HTMLSpanElement;
     if (!(span instanceof HTMLSpanElement)) return;
-    const lineCnt = Number.parseInt(span.dataset.lineCnt ?? "", 10);
-    if (lineCnt) {
-      setSelectedLine(lineCnt);
+    const selectedLine = Number.parseInt(span.dataset.lineCnt ?? "", 10);
+    if (selectedLine) {
+      console.log('cicl')
+      setSelectedLine({selectedLine});
     }
   };
   const chordsheetContent = useRef<HTMLElement>(null);
@@ -112,7 +115,7 @@ const Sheet = ({
           <div className="song-video">
             <YtInter
               data={data}
-              currentLine={selectedLine}
+              selectedLine={selectedLine}
               onLineChange={setPlayedLine}
             />
           </div>
