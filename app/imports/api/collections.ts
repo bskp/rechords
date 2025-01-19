@@ -11,7 +11,7 @@ function isDefined<T>(a: T | null | undefined): a is T {
   return a !== null && a !== undefined;
 }
 
-export const rmd_version = 9;
+export const rmd_version = 11;
 
 export class Song {
   _id?: string;
@@ -32,6 +32,7 @@ export class Song {
   last_editor?: string;
 
   revision_cache?: Revision[];
+  has_video: boolean = false;
 
   constructor(doc: { text: string }) {
     Object.assign(this, doc);
@@ -137,6 +138,11 @@ export class Song {
       this.author = "-";
     }
     this.author_ = slug(this.author, { lower: true });
+
+    this.has_video =
+      dom
+        .getElementsByTagName("pre")?.[0]
+        ?.childNodes[0]?.rawText.includes("language-yt") ?? false;
 
     this.tags = RmdHelpers.collectTags(dom);
     this.chords = RmdHelpers.collectChords(dom);

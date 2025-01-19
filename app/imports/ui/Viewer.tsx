@@ -9,7 +9,7 @@ import Sheet from "./Sheet";
 import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
-import { MenuContext } from "/imports/ui/App";
+import { MenuContext, VideoContext } from "/imports/ui/App";
 
 interface SongRouteParams {
   author?: string;
@@ -24,9 +24,9 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const [relTranspose, setRelTranspose] = useState<number>(
     getInitialTranspose(),
   );
-  const [inlineReferences, setInlineReferences] = useState<boolean>(false);
   const [showChords, setShowChords] = useState<boolean>(true);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
+  const [isVideoActive, setIsVideoActive] = useState<boolean>(false);
 
   const history = useHistory();
   const { author, title } = useParams<SongRouteParams>();
@@ -48,6 +48,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     document.scrollingElement?.scrollTo(0, 0);
     setRelTranspose(getInitialTranspose());
     stopAutoScroll();
+    setIsVideoActive(false);
     return () => stopAutoScroll();
   }, [song]);
 
@@ -147,8 +148,16 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const { setShowMenu } = useContext(MenuContext);
 
+  console.log("song", song.title, song.has_video);
+
   return (
-    <>
+    <VideoContext.Provider
+      value={{
+        isActive: isVideoActive,
+        setActive: setIsVideoActive,
+        hasVideo: song.has_video,
+      }}
+    >
       <div
         className="content"
         id="chordsheet"
@@ -161,6 +170,15 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         <Button onClick={() => setShowMenu(true)} phoneOnly>
           <ReactSVG src="/svg/menu.svg" />
         </Button>
+        {!song.has_video ? null : isVideoActive ? (
+          <Button onClick={() => setIsVideoActive(false)}>
+            <ReactSVG src="/svg/yt-close.svg" />
+          </Button>
+        ) : (
+          <Button onClick={() => setIsVideoActive(true)}>
+            <ReactSVG src="/svg/yt.svg" />
+          </Button>
+        )}
         <TransposeSetter
           onDoubleClick={() => setShowChords((prev) => !prev)}
           transposeSetter={setRelTranspose}
@@ -172,11 +190,11 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
             <ReactSVG src="/svg/conveyor_active.svg" />
           ) : (
             <ReactSVG src="/svg/conveyor.svg" />
-          )}
+          )}{" "}
         </Button>
       </aside>
       {drawer}
-    </>
+    </VideoContext.Provider>
   );
 };
 

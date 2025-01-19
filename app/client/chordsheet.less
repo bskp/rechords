@@ -6,6 +6,17 @@
   .chordsheet-colors;
   color: var(--gray);
 
+  a {
+    transition: filter ease-out 1s;
+    &:hover {
+      // main.less
+      border: unset;
+
+      filter: brightness(1.1);
+      transition: filter cubic-bezier(0, 2.89, 0.07, 1.01) 1s;
+    }
+  }
+
   #chordsheetContent {
     margin-bottom: 10em;
   }
@@ -62,10 +73,10 @@
     clear: both; // Clear floated chords diagrams
 
     .phone({
-      margin: 2em 0 0; 
-      width: auto; 
-      height: auto; 
-      line-height: 1em; 
+      margin: 2em 0 0;
+      width: auto;
+      height: auto;
+      line-height: 1em;
       text-align: left;
     });
   }
@@ -84,6 +95,7 @@
       }
     }
   }
+
   .hideRefs {
     .inlineReference {
       display: none;
@@ -206,17 +218,65 @@
     }
   }
 
-  .interactive {
+  .interactive,
+  .addanchor,
+  .playfromline {
     .select(none);
+    cursor: pointer;
+
     .ref,
     .inlineReference {
       display: none;
     }
+
+    // interim UI for to know which datapoint to delete
+    .line::before {
+      content: attr(data-line-cnt);
+      opacity: 0.5;
+      position: absolute;
+      margin-left: -3.8em;
+      text-align: right;
+      width: 2em;
+      line-height: 1.4em;
+    }
+
+    .line:hover::before {
+      opacity: 1;
+    }
+  }
+
+  // .addanchor {
+  //   .line:hover {
+  //     border-top: 2px solid var(--accent);
+  //     &::before {
+  //       content: "+" attr(data-line-cnt);
+  //     }
+  //   }
+  // }
+  .playfromline {
+    .line {
+      i {
+        transition: color 0.2s;
+      }
+      &:hover i {
+        color: var(--accent);
+        transition: color 0s;
+      }
+    }
+  }
+
+  .interactive,
+  .addanchor,
+  .playfromline {
+    i {
+      line-height: 1.4em;
+      text-indent: 0 !important;
+      padding-left: 0 !important;
+      cursor: pointer;
+    }
   }
 
   .interactive i {
-    cursor: pointer;
-
     &:not(.hasChord):hover {
       border-top: 2px solid var(--accent);
       margin-top: -2px;
@@ -225,11 +285,6 @@
     &.hasChord:hover span {
       color: var(--text);
     }
-
-    text-indent: 0 !important;
-    padding-left: 0 !important;
-
-    line-height: 1.4em;
   }
 
   .line i u {
@@ -243,6 +298,23 @@
   }
 
   @continuation_pad: 0.8em; // indent for wrapping rows
+
+  .hasVideo .line {
+    cursor: pointer;
+    transition-property: opacity, color;
+    transition-timing-function: ease-in;
+    transition-duration: 0.8s;
+    opacity: var(--ratio);
+
+    i {
+      transition: color 0.2s;
+    }
+
+    &:hover i {
+      color: var(--accent);
+      transition: color 0s;
+    }
+  }
 
   .line {
     display: flex;
@@ -262,23 +334,9 @@
     flex-direction: column;
     display: flex;
 
-    @supports (-moz-appearance: none) {
-      // Only for FF: Hanging indents for rows without chords.
-      // Does not work for webkit, as negative first-line indent is handled differently for contained flex-elements.
-      text-indent: -@continuation_pad;
-      padding-left: @continuation_pad;
-    }
-
     &:first-child {
       margin-left: -@continuation_pad;
     }
-
-    /* currently not in use: Both Viewer and Preview have preprocessors.
-    &::before {
-      content: attr(data-chord);
-      .before();
-    }
-    */
 
     .before {
       // aka. Chords.
@@ -311,12 +369,15 @@
 
       &.optional {
         color: var(--gray);
+
         &:before {
           content: "(";
         }
+
         &:after {
           content: ")";
         }
+
         &:after,
         &:before {
           font-weight: 200;
@@ -341,6 +402,57 @@
       position: relative;
       width: 0;
       left: -1.2em;
+    }
+  }
+
+  .song-video {
+    position: fixed;
+    top: 0;
+    right: 7em;
+
+    .phone({
+      right: unset;
+      left: 0;
+    });
+
+    iframe {
+      width: 16em;
+      height: unset;
+      aspect-ratio: 3/2;
+    }
+  }
+  .song-video-preview {
+    position: absolute;
+    top: 0;
+    right: 50%;
+  }
+
+  .song-video-preview.active {
+    position: fixed;
+    flex-direction: row-reverse;
+    display: flex;
+
+    .phone({
+      right: unset;
+      left: 0;
+    });
+
+    iframe {
+      height: 8em;
+      width: unset;
+      aspect-ratio: 3/2;
+    }
+  }
+  .time-insert-indicator {
+    display: flex;
+    align-items: end;
+    span {
+      color: var(--text-inverted);
+      padding: 2px;
+      width: 50px;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      background-color: var(--accent-flat);
     }
   }
 } // .chordsheet
