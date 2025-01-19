@@ -14,7 +14,6 @@ import { appendTime, YtInter } from "./YtInter";
 import classNames from "classnames";
 import { useDocumentListener } from "./Songlist/Menu";
 import { VideoContext } from "./App";
-import { Button } from "/imports/ui/Button";
 import { ReactSVG } from "react-svg";
 import { Tooltip } from "react-tooltip";
 
@@ -22,7 +21,7 @@ const nodeText = (node) => {
   return node.children.reduce(
     (out, child) =>
       (out += child.type == "text" ? child.data : nodeText(child)),
-    ""
+    "",
   );
 };
 
@@ -34,9 +33,9 @@ interface P {
 
 export default (props: P) => {
   const html = useRef<HTMLSelectElement>(null);
-  const lastTime = useRef(0);
+  const [currentPlayTime, setCurrentPlayTime] = useState<number | undefined>(0);
 
-  const [isActive, setActive] = useState<boolean>(false);
+  const [isVideoActive, setVideoActive] = useState<boolean>(false);
 
   useEffect(() => {
     const traverse = (node: HTMLElement): void => {
@@ -75,22 +74,25 @@ export default (props: P) => {
     });
     return { verseNames, chords };
   };
+
   // using wrapped number triggers prop change on every set
-  // otherwise same line can't clicked twice
+  // otherwise same line can't be clicked twice
   const [selectLine, setSelectLine] = useState({ selectedLine: 0 });
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
+    if (
+      isVideoActive &&
+      (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey)
+    ) {
       const line = (event.target as HTMLElement).closest(
-        "span.line"
+        "span.line",
       ) as HTMLSpanElement;
-      console.log(line);
       const selectedLine = Number.parseInt(line.dataset.lineCnt ?? "", 10);
       if (event.shiftKey) {
         setSelectLine({ selectedLine });
       } else {
         const md = props.md;
-        const newMd = appendTime(md, lastTime.current, selectedLine);
+        const newMd = appendTime(md, currentPlayTime, selectedLine);
         if (newMd) {
           props.updateHandler ? props.updateHandler(newMd) : null;
         }
@@ -143,7 +145,7 @@ export default (props: P) => {
       node,
       guessedChord + "|",
       offset,
-      skipWhitespace
+      skipWhitespace,
     );
     props.updateHandler(md);
   };
@@ -178,7 +180,7 @@ export default (props: P) => {
 
   const offsetChordPosition = (
     event: React.SyntheticEvent<HTMLElement>,
-    offset: number
+    offset: number,
   ) => {
     console.log("offsetchorspos");
     event.currentTarget.removeAttribute("data-initial");
@@ -261,7 +263,7 @@ export default (props: P) => {
     segment: Element,
     chord: string,
     offset = 0,
-    skipWhitespace = true
+    skipWhitespace = true,
   ) => {
     const pos = locate(segment);
 
@@ -433,39 +435,46 @@ export default (props: P) => {
             return (
               <div
                 className={classNames("song-video-preview", {
-                  active: isActive,
+                  active: isVideoActive,
                 })}
               >
-                {isActive ? (
-                  <Button
-                    onClick={() => setActive(false)}
-                    data-tooltip-content="Ctrl / Shift"
+                {isVideoActive ? (
+                  <a
+                    className="iconbutton"
                     data-tooltip-id="ts"
+                    onClick={() => setVideoActive(false)}
                   >
                     <ReactSVG src="/svg/yt-close.svg" />
-                  </Button>
+                  </a>
                 ) : (
-                  <Button onClick={() => setActive(true)}>
+                  <a
+                    className="iconbutton"
+                    data-tooltip-id="ts"
+                    data-tooltip-content="Loads video from youtube."
+                    onClick={() => setVideoActive(true)}
+                  >
                     <ReactSVG src="/svg/yt.svg" />
-                  </Button>
+                  </a>
                 )}
                 <Tooltip
-                  globalCloseEvents={{ scroll: true, clickOutsideAnchor: true }}
+                  place="bottom-end"
+                  closeEvents={{ mouseout: false }}
+                  globalCloseEvents={{ clickOutsideAnchor: true }}
                   id="ts"
-                />
+                >
+                  <div>
+                    <div>Click to a line in the song text</div>
+                    <div>
+                      <b>Ctrl + Click: </b>Add Time Anchor<br />
+                      <b>Shift + Click: </b>Play from here
+                    </div>
+                  </div>
+                </Tooltip>
                 <YtInter
                   data={data}
                   selectedLine={selectLine}
-                  onTimeChange={(v) => (lastTime.current = v)}
+                  onTimeChange={setCurrentPlayTime}
                 />
-                {/* <div>
-                  <div>
-                    <b>Ctrl + Click: </b>Add{" "}
-                  </div>
-                  <div>
-                    <b>Shift + Click: </b>Play
-                  </div>
-                </div> */}
               </div>
             );
           }
@@ -499,11 +508,36 @@ export default (props: P) => {
     },
   });
 
-  const handleSpecialKey = (kev: KeyboardEvent) => {
-    console.log(kev);
-    if (kev.ctrlKey || kev.metaKey) {
+  const [coords, setCoords] = useState({ x: 0, y: 0, h: 0 });
+  const handleMouseMove = (
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+  ) => {
+    // next line
+
+    const line = (event.target as HTMLElement).closest(
+      "span.line",
+    ) as HTMLSpanElement;
+
+    console.log(line);
+    if (line) {
+      const cl = line.getBoundingClientRect();
+      console.log(cl);
+      // setCoords({ x: cl.left, y: cl.top });
+      setCoords({
+        x: line.offsetLeft,
+        y: line.offsetTop,
+        h: line.offsetHeight,
+      });
+      handleSpecialKey(event);
+    }
+  };
+  const handleSpecialKey = (event: KeyboardEvent | MouseEvent) => {
+    if (!isVideoActive) {
+      return;
+    }
+    if (event.ctrlKey || event.metaKey) {
       setSpecialKey("ctrl");
-    } else if (kev.shiftKey) {
+    } else if (event.shiftKey) {
       setSpecialKey("shift");
     } else {
       setSpecialKey("");
@@ -514,12 +548,17 @@ export default (props: P) => {
   useDocumentListener("keydown", handleSpecialKey);
   useDocumentListener("keyup", handleSpecialKey);
 
-  console.log(specialKey);
+  // // changing window or going into iframe otherwise leaves last pressed key
+  // useDocumentListener("blur", () => {
+  //   setSpecialKey("");
+  // });
+  // needs a better / more general solution
+
   return (
     <VideoContext.Provider
       value={{
-        isActive: isActive,
-        setActive: setActive,
+        isActive: isVideoActive,
+        setActive: setVideoActive,
         hasVideo: true,
       }}
     >
@@ -532,10 +571,26 @@ export default (props: P) => {
           })}
           id="chordsheetContent"
           onClick={(e) => handleClick(e)}
+          onMouseMove={handleMouseMove}
           ref={html}
         >
           {vdom}
         </section>
+        {specialKey === "ctrl" && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${coords.x - 10}px`,
+              top: `${coords.y}px`,
+              height: `${coords.h}px`,
+            }}
+            className="time-insert-indicator"
+          >
+            <span>
+              {currentPlayTime?.toFixed(1)}
+            </span>
+          </div>
+        )}
       </div>
     </VideoContext.Provider>
   );

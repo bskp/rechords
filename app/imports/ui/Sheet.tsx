@@ -33,7 +33,7 @@ const Sheet = ({
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
   // from UI
-  const [selectedLine, setSelectedLine] = useState({selectedLine:0});
+  const [selectedLine, setSelectedLine] = useState({ selectedLine: 0 });
   // from time change in video
   const [playedLine, setPlayedLine] = useState<number>();
 
@@ -44,8 +44,8 @@ const Sheet = ({
     if (!(span instanceof HTMLSpanElement)) return;
     const selectedLine = Number.parseInt(span.dataset.lineCnt ?? "", 10);
     if (selectedLine) {
-      console.log('cicl')
-      setSelectedLine({selectedLine});
+      console.log("cicl");
+      setSelectedLine({ selectedLine });
     }
   };
   const chordsheetContent = useRef<HTMLElement>(null);

@@ -6,6 +6,17 @@
   .chordsheet-colors;
   color: var(--gray);
 
+  a {
+    transition: filter ease-out 1s;
+    &:hover {
+      // main.less
+      border: unset;
+
+      filter: brightness(1.1);
+      transition: filter cubic-bezier(0, 2.89, 0.07, 1.01) 1s;
+    }
+  }
+
   #chordsheetContent {
     margin-bottom: 10em;
   }
@@ -94,7 +105,11 @@
   code {
     // inline code elements
     display: inline-block;
-    font-family: "Input Mono", Courier New, Courier, monospace;
+    font-family:
+      "Input Mono",
+      Courier New,
+      Courier,
+      monospace;
     font-size: 0.9em;
     font-weight: 400;
     padding: 0 0.5em;
@@ -203,12 +218,14 @@
     }
   }
 
-  .interactive, .addanchor, .playfromline {
-    line-height: 1.4em;
+  .interactive,
+  .addanchor,
+  .playfromline {
     .select(none);
     cursor: pointer;
 
-    .ref, .inlineReference {
+    .ref,
+    .inlineReference {
       display: none;
     }
 
@@ -228,32 +245,38 @@
     }
   }
 
-  .addanchor {
-    .line:hover {
-      border-top: 2px solid var(--accent);
-
-      &::before {
-        content: "+" attr(data-line-cnt);
-      }
-    }
-  }
-
+  // .addanchor {
+  //   .line:hover {
+  //     border-top: 2px solid var(--accent);
+  //     &::before {
+  //       content: "+" attr(data-line-cnt);
+  //     }
+  //   }
+  // }
   .playfromline {
-    &:hover i {
-      color: var(--accent);
-      transition: color 0s;
-    }
-
     .line {
       i {
         transition: color 0.2s;
       }
+      &:hover i {
+        color: var(--accent);
+        transition: color 0s;
+      }
+    }
+  }
+
+  .interactive,
+  .addanchor,
+  .playfromline {
+    i {
+      line-height: 1.4em;
+      text-indent: 0 !important;
+      padding-left: 0 !important;
+      cursor: pointer;
     }
   }
 
   .interactive i {
-    cursor: pointer;
-
     &:not(.hasChord):hover {
       border-top: 2px solid var(--accent);
       margin-top: -2px;
@@ -262,11 +285,6 @@
     &.hasChord:hover span {
       color: var(--text);
     }
-
-    text-indent: 0 !important;
-    padding-left: 0 !important;
-
-    line-height: 1.4em;
   }
 
   .line i u {
@@ -403,7 +421,6 @@
       aspect-ratio: 3/2;
     }
   }
-
   .song-video-preview {
     position: absolute;
     top: 0;
@@ -426,4 +443,16 @@
       aspect-ratio: 3/2;
     }
   }
-}  // .chordsheet
+  .time-insert-indicator {
+    display: flex;
+    align-items: end;
+    span {
+      color: var(--text-inverted);
+      padding: 2px;
+      width: 50px;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      background-color: var(--accent-flat);
+    }
+  }
+} // .chordsheet

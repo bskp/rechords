@@ -25,12 +25,12 @@ export const YtInter: FC<{
         const estimatedLine = linInterpolation(
           anchors,
           time,
+          (l) => l[1],
           (l) => l[0],
-          (l) => l[1]
         );
         onLineChange(estimatedLine);
       }
-    }, 450);
+    }, 50);
   }, []);
 
   useEffect(() => {
@@ -41,15 +41,18 @@ export const YtInter: FC<{
     const estimatedTime = linInterpolation(
       anchors,
       currentLine.selectedLine,
+      (l) => l[0],
       (l) => l[1],
-      (l) => l[0]
     );
     yPlayer.current?.internalPlayer?.seekTo(estimatedTime ?? 0, true);
   }, [currentLine]);
 
   useEffect(() => {
+    console.log("playvideo");
     yPlayer.current?.internalPlayer?.playVideo();
-  }, [yPlayer.current]);
+    // otherwise the iframe consumes global keyboard events
+    yPlayer.current?.container?.blur();
+  }, [isActive]);
 
   if (isActive) {
     return <YouTube videoId={ytId} ref={yPlayer} />;
@@ -68,7 +71,7 @@ export function extractData(data: string): {
 export function appendTime(
   md: string,
   lastTime: number,
-  selectedLine: number
+  selectedLine: number,
 ): string | undefined {
   const rgx = /~~~yt\n(.*)\n~~~/s;
   const match = md.match(rgx);
@@ -76,7 +79,7 @@ export function appendTime(
   const data = match[1];
 
   const { ytId, anchors } = extractData(data);
-  anchors.push([Math.round(lastTime * 10) / 10, selectedLine]);
+  anchors.push([selectedLine, Math.round(lastTime * 10) / 10]);
 
   anchors.sort(([a, _], [b, __]) => a - b);
 
