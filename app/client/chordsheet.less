@@ -54,8 +54,9 @@
     }
   }
 
-  .inlineRefs .ref,
-  h3 {
+  .hideRefs h3,
+  .inlineRefs h3,
+  .inlineRefs .ref {
     font-size: 1em;
     margin: 0;
 
@@ -224,9 +225,12 @@
     .select(none);
     cursor: pointer;
 
-    .ref,
     .inlineReference {
-      display: none;
+      filter: grayscale(0.3);
+      background-color:var(--bg-list);
+      h3 {
+        display: none;
+      }
     }
 
     // interim UI for to know which datapoint to delete
@@ -422,7 +426,7 @@
     }
   }
   .song-video-preview {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 50%;
   }
