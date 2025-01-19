@@ -3,6 +3,8 @@
 name: Deploy Meteor App to Server
 on:
   push:
+    branches-ignore: 
+      - p/*
   workflow_dispatch:
 
 jobs:

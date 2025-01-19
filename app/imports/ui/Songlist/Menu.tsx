@@ -18,6 +18,7 @@ import MetaContent from "/imports/ui/MetaContent";
 import classNames from "classnames";
 import classnames from "classnames";
 import { Tooltip } from "react-tooltip";
+import { navigateTo, View } from "/imports/api/helpers";
 
 export function Menu(props: {
   filter: string;
@@ -32,6 +33,8 @@ export function Menu(props: {
     const tagName = (e.target as Element)?.tagName;
     // Do not steal focus if already on <input>
     if (["INPUT", "TEXTAREA"].includes(tagName)) return;
+    if(e.target.getAttribute('contenteditable')) return;
+
 
     // Ignore special keys
     if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
@@ -40,7 +43,7 @@ export function Menu(props: {
       e.preventDefault();
       setHasFocus(true);
     }
-  };
+ };
 
   React.useEffect(() => {
     document.addEventListener("keydown", globalKeyHandler);

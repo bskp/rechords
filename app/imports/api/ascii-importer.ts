@@ -1,4 +1,4 @@
-const matchchord = /^\(?([a-h](#|b)?)(-|\+|m?(?!aj))([^a-z](.*))?$/i;
+const matchchord = /^\(?([a-h](#|b)?)(-|\+|m?(?!aj))([^a-z])?$/i;
 
 export function convertToHoelibuSyntax(text: string) {
   const out = [];
