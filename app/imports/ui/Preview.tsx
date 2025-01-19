@@ -21,7 +21,7 @@ const nodeText = (node) => {
   return node.children.reduce(
     (out, child) =>
       (out += child.type == "text" ? child.data : nodeText(child)),
-    "",
+    ""
   );
 };
 
@@ -32,8 +32,9 @@ interface P {
 }
 
 export default (props: P) => {
-  const html = useRef<HTMLSelectElement>(null);
+  const html = useRef<HTMLElement>(null);
   const [currentPlayTime, setCurrentPlayTime] = useState<number | undefined>(0);
+  const [maxLine, setMaxLine]= useState(1)
 
   const [isVideoActive, setVideoActive] = useState<boolean>(false);
 
@@ -56,6 +57,19 @@ export default (props: P) => {
 
     if (html?.current) traverse(html.current);
   });
+
+  useEffect(()=>{
+    const current = html?.current;
+    if (current) {
+      const lines = current.querySelectorAll(".line")
+      const lastLine = lines[lines.length-1] as HTMLElement
+
+      const maxLine = parseInt(lastLine.dataset.lineCnt?? "", 10)
+      setMaxLine(maxLine)
+
+    }
+  }, [props.md])
+
 
   const chordProgressions = (md: string) => {
     const chords: string[][] = [];
@@ -85,7 +99,7 @@ export default (props: P) => {
       (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey)
     ) {
       const line = (event.target as HTMLElement).closest(
-        "span.line",
+        "span.line"
       ) as HTMLSpanElement;
       const selectedLine = Number.parseInt(line.dataset.lineCnt ?? "", 10);
       if (event.shiftKey) {
@@ -145,7 +159,7 @@ export default (props: P) => {
       node,
       guessedChord + "|",
       offset,
-      skipWhitespace,
+      skipWhitespace
     );
     props.updateHandler(md);
   };
@@ -180,7 +194,7 @@ export default (props: P) => {
 
   const offsetChordPosition = (
     event: React.SyntheticEvent<HTMLElement>,
-    offset: number,
+    offset: number
   ) => {
     console.log("offsetchorspos");
     event.currentTarget.removeAttribute("data-initial");
@@ -263,7 +277,7 @@ export default (props: P) => {
     segment: Element,
     chord: string,
     offset = 0,
-    skipWhitespace = true,
+    skipWhitespace = true
   ) => {
     const pos = locate(segment);
 
@@ -475,6 +489,7 @@ export default (props: P) => {
                   data={data}
                   selectedLine={selectLine}
                   onTimeChange={setCurrentPlayTime}
+                  maxLine={maxLine}
                 />
               </div>
             );
@@ -511,12 +526,12 @@ export default (props: P) => {
 
   const [coords, setCoords] = useState({ x: 0, y: 0, h: 0 });
   const handleMouseMove = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event: React.MouseEvent<HTMLElement, MouseEvent>
   ) => {
     // next line
 
     const line = (event.target as HTMLElement).closest(
-      "span.line",
+      "span.line"
     ) as HTMLSpanElement;
 
     if (line) {

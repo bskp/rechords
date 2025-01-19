@@ -67,8 +67,9 @@
     }
   }
 
-  &.inlineRefs .ref[id],
-  h3 {
+  &.hideRefs h3,
+  &.inlineRefs h3,
+  &.inlineRefs .ref[id] {
     font-size: 1em;
     margin: 0;
 
@@ -96,6 +97,20 @@
   p {
     margin: 1.33em 0;
     max-width: 40em;
+  }
+
+  .interactive, .addanchor, .playfromline {
+    p,
+    h3 {
+      margin: 0;
+      padding: 0;
+    }
+    p {
+      padding-bottom: 10px;
+    }
+    h3 {
+      margin-top: 10px;
+    }
   }
 
   &.inlineRefs {
@@ -243,7 +258,16 @@
 
     .ref,
     .inlineReference {
-      display: none;
+      cursor: default; //haha... does not work when there are no pointer events :-)
+      // pointer-events: none;
+      // a gray box would be prefered but since reference title / content are separate elements
+      // on top level a change in parsing would be necessary... so let it be
+      filter: opacity(0.5) grayscale(0.5);
+
+      // background-color:var(--bg-list);
+      h3 {
+        display: none;
+      }
     }
 
     // interim UI for to know which datapoint to delete
@@ -433,7 +457,7 @@
   }
 
   .song-video-preview {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 50%;
   }
