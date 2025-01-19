@@ -62,10 +62,10 @@
     clear: both; // Clear floated chords diagrams
 
     .phone({
-      margin: 2em 0 0; 
-      width: auto; 
-      height: auto; 
-      line-height: 1em; 
+      margin: 2em 0 0;
+      width: auto;
+      height: auto;
+      line-height: 1em;
       text-align: left;
     });
   }
@@ -84,6 +84,7 @@
       }
     }
   }
+
   .hideRefs {
     .inlineReference {
       display: none;
@@ -93,11 +94,7 @@
   code {
     // inline code elements
     display: inline-block;
-    font-family:
-      "Input Mono",
-      Courier New,
-      Courier,
-      monospace;
+    font-family: "Input Mono", Courier New, Courier, monospace;
     font-size: 0.9em;
     font-weight: 400;
     padding: 0 0.5em;
@@ -206,10 +203,12 @@
     }
   }
 
-  .interactive,.addanchor,.playfromline {
+  .interactive, .addanchor, .playfromline {
+    line-height: 1.4em;
     .select(none);
-    .ref,
-    .inlineReference {
+    cursor: pointer;
+
+    .ref, .inlineReference {
       display: none;
     }
 
@@ -223,37 +222,35 @@
       width: 2em;
       line-height: 1.4em;
     }
+
     .line:hover::before {
       opacity: 1;
     }
   }
 
-
-
-
   .addanchor {
     .line:hover {
       border-top: 2px solid var(--accent);
-    &::before {
-      content: "+" attr(data-line-cnt);
+
+      &::before {
+        content: "+" attr(data-line-cnt);
+      }
     }
   }
-  }
+
   .playfromline {
+    &:hover i {
+      color: var(--accent);
+      transition: color 0s;
+    }
+
     .line {
       i {
         transition: color 0.2s;
       }
-      &:hover i {
-        color: var(--accent);
-        transition: color 0s;
-      }
     }
   }
 
-  .interactive,.addanchor,.playfromline i {
-    line-height: 1.4em;
-  }
   .interactive i {
     cursor: pointer;
 
@@ -294,6 +291,7 @@
     i {
       transition: color 0.2s;
     }
+
     &:hover i {
       color: var(--accent);
       transition: color 0s;
@@ -318,23 +316,9 @@
     flex-direction: column;
     display: flex;
 
-    @supports (-moz-appearance: none) {
-      // Only for FF: Hanging indents for rows without chords.
-      // Does not work for webkit, as negative first-line indent is handled differently for contained flex-elements.
-      text-indent: -@continuation_pad;
-      padding-left: @continuation_pad;
-    }
-
     &:first-child {
       margin-left: -@continuation_pad;
     }
-
-    /* currently not in use: Both Viewer and Preview have preprocessors.
-    &::before {
-      content: attr(data-chord);
-      .before();
-    }
-    */
 
     .before {
       // aka. Chords.
@@ -367,12 +351,15 @@
 
       &.optional {
         color: var(--gray);
+
         &:before {
           content: "(";
         }
+
         &:after {
           content: ")";
         }
+
         &:after,
         &:before {
           font-weight: 200;
@@ -411,13 +398,15 @@
     });
 
     iframe {
-      width: 13em;
-      height: 8em;
+      width: 16em;
+      height: unset;
+      aspect-ratio: 3/2;
     }
   }
-  .song-video-preview{
-    position:absolute;
-    top:0;
+
+  .song-video-preview {
+    position: absolute;
+    top: 0;
     right: 50%;
   }
 
@@ -432,8 +421,9 @@
     });
 
     iframe {
-      width: 30wv;
       height: 8em;
+      width: unset;
+      aspect-ratio: 3/2;
     }
   }
-} // .chordsheet
+}  // .chordsheet
