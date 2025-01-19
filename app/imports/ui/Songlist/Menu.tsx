@@ -5,6 +5,7 @@ import {
   MdDarkMode,
   MdHome,
   MdLightMode,
+  MdMenu,
   MdSearch,
   MdSell,
 } from "react-icons/md";
@@ -17,7 +18,8 @@ import MetaContent from "/imports/ui/MetaContent";
 import classNames from "classnames";
 import classnames from "classnames";
 import { Tooltip } from "react-tooltip";
-import { navigateTo, View } from "/imports/api/helpers";
+import { currentFocusOnInput } from "/imports/api/helpers";
+import { HTMLElement } from "node-html-parser";
 
 export function Menu(props: {
   filter: string;
@@ -29,20 +31,13 @@ export function Menu(props: {
   const [skipBlurCheck, setSkipBlurCheck] = useState(false);
 
   const globalKeyHandler = (e: KeyboardEvent) => {
-    const tagName = (e.target as Element)?.tagName;
-    // Do not steal focus if already on <input>
-    if (["INPUT", "TEXTAREA"].includes(tagName)) return;
-    if(e.target.getAttribute('contenteditable')) return;
-
-
-    // Ignore special keys
-    if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
+    if (currentFocusOnInput(e)) return;
 
     if (e.key === "/") {
       e.preventDefault();
       setHasFocus(true);
     }
- };
+  };
 
   React.useEffect(() => {
     document.addEventListener("keydown", globalKeyHandler);
@@ -104,10 +99,7 @@ export function Menu(props: {
 
   return (
     <>
-      <menu
-        className={classnames("iconmenu", { searching: showSearch })}
-        onKeyDown={props.onKeyDown}
-      >
+      <menu className={classnames("iconmenu", { searching: showSearch })}>
         {showSearch ? (
           <>
             <input
@@ -184,6 +176,17 @@ export function Menu(props: {
           data-tooltip-id="tt"
         >
           {themeDark ? <MdLightMode /> : <MdDarkMode />}
+        </li>
+        <li>
+          <Link
+            to="#"
+            onClick={() => setShowMenu(false)}
+            data-tooltip-content="Zurück zum Lied"
+            data-tooltip-id="tt"
+            className="hideUnlessMobile"
+          >
+            <MdMenu />
+          </Link>
         </li>
       </menu>
       <MetaContent

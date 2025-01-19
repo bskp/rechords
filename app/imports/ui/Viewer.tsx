@@ -1,20 +1,16 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { NavLink, useHistory, useParams } from "react-router-dom";
-import TransposeSetter from "./TransposeSetter";
+import React, {useCallback, useContext, useEffect, useState} from "react";
+import {NavLink, useHistory} from "react-router-dom";
+import Transposer from "./Transposer";
 import ChrodLib from "../api/libchrod";
-import { Song } from "../api/collections";
+import Chord_ from "../api/libchr0d/chord";
+import {Song} from "../api/collections";
 import Drawer from "./Drawer";
-import { navigateTo, routePath, userMayWrite, View } from "../api/helpers";
+import {currentFocusOnInput, navigateTo, routePath, userMayWrite, View,} from "../api/helpers";
 import Sheet from "./Sheet";
-import { Button } from "./Button";
-import { ReactSVG } from "react-svg";
-import { Meteor } from "meteor/meteor";
-import { MenuContext } from "/imports/ui/App";
-
-interface SongRouteParams {
-  author?: string;
-  title?: string;
-}
+import {Button} from "./Button";
+import {ReactSVG} from "react-svg";
+import {Meteor} from "meteor/meteor";
+import {MenuContext} from "/imports/ui/App";
 
 interface ViewerProps {
   song: Song;
@@ -24,20 +20,19 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const [relTranspose, setRelTranspose] = useState<number>(
     getInitialTranspose(),
   );
-  const [inlineReferences, setInlineReferences] = useState<boolean>(false);
   const [showChords, setShowChords] = useState<boolean>(true);
+  const [showTransposer, setShowTransposer] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
 
   const history = useHistory();
-  const { author, title } = useParams<SongRouteParams>();
 
   let duration_s: number | undefined;
 
   const updateDuration = useCallback(() => {
     const duration = song.getTag("dauer");
     if (duration) {
-      const chunks = duration.split(":");
-      duration_s = 60 * Number(chunks[0]) + Number(chunks[1]);
+      const [minutes, seconds] = duration.split(":");
+      duration_s = 60 * Number(minutes) + Number(seconds);
     } else {
       duration_s = undefined;
     }
@@ -52,26 +47,17 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   }, [song]);
 
   const globalKeyHandler = (e: KeyboardEvent) => {
-    const tagName = (e.target as Element)?.tagName;
-    // Do not steal focus if already on <input>
-    if (["INPUT", "TEXTAREA"].includes(tagName)) return;
-    if(e.target.getAttribute('contenteditable')) return;
-
-
-    // Ignore special keys
-    if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
-
+    if (currentFocusOnInput(e)) return;
     if (e.key === "e") {
       e.preventDefault();
-      navigateTo(history, View.edit, song)
+      navigateTo(history, View.edit, song);
     }
- };
+  };
 
   React.useEffect(() => {
     document.addEventListener("keydown", globalKeyHandler);
     return () => document.removeEventListener("keydown", globalKeyHandler);
   });
-
 
   function getInitialTranspose(): number {
     const transposeTag = song
@@ -84,7 +70,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
     if (userMayWrite()) {
-      navigateTo(history, View.edit, song)
+      navigateTo(history, View.edit, song);
     }
     event.preventDefault();
   };
@@ -161,12 +147,24 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         <Button onClick={() => setShowMenu(true)} phoneOnly>
           <ReactSVG src="/svg/menu.svg" />
         </Button>
-        <TransposeSetter
-          onDoubleClick={() => setShowChords((prev) => !prev)}
-          transposeSetter={setRelTranspose}
-          transpose={relTranspose}
-          keym={key}
-        />
+        <Button onClick={() => setShowTransposer(true)}>
+          <ReactSVG src="/svg/sharp.svg" />
+        </Button>
+        {showTransposer ? (
+          <Transposer
+            onDoubleClick={() => setShowChords((prev) => !prev)}
+            transposeSetter={setRelTranspose}
+            transpose={relTranspose}
+            close={() => setShowTransposer(false)}
+            chords={song
+              .getChords()
+              .map((chord) => Chord_.from(chord))
+              .filter(
+                (chord: Chord_ | undefined): chord is Chord_ =>
+                  chord !== undefined,
+              )}
+          />
+        ) : null}
         <Button onClick={toggleAutoScroll}>
           {autoScroll ? (
             <ReactSVG src="/svg/conveyor_active.svg" />

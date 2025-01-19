@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import assert from "assert";
 import { parseRechordsDown } from "./parseRechordsDown";
-import {describe, it} from 'node:test'
+import { describe, it } from "node:test";
 
 const normalize = (html: string) => {
   html = html.replace(/\r/g, ""); // Normalize line returns

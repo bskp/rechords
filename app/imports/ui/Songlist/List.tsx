@@ -36,7 +36,7 @@ const List = (props: ListProps) => {
       visibleSongs = visibleSongs.filter((song) => song.checkTag("frei"));
     } else if (props.user.profile.role == "user") {
       visibleSongs = visibleSongs.filter(
-        (song) => props.user?.profile.role == "user" && !song.checkTag("fini")
+        (song) => props.user?.profile.role == "user" && !song.checkTag("fini"),
       );
     }
 
@@ -45,7 +45,7 @@ const List = (props: ListProps) => {
     }
 
     const exactMatches = visibleSongs.filter((song) =>
-      song.title.toLowerCase().includes(filter.toLowerCase())
+      song.title.toLowerCase().includes(filter.toLowerCase()),
     );
 
     const words = filter.toLowerCase().split(/\s+/);
@@ -53,8 +53,8 @@ const List = (props: ListProps) => {
       words.every(
         (word) =>
           song.text.toLowerCase().includes(word) ||
-          song.author.toLowerCase().includes(word)
-      )
+          song.author.toLowerCase().includes(word),
+      ),
     );
 
     return [fuzzyMatches, exactMatches];
