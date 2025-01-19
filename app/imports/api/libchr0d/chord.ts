@@ -74,7 +74,8 @@ export default class Chord_ {
 
   public toStringTensionsAndSlash() {
     return (
-      this.tensions ?? "" + (this.slash !== undefined ? "/" + this.slash.toString() : "")
+      this.tensions ??
+      "" + (this.slash !== undefined ? "/" + this.slash.toString() : "")
     );
   }
 

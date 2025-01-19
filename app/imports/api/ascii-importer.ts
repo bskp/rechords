@@ -1,4 +1,4 @@
-const matchchord = /^\(?([a-h](#|b)?)(-|\+|m?(?!aj))([^a-z])?$/i;
+const matchChord = /^\(?([a-h]([#b])?)(-|\+|m?(?!aj))([^a-z])?$/i;
 
 export function convertToHoelibuSyntax(text: string) {
   const out = [];
@@ -26,7 +26,7 @@ function isChordLine(str: string) {
     numNonChords = 0;
 
   for (const part of parts) {
-    if (matchchord.test(part)) {
+    if (matchChord.test(part)) {
       numChords++;
     } else {
       numNonChords++;
@@ -38,7 +38,7 @@ function isChordLine(str: string) {
 function parseChords(str: string) {
   const re = /\S+/g;
   const returnValue = new Map();
-  let match: RegExpExecArray;
+  let match: RegExpExecArray | null;
   while ((match = re.exec(str))) {
     returnValue.set(match.index, match[0]);
   }

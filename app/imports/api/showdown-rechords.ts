@@ -54,7 +54,9 @@ export const tags = {
   replace: function (tags: string): string {
     return (
       '<ul class="tags">' +
-      tags.replace(/\s*#([^\s:]+)(?::(\S*))?\s*/g, (_match: string, tag: string, value: string) => {
+      tags.replace(
+        /\s*#([^\s:]+)(?::(\S*))?\s*/g,
+        (_match: string, tag: string, value: string) => {
           if (value !== undefined) {
             tag += "<b>" + value + "</b>";
           }

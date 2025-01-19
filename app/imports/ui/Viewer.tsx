@@ -1,21 +1,16 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { NavLink, useHistory, useParams } from "react-router-dom";
+import React, {useCallback, useContext, useEffect, useState} from "react";
+import {NavLink, useHistory} from "react-router-dom";
 import Transposer from "./Transposer";
 import ChrodLib from "../api/libchrod";
 import Chord_ from "../api/libchr0d/chord";
-import { Song } from "../api/collections";
+import {Song} from "../api/collections";
 import Drawer from "./Drawer";
-import { navigateTo, routePath, userMayWrite, View } from "../api/helpers";
+import {currentFocusOnInput, navigateTo, routePath, userMayWrite, View,} from "../api/helpers";
 import Sheet from "./Sheet";
-import { Button } from "./Button";
-import { ReactSVG } from "react-svg";
-import { Meteor } from "meteor/meteor";
-import { MenuContext } from "/imports/ui/App";
-
-interface SongRouteParams {
-  author?: string;
-  title?: string;
-}
+import {Button} from "./Button";
+import {ReactSVG} from "react-svg";
+import {Meteor} from "meteor/meteor";
+import {MenuContext} from "/imports/ui/App";
 
 interface ViewerProps {
   song: Song;
@@ -25,13 +20,11 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const [relTranspose, setRelTranspose] = useState<number>(
     getInitialTranspose(),
   );
-  const [inlineReferences, setInlineReferences] = useState<boolean>(false);
   const [showChords, setShowChords] = useState<boolean>(true);
   const [showTransposer, setShowTransposer] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
 
   const history = useHistory();
-  const { author, title } = useParams<SongRouteParams>();
 
   let duration_s: number | undefined;
 
@@ -54,26 +47,17 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   }, [song]);
 
   const globalKeyHandler = (e: KeyboardEvent) => {
-    const tagName = (e.target as Element)?.tagName;
-    // Do not steal focus if already on <input>
-    if (["INPUT", "TEXTAREA"].includes(tagName)) return;
-    if(e.target.getAttribute('contenteditable')) return;
-
-
-    // Ignore special keys
-    if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
-
+    if (currentFocusOnInput(e)) return;
     if (e.key === "e") {
       e.preventDefault();
-      navigateTo(history, View.edit, song)
+      navigateTo(history, View.edit, song);
     }
- };
+  };
 
   React.useEffect(() => {
     document.addEventListener("keydown", globalKeyHandler);
     return () => document.removeEventListener("keydown", globalKeyHandler);
   });
-
 
   function getInitialTranspose(): number {
     const transposeTag = song
@@ -86,7 +70,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
     if (userMayWrite()) {
-      navigateTo(history, View.edit, song)
+      navigateTo(history, View.edit, song);
     }
     event.preventDefault();
   };
