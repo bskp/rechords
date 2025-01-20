@@ -70,9 +70,13 @@ export function appendTime(
   if (!match) return;
   const data = match[1];
 
-  const { ytId, anchors } = extractData(data);
-  anchors.push([selectedLine, Math.round(lastTime * 10) / 10]);
+  const { ytId, anchors: anchors_ } = extractData(data);
+  const anchorMap = new Map(anchors_)
+  // anchors.push([selectedLine, Math.round(lastTime * 10) / 10]);
+  // avoid duplicate
+  anchorMap.set(selectedLine, Math.round(lastTime*10)/10)
 
+  const anchors = [...anchorMap.entries()]
   anchors.sort(([a, _], [b, __]) => a - b);
 
   const ytOut = `~~~yt
