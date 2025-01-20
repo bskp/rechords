@@ -4,6 +4,7 @@ import { parse, HTMLElement } from "node-html-parser";
 import slug from "slug";
 import { Meteor } from "meteor/meteor";
 import { parseRechordsDown } from "./parseRechordsDown";
+import { extractData } from "./extractData";
 
 const DATACHORD = "data-chord";
 
@@ -11,7 +12,7 @@ function isDefined<T>(a: T | null | undefined): a is T {
   return a !== null && a !== undefined;
 }
 
-export const rmd_version = 11;
+export const rmd_version = 12;
 
 export class Song {
   _id?: string;
@@ -32,6 +33,8 @@ export class Song {
   last_editor?: string;
 
   revision_cache?: Revision[];
+
+  video_data?: { ytId: string; anchors: [number, number][] };
   has_video: boolean = false;
 
   constructor(doc: { text: string }) {
@@ -144,6 +147,12 @@ export class Song {
         .getElementsByTagName("pre")?.[0]
         ?.childNodes[0]?.rawText.includes("language-yt") ?? false;
 
+    if (this.has_video) {
+      let data = dom.getElementsByTagName("pre")?.[0]?.childNodes[0]?.rawText;
+      data = data.replace('<code class="yt language-yt">', "");
+      data = data.replace("</code>", "");
+      this.video_data = extractData(data);
+    }
     this.tags = RmdHelpers.collectTags(dom);
     this.chords = RmdHelpers.collectChords(dom);
     this.parsed_rmd_version = rmd_version;
@@ -155,7 +164,7 @@ export class Song {
         { of: this._id },
         {
           sort: { timestamp: -1 },
-        },
+        }
       ).fetch();
     }
     return this.revision_cache;
@@ -192,7 +201,7 @@ export class RmdHelpers {
       .map((li) =>
         Array.from(li.childNodes)
           .map((child) => child.textContent)
-          .join(":"),
+          .join(":")
       );
   }
 

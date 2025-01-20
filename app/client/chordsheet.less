@@ -227,14 +227,14 @@
 
     .inlineReference {
       filter: grayscale(0.3);
-      background-color:var(--bg-list);
+      background-color: var(--bg-list);
       h3 {
         display: none;
       }
     }
 
     // interim UI for to know which datapoint to delete
-    .line::before {
+    .line .rowidx {
       content: attr(data-line-cnt);
       opacity: 0.5;
       position: absolute;
@@ -242,10 +242,10 @@
       text-align: right;
       width: 2em;
       line-height: 1.4em;
-    }
 
-    .line:hover::before {
-      opacity: 1;
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 

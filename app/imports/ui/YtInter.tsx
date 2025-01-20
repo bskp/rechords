@@ -3,6 +3,7 @@ import * as React from "react";
 import YouTube from "react-youtube";
 import { linInterpolation } from "./time2line";
 import { VideoContext } from "/imports/ui/App";
+import { extractData } from "../api/extractData";
 
 export const YtInter: FC<{
   data: string;
@@ -58,15 +59,6 @@ export const YtInter: FC<{
     return <YouTube videoId={ytId} ref={yPlayer} />;
   }
 };
-
-export function extractData(data: string): {
-  ytId: string;
-  anchors: [number, number][];
-} {
-  const [ytId, ..._anchors] = data.split("\n");
-  const anchors = _anchors.map((line) => line.split(/\s+/).map(parseFloat));
-  return { ytId, anchors };
-}
 
 export function appendTime(
   md: string,

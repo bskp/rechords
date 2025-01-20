@@ -21,7 +21,7 @@ const nodeText = (node) => {
   return node.children.reduce(
     (out, child) =>
       (out += child.type == "text" ? child.data : nodeText(child)),
-    "",
+    ""
   );
 };
 
@@ -33,9 +33,17 @@ interface P {
 
 export default (props: P) => {
   const html = useRef<HTMLSelectElement>(null);
-  const [currentPlayTime, setCurrentPlayTime] = useState<number | undefined>(0);
 
+  const [currentPlayTime, setCurrentPlayTime] = useState<number | undefined>(0);
   const [isVideoActive, setVideoActive] = useState<boolean>(false);
+
+  const anchorTimeByLine = new Map()
+  if(props.song.has_video) {
+    props.song.video_data?.anchors?.forEach(
+      ([line,time]) => anchorTimeByLine.set(line,time)
+    )
+  }
+
 
   useEffect(() => {
     const traverse = (node: HTMLElement): void => {
@@ -85,7 +93,7 @@ export default (props: P) => {
       (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey)
     ) {
       const line = (event.target as HTMLElement).closest(
-        "span.line",
+        "span.line"
       ) as HTMLSpanElement;
       const selectedLine = Number.parseInt(line.dataset.lineCnt ?? "", 10);
       if (event.shiftKey) {
@@ -145,7 +153,7 @@ export default (props: P) => {
       node,
       guessedChord + "|",
       offset,
-      skipWhitespace,
+      skipWhitespace
     );
     props.updateHandler(md);
   };
@@ -180,7 +188,7 @@ export default (props: P) => {
 
   const offsetChordPosition = (
     event: React.SyntheticEvent<HTMLElement>,
-    offset: number,
+    offset: number
   ) => {
     console.log("offsetchorspos");
     event.currentTarget.removeAttribute("data-initial");
@@ -263,7 +271,7 @@ export default (props: P) => {
     segment: Element,
     chord: string,
     offset = 0,
-    skipWhitespace = true,
+    skipWhitespace = true
   ) => {
     const pos = locate(segment);
 
@@ -422,7 +430,11 @@ export default (props: P) => {
           "class" in node.attribs &&
           "line" == node.attribs.class
         ) {
+          const rowidx = parseInt(node.attribs["data-line-cnt"],10);
+          const timeEntry = anchorTimeByLine.get(rowidx)
+          const time = <span className="rowidx">{rowidx}<b>{timeEntry||0}</b></span>
           // Fakey syllable to allow appended chords
+          node.children.unshift(time);
           node.children.push(<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>);
         } else if (node.name == "pre") {
           if (node.children.length != 1) return node;
@@ -430,6 +442,7 @@ export default (props: P) => {
           if (!("class" in code.attribs)) return node;
           const classes = code.attribs["class"];
 
+          // todo: use preparsed string from collection
           if (classes.includes("language-yt")) {
             const data = (code.firstChild as DH.DataNode).data as string;
             return (
@@ -465,7 +478,8 @@ export default (props: P) => {
                   <div>
                     <div>Click to a line in the song text</div>
                     <div>
-                      <b>Ctrl + Click: </b>Add Time Anchor<br />
+                      <b>Ctrl + Click: </b>Add Time Anchor
+                      <br />
                       <b>Shift + Click: </b>Play from here
                     </div>
                   </div>
@@ -510,12 +524,12 @@ export default (props: P) => {
 
   const [coords, setCoords] = useState({ x: 0, y: 0, h: 0 });
   const handleMouseMove = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event: React.MouseEvent<HTMLElement, MouseEvent>
   ) => {
     // next line
 
     const line = (event.target as HTMLElement).closest(
-      "span.line",
+      "span.line"
     ) as HTMLSpanElement;
 
     console.log(line);
@@ -586,9 +600,6 @@ export default (props: P) => {
             }}
             className="time-insert-indicator"
           >
-            <span>
-              {currentPlayTime?.toFixed(1)}
-            </span>
           </div>
         )}
       </div>
