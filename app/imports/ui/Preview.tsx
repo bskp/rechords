@@ -432,7 +432,7 @@ export default (props: P) => {
         ) {
           const rowidx = parseInt(node.attribs["data-line-cnt"],10);
           const timeEntry = anchorTimeByLine.get(rowidx)
-          const time = <span className="rowidx">{rowidx}<b>{timeEntry||0}</b></span>
+          const time = <span className="rowidx">{rowidx}{timeEntry&&<b>{timeEntry}</b>}</span>
           // Fakey syllable to allow appended chords
           node.children.unshift(time);
           node.children.push(<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>);
