@@ -219,9 +219,7 @@
     }
   }
 
-  .interactive,
-  .addanchor,
-  .playfromline {
+  .interactive {
     .select(none);
     cursor: pointer;
 
@@ -235,52 +233,52 @@
 
     // interim UI for to know which datapoint to delete
     .line .rowidx {
-      content: attr(data-line-cnt);
+      width: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: end;
       opacity: 0.5;
+    }
+    &.isVideoActive .line .rowidx {
+      width: 100px;
       position: absolute;
-      margin-left: -3.8em;
+      margin-left: -110px;
       text-align: right;
-      width: 2em;
       line-height: 1.4em;
 
       b {
+        &.newtime {
+          opacity: 0.1;
+        }
+        line-height: 15px;
         color: var(--text-inverted);
-        padding: 2px;
-        width: 50px;
-        border-top-right-radius: 10px;
-        border-bottom-right-radius: 10px;
+        padding: 3px;
+        margin-right: 2px;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
         background-color: var(--accent-flat);
       }
 
       &:hover {
         opacity: 1;
+
+        &:not(.newtime) {
+        text-decoration: line-through;
+        }
       }
     }
   }
 
-  // .addanchor {
-  //   .line:hover {
-  //     border-top: 2px solid var(--accent);
-  //     &::before {
-  //       content: "+" attr(data-line-cnt);
-  //     }
-  //   }
-  // }
-  .playfromline {
-    .line {
-      i {
-        transition: color 0.2s;
-      }
-      &:hover i {
-        color: var(--accent);
-        transition: color 0s;
-      }
+  span.line :not(li) {
+    transition: color 0.2s;
+    &:hover :not(li) {
+      color: var(--accent);
+      transition: color 0s;
     }
   }
 
-  .interactive,
-  .addanchor,
-  .playfromline {
+  .interactive {
     i {
       line-height: 1.4em;
       text-indent: 0 !important;
@@ -400,6 +398,16 @@
     } // before aka. chords
   } // i
 
+  .interactive .line {
+    // https://stackoverflow.com/questions/22270078/css-hover-on-a-div-but-not-if-hover-on-his-children
+    &:hover:not(:has(*:hover)) {
+      &::after {
+        content: "++++";
+        border-top: solid 3px;
+      }
+    }
+  }
+
   .interactive .line i .before {
     // Re-allow chord text selection when editing.
     .select(text);
@@ -454,18 +462,6 @@
       height: 8em;
       width: unset;
       aspect-ratio: 3/2;
-    }
-  }
-  .time-insert-indicator {
-    display: flex;
-    align-items: end;
-    span {
-      color: var(--text-inverted);
-      padding: 2px;
-      width: 50px;
-      border-top-right-radius: 10px;
-      border-bottom-right-radius: 10px;
-      background-color: var(--accent-flat);
     }
   }
 } // .chordsheet

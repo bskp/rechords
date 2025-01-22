@@ -37,13 +37,12 @@ export default (props: P) => {
   const [currentPlayTime, setCurrentPlayTime] = useState<number | undefined>(0);
   const [isVideoActive, setVideoActive] = useState<boolean>(false);
 
-  const anchorTimeByLine = new Map()
-  if(props.song.has_video) {
-    props.song.video_data?.anchors?.forEach(
-      ([line,time]) => anchorTimeByLine.set(line,time)
-    )
+  const anchorTimeByLine = new Map<number, number>();
+  if (props.song.has_video) {
+    props.song.video_data?.anchors?.forEach(([line, time]) =>
+      anchorTimeByLine.set(line, time)
+    );
   }
-
 
   useEffect(() => {
     const traverse = (node: HTMLElement): void => {
@@ -88,24 +87,23 @@ export default (props: P) => {
   const [selectLine, setSelectLine] = useState({ selectedLine: 0 });
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    if (
-      isVideoActive &&
-      (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey)
-    ) {
-      const line = (event.target as HTMLElement).closest(
-        "span.line"
-      ) as HTMLSpanElement;
+    if (isVideoActive) {
+      const target = event.target as HTMLElement;
+
+      const line = target.closest("span.line") as HTMLSpanElement;
       const selectedLine = Number.parseInt(line.dataset.lineCnt ?? "", 10);
-      if (event.shiftKey) {
+
+      if (target.matches("span.line")) {
         setSelectLine({ selectedLine });
-      } else {
+        return;
+      } else if (target.matches(".rowidx,.rowidx *")) {
         const md = props.md;
         const newMd = appendTime(md, currentPlayTime, selectedLine);
         if (newMd) {
           props.updateHandler ? props.updateHandler(newMd) : null;
         }
+        return;
       }
-      return;
     }
     const node: Element = event.target as Element;
     if (!(node instanceof HTMLElement) || node.tagName != "I") return;
@@ -430,9 +428,16 @@ export default (props: P) => {
           "class" in node.attribs &&
           "line" == node.attribs.class
         ) {
-          const rowidx = parseInt(node.attribs["data-line-cnt"],10);
-          const timeEntry = anchorTimeByLine.get(rowidx)
-          const time = <span className="rowidx">{rowidx}{timeEntry&&<b>{timeEntry}</b>}</span>
+          const rowidx = parseInt(node.attribs["data-line-cnt"], 10);
+          const timeEntry = anchorTimeByLine.get(rowidx);
+          const quark = 234.2;
+          quark.toFixed(1);
+          const time = (
+            <span className="rowidx">
+              {timeEntry ? <b>{timeEntry.toFixed(1)}</b> : <b className="newtime">+++</b>}
+              <span>{rowidx}</span>
+            </span>
+          );
           // Fakey syllable to allow appended chords
           node.children.unshift(time);
           node.children.push(<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>);
@@ -522,52 +527,6 @@ export default (props: P) => {
     },
   });
 
-  const [coords, setCoords] = useState({ x: 0, y: 0, h: 0 });
-  const handleMouseMove = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>
-  ) => {
-    // next line
-
-    const line = (event.target as HTMLElement).closest(
-      "span.line"
-    ) as HTMLSpanElement;
-
-    console.log(line);
-    if (line) {
-      const cl = line.getBoundingClientRect();
-      console.log(cl);
-      // setCoords({ x: cl.left, y: cl.top });
-      setCoords({
-        x: line.offsetLeft,
-        y: line.offsetTop,
-        h: line.offsetHeight,
-      });
-      handleSpecialKey(event);
-    }
-  };
-  const handleSpecialKey = (event: KeyboardEvent | MouseEvent) => {
-    if (!isVideoActive) {
-      return;
-    }
-    if (event.ctrlKey || event.metaKey) {
-      setSpecialKey("ctrl");
-    } else if (event.shiftKey) {
-      setSpecialKey("shift");
-    } else {
-      setSpecialKey("");
-    }
-  };
-  const [specialKey, setSpecialKey] = useState("");
-
-  useDocumentListener("keydown", handleSpecialKey);
-  useDocumentListener("keyup", handleSpecialKey);
-
-  // // changing window or going into iframe otherwise leaves last pressed key
-  // useDocumentListener("blur", () => {
-  //   setSpecialKey("");
-  // });
-  // needs a better / more general solution
-
   return (
     <VideoContext.Provider
       value={{
@@ -578,30 +537,13 @@ export default (props: P) => {
     >
       <div className="content" id="chordsheet">
         <section
-          className={classNames({
-            interactive: specialKey === "",
-            addanchor: specialKey === "ctrl",
-            playfromline: specialKey === "shift",
-          })}
+          className={classNames("interactive", { isVideoActive })}
           id="chordsheetContent"
           onClick={(e) => handleClick(e)}
-          onMouseMove={handleMouseMove}
           ref={html}
         >
           {vdom}
         </section>
-        {specialKey === "ctrl" && (
-          <div
-            style={{
-              position: "absolute",
-              left: `${coords.x - 10}px`,
-              top: `${coords.y}px`,
-              height: `${coords.h}px`,
-            }}
-            className="time-insert-indicator"
-          >
-          </div>
-        )}
       </div>
     </VideoContext.Provider>
   );
