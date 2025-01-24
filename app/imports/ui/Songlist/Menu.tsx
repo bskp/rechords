@@ -32,8 +32,7 @@ export function Menu(props: {
     const tagName = (e.target as Element)?.tagName;
     // Do not steal focus if already on <input>
     if (["INPUT", "TEXTAREA"].includes(tagName)) return;
-    if(e.target.getAttribute('contenteditable')) return;
-
+    if (e.target.getAttribute("contenteditable")) return;
 
     // Ignore special keys
     if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
@@ -42,7 +41,7 @@ export function Menu(props: {
       e.preventDefault();
       setHasFocus(true);
     }
- };
+  };
 
   const event = "keydown";
   useDocumentListener(event, globalKeyHandler);

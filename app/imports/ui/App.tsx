@@ -181,15 +181,6 @@ class App extends React.Component<AppProps, AppStates> {
     // This is a hack to easily update all internal "caching states" (matches etc.)
     const list_key = this.props.songs.map((s) => s.title).join("-");
 
-    if (!this.props.user) {
-      return (
-        <div id="body" className="light">
-          <TrackingDocumentTitle title="Hölibu" track_as="/no-login" />
-          <Login />
-        </div>
-      );
-    }
-
     if (this.props.songsLoading) {
       return (
         <div id="body" className="light">
@@ -225,6 +216,12 @@ class App extends React.Component<AppProps, AppStates> {
           }}
         >
           <BrowserRouter>
+            <Route path="/login">
+              <div id="body" className="light">
+                <TrackingDocumentTitle title="Hölibu" track_as="/no-login" />
+                <Login />
+              </div>
+            </Route>
             <div id="body">
               <List
                 songs={this.props.songs}
@@ -398,10 +395,11 @@ export default withTracker((_) => {
   const songHandle = Meteor.subscribe("songs");
   const revHandle = Meteor.subscribe("revisions");
 
+  const songs = Songs.find({}, { sort: { title: 1 } }).fetch();
   return {
     songsLoading: !songHandle.ready(),
     revisionsLoading: !revHandle.ready(),
-    songs: Songs.find({}, { sort: { title: 1 } }).fetch(),
+    songs,
     user: Meteor.user(),
   };
 })(App);
