@@ -2,11 +2,9 @@
   "name": "rechords",
   "private": true,
   "scripts": {
-    "start": "meteor --settings settings.json --exclude-archs web.browser.legacy --port 0:3000",
     "pretty": "prettier . --write",
     "lint": "eslint imports/",
     "debug": "meteor run --inspect",
-    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "test": "tsx imports/tests.spec.ts",
     "test:watch": "tsx watch --include 'imports/api/**' imports/tests.spec.ts"
@@ -56,7 +54,6 @@
     "@types/core-js": "^2.5.5",
     "@types/diff": "^5.0.2",
     "@types/expect": "^24.3.0",
-    "@types/meteor": "~1.4",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.14.1",
     "@types/prop-types": "^15.7.4",

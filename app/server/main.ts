@@ -23,7 +23,7 @@ const count = await Meteor.users.find().countAsync()
   }
 });
 
-Meteor.publish(null, function () {
+Meteor.publish(null, async function () {
   if (!this.userId) {
     this.ready();
     return;
@@ -38,7 +38,7 @@ Meteor.publish(null, function () {
     },
   };
 
-  if (Meteor.user()?.profile.role == "admin")
+  if ((await Meteor.userAsync())?.profile.role == "admin")
     return Meteor.users.find({}, fields);
 
   return Meteor.users.find({ _id: this.userId }, fields);
