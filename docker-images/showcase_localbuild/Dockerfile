@@ -1,15 +1,15 @@
 # The tag here should match the Meteor version of your app, per .meteor/release
 FROM geoffreybooth/meteor-base:3.1
 
-# Copy app package.json and package-lock.json into container
-COPY ./app/package*.json $APP_SOURCE_FOLDER/
+# # Copy app package.json and package-lock.json into container
+# COPY ./app/package*.json $APP_SOURCE_FOLDER/
 
-RUN bash $SCRIPTS_FOLDER/build-app-npm-dependencies.sh
+# RUN bash $SCRIPTS_FOLDER/build-app-npm-dependencies.sh
 
-# Copy app source into container
-COPY ./app $APP_SOURCE_FOLDER/
+# # Copy app source into container
+# COPY ./app $APP_SOURCE_FOLDER/
 
-RUN bash $SCRIPTS_FOLDER/build-meteor-bundle.sh
+# RUN bash $SCRIPTS_FOLDER/build-meteor-bundle.sh
 
 
 # Use the specific version of Node expected by your Meteor release, per https://docs.meteor.com/changelog.html; this is expected for Meteor 3.1
@@ -28,11 +28,11 @@ RUN apk add --no-cache --virtual .build-deps alpine-sdk python3
 COPY --from=0 $SCRIPTS_FOLDER $SCRIPTS_FOLDER/
 
 # Copy in app bundle
-COPY --from=0 $APP_BUNDLE_FOLDER/bundle $APP_BUNDLE_FOLDER/bundle/
+COPY ./bundle $APP_BUNDLE_FOLDER/bundle/
 
 RUN bash $SCRIPTS_FOLDER/build-meteor-npm-dependencies.sh
 
-RUN apk add --no-cache --virtual .build-deps alpine-sdk python3 
+RUN apk del .build-deps
 # Start app
 ENTRYPOINT ["/docker/entrypoint.sh"]
 
