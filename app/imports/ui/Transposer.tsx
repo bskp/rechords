@@ -4,18 +4,48 @@ import "rc-tooltip/assets/bootstrap.css";
 
 import "./transposerStyle.less";
 import Chord_ from "/imports/api/libchr0d/chord";
+import Note from "/imports/api/libchr0d/note";
 
 type TransposeSetterProps = {
-  transposeSetter: (halfTones: number) => void;
-  transpose: number;
+  transposeSetter: (semitones: number) => void;
+  transpose: number | undefined;
   onDoubleClick: MouseEventHandler;
   chords: Chord_[];
   close?: () => void;
 };
 
-const rotToTranspose = (rotation: number) =>
+export const rotToTranspose = (rotation: number) =>
   7 * rotation - 12 * Math.floor(rotation / 2);
 
+export const transposeToRotation = (semitones: number) =>
+  semitones - (semitones % 2 == 0 ? 0 : Math.sign(semitones) * 6);
+
+const guessKeyFromChordCounts = (chordCounts: [string, number][]) => {
+  const votes: { [key: string]: number } = {};
+  const bump = (key: string, increment: number) => {
+    votes[key] = (votes[key] ?? 0) + Math.sqrt(increment);
+  };
+  chordCounts.forEach(([chord, count]) => {
+    const quality = chord[0];
+    const valuestr = chord.slice(1);
+    const value = parseInt(valuestr, 10);
+    const rot = transposeToRotation(value);
+    const left = quality + (((rotToTranspose(rot - 1) % 12) + 12) % 12);
+    const right = quality + (((rotToTranspose(rot + 1) % 12) + 12) % 12);
+    const parallel = quality === "m" ? "M" : "m" + value;
+    bump(left, count);
+    bump(right, count);
+    bump(parallel, count);
+    bump(chord, 2 * count);
+  });
+  return Object.entries(votes)
+    .sort(([_, a], [__, b]) => b - a)
+    .map(([chord, votes]) => {
+      const c = Chord_.fromCode(chord);
+      console.log(`${c}: ${votes}`);
+      return (c?.key.value ?? 0) + (c?.quality == "minor" ? 3 : 0);
+    })[0];
+};
 const Transposer = (props: TransposeSetterProps) => {
   const counts: any = {};
   props.chords
@@ -23,18 +53,25 @@ const Transposer = (props: TransposeSetterProps) => {
     .forEach((code) => (counts[code] = counts[code] ? counts[code] + 1 : 1));
 
   const ref = useRef<HTMLDivElement>(null);
-  const [rotation, setRotation] = React.useState<number>(0);
 
-  let entries = Object.entries(counts) as unknown as [string, number][];
-  const normalization = Math.max(...entries.map(([_code, count]) => count));
+  let chordCounts = Object.entries(counts) as unknown as [string, number][];
+  const normalization = Math.max(...chordCounts.map(([_code, count]) => count));
 
   const style: any = {};
-  entries.forEach(([chord, count]) => {
+  chordCounts.forEach(([chord, count]) => {
     let ratio = count / normalization;
     style[`--${chord}`] = ratio ** (1 / 3) * 100 + "%";
   });
 
-  style[`--rot`] = `${0}deg`;
+  const rotKey = transposeToRotation(guessKeyFromChordCounts(chordCounts) ?? 0);
+  console.log("rotKey", rotKey);
+
+  const semiTones = props.transpose ?? 0;
+  const [rotation, setRotation] = React.useState<number>(
+    transposeToRotation(semiTones),
+  );
+
+  style[`--rotKey`] = `${360 - rotKey * 30}deg`;
   style[`--rotTranspose`] = `${360 - rotation * 30}deg`;
 
   const onClick = (event: React.MouseEvent<SVGSVGElement>) => {
@@ -47,7 +84,7 @@ const Transposer = (props: TransposeSetterProps) => {
     const fieldNumber = Number.parseInt(target.classList.item(1)!.slice(1), 10);
     const increment = ((fieldNumber + 6) % 12) - 6;
     const rot = rotation + increment;
-    setRotation(rot);
+    setRotation(rot - rotKey);
 
     props.transposeSetter(rotToTranspose(rot));
   };

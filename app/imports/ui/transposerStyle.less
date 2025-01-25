@@ -7,7 +7,7 @@
   left: @drawer-open;
   right: @drawer-closed;
   bottom: 0;
-  background-color: #02020278;
+  background-color: transparent;
 
   .phone({
     left: 0;
@@ -21,7 +21,7 @@
     display: block;
     height: 100vh;
 
-    //transition: --rotTranspose 0.5s;
+    transform: rotate(var(--rotKey));
 
     circle {
       fill: none;
@@ -108,12 +108,12 @@
       pointer-events: all;
       cursor: pointer;
       :hover {
-        fill: red;
+        fill: var(--gray);
       }
     }
 
     #labels path {
-      fill: white;
+      fill: var(--text-inverted);
       pointer-events: none;
     }
 

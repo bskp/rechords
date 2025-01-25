@@ -3,7 +3,7 @@ export type Notation = "bee" | "sharp" | "undetermined";
 export default class Note {
   public constructor(
     public readonly value: number,
-    public readonly notation: Notation,
+    public readonly notation: Notation = "undetermined",
   ) {}
 
   static from(name: string) {
@@ -58,48 +58,48 @@ export default class Note {
     switch (this.notation) {
       case "bee":
         return [
-          "c",
-          "db",
-          "d",
-          "eb",
-          "e",
-          "f",
-          "gb",
-          "g",
-          "ab",
-          "a",
-          "bb",
-          "b",
+          "C",
+          "Db",
+          "D",
+          "Eb",
+          "E",
+          "F",
+          "Gb",
+          "G",
+          "Ab",
+          "A",
+          "Bb",
+          "B",
         ][this.value];
       case "undetermined":
         return [
-          "c",
-          "c#",
-          "d",
-          "eb",
-          "e",
-          "f",
-          "f#",
-          "g",
-          "g#",
-          "a",
-          "bb",
-          "b",
+          "C",
+          "C#",
+          "D",
+          "Eb",
+          "E",
+          "F",
+          "F#",
+          "G",
+          "G#",
+          "A",
+          "Bb",
+          "B",
         ][this.value];
       case "sharp":
         return [
-          "c",
-          "c#",
-          "d",
-          "d#",
-          "e",
-          "f",
-          "f#",
-          "g",
-          "g#",
-          "a",
-          "a#",
-          "b",
+          "C",
+          "C#",
+          "D",
+          "D#",
+          "E",
+          "F",
+          "F#",
+          "G",
+          "G#",
+          "A",
+          "A#",
+          "B",
         ][this.value];
     }
   }

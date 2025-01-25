@@ -1,24 +1,30 @@
-import React, {useCallback, useContext, useEffect, useState} from "react";
-import {NavLink, useHistory} from "react-router-dom";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { NavLink, useHistory } from "react-router-dom";
 import Transposer from "./Transposer";
 import ChrodLib from "../api/libchrod";
 import Chord_ from "../api/libchr0d/chord";
-import {Song} from "../api/collections";
+import { Song } from "../api/collections";
 import Drawer from "./Drawer";
-import {currentFocusOnInput, navigateTo, routePath, userMayWrite, View,} from "../api/helpers";
+import {
+  currentFocusOnInput,
+  navigateTo,
+  routePath,
+  userMayWrite,
+  View,
+} from "../api/helpers";
 import Sheet from "./Sheet";
-import {Button} from "./Button";
-import {ReactSVG} from "react-svg";
-import {Meteor} from "meteor/meteor";
-import {MenuContext} from "/imports/ui/App";
+import { Button } from "./Button";
+import { ReactSVG } from "react-svg";
+import { Meteor } from "meteor/meteor";
+import { MenuContext } from "/imports/ui/App";
 
 interface ViewerProps {
   song: Song;
 }
 
 const Viewer: React.FC<ViewerProps> = ({ song }) => {
-  const [relTranspose, setRelTranspose] = useState<number>(
-    getInitialTranspose(),
+  const [relTranspose, setRelTranspose] = useState<number | undefined>(
+    getTransposeFromTag(),
   );
   const [showChords, setShowChords] = useState<boolean>(true);
   const [showTransposer, setShowTransposer] = useState<boolean>(false);
@@ -41,7 +47,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   useEffect(() => {
     updateDuration();
     document.scrollingElement?.scrollTo(0, 0);
-    setRelTranspose(getInitialTranspose());
+    setRelTranspose(getTransposeFromTag());
     stopAutoScroll();
     return () => stopAutoScroll();
   }, [song]);
@@ -52,6 +58,10 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
       e.preventDefault();
       navigateTo(history, View.edit, song);
     }
+    if (e.key === "t") {
+      e.preventDefault();
+      setShowTransposer(!showTransposer);
+    }
   };
 
   React.useEffect(() => {
@@ -59,13 +69,13 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     return () => document.removeEventListener("keydown", globalKeyHandler);
   });
 
-  function getInitialTranspose(): number {
+  function getTransposeFromTag(): number | undefined {
     const transposeTag = song
       .getTags()
       .find((tag) => tag.startsWith("transponierung:"));
-    if (!transposeTag) return 0;
+    if (!transposeTag) return undefined;
     let dt = parseInt(transposeTag.split(":")[1], 10);
-    return isNaN(dt) ? 0 : dt;
+    return isNaN(dt) ? undefined : dt;
   }
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
