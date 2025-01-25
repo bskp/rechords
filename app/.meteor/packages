@@ -19,8 +19,7 @@ hot-module-replacement@0.5.4  # Update client in development without reloading t
 
 static-html@1.4.0             # Define static page content in .html files
 react-meteor-data       # React higher-order component for reactively tracking Meteor data
-# less@2.8.0
 zodern:types            # Pull in type declarations from other Meteor packages
-# accounts-base
-# accounts-password
 accounts-base
+accounts-password
+less
