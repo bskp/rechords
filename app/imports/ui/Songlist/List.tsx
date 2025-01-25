@@ -36,7 +36,7 @@ const List = (props: ListProps) => {
       visibleSongs = visibleSongs.filter((song) => song.checkTag("frei"));
     } else if (props.user.profile.role == "user") {
       visibleSongs = visibleSongs.filter(
-        (song) => props.user?.profile.role == "user" && !song.checkTag("fini")
+        (song) => props.user?.profile.role == "user" && song.checkTag("fini")
       );
     }
 
