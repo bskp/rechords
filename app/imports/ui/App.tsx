@@ -10,7 +10,7 @@ import Editor from "./Editor";
 import Progress from "./Progress";
 import Users from "./Users";
 import User from "./User";
-import Login from "./Login";
+import {Login} from "./Login"
 import Hallo from "./Hallo";
 
 import {
