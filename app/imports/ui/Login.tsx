@@ -1,8 +1,10 @@
 import { Meteor } from "meteor/meteor";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
+import { Redirect, useHistory } from "react-router-dom";
 
 import { ReactSVG } from "react-svg";
+import { navigateTo, View } from "../api/helpers";
 
 export const Login: React.FC = () => {
   const oneR = useRef<HTMLInputElement>(null);
@@ -16,6 +18,8 @@ export const Login: React.FC = () => {
   const [three, setThree] = useState("");
   const [four, setFour] = useState("");
 
+  const history = useHistory()
+
   const handleSubmit = () => {
     Meteor.loginWithPassword(
       one.toLowerCase(),
@@ -23,6 +27,7 @@ export const Login: React.FC = () => {
       (err: Meteor.Error) => {
         if (!err) {
           setMsg("eingeloggt!");
+          setTimeout(()=> navigateTo(history, View.home), 1000) // login "feeling..."
         } else {
           let msg = err.message;
           if (err.reason == "Incorrect password") {
@@ -68,6 +73,7 @@ export const Login: React.FC = () => {
 
   let status = msg;
   if (Meteor.loggingIn()) status = "Melde an…";
+
 
   return (
     <section className="content" id="home">

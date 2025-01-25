@@ -15,6 +15,7 @@ import Hallo from "./Hallo";
 
 import {
   BrowserRouter,
+  Redirect,
   Route,
   RouteComponentProps,
   Switch,
@@ -364,7 +365,11 @@ class App extends React.Component<AppProps, AppStates> {
                 <Route
                   path="/user"
                   render={() => {
-                    const user = Meteor.user()!;
+                    const user = Meteor.user();
+                    
+                    if(!user) {
+                      return <Redirect to="/" />
+                    }
                     return (
                       <>
                         <TrackingDocumentTitle
