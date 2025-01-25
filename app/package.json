@@ -17,6 +17,7 @@
     "@tombatossals/chords-db": "^0.5.1",
     "abcjs": "^6.4.4",
     "bcrypt": "^5.0.0",
+    "caniuse-lite": "^1.0.30001695",
     "classnames": "^2.3.1",
     "diff": "^5.0.0",
     "html-react-parser": "^1.3",
