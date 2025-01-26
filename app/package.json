@@ -2,11 +2,9 @@
   "name": "rechords",
   "private": true,
   "scripts": {
-    "start": "meteor --settings settings.json --exclude-archs web.browser.legacy --port 0:3000",
     "pretty": "prettier . --write",
     "lint": "eslint imports/",
     "debug": "meteor run --inspect",
-    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "test": "tsx imports/tests.spec.ts",
     "test:watch": "tsx watch --include 'imports/api/**' imports/tests.spec.ts"
@@ -55,7 +53,6 @@
     "@types/core-js": "^2.5.5",
     "@types/diff": "^5.0.2",
     "@types/expect": "^24.3.0",
-    "@types/meteor": "~1.4",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.14.1",
     "@types/prop-types": "^15.7.4",
@@ -69,6 +66,7 @@
     "@types/slug": "^5.0.2",
     "@types/xmldom": "^0.1.31",
     "@types/youtube-player": "^5.5.11",
+    "caniuse-lite": "^1.0.30001695",
     "eslint": "^9.18.0",
     "eslint-plugin-react": "^7.37.4",
     "globals": "^15.14.0",

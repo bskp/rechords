@@ -43,7 +43,7 @@ Meteor.methods({
     Accounts.setPassword(id!, secret_words.join("-"));
   },
 
-  saveSong(remoteObject: OptionalId<Song>) {
+  async saveSong(remoteObject: OptionalId<Song>) {
     //  Attach helpers
     const song: Song = new Song(remoteObject);
 
@@ -60,14 +60,14 @@ Meteor.methods({
     delete song.revision_cache; // aka. transient field!
 
     // Check for modifications
-    const storedSong = Songs.findOne(song._id);
+    const storedSong = await Songs.findOneAsync(song._id);
     if (storedSong != undefined && storedSong.text == song.text) {
       // Content has not changed.
       if (
         storedSong?.parsed_rmd_version != rmd_version &&
         song._id !== undefined
       ) {
-        Songs.update(song._id, song);
+        await Songs.updateAsync(song._id, song);
       }
       return true; // early return, don't create revision
     }
@@ -78,15 +78,15 @@ Meteor.methods({
     // Save Song
     if ("_id" in song && song._id !== undefined) {
       if (song.isEmpty()) {
-        Songs.remove(song._id);
+        await Songs.removeAsync(song._id);
 
         return false; // early return, don't create revision
       } else {
-        Songs.update(song._id, song);
+        await Songs.updateAsync (song._id, song);
       }
     } else {
       delete song._id;
-      song._id = Songs.insert(song);
+      song._id = await Songs.insertAsync(song);
     }
 
     // Create Revision
@@ -98,7 +98,7 @@ Meteor.methods({
       editor: user_id,
     };
 
-    Revisions.insert(rev);
+    await Revisions.insertAsync(rev);
     return true;
   },
 });
