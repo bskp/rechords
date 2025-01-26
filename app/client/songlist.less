@@ -165,6 +165,10 @@ aside.drawer#list {
         overflow: hidden;
       }
 
+      .title {
+        flex-grow: 1;
+      }
+
       .author {
         display: none;
         flex: 1 1 auto;
@@ -219,6 +223,11 @@ aside.drawer#list {
         &:hover svg {
           fill: var(--accent);
         }
+      }
+
+      svg {
+        // Protect WIP-Icon min-size
+        flex-shrink: 0;
       }
 
       &:hover {

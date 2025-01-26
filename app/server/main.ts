@@ -8,7 +8,15 @@ Meteor.publish("songs", function () {
   if (Meteor.user()?.profile) {
     return Songs.find({});
   } else {
-    return Songs.find({ tags: "lizenz:frei" });
+    return Songs.find({
+      $or: [
+        { tags: "lizenz:frei" },
+        {
+          author_: "meta",
+          title: /^[^!]/i,
+        },
+      ],
+    });
   }
 });
 

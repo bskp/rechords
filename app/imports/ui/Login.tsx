@@ -1,7 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import { ReactSVG } from "react-svg";
 import { navigateTo, View } from "../api/helpers";
@@ -18,16 +18,16 @@ export const Login: React.FC = () => {
   const [three, setThree] = useState("");
   const [four, setFour] = useState("");
 
-  const history = useHistory()
+  const history = useHistory();
 
   const handleSubmit = () => {
     Meteor.loginWithPassword(
       one.toLowerCase(),
       two.toLowerCase() + "-" + three.toLowerCase() + "-" + four.toLowerCase(),
-      (err: Meteor.Error) => {
+      (err: Meteor.Error | Error | undefined) => {
         if (!err) {
           setMsg("eingeloggt!");
-          setTimeout(()=> navigateTo(history, View.home), 1000) // login "feeling..."
+          navigateTo(history, View.home);
         } else {
           let msg = err.message;
           if (err.reason == "Incorrect password") {
@@ -38,7 +38,7 @@ export const Login: React.FC = () => {
           }
           setMsg(msg);
         }
-      }
+      },
     );
   };
 
@@ -74,15 +74,11 @@ export const Login: React.FC = () => {
   let status = msg;
   if (Meteor.loggingIn()) status = "Melde an…";
 
-
   return (
     <section className="content" id="home">
       <ReactSVG src="/svg/header.svg" />
 
-      <p>
-        Das Lieder-Wiki für Jublanerinnen und Jublaner. Logge dich erst mal ein
-        mit…
-      </p>
+      <p>Das Lieder-Wiki für Jublanerinnen und Jublaner. Logge dich ein mit…</p>
       <div className="fourWords">
         <input
           id="one"
@@ -121,8 +117,9 @@ export const Login: React.FC = () => {
         Du hast keinen Zugang? Frage deine Scharleitung oder schreibe eine Mail
         an <a href="mailto:hoelibu@posteo.ch">hoelibu@posteo.ch</a> und du
         kriegst einen.
+        <br />
+        <span className="loginStatus"> {status}</span>
       </p>
-      <p>{status}&#8203;</p>
     </section>
   );
 };

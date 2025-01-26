@@ -17,7 +17,7 @@ import MetaContent from "/imports/ui/MetaContent";
 import classNames from "classnames";
 import classnames from "classnames";
 import { Tooltip } from "react-tooltip";
-import { navigateTo, View } from "/imports/api/helpers";
+import { Meteor } from "meteor/meteor";
 
 export function Menu(props: {
   filter: string;
@@ -165,16 +165,18 @@ export function Menu(props: {
             <MdHome />
           </Link>
         </li>
-        <li>
-          <Link
-            to="/user"
-            onClick={() => setShowMenu(false)}
-            data-tooltip-content="Einstellungen"
-            data-tooltip-id="tt"
-          >
-            <MdAccountCircle />
-          </Link>
-        </li>
+        {Meteor.user() ? (
+          <li>
+            <Link
+              to="/user"
+              onClick={() => setShowMenu(false)}
+              data-tooltip-content="Einstellungen"
+              data-tooltip-id="tt"
+            >
+              <MdAccountCircle />
+            </Link>
+          </li>
+        ) : null}
         <li
           onClick={(_) => toggleTheme()}
           data-tooltip-content="Licht an/aus"
