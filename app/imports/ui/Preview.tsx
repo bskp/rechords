@@ -465,7 +465,8 @@ export default (props: P) => {
                   <div>
                     <div>Click to a line in the song text</div>
                     <div>
-                      <b>Ctrl + Click: </b>Add Time Anchor<br />
+                      <b>Ctrl + Click: </b>Add Time Anchor
+                      <br />
                       <b>Shift + Click: </b>Play from here
                     </div>
                   </div>
@@ -586,9 +587,7 @@ export default (props: P) => {
             }}
             className="time-insert-indicator"
           >
-            <span>
-              {currentPlayTime?.toFixed(1)}
-            </span>
+            <span>{currentPlayTime?.toFixed(1)}</span>
           </div>
         )}
       </div>

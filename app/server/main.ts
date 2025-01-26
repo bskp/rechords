@@ -4,11 +4,31 @@ import Songs, { Revisions } from "../imports/api/collections";
 import "../imports/api/methods.ts";
 
 Meteor.publish("songs", function () {
-  return Songs.find({});
+  // todo: some kind of collection
+  if (Meteor.user()?.profile) {
+    return Songs.find({});
+  } else {
+    return Songs.find({
+      $or: [
+        { tags: "lizenz:frei" },
+        {
+          author_: "meta",
+          title: /^[^!]/i,
+        },
+      ],
+    });
+  }
 });
 
 Meteor.publish("revisions", function () {
-  return Revisions.find({});
+  if (Meteor.user()?.profile) {
+    return Revisions.find({});
+  } else {
+    const songids = Songs.find(
+      { tags: "lizenz:frei" } /* , { fields: { _id: 1 } }*/,
+    ).fetch();
+    return Revisions.find({ of: { $in: songids.map((s) => s._id) } });
+  }
 });
 
 Meteor.startup(async () => {

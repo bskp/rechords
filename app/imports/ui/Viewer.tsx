@@ -56,23 +56,21 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     const tagName = (e.target as Element)?.tagName;
     // Do not steal focus if already on <input>
     if (["INPUT", "TEXTAREA"].includes(tagName)) return;
-    if(e.target.getAttribute('contenteditable')) return;
-
+    if (e.target.getAttribute("contenteditable")) return;
 
     // Ignore special keys
     if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
 
     if (e.key === "e") {
       e.preventDefault();
-      navigateTo(history, View.edit, song)
+      navigateTo(history, View.edit, song);
     }
- };
+  };
 
   React.useEffect(() => {
     document.addEventListener("keydown", globalKeyHandler);
     return () => document.removeEventListener("keydown", globalKeyHandler);
   });
-
 
   function getInitialTranspose(): number {
     const transposeTag = song
@@ -85,7 +83,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
     if (userMayWrite()) {
-      navigateTo(history, View.edit, song)
+      navigateTo(history, View.edit, song);
     }
     event.preventDefault();
   };

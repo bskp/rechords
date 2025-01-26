@@ -10,11 +10,12 @@ import Editor from "./Editor";
 import Progress from "./Progress";
 import Users from "./Users";
 import User from "./User";
-import Login from "./Login";
+import { Login } from "./Login";
 import Hallo from "./Hallo";
 
 import {
   BrowserRouter,
+  Redirect,
   Route,
   RouteComponentProps,
   Switch,
@@ -136,23 +137,6 @@ class App extends React.Component<AppProps, AppStates> {
     };
   }
 
-  hideSongListOnMobile = () => {
-    if (window.innerWidth > 700) return;
-    this.setState({
-      songListHidden: true,
-    });
-  };
-
-  hideSongList = (hide: boolean) => {
-    this.setState({
-      songListHidden: hide,
-    });
-  };
-
-  toggleSongList = () => {
-    this.setState((state) => ({ songListHidden: !state.songListHidden }));
-  };
-
   toggleTheme = () => {
     this.setState((state) => ({
       swapTheme: !state.swapTheme,
@@ -180,15 +164,6 @@ class App extends React.Component<AppProps, AppStates> {
     // If any song's title changes, the key for the <List /> changes and flushes all states.
     // This is a hack to easily update all internal "caching states" (matches etc.)
     const list_key = this.props.songs.map((s) => s.title).join("-");
-
-    if (!this.props.user) {
-      return (
-        <div id="body" className="light">
-          <TrackingDocumentTitle title="Hölibu" track_as="/no-login" />
-          <Login />
-        </div>
-      );
-    }
 
     if (this.props.songsLoading) {
       return (
@@ -232,159 +207,173 @@ class App extends React.Component<AppProps, AppStates> {
                 user={this.props.user}
               />
               <Switch>
-                <Route exact={true} path="/">
-                  <TrackingDocumentTitle title="Hölibu 3000" />
-                  <ErrorBoundary fallback={<NA400 />}>
+                <ErrorBoundary fallback={<NA400 />}>
+                  <Route exact={true} path="/">
+                    <TrackingDocumentTitle title="Hölibu 3000" />
                     <Hallo />
                     <MenuBurger />
-                  </ErrorBoundary>
-                </Route>
+                  </Route>
 
-                <Route
-                  path="/print/:author/:title"
-                  render={(routerProps) => {
-                    const song = getSong(routerProps.match.params);
+                  <Route path="/login">
+                    <TrackingDocumentTitle
+                      title="Hölibu"
+                      track_as="/no-login"
+                    />
+                    <Login />
+                  </Route>
 
-                    if (song === undefined) {
-                      return nA404;
-                    }
+                  <Route
+                    path="/print/:author/:title"
+                    render={(routerProps) => {
+                      const song = getSong(routerProps.match.params);
 
-                    return (
-                      <>
-                        <TrackingDocumentTitle
-                          title={"Hölibu | " + song.author + ": " + song.title}
-                        />
-                        <Printer song={song} {...routerProps} />
-                      </>
-                    );
-                  }}
-                />
+                      if (song === undefined) {
+                        return nA404;
+                      }
 
-                <Route
-                  path="/view/:author/:title"
-                  render={(routerProps) => {
-                    const song = getSong(routerProps.match.params);
+                      return (
+                        <>
+                          <TrackingDocumentTitle
+                            title={
+                              "Hölibu | " + song.author + ": " + song.title
+                            }
+                          />
+                          <Printer song={song} {...routerProps} />
+                        </>
+                      );
+                    }}
+                  />
 
-                    if (song === undefined) {
-                      return nA404;
-                    }
+                  <Route
+                    path="/view/:author/:title"
+                    render={(routerProps) => {
+                      const song = getSong(routerProps.match.params);
 
-                    return (
-                      <>
-                        <TrackingDocumentTitle
-                          title={"Hölibu | " + song.author + ": " + song.title}
-                        />
-                        <Viewer song={song} {...routerProps} />
-                      </>
-                    );
-                  }}
-                />
+                      if (song === undefined) {
+                        return nA404;
+                      }
 
-                <WriterRoute
-                  path="/edit/:author/:title"
-                  render={(match) => {
-                    const song = getSong(match.match.params);
+                      return (
+                        <>
+                          <TrackingDocumentTitle
+                            title={
+                              "Hölibu | " + song.author + ": " + song.title
+                            }
+                          />
+                          <Viewer song={song} {...routerProps} />
+                        </>
+                      );
+                    }}
+                  />
 
-                    if (song === undefined) {
-                      return nA404;
-                    }
+                  <WriterRoute
+                    path="/edit/:author/:title"
+                    render={(match) => {
+                      const song = getSong(match.match.params);
 
-                    let editor;
-                    // In any case, the editor is rendered. However, a rerender is triggered after the song's
-                    // revisions have been loaded.
-                    editor = this.props.revisionsLoading ? (
-                      <Editor song={song} />
-                    ) : (
-                      <Editor song={song} />
-                    );
+                      if (song === undefined) {
+                        return nA404;
+                      }
 
-                    return (
-                      <>
-                        <TrackingDocumentTitle
-                          title={
-                            "Hölibu | " +
-                            song.author +
-                            ": " +
-                            song.title +
-                            " (bearbeiten)"
-                          }
-                        />
-                        {editor}
-                      </>
-                    );
-                  }}
-                />
-
-                <WriterRoute
-                  path="/new"
-                  render={() => {
-                    const song = new Song(empty_song);
-
-                    return (
-                      <>
-                        <TrackingDocumentTitle title="Hölibu | Neues Lied" />
+                      let editor;
+                      // In any case, the editor is rendered. However, a rerender is triggered after the song's
+                      // revisions have been loaded.
+                      editor = this.props.revisionsLoading ? (
                         <Editor song={song} />
-                      </>
-                    );
-                  }}
-                />
+                      ) : (
+                        <Editor song={song} />
+                      );
 
-                <Route
-                  path="/progress"
-                  render={() => {
-                    const content = this.props.revisionsLoading ? (
-                      <div className="content chordsheet-colors">
-                        Lade Lieder-Fortschritt…
-                      </div>
-                    ) : (
-                      <Progress songs={this.props.songs} />
-                    );
+                      return (
+                        <>
+                          <TrackingDocumentTitle
+                            title={
+                              "Hölibu | " +
+                              song.author +
+                              ": " +
+                              song.title +
+                              " (bearbeiten)"
+                            }
+                          />
+                          {editor}
+                        </>
+                      );
+                    }}
+                  />
 
-                    return (
-                      <>
-                        <TrackingDocumentTitle title="Hölibu | Lieder-Fortschritt" />
-                        {content}
-                        <MenuBurger />
-                      </>
-                    );
-                  }}
-                />
+                  <WriterRoute
+                    path="/new"
+                    render={() => {
+                      const song = new Song(empty_song);
 
-                <AdminRoute
-                  path="/users"
-                  render={() => {
-                    const users = Meteor.users.find().fetch();
-                    return (
-                      <>
-                        <TrackingDocumentTitle title="Hölibu | Alle Benutzer" />
-                        <Users users={users} />
-                        <MenuBurger />
-                      </>
-                    );
-                  }}
-                />
+                      return (
+                        <>
+                          <TrackingDocumentTitle title="Hölibu | Neues Lied" />
+                          <Editor song={song} />
+                        </>
+                      );
+                    }}
+                  />
 
-                <Route
-                  path="/user"
-                  render={() => {
-                    const user = Meteor.user()!;
-                    return (
-                      <>
-                        <TrackingDocumentTitle
-                          title={"Hölibu | " + user.profile.name}
-                        />
-                        <User
-                          user={user}
-                          key={user._id}
-                          revisionsLoading={this.props.revisionsLoading}
-                        />
-                        <MenuBurger />
-                      </>
-                    );
-                  }}
-                />
+                  <Route
+                    path="/progress"
+                    render={() => {
+                      const content = this.props.revisionsLoading ? (
+                        <div className="content chordsheet-colors">
+                          Lade Lieder-Fortschritt…
+                        </div>
+                      ) : (
+                        <Progress songs={this.props.songs} />
+                      );
 
-                <Route>{nA404}</Route>
+                      return (
+                        <>
+                          <TrackingDocumentTitle title="Hölibu | Lieder-Fortschritt" />
+                          {content}
+                          <MenuBurger />
+                        </>
+                      );
+                    }}
+                  />
+
+                  <AdminRoute
+                    path="/users"
+                    render={() => {
+                      const users = Meteor.users.find().fetch();
+                      return (
+                        <>
+                          <TrackingDocumentTitle title="Hölibu | Alle Benutzer" />
+                          <Users users={users} />
+                          <MenuBurger />
+                        </>
+                      );
+                    }}
+                  />
+
+                  <Route
+                    path="/user"
+                    render={() => {
+                      const user = Meteor.user();
+
+                      if (!user) {
+                        return <Redirect to="/" />;
+                      }
+                      return (
+                        <>
+                          <TrackingDocumentTitle
+                            title={"Hölibu | " + user.profile.name}
+                          />
+                          <User
+                            user={user}
+                            key={user._id}
+                            revisionsLoading={this.props.revisionsLoading}
+                          />
+                          <MenuBurger />
+                        </>
+                      );
+                    }}
+                  />
+                </ErrorBoundary>
               </Switch>
             </div>
           </BrowserRouter>
@@ -398,10 +387,11 @@ export default withTracker((_) => {
   const songHandle = Meteor.subscribe("songs");
   const revHandle = Meteor.subscribe("revisions");
 
+  const songs = Songs.find({}, { sort: { title: 1 } }).fetch();
   return {
     songsLoading: !songHandle.ready(),
     revisionsLoading: !revHandle.ready(),
-    songs: Songs.find({}, { sort: { title: 1 } }).fetch(),
+    songs,
     user: Meteor.user(),
   };
 })(App);

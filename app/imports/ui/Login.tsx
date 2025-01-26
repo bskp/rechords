@@ -1,48 +1,33 @@
 import { Meteor } from "meteor/meteor";
 import * as React from "react";
+import { useEffect, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import { ReactSVG } from "react-svg";
+import { navigateTo, View } from "../api/helpers";
 
-export default class Login extends React.Component<
-  any,
-  { one: string; two: string; three: string; four: string; msg: string }
-> {
-  private one = React.createRef<HTMLInputElement>();
-  private two = React.createRef<HTMLInputElement>();
-  private three = React.createRef<HTMLInputElement>();
-  private four = React.createRef<HTMLInputElement>();
+export const Login: React.FC = () => {
+  const oneR = useRef<HTMLInputElement>(null);
+  const twoR = useRef<HTMLInputElement>(null);
+  const threeR = useRef<HTMLInputElement>(null);
+  const fourR = useRef<HTMLInputElement>(null);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      one: "",
-      two: "",
-      three: "",
-      four: "",
-      msg: "",
-    };
-  }
+  const [msg, setMsg] = useState("");
+  const [one, setOne] = useState("");
+  const [two, setTwo] = useState("");
+  const [three, setThree] = useState("");
+  const [four, setFour] = useState("");
 
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const field = e.target.id;
-    const value = e.target.value;
-    this.setState((state, props) => {
-      state[field] = value;
-      return state;
-    });
-  };
+  const history = useHistory();
 
-  handleSubmit = () => {
+  const handleSubmit = () => {
     Meteor.loginWithPassword(
-      this.state.one.toLowerCase(),
-      this.state.two.toLowerCase() +
-        "-" +
-        this.state.three.toLowerCase() +
-        "-" +
-        this.state.four.toLowerCase(),
-      (err: Meteor.Error) => {
+      one.toLowerCase(),
+      two.toLowerCase() + "-" + three.toLowerCase() + "-" + four.toLowerCase(),
+      (err: Meteor.Error | Error | undefined) => {
         if (!err) {
-          this.setState({ msg: "eingeloggt!" });
+          setMsg("eingeloggt!");
+          navigateTo(history, View.home);
         } else {
           let msg = err.message;
           if (err.reason == "Incorrect password") {
@@ -51,14 +36,14 @@ export default class Login extends React.Component<
           if (err.reason == "User not found") {
             msg = "Das erste geheime Wort ist falsch!";
           }
-          this.setState({ msg: msg });
+          setMsg(msg);
         }
       },
     );
   };
 
-  handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    this.setState({ msg: "" });
+  const handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    setMsg("");
 
     const id = e.currentTarget.id;
 
@@ -68,79 +53,73 @@ export default class Login extends React.Component<
     };
 
     if (e.key == "Enter") {
-      this.handleSubmit();
+      handleSubmit();
       e.preventDefault();
     } else if (e.key == " ") {
-      if (id == "one") tab(this.two.current);
-      if (id == "two") tab(this.three.current);
-      if (id == "three") tab(this.four.current);
-      if (id == "four") this.handleSubmit();
+      if (id == "one") tab(twoR.current);
+      if (id == "two") tab(threeR.current);
+      if (id == "three") tab(fourR.current);
+      if (id == "four") handleSubmit();
       e.preventDefault();
     } else if (e.currentTarget.value == "" && e.key == "Backspace") {
-      if (id == "two") this.one.current.focus();
-      if (id == "three") this.two.current.focus();
-      if (id == "four") this.three.current.focus();
+      if (id == "two") oneR.current.focus();
+      if (id == "three") twoR.current.focus();
+      if (id == "four") threeR.current.focus();
       e.preventDefault();
     }
   };
 
-  componentDidMount() {
-    this.one.current.focus();
-  }
+  useEffect(() => oneR.current.focus(), []);
 
-  render() {
-    let status = this.state.msg;
-    if (Meteor.loggingIn()) status = "Melde an…";
+  let status = msg;
+  if (Meteor.loggingIn()) status = "Melde an…";
 
-    return (
-      <section className="content" id="home">
-        <ReactSVG src="/svg/header.svg" />
+  return (
+    <section className="content" id="home">
+      <ReactSVG src="/svg/header.svg" />
 
-        <p>
-          Das Lieder-Wiki für Jublanerinnen und Jublaner. Logge dich erst mal
-          ein mit…
-        </p>
-        <div className="fourWords">
-          <input
-            id="one"
-            ref={this.one}
-            type="text"
-            onKeyDown={this.handleKey}
-            onChange={this.handleChange}
-            placeholder="deinen"
-          />
-          <input
-            id="two"
-            ref={this.two}
-            type="text"
-            onKeyDown={this.handleKey}
-            onChange={this.handleChange}
-            placeholder="vier"
-          />
-          <input
-            id="three"
-            ref={this.three}
-            type="text"
-            onKeyDown={this.handleKey}
-            onChange={this.handleChange}
-            placeholder="geheimen"
-          />
-          <input
-            id="four"
-            ref={this.four}
-            type="text"
-            onKeyDown={this.handleKey}
-            onChange={this.handleChange}
-            placeholder="Wörtern"
-          />
-        </div>
-        <p>
-          Du hast keinen Zugang? Frage deine Scharleitung oder schreibe eine
-          Mail an <a href="mailto:hoelibu@posteo.ch">hoelibu@posteo.ch</a> und
-          du kriegst einen.
-        </p>
-        <p>{status}&#8203;</p>
-      </section>
-    );
-  }
-}
+      <p>Das Lieder-Wiki für Jublanerinnen und Jublaner. Logge dich ein mit…</p>
+      <div className="fourWords">
+        <input
+          id="one"
+          ref={oneR}
+          type="text"
+          onKeyDown={handleKey}
+          onChange={(e) => setOne(e.target.value)}
+          placeholder="deinen"
+        />
+        <input
+          id="two"
+          ref={twoR}
+          type="text"
+          onKeyDown={handleKey}
+          onChange={(e) => setTwo(e.target.value)}
+          placeholder="vier"
+        />
+        <input
+          id="three"
+          ref={threeR}
+          type="text"
+          onKeyDown={handleKey}
+          onChange={(e) => setThree(e.target.value)}
+          placeholder="geheimen"
+        />
+        <input
+          id="four"
+          ref={fourR}
+          type="text"
+          onKeyDown={handleKey}
+          onChange={(e) => setFour(e.target.value)}
+          placeholder="Wörtern"
+        />
+      </div>
+      <p>
+        Du hast keinen Zugang? Frage deine Scharleitung oder schreibe eine Mail
+        an <a href="mailto:hoelibu@posteo.ch">hoelibu@posteo.ch</a> und du
+        kriegst einen.
+        <br />
+        <span className="loginStatus"> {status}</span>
+      </p>
+    </section>
+  );
+};

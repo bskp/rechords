@@ -32,12 +32,8 @@ const List = (props: ListProps) => {
   const [fuzzyMatches, exactMatches] = useMemo(() => {
     let visibleSongs = props.songs;
 
-    if (props.user === null) {
-      visibleSongs = visibleSongs.filter((song) => song.checkTag("frei"));
-    } else if (props.user.profile.role == "user") {
-      visibleSongs = visibleSongs.filter(
-        (song) => props.user?.profile.role == "user" && !song.checkTag("fini")
-      );
+    if (!["admin", "writer"].includes(props.user?.profile.role)) {
+      visibleSongs = visibleSongs.filter((song) => song.checkTag("fini"));
     }
 
     if (!filter.includes("#privat")) {
@@ -45,7 +41,7 @@ const List = (props: ListProps) => {
     }
 
     const exactMatches = visibleSongs.filter((song) =>
-      song.title.toLowerCase().includes(filter.toLowerCase())
+      song.title.toLowerCase().includes(filter.toLowerCase()),
     );
 
     const words = filter.toLowerCase().split(/\s+/);
@@ -53,8 +49,8 @@ const List = (props: ListProps) => {
       words.every(
         (word) =>
           song.text.toLowerCase().includes(word) ||
-          song.author.toLowerCase().includes(word)
-      )
+          song.author.toLowerCase().includes(word),
+      ),
     );
 
     return [fuzzyMatches, exactMatches];
@@ -127,6 +123,11 @@ const List = (props: ListProps) => {
           );
         })}
       </ul>
+      {props.user === null && (
+        <div className="callToLogin">
+          <NavLink to="/login">Melde dich an</NavLink>, um alle Lieder zu sehen!
+        </div>
+      )}
     </Drawer>
   );
 };
