@@ -16,7 +16,7 @@ import Sheet from "./Sheet";
 import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
-import { MenuContext } from "/imports/ui/App";
+import { MenuContext, VideoContext } from "/imports/ui/App";
 
 interface ViewerProps {
   song: Song;
@@ -29,6 +29,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const [showChords, setShowChords] = useState<boolean>(true);
   const [showTransposer, setShowTransposer] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
+  const [isVideoActive, setIsVideoActive] = useState<boolean>(false);
 
   const history = useHistory();
 
@@ -49,6 +50,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     document.scrollingElement?.scrollTo(0, 0);
     setRelTranspose(getTransposeFromTag());
     stopAutoScroll();
+    setIsVideoActive(false);
     return () => stopAutoScroll();
   }, [song]);
 
@@ -144,7 +146,13 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const { setShowMenu } = useContext(MenuContext);
 
   return (
-    <>
+    <VideoContext.Provider
+      value={{
+        isActive: isVideoActive,
+        setActive: setIsVideoActive,
+        hasVideo: song.has_video,
+      }}
+    >
       <div
         className="content"
         id="chordsheet"
@@ -157,6 +165,15 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         <Button onClick={() => setShowMenu(true)} phoneOnly>
           <ReactSVG src="/svg/menu.svg" />
         </Button>
+        {!song.has_video ? null : isVideoActive ? (
+          <Button onClick={() => setIsVideoActive(false)}>
+            <ReactSVG src="/svg/yt-close.svg" />
+          </Button>
+        ) : (
+          <Button onClick={() => setIsVideoActive(true)}>
+            <ReactSVG src="/svg/yt.svg" />
+          </Button>
+        )}
         <Button onClick={() => setShowTransposer(true)}>
           <ReactSVG src="/svg/sharp.svg" />
         </Button>
@@ -184,7 +201,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         </Button>
       </aside>
       {drawer}
-    </>
+    </VideoContext.Provider>
   );
 };
 

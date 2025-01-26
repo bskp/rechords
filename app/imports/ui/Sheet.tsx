@@ -5,10 +5,12 @@ import { Abcjs } from "./Abcjs";
 import Kord from "./Kord";
 import { userMayWrite } from "../api/helpers";
 import * as DH from "domhandler";
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import { Tablature } from "abcjs";
 import Chord_ from "/imports/api/libchr0d/chord";
 import classNames from "classnames";
+import { YtInter } from "./YtInter";
+import { VideoContext } from "/imports/ui/App";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
 
@@ -30,6 +32,22 @@ const Sheet = ({
   const [inlineRefs, setInlineRefs] = useState(true);
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
+  // from UI
+  const [selectedLine, setSelectedLine] = useState({ selectedLine: 0 });
+  // from time change in video
+  const [playedLine, setPlayedLine] = useState<number>();
+
+  const { hasVideo, isActive } = useContext(VideoContext);
+
+  const handleLineClick = (e: MouseEvent) => {
+    const span = e?.currentTarget as HTMLSpanElement;
+    if (!(span instanceof HTMLSpanElement)) return;
+    const selectedLine = Number.parseInt(span.dataset.lineCnt ?? "", 10);
+    if (selectedLine) {
+      console.log("cicl");
+      setSelectedLine({ selectedLine });
+    }
+  };
   const chordsheetContent = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -76,7 +94,7 @@ const Sheet = ({
       );
     }
 
-    // Abcjs
+    // Abcjs or youtube block
     else if (node.name == "pre") {
       if (node.children.length != 1) return node;
 
@@ -84,6 +102,19 @@ const Sheet = ({
       if (!("class" in code.attribs)) return node;
 
       const classes = code.attribs["class"];
+      if (classes.includes("language-yt")) {
+        const data = (code.firstChild as DH.DataNode).data as string;
+        return (
+          <div className="song-video">
+            <YtInter
+              data={data}
+              selectedLine={selectedLine}
+              onLineChange={setPlayedLine}
+            />
+          </div>
+        );
+      }
+
       if (!classes.includes("language-abc")) return node;
 
       if (code.children.length != 1) return node;
@@ -150,12 +181,44 @@ const Sheet = ({
 
   let vdom = parse(rmd_html, { replace: postprocess }) as JSX.Element[];
 
+  useEffect(() => {
+    if (hasVideo) {
+      const elements = chordsheetContent.current?.querySelectorAll("span.line");
+      elements?.forEach((e) => e.addEventListener("click", handleLineClick));
+      return () =>
+        elements?.forEach((e) =>
+          e.removeEventListener("click", handleLineClick),
+        );
+    }
+  });
+
+  useEffect(() => {
+    const lines = chordsheetContent.current?.querySelectorAll("span.line");
+    if (lines == null || playedLine == null) {
+      return;
+    }
+    for (const maybeLine of lines) {
+      const line = maybeLine as HTMLSpanElement;
+      if (!(line instanceof HTMLSpanElement)) return;
+      const lineCnt = parseInt(line.dataset.lineCnt ?? "", 10);
+      const ratio = clamp(0, playedLine - lineCnt, 0.65);
+
+      const style = `--ratio: ${1 - ratio}`;
+      // @ts-ignore
+      line.style = style;
+    }
+  }, [playedLine]);
+
   return (
     <section
       ref={chordsheetContent}
       id="chordsheetContent"
       style={style}
-      className={classNames({ inlineRefs, hideRefs: !inlineRefs })}
+      className={classNames({
+        inlineRefs,
+        hideRefs: !inlineRefs,
+        hasVideo: isActive,
+      })}
     >
       {vdom}
     </section>
@@ -163,3 +226,7 @@ const Sheet = ({
 };
 
 export default Sheet;
+
+function clamp(min: number, val: number, max: number) {
+  return Math.max(min, Math.min(max, val));
+}

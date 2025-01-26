@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
-import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
+import { MdFavorite, MdFavoriteBorder, MdPendingActions } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import { routePath, View } from "/imports/api/helpers";
 import { Song } from "/imports/api/collections";
 import { Meteor } from "meteor/meteor";
 import { MenuContext } from "/imports/ui/App";
+import classNames from "classnames";
 
 interface ListItemProps {
   song: Song;
@@ -51,11 +52,15 @@ const ListItem: React.FC<ListItemProps> = ({ song, user }) => {
         {user && (
           <span
             onClick={toggleDarling}
-            className={`darling ${isDarling ? "is_darling" : ""}`}
+            className={classNames({
+              darling: true,
+              is_darling: isDarling,
+            })}
           >
             {isDarling ? <MdFavorite /> : <MdFavoriteBorder />}
           </span>
         )}
+        {!song.checkTag("fini") && <MdPendingActions />}
       </NavLink>
     </li>
   );

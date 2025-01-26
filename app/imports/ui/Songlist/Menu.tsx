@@ -20,6 +20,7 @@ import classnames from "classnames";
 import { Tooltip } from "react-tooltip";
 import { currentFocusOnInput } from "/imports/api/helpers";
 import { HTMLElement } from "node-html-parser";
+import { Meteor } from "meteor/meteor";
 
 export function Menu(props: {
   filter: string;
@@ -39,10 +40,8 @@ export function Menu(props: {
     }
   };
 
-  React.useEffect(() => {
-    document.addEventListener("keydown", globalKeyHandler);
-    return () => document.removeEventListener("keydown", globalKeyHandler);
-  });
+  const event = "keydown";
+  useDocumentListener(event, globalKeyHandler);
 
   const onTagClick = (event: React.MouseEvent<HTMLElement>) => {
     const tag =
@@ -99,7 +98,10 @@ export function Menu(props: {
 
   return (
     <>
-      <menu className={classnames("iconmenu", { searching: showSearch })}>
+      <menu
+        className={classnames("iconmenu", { searching: showSearch })}
+        onKeyDown={props.onKeyDown}
+      >
         {showSearch ? (
           <>
             <input
@@ -160,16 +162,18 @@ export function Menu(props: {
             <MdHome />
           </Link>
         </li>
-        <li>
-          <Link
-            to="/user"
-            onClick={() => setShowMenu(false)}
-            data-tooltip-content="Einstellungen"
-            data-tooltip-id="tt"
-          >
-            <MdAccountCircle />
-          </Link>
-        </li>
+        {Meteor.user() ? (
+          <li>
+            <Link
+              to="/user"
+              onClick={() => setShowMenu(false)}
+              data-tooltip-content="Einstellungen"
+              data-tooltip-id="tt"
+            >
+              <MdAccountCircle />
+            </Link>
+          </li>
+        ) : null}
         <li
           onClick={(_) => toggleTheme()}
           data-tooltip-content="Licht an/aus"
@@ -203,4 +207,24 @@ export function Menu(props: {
       />
     </>
   );
+}
+
+export function useDocumentListener<K extends keyof DocumentEventMap>(
+  type: K,
+  listener: (this: Document, ev: DocumentEventMap[K]) => any,
+) {
+  React.useEffect(() => {
+    document.addEventListener(type, listener);
+    return () => document.removeEventListener(type, listener);
+  });
+}
+
+export function useWindowListener<K extends keyof WindowEventMap>(
+  type: K,
+  listener: (this: Window, ev: WindowEventMap[K]) => any,
+) {
+  React.useEffect(() => {
+    window.addEventListener(type, listener);
+    return () => window.removeEventListener(type, listener);
+  });
 }
