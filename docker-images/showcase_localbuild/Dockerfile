@@ -1,3 +1,7 @@
+# based on: https://github.com/disney/meteor-base/blob/main/example/default.dockerfile
+
+# todo: use intermediate image like here: https://github.com/disney/meteor-base/blob/main/example/app-with-native-dependencies.dockerfile
+
 # The tag here should match the Meteor version of your app, per .meteor/release
 FROM geoffreybooth/meteor-base:3.1
 
