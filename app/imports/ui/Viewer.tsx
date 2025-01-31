@@ -174,6 +174,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
             onDoubleClick={() => setShowChords((prev) => !prev)}
             transposeSetter={setRelTranspose}
             transpose={relTranspose}
+            keyHint={Chord_.from(keyTag)}
             close={() => setShowTransposer(false)}
             chords={song
               .getChords()

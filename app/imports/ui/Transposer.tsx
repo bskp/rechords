@@ -46,6 +46,7 @@ const Transposer = (props: {
   onDoubleClick: MouseEventHandler;
   chords: Chord_[];
   close?: () => void;
+  keyHint?: Chord_ | undefined;
 }) => {
   const counts: any = {};
   props.chords
@@ -63,7 +64,16 @@ const Transposer = (props: {
     style[`--${chord}`] = ratio ** (1 / 3) * 100 + "%";
   });
 
-  const { value, isMinor } = guessKeyFromChordCounts(chordCounts);
+  const { value, isMinor } =
+    props.keyHint === undefined
+      ? guessKeyFromChordCounts(chordCounts)
+      : {
+          value:
+            (props.keyHint.key.value +
+              (props.keyHint.quality === "minor" ? 3 : 0)) %
+            12,
+          isMinor: props.keyHint.quality === "minor",
+        };
   const rotKey = transposeToRotation(value ?? 0);
   console.log("rotKey", rotKey);
 

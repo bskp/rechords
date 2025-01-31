@@ -1,7 +1,6 @@
 import Note from "./note";
-import { Chord } from "/imports/api/libchrod";
 
-export type Quality = "major" | "minor" | "diminished" | "augmented";
+export type Quality = "major" | "minor"; // | "diminished" | "augmented";
 
 const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);
 
@@ -24,7 +23,10 @@ export default class Chord_ {
     return new Chord_(new Note(value), m === "M" ? "major" : "minor");
   }
 
-  public static from(chordString: string): Chord_ | undefined {
+  public static from(chordString: string | undefined): Chord_ | undefined {
+    if (chordString === undefined) {
+      return undefined;
+    }
     const isOptional = chordString.startsWith("(") && chordString.endsWith(")");
 
     if (isOptional) {
