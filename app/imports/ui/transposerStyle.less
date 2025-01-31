@@ -7,7 +7,7 @@
   left: @drawer-open;
   right: @drawer-closed;
   bottom: 0;
-  background-color: transparent;
+  background-color: color-mix(in hsl, color-mix(in hsl, var(--accent-flat) 25%, black), transparent 45%);
 
   .phone({
     left: 0;
@@ -19,9 +19,6 @@
     width: 80%;
     margin: auto;
     display: block;
-    height: 100vh;
-
-    transform: rotate(var(--rotKey));
 
     circle {
       fill: none;
@@ -30,75 +27,104 @@
     #M0 {
       --v: var(--M0);
     }
+
     #M1 {
       --v: var(--M1);
     }
+
     #M2 {
       --v: var(--M2);
     }
+
     #M3 {
       --v: var(--M3);
     }
+
     #M4 {
       --v: var(--M4);
     }
+
     #M5 {
       --v: var(--M5);
     }
+
     #M6 {
       --v: var(--M6);
     }
+
     #M7 {
       --v: var(--M7);
     }
+
     #M8 {
       --v: var(--M8);
     }
+
     #M9 {
       --v: var(--M9);
     }
+
     #M10 {
       --v: var(--M10);
     }
+
     #M11 {
       --v: var(--M11);
     }
+
     #m0 {
       --v: var(--m0);
     }
+
     #m1 {
       --v: var(--m1);
     }
+
     #m2 {
       --v: var(--m2);
     }
+
     #m3 {
       --v: var(--m3);
     }
+
     #m4 {
       --v: var(--m4);
     }
+
     #m5 {
       --v: var(--m5);
     }
+
     #m6 {
       --v: var(--m6);
     }
+
     #m7 {
       --v: var(--m7);
     }
+
     #m8 {
       --v: var(--m8);
     }
+
     #m9 {
       --v: var(--m9);
     }
+
     #m10 {
       --v: var(--m10);
     }
+
     #m11 {
       --v: var(--m11);
     }
+
+    #wheel {
+      transform: rotate(var(--rotKey));
+      transform-origin: center;
+    }
+
 
     #fields path {
       fill: color-mix(in hsl, var(--gray-light), var(--accent) var(--v, 0%));
@@ -107,20 +133,36 @@
     #fields {
       pointer-events: all;
       cursor: pointer;
+
       :hover {
         fill: var(--gray);
       }
     }
 
     #labels path {
-      fill: var(--text-inverted);
+      fill: white;
       pointer-events: none;
     }
 
     #labels {
       transform-origin: center;
-      transition: transform 4s;
+      transition: transform 1s;
       transform: rotate(var(--rotTranspose));
+    }
+
+    #overlay {
+      stroke: white;
+      pointer-events: none;
+
+      .hitbox {
+        stroke: none;
+        cursor: pointer;
+        pointer-events: all;
+
+        &:hover {
+          fill: var(--gray-light);
+        }
+      }
     }
   }
 }

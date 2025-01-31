@@ -1,7 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import Transposer from "./Transposer";
-import ChrodLib from "../api/libchrod";
 import Chord_ from "../api/libchr0d/chord";
 import { Song } from "../api/collections";
 import Drawer from "./Drawer";
@@ -123,10 +122,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   };
 
   const keyTag = song.getTag("tonart");
-  let key = keyTag && ChrodLib.parseTag(keyTag);
-  if (!key) {
-    key = ChrodLib.guessKey(song.getChords());
-  }
 
   const drawer = userMayWrite() ? (
     <Drawer className="source-colors" onClick={handleContextMenu}>
@@ -174,9 +169,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
             <ReactSVG src="/svg/yt.svg" />
           </Button>
         )}
-        <Button onClick={() => setShowTransposer(true)}>
-          <ReactSVG src="/svg/sharp.svg" />
-        </Button>
         {showTransposer ? (
           <Transposer
             onDoubleClick={() => setShowChords((prev) => !prev)}
@@ -192,6 +184,9 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
               )}
           />
         ) : null}
+        <Button onClick={() => setShowTransposer(true)}>
+          <ReactSVG src="/svg/transposer.svg" />
+        </Button>
         <Button onClick={toggleAutoScroll}>
           {autoScroll ? (
             <ReactSVG src="/svg/conveyor_active.svg" />
