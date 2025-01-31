@@ -98,10 +98,7 @@ export function Menu(props: {
 
   return (
     <>
-      <menu
-        className={classnames("iconmenu", { searching: showSearch })}
-        onKeyDown={props.onKeyDown}
-      >
+      <menu className={classnames("iconmenu", { searching: showSearch })}>
         {showSearch ? (
           <>
             <input
@@ -113,9 +110,11 @@ export function Menu(props: {
               onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
                 if (event.key === "Escape") {
                   removeFocusAction();
+                  event.preventDefault();
                 } else if (event.key === "Enter") {
                   removeFocusAction();
                   props.onEnter();
+                  event.preventDefault();
                 }
               }}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {

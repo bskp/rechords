@@ -4,15 +4,6 @@ import "rc-tooltip/assets/bootstrap.css";
 
 import "./transposerStyle.less";
 import Chord_ from "/imports/api/libchr0d/chord";
-import Note from "/imports/api/libchr0d/note";
-
-type TransposeSetterProps = {
-  transposeSetter: (semitones: number) => void;
-  transpose: number | undefined;
-  onDoubleClick: MouseEventHandler;
-  chords: Chord_[];
-  close?: () => void;
-};
 
 export const rotToTranspose = (rotation: number) =>
   7 * rotation - 12 * Math.floor(rotation / 2);
@@ -46,7 +37,14 @@ const guessKeyFromChordCounts = (chordCounts: [string, number][]) => {
       return (c?.key.value ?? 0) + (c?.quality == "minor" ? 3 : 0);
     })[0];
 };
-const Transposer = (props: TransposeSetterProps) => {
+
+const Transposer = (props: {
+  transposeSetter: (semitones: number) => void;
+  transpose: number | undefined;
+  onDoubleClick: MouseEventHandler;
+  chords: Chord_[];
+  close?: () => void;
+}) => {
   const counts: any = {};
   props.chords
     .map((c) => c.asCode())
@@ -67,6 +65,7 @@ const Transposer = (props: TransposeSetterProps) => {
   console.log("rotKey", rotKey);
 
   const semiTones = props.transpose ?? 0;
+  console.log("semiTones", semiTones);
   const [rotation, setRotation] = React.useState<number>(
     transposeToRotation(semiTones),
   );
@@ -81,10 +80,11 @@ const Transposer = (props: TransposeSetterProps) => {
     }
     event.stopPropagation();
 
-    const fieldNumber = Number.parseInt(target.classList.item(1)!.slice(1), 10);
+    const fieldNumber =
+      Number.parseInt(target.classList.item(1)!.slice(1), 10) - rotKey;
     const increment = ((fieldNumber + 6) % 12) - 6;
     const rot = rotation + increment;
-    setRotation(rot - rotKey);
+    setRotation(rot);
 
     props.transposeSetter(rotToTranspose(rot));
   };
