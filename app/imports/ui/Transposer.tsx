@@ -102,20 +102,22 @@ const Transposer = (props: {
     }
     if (target.parentElement?.id == "down") {
       event.stopPropagation();
-      setRotation((rotation + 5) % 12);
-      props.transposeSetter(rotToTranspose(rotation));
+      const rot = (rotation + 5) % 12;
+      setRotation(rot);
+      props.transposeSetter(rotToTranspose(rot));
       return;
     }
     if (target.parentElement?.id == "up") {
       event.stopPropagation();
-      setRotation((rotation + 7) % 12);
-      props.transposeSetter(rotToTranspose(rotation));
+      const rot = (rotation + 7) % 12;
+      setRotation(rot);
+      props.transposeSetter(rotToTranspose(rot));
       return;
     }
     if (target.parentElement?.id == "reset") {
       event.stopPropagation();
       setRotation(0);
-      props.transposeSetter(rotToTranspose(rotation));
+      props.transposeSetter(rotToTranspose(0));
       return;
     }
   };
