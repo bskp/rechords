@@ -134,9 +134,11 @@
       pointer-events: all;
       cursor: pointer;
 
-      :hover {
-        fill: var(--gray);
-      }
+      .not-phone({
+        :hover {
+          fill: var(--gray);
+        }
+      });
     }
 
     #labels path {
@@ -159,9 +161,11 @@
         cursor: pointer;
         pointer-events: all;
 
-        &:hover {
-          fill: var(--gray-light);
-        }
+        .not-phone({
+          &:hover {
+            fill: var(--gray-light);
+          }
+        });
       }
     }
   }
