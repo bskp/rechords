@@ -2,61 +2,6 @@
 @import (reference) "./variables.import.less";
 @import (reference) "./icons.less";
 
-#transposer {
-  flex-grow: 1;
-
-  .phone({
-    display: none;
-  });
-
-  padding: 2em;
-
-  height: 400px;
-  width: 50px;
-  > * {
-    position: relative;
-    right: -40px;
-  }
-
-  .rc-slider {
-    width: 0;
-    max-height: 400px;
-  }
-
-  .rc-slider-mark {
-    left: -75px;
-  }
-
-  .rc-slider-mark-text-active,
-  .rc-slider-mark-text {
-    width: 65px;
-    text-align: right;
-    line-height: 2.5em;
-
-    color: var(--gray);
-
-    &:hover {
-      color: var(--ink);
-    }
-  }
-
-  .rc-slider-dot,
-  .rc-slider-rail {
-    background-color: var(--gray);
-    border-color: var(--gray);
-  }
-
-  .rc-slider-track {
-    background-color: var(--accent);
-  }
-
-  .rc-slider-handle,
-  .rc-slider-dot-active {
-    border-color: var(--accent);
-    background-color: var(--accent);
-  }
-}
-
 a.iconbutton {
   display: block;
   padding-right: 0.5em;
@@ -91,12 +36,8 @@ a.iconbutton {
   align-items: flex-end;
   justify-content: space-between;
 
-  #scroll-toggler {
-    padding-right: 0.5em;
-    cursor: pointer;
-    svg {
-      width: 4em;
-    }
+  a:nth-last-child(2) {
+    flex-grow: 1;
   }
 
   &:last-child {

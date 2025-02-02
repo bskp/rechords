@@ -98,7 +98,7 @@ const AdminRoute = ({ render: render, ...rest }) => (
 );
 
 interface AppStates {
-  songListHidden: boolean;
+  showMenu: boolean;
   swapTheme: boolean;
   themeTransition: boolean;
 }
@@ -131,7 +131,7 @@ class App extends React.Component<AppProps, AppStates> {
     super(props);
 
     this.state = {
-      songListHidden: false,
+      showMenu: false,
       swapTheme: false,
       themeTransition: false,
     };
@@ -195,8 +195,8 @@ class App extends React.Component<AppProps, AppStates> {
       >
         <MenuContext.Provider
           value={{
-            showMenu: !this.state.songListHidden,
-            setShowMenu: (show) => this.setState({ songListHidden: !show }),
+            showMenu: this.state.showMenu,
+            setShowMenu: (show) => this.setState({ showMenu: show }),
           }}
         >
           <BrowserRouter>

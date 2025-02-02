@@ -1,43 +1,44 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { NavLink, useHistory, useParams } from "react-router-dom";
-import TransposeSetter from "./TransposeSetter";
-import ChrodLib from "../api/libchrod";
+import { NavLink, useHistory } from "react-router-dom";
+import Transposer from "./Transposer";
+import Chord_ from "../api/libchr0d/chord";
 import { Song } from "../api/collections";
 import Drawer from "./Drawer";
-import { navigateTo, routePath, userMayWrite, View } from "../api/helpers";
+import {
+  currentFocusOnInput,
+  navigateTo,
+  routePath,
+  userMayWrite,
+  View,
+} from "../api/helpers";
 import Sheet from "./Sheet";
 import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
 
-interface SongRouteParams {
-  author?: string;
-  title?: string;
-}
-
 interface ViewerProps {
   song: Song;
 }
 
 const Viewer: React.FC<ViewerProps> = ({ song }) => {
-  const [relTranspose, setRelTranspose] = useState<number>(
-    getInitialTranspose(),
+  const [relTranspose, setRelTranspose] = useState<number | undefined>(
+    getTransposeFromTag(),
   );
   const [showChords, setShowChords] = useState<boolean>(true);
+  const [showTransposer, setShowTransposer] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
   const [isVideoActive, setIsVideoActive] = useState<boolean>(false);
 
   const history = useHistory();
-  const { author, title } = useParams<SongRouteParams>();
 
   let duration_s: number | undefined;
 
   const updateDuration = useCallback(() => {
     const duration = song.getTag("dauer");
     if (duration) {
-      const chunks = duration.split(":");
-      duration_s = 60 * Number(chunks[0]) + Number(chunks[1]);
+      const [minutes, seconds] = duration.split(":");
+      duration_s = 60 * Number(minutes) + Number(seconds);
     } else {
       duration_s = undefined;
     }
@@ -46,24 +47,21 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   useEffect(() => {
     updateDuration();
     document.scrollingElement?.scrollTo(0, 0);
-    setRelTranspose(getInitialTranspose());
+    setRelTranspose(getTransposeFromTag());
     stopAutoScroll();
     setIsVideoActive(false);
     return () => stopAutoScroll();
   }, [song]);
 
   const globalKeyHandler = (e: KeyboardEvent) => {
-    const tagName = (e.target as Element)?.tagName;
-    // Do not steal focus if already on <input>
-    if (["INPUT", "TEXTAREA"].includes(tagName)) return;
-    if (e.target.getAttribute("contenteditable")) return;
-
-    // Ignore special keys
-    if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
-
+    if (currentFocusOnInput(e)) return;
     if (e.key === "e") {
       e.preventDefault();
       navigateTo(history, View.edit, song);
+    }
+    if (e.key === "t") {
+      e.preventDefault();
+      setShowTransposer(!showTransposer);
     }
   };
 
@@ -72,13 +70,13 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     return () => document.removeEventListener("keydown", globalKeyHandler);
   });
 
-  function getInitialTranspose(): number {
+  function getTransposeFromTag(): number | undefined {
     const transposeTag = song
       .getTags()
       .find((tag) => tag.startsWith("transponierung:"));
-    if (!transposeTag) return 0;
+    if (!transposeTag) return undefined;
     let dt = parseInt(transposeTag.split(":")[1], 10);
-    return isNaN(dt) ? 0 : dt;
+    return isNaN(dt) ? undefined : dt;
   }
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -124,10 +122,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   };
 
   const keyTag = song.getTag("tonart");
-  let key = keyTag && ChrodLib.parseTag(keyTag);
-  if (!key) {
-    key = ChrodLib.guessKey(song.getChords());
-  }
 
   const drawer = userMayWrite() ? (
     <Drawer className="source-colors" onClick={handleContextMenu}>
@@ -145,8 +139,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   ) : null;
 
   const { setShowMenu } = useContext(MenuContext);
-
-  console.log("song", song.title, song.has_video);
 
   return (
     <VideoContext.Provider
@@ -177,18 +169,31 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
             <ReactSVG src="/svg/yt.svg" />
           </Button>
         )}
-        <TransposeSetter
-          onDoubleClick={() => setShowChords((prev) => !prev)}
-          transposeSetter={setRelTranspose}
-          transpose={relTranspose}
-          keym={key}
-        />
+        {showTransposer ? (
+          <Transposer
+            onDoubleClick={() => setShowChords((prev) => !prev)}
+            transposeSetter={setRelTranspose}
+            transpose={relTranspose}
+            keyHint={Chord_.from(keyTag)}
+            close={() => setShowTransposer(false)}
+            chords={song
+              .getChords()
+              .map((chord) => Chord_.from(chord))
+              .filter(
+                (chord: Chord_ | undefined): chord is Chord_ =>
+                  chord !== undefined,
+              )}
+          />
+        ) : null}
+        <Button onClick={() => setShowTransposer(true)}>
+          <ReactSVG src="/svg/transposer.svg" />
+        </Button>
         <Button onClick={toggleAutoScroll}>
           {autoScroll ? (
             <ReactSVG src="/svg/conveyor_active.svg" />
           ) : (
             <ReactSVG src="/svg/conveyor.svg" />
-          )}{" "}
+          )}
         </Button>
       </aside>
       {drawer}

@@ -5,6 +5,7 @@ import {
   MdDarkMode,
   MdHome,
   MdLightMode,
+  MdMenu,
   MdSearch,
   MdSell,
 } from "react-icons/md";
@@ -17,6 +18,8 @@ import MetaContent from "/imports/ui/MetaContent";
 import classNames from "classnames";
 import classnames from "classnames";
 import { Tooltip } from "react-tooltip";
+import { currentFocusOnInput } from "/imports/api/helpers";
+import { HTMLElement } from "node-html-parser";
 import { Meteor } from "meteor/meteor";
 
 export function Menu(props: {
@@ -29,13 +32,7 @@ export function Menu(props: {
   const [skipBlurCheck, setSkipBlurCheck] = useState(false);
 
   const globalKeyHandler = (e: KeyboardEvent) => {
-    const tagName = (e.target as Element)?.tagName;
-    // Do not steal focus if already on <input>
-    if (["INPUT", "TEXTAREA"].includes(tagName)) return;
-    if (e.target.getAttribute("contenteditable")) return;
-
-    // Ignore special keys
-    if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return;
+    if (currentFocusOnInput(e)) return;
 
     if (e.key === "/") {
       e.preventDefault();
@@ -101,10 +98,7 @@ export function Menu(props: {
 
   return (
     <>
-      <menu
-        className={classnames("iconmenu", { searching: showSearch })}
-        onKeyDown={props.onKeyDown}
-      >
+      <menu className={classnames("iconmenu", { searching: showSearch })}>
         {showSearch ? (
           <>
             <input
@@ -116,9 +110,11 @@ export function Menu(props: {
               onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
                 if (event.key === "Escape") {
                   removeFocusAction();
+                  event.preventDefault();
                 } else if (event.key === "Enter") {
                   removeFocusAction();
                   props.onEnter();
+                  event.preventDefault();
                 }
               }}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,6 +180,17 @@ export function Menu(props: {
         >
           {themeDark ? <MdLightMode /> : <MdDarkMode />}
         </li>
+        <li>
+          <Link
+            to="#"
+            onClick={() => setShowMenu(false)}
+            data-tooltip-content="Zurück zum Lied"
+            data-tooltip-id="tt"
+            className="hideUnlessMobile"
+          >
+            <MdMenu />
+          </Link>
+        </li>
       </menu>
       <MetaContent
         replace={attachClickHandlers()}
@@ -200,6 +207,7 @@ export function Menu(props: {
     </>
   );
 }
+
 export function useDocumentListener<K extends keyof DocumentEventMap>(
   type: K,
   listener: (this: Document, ev: DocumentEventMap[K]) => any,
@@ -209,6 +217,7 @@ export function useDocumentListener<K extends keyof DocumentEventMap>(
     return () => document.removeEventListener(type, listener);
   });
 }
+
 export function useWindowListener<K extends keyof WindowEventMap>(
   type: K,
   listener: (this: Window, ev: WindowEventMap[K]) => any,
