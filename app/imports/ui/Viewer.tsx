@@ -186,7 +186,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
           />
         ) : null}
         <Button onClick={() => setShowTransposer(true)}>
-          <ReactSVG src="/svg/transposer_.svg" />
+          <ReactSVG src="/svg/transposer.svg" />
         </Button>
         <Button onClick={toggleAutoScroll}>
           {autoScroll ? (
