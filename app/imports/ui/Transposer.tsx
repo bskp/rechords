@@ -6,7 +6,7 @@ import "./transposerStyle.less";
 import Chord_ from "/imports/api/libchr0d/chord";
 import { Notation } from "/imports/api/libchr0d/note";
 
-const keyValueToNotation: Notation[] = [
+const majorKeyValueToNotation: Notation[] = [
   "bee", // C
   "sharp", // C#
   "sharp", // D
@@ -19,6 +19,20 @@ const keyValueToNotation: Notation[] = [
   "sharp", // A
   "bee", // Bb
   "sharp", // B
+];
+const minorKeyValueToNotation: Notation[] = [
+  "bee", // Cm
+  "sharp", // C#m
+  "bee", // Dm
+  "bee", // Ebm
+  "sharp", // Em
+  "bee", // Fm
+  "sharp", // F#m
+  "bee", // Gm
+  "sharp", // G#m
+  "sharp", // Am
+  "bee", // Bbm
+  "sharp", // Bm
 ];
 
 export const rotToTranspose = (rotation: number) =>
@@ -104,8 +118,12 @@ const Transposer = (props: {
   const set = (rotation: number) => {
     setRotation(rotation);
     const semitones = rotToTranspose(rotation);
-    const notation =
-      keyValueToNotation[(((keyValue + semitones) % 12) + 12) % 12];
+    const targetKeyValue =
+      (((keyValue + semitones - (isMinor ? 3 : 0)) % 12) + 12) % 12;
+    const notation = isMinor
+      ? minorKeyValueToNotation[targetKeyValue]
+      : majorKeyValueToNotation[targetKeyValue];
+    console.log("tkv", targetKeyValue);
     props.transposeSetter({ semitones, notation });
   };
 
