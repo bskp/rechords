@@ -65,6 +65,7 @@ export function extractData(data: string): {
 } {
   const [ytId, ..._anchors] = data.split("\n");
   const anchors = _anchors.map((line) => line.split(/\s+/).map(parseFloat));
+  // @ts-ignore
   return { ytId, anchors };
 }
 

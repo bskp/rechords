@@ -7,7 +7,8 @@
   left: @drawer-open;
   right: @drawer-closed;
   bottom: 0;
-  background-color: color-mix(in hsl, color-mix(in hsl, var(--accent-flat) 25%, black), transparent 45%);
+  background-color: color-mix(in hsl, var(--bg-list), transparent 70%);
+  backdrop-filter: blur(2px);
 
   .phone({
     left: 0;
@@ -142,7 +143,7 @@
     }
 
     #labels path {
-      fill: white;
+      fill: var(--text-inverted);
       pointer-events: none;
     }
 
@@ -153,7 +154,7 @@
     }
 
     #overlay {
-      stroke: white;
+      stroke: var(--ink);
       pointer-events: none;
 
       .hitbox {
