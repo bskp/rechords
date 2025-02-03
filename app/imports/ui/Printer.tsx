@@ -50,7 +50,8 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
         <div className={"content" + colMode} id="chordsheet">
           <Sheet
             song={song}
-            transpose={transpose}
+            transposeSemitones={transpose}
+            notationPreference="undetermined"
             hideChords={hideChords}
             style={sheetStyle}
           />

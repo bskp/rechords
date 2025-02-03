@@ -1,4 +1,4 @@
-import Note from "./note";
+import Note, { Notation } from "./note";
 
 export type Quality = "major" | "minor"; // | "diminished" | "augmented";
 
@@ -60,13 +60,13 @@ export default class Chord_ {
     return new Chord_(key, quality, tensions, isOptional, Note.from(slash));
   }
 
-  public transposed(semitones: number) {
+  public transposed(semitones: number, notation?: Notation) {
     return new Chord_(
-      this.key.transposed(semitones),
+      this.key.transposed(semitones, notation),
       this.quality,
       this.tensions,
       this.isOptional,
-      this.slash?.transposed(semitones),
+      this.slash?.transposed(semitones, notation),
     );
   }
 

@@ -16,15 +16,20 @@ import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
+import { Notation } from "/imports/api/libchr0d/note";
 
 interface ViewerProps {
   song: Song;
 }
 
 const Viewer: React.FC<ViewerProps> = ({ song }) => {
-  const [relTranspose, setRelTranspose] = useState<number | undefined>(
-    getTransposeFromTag(),
-  );
+  const [transpose, setTranspose] = useState<{
+    semitones: number | undefined;
+    notation: Notation;
+  }>({
+    semitones: getTransposeFromTag(),
+    notation: "undetermined",
+  });
   const [showChords, setShowChords] = useState<boolean>(true);
   const [showTransposer, setShowTransposer] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
@@ -47,7 +52,10 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   useEffect(() => {
     updateDuration();
     document.scrollingElement?.scrollTo(0, 0);
-    setRelTranspose(getTransposeFromTag());
+    setTranspose({
+      semitones: getTransposeFromTag(),
+      notation: "undetermined",
+    });
     stopAutoScroll();
     setIsVideoActive(false);
     return () => stopAutoScroll();
@@ -153,7 +161,12 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         id="chordsheet"
         onContextMenu={handleContextMenu}
       >
-        <Sheet song={song} transpose={relTranspose} hideChords={!showChords} />
+        <Sheet
+          song={song}
+          transposeSemitones={transpose.semitones}
+          notationPreference={transpose.notation}
+          hideChords={!showChords}
+        />
         {footer}
       </div>
       <aside id="rightSettings">
@@ -172,8 +185,8 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         {showTransposer ? (
           <Transposer
             onDoubleClick={() => setShowChords((prev) => !prev)}
-            transposeSetter={setRelTranspose}
-            transpose={relTranspose}
+            transposeSetter={setTranspose}
+            transpose={transpose.semitones}
             keyHint={Chord_.from(keyTag)}
             close={() => setShowTransposer(false)}
             chords={song

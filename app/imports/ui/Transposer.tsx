@@ -1,9 +1,25 @@
-import React, { MouseEventHandler, useRef } from "react";
+import React, { MouseEventHandler } from "react";
 import "rc-slider/assets/index.css";
 import "rc-tooltip/assets/bootstrap.css";
 
 import "./transposerStyle.less";
 import Chord_ from "/imports/api/libchr0d/chord";
+import { Notation } from "/imports/api/libchr0d/note";
+
+const valueToNotation: Notation[] = [
+  "sharp",
+  "sharp",
+  "sharp",
+  "bee",
+  "bee",
+  "sharp",
+  "sharp",
+  "sharp",
+  "sharp",
+  "sharp",
+  "bee",
+  "bee",
+];
 
 export const rotToTranspose = (rotation: number) =>
   7 * rotation - 12 * Math.floor(rotation / 2);
@@ -33,15 +49,33 @@ const guessKeyFromChordCounts = (chordCounts: [string, number][]) => {
     .sort(([_, a], [__, b]) => b - a)
     .map(([chord, votes]) => {
       const c = Chord_.fromCode(chord);
-      console.log(`${c}: ${votes}`);
+      //console.log(`${c}: ${votes}`);
       const isMinor = c?.quality == "minor";
       const value = ((c?.key.value ?? 0) + (isMinor ? 3 : 0)) % 12;
-      return { value, isMinor };
+      return { keyValue: value, isMinor };
     })[0];
 };
 
+const checkForExplicitNotation: (chords: Chord_[]) => Notation = (chords) => {
+  const explicitNotationOccurences = chords
+    .map((c) => c.key.notation)
+    .filter((n) => n !== "undetermined");
+
+  if (explicitNotationOccurences.length == 0) {
+    return "undetermined";
+  }
+
+  return explicitNotationOccurences.filter((n) => n === "bee").length >
+    explicitNotationOccurences.length / 2
+    ? "bee"
+    : "sharp";
+};
+
 const Transposer = (props: {
-  transposeSetter: (semitones: number) => void;
+  transposeSetter: (transpose: {
+    semitones: number;
+    notation: Notation;
+  }) => void;
   transpose: number | undefined;
   onDoubleClick: MouseEventHandler;
   chords: Chord_[];
@@ -53,8 +87,6 @@ const Transposer = (props: {
     .map((c) => c.asCode())
     .forEach((code) => (counts[code] = counts[code] ? counts[code] + 1 : 1));
 
-  const ref = useRef<HTMLDivElement>(null);
-
   let chordCounts = Object.entries(counts) as unknown as [string, number][];
   const normalization = Math.max(...chordCounts.map(([_code, count]) => count));
 
@@ -64,27 +96,38 @@ const Transposer = (props: {
     style[`--${chord}`] = ratio ** (1 / 3) * 100 + "%";
   });
 
-  const { value, isMinor } =
+  const { keyValue, isMinor } =
     props.keyHint === undefined
       ? guessKeyFromChordCounts(chordCounts)
       : {
-          value:
+          keyValue:
             (props.keyHint.key.value +
               (props.keyHint.quality === "minor" ? 3 : 0)) %
             12,
           isMinor: props.keyHint.quality === "minor",
         };
-  const rotKey = transposeToRotation(value ?? 0);
-  console.log("rotKey", rotKey);
+  const rotKey = transposeToRotation(keyValue ?? 0);
+
+  const notationPreference = checkForExplicitNotation(props.chords);
 
   const semiTones = props.transpose ?? 0;
-  console.log("semiTones", semiTones);
   const [rotation, setRotation] = React.useState<number>(
     transposeToRotation(semiTones),
   );
 
   style[`--rotKey`] = `${360 - rotKey * 30}deg`;
   style[`--rotTranspose`] = `${360 - rotation * 30}deg`;
+
+  const set = (rotation: number) => {
+    setRotation(rotation);
+    const semitones = rotToTranspose(rotation);
+    const notation =
+      notationPreference === "undetermined"
+        ? valueToNotation[(((keyValue + semitones) % 12) + 12) % 12]
+        : notationPreference;
+    console.log("notation", notation);
+    props.transposeSetter({ semitones, notation });
+  };
 
   const onClick = (event: React.MouseEvent<SVGSVGElement>) => {
     const target = event.target as SVGSVGElement;
@@ -94,35 +137,26 @@ const Transposer = (props: {
       const fieldNumber =
         Number.parseInt(target.classList.item(1)!.slice(1), 10) - rotKey;
       const increment = ((fieldNumber + 6) % 12) - 6;
-      const rot = rotation + increment;
-      setRotation(rot);
-
-      props.transposeSetter(rotToTranspose(rot));
+      set(rotation + increment);
       return;
     }
     if (target.parentElement?.id == "down") {
       event.stopPropagation();
-      const rot = (rotation + 5) % 12;
-      setRotation(rot);
-      props.transposeSetter(rotToTranspose(rot));
+      set((rotation + 5) % 12);
       return;
     }
     if (target.parentElement?.id == "up") {
       event.stopPropagation();
-      const rot = (rotation + 7) % 12;
-      setRotation(rot);
-      props.transposeSetter(rotToTranspose(rot));
-      return;
+      set((rotation + 7) % 12);
     }
     if (target.parentElement?.id == "reset") {
       event.stopPropagation();
-      setRotation(0);
-      props.transposeSetter(rotToTranspose(0));
+      set(0);
       return;
     }
   };
   return (
-    <div id="transposer" ref={ref} onClick={props.close}>
+    <div id="transposer" onClick={props.close}>
       <svg
         onClick={onClick}
         style={style}

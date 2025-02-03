@@ -50,8 +50,11 @@ export default class Note {
     return new Note(value, notation);
   }
 
-  public transposed(semitones: number) {
-    return new Note((this.value + 12 + (semitones % 12)) % 12, this.notation);
+  public transposed(semitones: number, notation?: Notation) {
+    return new Note(
+      (this.value + 12 + (semitones % 12)) % 12,
+      notation ?? this.notation,
+    );
   }
 
   public toString() {

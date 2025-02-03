@@ -1,22 +1,24 @@
 import * as React from "react";
+import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import parse, { DOMNode, domToReact } from "html-react-parser";
 import { Song } from "../api/collections";
 import { Abcjs } from "./Abcjs";
 import Kord from "./Kord";
 import { userMayWrite } from "../api/helpers";
 import * as DH from "domhandler";
-import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import { Tablature } from "abcjs";
 import Chord_ from "/imports/api/libchr0d/chord";
 import classNames from "classnames";
 import { YtInter } from "./YtInter";
 import { VideoContext } from "/imports/ui/App";
+import { Notation } from "/imports/api/libchr0d/note";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
 
 type SheetProps = {
   song: Song;
-  transpose?: number;
+  transposeSemitones?: number;
+  notationPreference: Notation;
   hideChords?: boolean;
   processVdom?: (vdom: any) => any;
   style?: CSSProperties;
@@ -24,7 +26,8 @@ type SheetProps = {
 };
 const Sheet = ({
   song,
-  transpose,
+  notationPreference,
+  transposeSemitones,
   hideChords,
   processVdom,
   style,
@@ -44,7 +47,6 @@ const Sheet = ({
     if (!(span instanceof HTMLSpanElement)) return;
     const selectedLine = Number.parseInt(span.dataset.lineCnt ?? "", 10);
     if (selectedLine) {
-      console.log("cicl");
       setSelectedLine({ selectedLine });
     }
   };
@@ -61,8 +63,6 @@ const Sheet = ({
 
   const rmd_html = song.getHtml();
 
-  const key_tag = song.getTag("tonart");
-
   // Postprocessing on each node from the dom-to-react parser
   const populateReactNodes = (node: DOMNode): DomOut => {
     if (!(node instanceof DH.Element && node.attribs)) return node;
@@ -74,7 +74,10 @@ const Sheet = ({
       let chord_ = null;
       if ("data-chord" in node.attribs) {
         const chord = node.attribs["data-chord"];
-        const t = Chord_.from(chord)?.transposed(transpose ?? 0);
+        const t = Chord_.from(chord)?.transposed(
+          transposeSemitones ?? 0,
+          notationPreference,
+        );
         if (t === undefined) {
           chord_ = <span className="before">{chord}</span>;
         } else {
@@ -130,7 +133,7 @@ const Sheet = ({
         return (
           <Abcjs
             abcNotation={abc}
-            params={{ visualTranspose: transpose, tablature }}
+            params={{ visualTranspose: transposeSemitones, tablature }}
           />
         );
       }
