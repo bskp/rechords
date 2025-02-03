@@ -6,19 +6,19 @@ import "./transposerStyle.less";
 import Chord_ from "/imports/api/libchr0d/chord";
 import { Notation } from "/imports/api/libchr0d/note";
 
-const valueToNotation: Notation[] = [
-  "sharp",
-  "sharp",
-  "sharp",
-  "bee",
-  "bee",
-  "sharp",
-  "sharp",
-  "sharp",
-  "sharp",
-  "sharp",
-  "bee",
-  "bee",
+const keyValueToNotation: Notation[] = [
+  "bee", // C
+  "sharp", // C#
+  "sharp", // D
+  "bee", // Eb
+  "sharp", // E
+  "bee", // F
+  "sharp", // F#
+  "sharp", // G
+  "sharp", // G#
+  "sharp", // A
+  "bee", // Bb
+  "sharp", // B
 ];
 
 export const rotToTranspose = (rotation: number) =>
@@ -54,21 +54,6 @@ const guessKeyFromChordCounts = (chordCounts: [string, number][]) => {
       const value = ((c?.key.value ?? 0) + (isMinor ? 3 : 0)) % 12;
       return { keyValue: value, isMinor };
     })[0];
-};
-
-const checkForExplicitNotation: (chords: Chord_[]) => Notation = (chords) => {
-  const explicitNotationOccurences = chords
-    .map((c) => c.key.notation)
-    .filter((n) => n !== "undetermined");
-
-  if (explicitNotationOccurences.length == 0) {
-    return "undetermined";
-  }
-
-  return explicitNotationOccurences.filter((n) => n === "bee").length >
-    explicitNotationOccurences.length / 2
-    ? "bee"
-    : "sharp";
 };
 
 const Transposer = (props: {
@@ -108,8 +93,6 @@ const Transposer = (props: {
         };
   const rotKey = transposeToRotation(keyValue ?? 0);
 
-  const notationPreference = checkForExplicitNotation(props.chords);
-
   const semiTones = props.transpose ?? 0;
   const [rotation, setRotation] = React.useState<number>(
     transposeToRotation(semiTones),
@@ -122,10 +105,7 @@ const Transposer = (props: {
     setRotation(rotation);
     const semitones = rotToTranspose(rotation);
     const notation =
-      notationPreference === "undetermined"
-        ? valueToNotation[(((keyValue + semitones) % 12) + 12) % 12]
-        : notationPreference;
-    console.log("notation", notation);
+      keyValueToNotation[(((keyValue + semitones) % 12) + 12) % 12];
     props.transposeSetter({ semitones, notation });
   };
 
