@@ -22,7 +22,8 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
   const [cols, setCols] = React.useState(2);
   const [scale, setScale] = React.useState(100);
   const [lineHeight, setLineHeight] = React.useState(1.35);
-  const [transpose, setTranspose] = React.useState(initial_transpose());
+  const [transposeSemitones, setTransposeSemitones] =
+    React.useState(initial_transpose());
   const [hideChords, setHideChords] = React.useState(false);
   const [hideFrets, setHideFrets] = React.useState(false);
 
@@ -50,7 +51,10 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
         <div className={"content" + colMode} id="chordsheet">
           <Sheet
             song={song}
-            transpose={transpose}
+            transpose={{
+              semitones: transposeSemitones,
+              notation: "undetermined",
+            }}
             hideChords={hideChords}
             style={sheetStyle}
           />

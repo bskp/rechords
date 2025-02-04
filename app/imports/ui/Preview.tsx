@@ -519,11 +519,7 @@ export default (props: P) => {
       "span.line",
     ) as HTMLSpanElement;
 
-    console.log(line);
     if (line) {
-      const cl = line.getBoundingClientRect();
-      console.log(cl);
-      // setCoords({ x: cl.left, y: cl.top });
       setCoords({
         x: line.offsetLeft,
         y: line.offsetTop,
