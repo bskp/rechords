@@ -3,37 +3,12 @@ import "rc-slider/assets/index.css";
 import "rc-tooltip/assets/bootstrap.css";
 
 import "./transposerStyle.less";
-import Chord_ from "/imports/api/libchr0d/chord";
+import Chord from "/imports/api/libchr0d/chord";
 import { Notation } from "/imports/api/libchr0d/note";
-
-const majorKeyValueToNotation: Notation[] = [
-  "bee", // C
-  "sharp", // C#
-  "sharp", // D
-  "bee", // Eb
-  "sharp", // E
-  "bee", // F
-  "sharp", // F#
-  "sharp", // G
-  "sharp", // G#
-  "sharp", // A
-  "bee", // Bb
-  "sharp", // B
-];
-const minorKeyValueToNotation: Notation[] = [
-  "bee", // Cm
-  "sharp", // C#m
-  "bee", // Dm
-  "bee", // Ebm
-  "sharp", // Em
-  "bee", // Fm
-  "sharp", // F#m
-  "bee", // Gm
-  "sharp", // G#m
-  "sharp", // Am
-  "bee", // Bbm
-  "sharp", // Bm
-];
+import {
+  guessKeyFromChordCounts,
+  notationPreferenceFor,
+} from "/imports/api/libchr0d/helpers";
 
 export const rotToTranspose = (rotation: number) =>
   7 * rotation - 12 * Math.floor(rotation / 2);
@@ -41,45 +16,18 @@ export const rotToTranspose = (rotation: number) =>
 export const transposeToRotation = (semitones: number) =>
   semitones - (semitones % 2 == 0 ? 0 : Math.sign(semitones) * 6);
 
-const guessKeyFromChordCounts = (chordCounts: [string, number][]) => {
-  const votes: { [key: string]: number } = {};
-  const bump = (key: string, increment: number) => {
-    votes[key] = (votes[key] ?? 0) + Math.sqrt(increment);
-  };
-  chordCounts.forEach(([chord, count]) => {
-    const quality = chord[0];
-    const valuestr = chord.slice(1);
-    const value = parseInt(valuestr, 10);
-    const rot = transposeToRotation(value);
-    const left = quality + (((rotToTranspose(rot - 1) % 12) + 12) % 12);
-    const right = quality + (((rotToTranspose(rot + 1) % 12) + 12) % 12);
-    const parallel = quality === "m" ? "M" : "m" + value;
-    bump(left, count);
-    bump(right, count);
-    bump(parallel, count);
-    bump(chord, 2 * count);
-  });
-  return Object.entries(votes)
-    .sort(([_, a], [__, b]) => b - a)
-    .map(([chord, votes]) => {
-      const c = Chord_.fromCode(chord);
-      //console.log(`${c}: ${votes}`);
-      const isMinor = c?.quality == "minor";
-      const value = ((c?.key.value ?? 0) + (isMinor ? 3 : 0)) % 12;
-      return { keyValue: value, isMinor };
-    })[0];
+export type Transpose = {
+  semitones: number | undefined;
+  notation: Notation;
 };
 
 const Transposer = (props: {
-  transposeSetter: (transpose: {
-    semitones: number;
-    notation: Notation;
-  }) => void;
+  transposeSetter: (transpose: Transpose) => void;
   transpose: number | undefined;
   onDoubleClick: MouseEventHandler;
-  chords: Chord_[];
+  chords: Chord[];
   close?: () => void;
-  keyHint?: Chord_ | undefined;
+  keyHint?: Chord | undefined;
 }) => {
   const counts: any = {};
   props.chords
@@ -120,10 +68,7 @@ const Transposer = (props: {
     const semitones = rotToTranspose(rotation);
     const targetKeyValue =
       (((keyValue + semitones - (isMinor ? 3 : 0)) % 12) + 12) % 12;
-    const notation = isMinor
-      ? minorKeyValueToNotation[targetKeyValue]
-      : majorKeyValueToNotation[targetKeyValue];
-    console.log("tkv", targetKeyValue);
+    const notation = notationPreferenceFor(targetKeyValue, isMinor);
     props.transposeSetter({ semitones, notation });
   };
 

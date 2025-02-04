@@ -1,20 +1,20 @@
 import { describe, it } from "node:test";
 import assert from "assert";
 import Note from "./note";
-import Chord_ from "./chord";
+import Chord from "./chord";
 
 describe("Chord", () => {
   it("should parse B7 correctly", () => {
     assert.deepEqual(
-      Chord_.from("(B7)"),
-      new Chord_(new Note(11, "undetermined"), "major", "7", true, undefined),
+      Chord.from("(B7)"),
+      new Chord(new Note(11, "undetermined"), "major", "7", true, undefined),
     );
   });
 
   it("should parse C/B correctly", () => {
     assert.deepEqual(
-      Chord_.from("C/B"),
-      new Chord_(
+      Chord.from("C/B"),
+      new Chord(
         new Note(0, "undetermined"),
         "major",
         "",
@@ -25,7 +25,7 @@ describe("Chord", () => {
   });
 
   it("should render slash chords properly", () => {
-    assert.equal(Chord_.from("C/B")?.toStringTensionsAndSlash(), "/B");
+    assert.equal(Chord.from("C/B")?.toStringTensionsAndSlash(), "/B");
   });
 });
 

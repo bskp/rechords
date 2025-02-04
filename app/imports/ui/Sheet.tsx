@@ -7,18 +7,17 @@ import Kord from "./Kord";
 import { userMayWrite } from "../api/helpers";
 import * as DH from "domhandler";
 import { Tablature } from "abcjs";
-import Chord_ from "/imports/api/libchr0d/chord";
+import Chord from "/imports/api/libchr0d/chord";
 import classNames from "classnames";
 import { YtInter } from "./YtInter";
 import { VideoContext } from "/imports/ui/App";
-import { Notation } from "/imports/api/libchr0d/note";
+import { Transpose } from "/imports/ui/Transposer";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
 
 type SheetProps = {
   song: Song;
-  transposeSemitones?: number;
-  notationPreference: Notation;
+  transpose: Transpose;
   hideChords?: boolean;
   processVdom?: (vdom: any) => any;
   style?: CSSProperties;
@@ -26,8 +25,7 @@ type SheetProps = {
 };
 const Sheet = ({
   song,
-  notationPreference,
-  transposeSemitones,
+  transpose,
   hideChords,
   processVdom,
   style,
@@ -74,9 +72,9 @@ const Sheet = ({
       let chord_ = null;
       if ("data-chord" in node.attribs) {
         const chord = node.attribs["data-chord"];
-        const t = Chord_.from(chord)?.transposed(
-          transposeSemitones ?? 0,
-          notationPreference,
+        const t = Chord.from(chord)?.transposed(
+          transpose.semitones ?? 0,
+          transpose.notation,
         );
         if (t === undefined) {
           chord_ = <span className="before">{chord}</span>;
@@ -133,7 +131,7 @@ const Sheet = ({
         return (
           <Abcjs
             abcNotation={abc}
-            params={{ visualTranspose: transposeSemitones, tablature }}
+            params={{ visualTranspose: transpose.semitones, tablature }}
           />
         );
       }
@@ -142,7 +140,7 @@ const Sheet = ({
     // Fret diagrams
     else if (node.name == "abbr") {
       const chord = (node.firstChild as DH.DataNode).data;
-      const c = Chord_.from(chord);
+      const c = Chord.from(chord);
 
       return (
         <span className="chord-container">

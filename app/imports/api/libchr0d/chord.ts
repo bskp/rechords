@@ -4,7 +4,7 @@ export type Quality = "major" | "minor"; // | "diminished" | "augmented";
 
 const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);
 
-export default class Chord_ {
+export default class Chord {
   public constructor(
     public readonly key: Note,
     public readonly quality: Quality,
@@ -13,17 +13,17 @@ export default class Chord_ {
     public readonly slash?: Note,
   ) {}
 
-  public static fromCode(code: string): Chord_ | undefined {
+  public static fromCode(code: string): Chord | undefined {
     if (code.length !== 2) {
       return undefined;
     }
     const [m, valueStr] = code;
     const value = parseInt(valueStr, 10);
 
-    return new Chord_(new Note(value), m === "M" ? "major" : "minor");
+    return new Chord(new Note(value), m === "M" ? "major" : "minor");
   }
 
-  public static from(chordString: string | undefined): Chord_ | undefined {
+  public static from(chordString: string | undefined): Chord | undefined {
     if (chordString === undefined) {
       return undefined;
     }
@@ -57,11 +57,11 @@ export default class Chord_ {
     const key = Note.from(keystr);
     if (key === undefined) return undefined;
 
-    return new Chord_(key, quality, tensions, isOptional, Note.from(slash));
+    return new Chord(key, quality, tensions, isOptional, Note.from(slash));
   }
 
   public transposed(semitones: number, notation?: Notation) {
-    return new Chord_(
+    return new Chord(
       this.key.transposed(semitones, notation),
       this.quality,
       this.tensions,

@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { NavLink, useHistory } from "react-router-dom";
-import Transposer from "./Transposer";
-import Chord_ from "../api/libchr0d/chord";
+import Transposer, { Transpose } from "./Transposer";
+import Chord from "../api/libchr0d/chord";
 import { Song } from "../api/collections";
 import Drawer from "./Drawer";
 import {
@@ -16,17 +16,13 @@ import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
-import { Notation } from "/imports/api/libchr0d/note";
 
 interface ViewerProps {
   song: Song;
 }
 
 const Viewer: React.FC<ViewerProps> = ({ song }) => {
-  const [transpose, setTranspose] = useState<{
-    semitones: number | undefined;
-    notation: Notation;
-  }>({
+  const [transpose, setTranspose] = useState<Transpose>({
     semitones: getTransposeFromTag(),
     notation: "undetermined",
   });
@@ -148,6 +144,10 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const { setShowMenu } = useContext(MenuContext);
 
+  const chords = song
+    .getChords()
+    .map((chord) => Chord.from(chord))
+    .filter((chord: Chord | undefined): chord is Chord => chord !== undefined);
   return (
     <VideoContext.Provider
       value={{
@@ -161,12 +161,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         id="chordsheet"
         onContextMenu={handleContextMenu}
       >
-        <Sheet
-          song={song}
-          transposeSemitones={transpose.semitones}
-          notationPreference={transpose.notation}
-          hideChords={!showChords}
-        />
+        <Sheet song={song} transpose={transpose} hideChords={!showChords} />
         {footer}
       </div>
       <aside id="rightSettings">
@@ -182,22 +177,16 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
             <ReactSVG src="/svg/yt.svg" />
           </Button>
         )}
-        {showTransposer ? (
+        {showTransposer && (
           <Transposer
             onDoubleClick={() => setShowChords((prev) => !prev)}
             transposeSetter={setTranspose}
             transpose={transpose.semitones}
-            keyHint={Chord_.from(keyTag)}
+            keyHint={Chord.from(keyTag)}
             close={() => setShowTransposer(false)}
-            chords={song
-              .getChords()
-              .map((chord) => Chord_.from(chord))
-              .filter(
-                (chord: Chord_ | undefined): chord is Chord_ =>
-                  chord !== undefined,
-              )}
+            chords={chords}
           />
-        ) : null}
+        )}
         <Button onClick={() => setShowTransposer(true)}>
           <ReactSVG src="/svg/transposer.svg" />
         </Button>
