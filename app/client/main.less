@@ -53,13 +53,8 @@ textarea {
 // Base Layout
 
 html {
-  height: 100%;
   width: 100%;
   background-color: var(--bg-sheet);
-}
-
-.noscroll {
-  overflow: hidden;
 }
 
 body {
@@ -94,16 +89,17 @@ body {
   background-color: var(--bg-sheet);
   .phone({
     flex-flow: row wrap;
-    overflow-y: scroll;
   });
+}
+
+.noScroll {
+  overflow: hidden !important;
 }
 
 // Generic content pages
 .content {
   box-sizing: border-box;
   min-height: 100vh;
-
-  .scroll-vertical;
 
   width: 100%;
   padding: 1.5em 2em;
@@ -116,6 +112,7 @@ body {
 
   .phone({
     padding: 2em 1em !important;
+    height: 100vh;  // prevents scrolling when covered by menu
   });
 
   .sd-header {
