@@ -26,6 +26,7 @@ import Printer from "/imports/ui/Printer";
 import { Button } from "/imports/ui/Button";
 import { ReactSVG } from "react-svg";
 import { useContext } from "react";
+import classnames from "classnames";
 
 export const ThemeContext = React.createContext<{
   toggleTheme: () => void;
@@ -200,7 +201,10 @@ class App extends React.Component<AppProps, AppStates> {
           }}
         >
           <BrowserRouter>
-            <div id="body">
+            <div
+              id="body"
+              className={classnames({ noScroll: this.state.showMenu })}
+            >
               <List
                 songs={this.props.songs}
                 key={list_key}
