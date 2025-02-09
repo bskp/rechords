@@ -13,35 +13,35 @@ a.iconbutton {
   }
 
   svg {
-    width: 4em;
-    .applySchemeColors;
-  }
+    width: 1.8em;
+    font-size: 2.4em;
 
-  &.phoneOnly {
-    .not-phone({
-      display: none;
-    });
+    .applySchemeColors;
+
+    &[fill] {
+      // Selects Material Design Icons only
+      fill: var(--gray-light);
+      padding: 0.3em 0;
+
+      &:hover {
+        fill: var(--accent);
+      }
+    }
   }
 }
 
 #rightSettings {
   height: 100%;
   position: fixed;
-  right: @drawer-closed;
-  .phone({
-    right: 0;
-  });
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-between;
 
-  a:nth-last-child(2) {
+  a:last-child {
     flex-grow: 1;
-  }
-
-  &:last-child {
-    // If no "edit"-Aside is shown…
-    right: 0; // …pull it flush to the right edge.
+    display: flex;
+    align-items: end;
   }
 }

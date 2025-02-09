@@ -1,6 +1,7 @@
 import { generatePath } from "react-router-dom";
 import { Song } from "./collections";
 import { History } from "history";
+import { Meteor } from "meteor/meteor";
 
 export const userMayWrite = () => {
   const role = Meteor.user()?.profile?.role;
