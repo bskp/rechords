@@ -5,10 +5,11 @@
   position: fixed;
   top: 0;
   left: @drawer-open;
-  right: @drawer-closed;
+  right: 0;
   bottom: 0;
   background-color: color-mix(in hsl, var(--bg-list), transparent 70%);
   backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 
   .phone({
     left: 0;

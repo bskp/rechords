@@ -1,13 +1,11 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { NavLink, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Transposer, { Transpose } from "./Transposer";
 import Chord from "../api/libchr0d/chord";
 import { Song } from "../api/collections";
-import Drawer from "./Drawer";
 import {
   currentFocusOnInput,
   navigateTo,
-  routePath,
   userMayWrite,
   View,
 } from "../api/helpers";
@@ -16,6 +14,7 @@ import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
+import { MdEdit } from "react-icons/md";
 
 interface ViewerProps {
   song: Song;
@@ -127,21 +126,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const keyTag = song.getTag("tonart");
 
-  const drawer = userMayWrite() ? (
-    <Drawer className="source-colors" onClick={handleContextMenu}>
-      <h1>bearbeiten</h1>
-      <p>Schneller:&nbsp;Rechtsklick!</p>
-    </Drawer>
-  ) : null;
-
-  const footer = userMayWrite() ? (
-    <div className="mobile-footer">
-      <NavLink to={routePath(View.edit, song)} id="edit">
-        Bearbeiten…
-      </NavLink>
-    </div>
-  ) : null;
-
   const { setShowMenu } = useContext(MenuContext);
 
   const chords = song
@@ -162,7 +146,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         onContextMenu={handleContextMenu}
       >
         <Sheet song={song} transpose={transpose} hideChords={!showChords} />
-        {footer}
       </div>
       <aside id="rightSettings">
         <Button onClick={() => setShowMenu(true)} phoneOnly>
@@ -190,15 +173,23 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         <Button onClick={() => setShowTransposer(true)}>
           <ReactSVG src="/svg/transposer.svg" />
         </Button>
+        {userMayWrite() && (
+          <Button onClick={handleContextMenu} hideOnPhone>
+            <MdEdit />
+          </Button>
+        )}
         <Button onClick={toggleAutoScroll}>
           {autoScroll ? (
             <ReactSVG src="/svg/conveyor_active.svg" />
           ) : (
-            <ReactSVG src="/svg/conveyor.svg" />
+            <ReactSVG
+              src="/svg/conveyor.svg"
+              data-tooltip-content="Auto-Scroll"
+              data-tooltip-id="tt"
+            />
           )}
         </Button>
       </aside>
-      {drawer}
     </VideoContext.Provider>
   );
 };
