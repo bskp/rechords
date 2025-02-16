@@ -30,6 +30,7 @@ export const options: XSS.IFilterXSSOptions = {
     pre: [],
     img: ["src", "alt"],
     abbr: ["class", "title", "data-fingers"],
+    blockquote: [],
   },
 };
 

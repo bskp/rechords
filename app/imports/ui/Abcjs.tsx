@@ -20,6 +20,10 @@ const defaults: AbcVisualParams & AbcTabParams = {
   paddingright: 0,
   paddingleft: 0,
   viewportHorizontal: true,
+  scrollHorizontal: true,
+  jazzchords: true,
+  selectTypes: false,
+  responsive: undefined,
   format: {
     gchordfont: bold,
     annotationfont: bold,
