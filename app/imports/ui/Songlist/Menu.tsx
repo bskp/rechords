@@ -121,7 +121,7 @@ export function Menu(props: {
                 props.filterChanged(event.currentTarget.value);
               }}
               ref={(r) => {
-                r && r.focus();
+                hasFocus && r && r.focus();
               }}
             />
             <MdClose
