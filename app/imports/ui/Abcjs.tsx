@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import abcjs, { AbcVisualParams } from "abcjs";
 
 const regular = "Roboto 12";
@@ -21,6 +21,8 @@ const defaults: AbcVisualParams & AbcTabParams = {
   paddingleft: 0,
   viewportHorizontal: true,
   scrollHorizontal: true,
+  staffwidth: 600,
+  expandToWidest: true,
   jazzchords: true,
   selectTypes: false,
   responsive: undefined,
@@ -50,17 +52,20 @@ export const Abcjs = (props: {
   params: AbcVisualParams;
 }) => {
   const target = "abcjs-result-" + Math.round(100000 * Math.random());
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    console.log("width", ref.current?.clientWidth);
     abcjs.renderAbc(target, props.abcNotation, {
       ...props.params,
       ...defaults,
+      staffwidth: (ref.current?.clientWidth ?? 0) - 8,
     });
   });
 
   return (
     <div className="abc-notation">
-      <div id={target} style={{ width: "100%" }} />
+      <div id={target} ref={ref} />
     </div>
   );
 };

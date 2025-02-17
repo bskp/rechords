@@ -151,10 +151,6 @@
   }
 
   .abc-notation {
-    .phone({
-      margin-right: -1em;
-    });
-
     svg {
       .abcjs-note,
       .abcjs-slur,
@@ -201,16 +197,24 @@
         fill: var(--accent);
         font-size: 18px;
         font-weight: 600;
+        font-family: "Shantell Sans", sans-serif;
+
+        tspan tspan {
+          // tensions & slash
+          font-weight: 900;
+        }
       }
     }
+  }
+
+  p:has(> .chord-container) {
+    display: flex;
   }
 
   .chord-container {
     display: flex;
     flex-direction: column-reverse;
     text-align: center;
-
-    float: left;
 
     margin-right: 2em;
     margin-bottom: 2em;
@@ -237,7 +241,7 @@
       font-size: 0.7em;
       letter-spacing: 0.02em;
       padding-left: 0.1em;
-      font-weight: 700;
+      font-weight: 900;
     }
   }
 
