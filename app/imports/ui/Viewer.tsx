@@ -15,6 +15,7 @@ import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
 import { MdEdit } from "react-icons/md";
+import { usePinch } from "@use-gesture/react";
 
 interface ViewerProps {
   song: Song;
@@ -29,6 +30,22 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const [showTransposer, setShowTransposer] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
   const [isVideoActive, setIsVideoActive] = useState<boolean>(false);
+  const [textZoom, setTextZoom] = useState<number>(1);
+
+  const ref = React.useRef<HTMLDivElement>(null);
+  usePinch(
+    ({ offset, memo }) => {
+      const [scale] = offset;
+      const initialZoom = memo ?? 1.0;
+      const currentZoom = initialZoom * (0.5 + scale * 0.5);
+      setTextZoom(currentZoom);
+      return initialZoom;
+    },
+    {
+      // @ts-ignore
+      target: ref.current,
+    },
+  );
 
   const history = useHistory();
 
@@ -143,6 +160,8 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
       <div
         className="content"
         id="chordsheet"
+        ref={ref}
+        style={{ fontSize: textZoom + "em" }}
         onContextMenu={handleContextMenu}
       >
         <Sheet song={song} transpose={transpose} hideChords={!showChords} />
