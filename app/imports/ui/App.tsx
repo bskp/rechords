@@ -115,7 +115,7 @@ interface AppProps extends RouteComponentProps {
   toggleTheme: () => void;
 }
 
-function MenuBurger() {
+const MenuBurger = () => {
   const { setShowMenu } = useContext(MenuContext);
   return (
     <aside id="rightSettings">
@@ -124,7 +124,7 @@ function MenuBurger() {
       </Button>
     </aside>
   );
-}
+};
 
 // App component - represents the whole app
 class App extends React.Component<AppProps, AppStates> {

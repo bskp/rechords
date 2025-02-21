@@ -9,10 +9,10 @@ interface TrackingDocumentTitleProps {
   track_as?: string;
 }
 
-function TrackingDocumentTitle({
+const TrackingDocumentTitle = ({
   title,
   track_as,
-}: TrackingDocumentTitleProps) {
+}: TrackingDocumentTitleProps) => {
   const location = track_as || useLocation().pathname;
   const { trackPageView } = useMatomo();
   React.useEffect(() => {
@@ -31,6 +31,6 @@ function TrackingDocumentTitle({
   }, [location]);
 
   return <DocumentTitle title={title} />;
-}
+};
 
 export default TrackingDocumentTitle;
