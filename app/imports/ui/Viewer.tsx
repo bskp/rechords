@@ -15,6 +15,7 @@ import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
 import { MdEdit } from "react-icons/md";
+import { usePinch } from "@use-gesture/react";
 
 interface ViewerProps {
   song: Song;
@@ -29,6 +30,16 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const [showTransposer, setShowTransposer] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
   const [isVideoActive, setIsVideoActive] = useState<boolean>(false);
+  const [textZoom, setTextZoom] = useState<number>(1);
+
+  const bind = usePinch((state) => {
+    const { offset, memo } = state;
+    const initialZoom = memo ?? 1.0;
+    const [scale] = offset;
+    const currentZoom = initialZoom * scale ** 0.1;
+    setTextZoom(currentZoom);
+    return initialZoom;
+  }, {});
 
   const history = useHistory();
 
@@ -53,7 +64,14 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     });
     stopAutoScroll();
     setIsVideoActive(false);
-    return () => stopAutoScroll();
+    const preventDefault = (e) => e.preventDefault();
+    document.addEventListener("gesturestart", preventDefault);
+    document.addEventListener("gesturechange", preventDefault);
+    return () => {
+      stopAutoScroll();
+      document.removeEventListener("gesturestart", preventDefault);
+      document.removeEventListener("gesturechange", preventDefault);
+    };
   }, [song]);
 
   const globalKeyHandler = (e: KeyboardEvent) => {
@@ -141,8 +159,10 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
       }}
     >
       <div
+        {...bind()}
         className="content"
         id="chordsheet"
+        style={{ fontSize: textZoom + "em" }}
         onContextMenu={handleContextMenu}
       >
         <Sheet song={song} transpose={transpose} hideChords={!showChords} />
@@ -162,7 +182,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         )}
         {showTransposer && (
           <Transposer
-            onDoubleClick={() => setShowChords((prev) => !prev)}
             transposeSetter={setTranspose}
             transpose={transpose.semitones}
             keyHint={Chord.from(keyTag)}

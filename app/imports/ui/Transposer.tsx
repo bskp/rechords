@@ -24,7 +24,6 @@ export type Transpose = {
 const Transposer = (props: {
   transposeSetter: (transpose: Transpose) => void;
   transpose: number | undefined;
-  onDoubleClick: MouseEventHandler;
   chords: Chord[];
   close?: () => void;
   keyHint?: Chord | undefined;
