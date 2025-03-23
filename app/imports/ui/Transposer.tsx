@@ -28,12 +28,9 @@ const Transposer = (props: {
   close?: () => void;
   keyHint?: Chord | undefined;
 }) => {
-  const counts: any = {};
-  props.chords
-    .map((c) => c.asCode())
-    .forEach((code) => (counts[code] = counts[code] ? counts[code] + 1 : 1));
+  const counts = countChords(props.chords);
 
-  let chordCounts = Object.entries(counts) as unknown as [string, number][];
+  let chordCounts = Object.entries(counts);
   const normalization = Math.max(...chordCounts.map(([_code, count]) => count));
 
   const style: any = {};
@@ -326,3 +323,12 @@ const Transposer = (props: {
 };
 
 export default Transposer;
+
+export function countChords(chords: Chord[]) {
+  const counts: Record<string,number> = {};
+  chords
+    .map((c) => c.asCode())
+    .forEach((code) => (counts[code] = counts[code] ? counts[code] + 1 : 1));
+  return counts;
+}
+

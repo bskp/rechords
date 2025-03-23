@@ -27,6 +27,7 @@ import { Button } from "/imports/ui/Button";
 import { ReactSVG } from "react-svg";
 import { useContext } from "react";
 import classnames from "classnames";
+import { PdfViewer } from "./PdfViewer/PdfViewer";
 
 export const ThemeContext = React.createContext<{
   toggleTheme: () => void;
@@ -243,6 +244,27 @@ class App extends React.Component<AppProps, AppStates> {
                             }
                           />
                           <Printer song={song} {...routerProps} />
+                        </>
+                      );
+                    }}
+                  />
+                  <Route
+                    path="/pdf/:author/:title"
+                    render={(routerProps) => {
+                      const song = getSong(routerProps.match.params);
+
+                      if (song === undefined) {
+                        return nA404;
+                      }
+
+                      return (
+                        <>
+                          <TrackingDocumentTitle
+                            title={
+                              "Hölibu | " + song.author + ": " + song.title
+                            }
+                          />
+                          <PdfViewer song={song} {...routerProps} />
                         </>
                       );
                     }}

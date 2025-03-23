@@ -1,9 +1,11 @@
-import { ParsedSong } from "/imports/api/collections";
 import { ChordPdfJs } from "/imports/api/comfyPdfJs";
-import ChrodLib from "/imports/api/libchrod";
 import { refPrefix } from "/imports/api/showdown-rechords";
 import { IPdfViewerSettings } from "../PdfSettings";
-import { extractOrGuessKey } from "/imports/api/helpers";
+import { guessKeyFromChordCounts } from "/imports/api/libchr0d/helpers";
+import { Song } from "/imports/api/collections";
+import Chord from "/imports/api/libchr0d/chord";
+import { parseChords } from "../../Viewer";
+import { countChords, countChords } from "../../Transposer";
 
 /**
  *
@@ -13,11 +15,11 @@ import { extractOrGuessKey } from "/imports/api/helpers";
  * @returns URL of the generated Blob
  */
 export async function jsPdfGenerator(
-  song: ParsedSong,
+  song: Song,
   settings: IPdfViewerSettings,
-  debug = false,
+  debug = false
 ): Promise<string> {
-  if (!song) return;
+  if (!song) return "";
 
   /** font sizes  */
   const fos = settings.sizes;
@@ -29,8 +31,9 @@ export async function jsPdfGenerator(
   // this PDF rendering  will obliviate
   const mdHtml = new DOMParser().parseFromString(song.getHtml(), "text/html");
 
-  const libChrod = new ChrodLib();
-  const key = extractOrGuessKey(song);
+  const chords = parseChords(song.getChords());
+  const counts = countChords(chords);
+  const key = guessKeyFromChordCounts(Object.entries(counts));
 
   const sections_ = mdHtml.body.children;
 
@@ -80,19 +83,19 @@ export async function jsPdfGenerator(
       "/fonts/Shantell_Sans/static/ShantellSans-SemiBold.ttf",
       "Sh",
       "normal",
-      "light",
+      "light"
     ),
     cdoc.addFontXhr(
       "/fonts/Bricolage_Grotesque/static/BricolageGrotesque_Condensed-Regular.ttf",
       "Bric",
       "normal",
-      "regular",
+      "regular"
     ),
     cdoc.addFontXhr(
       "/fonts/Bricolage_Grotesque/static/BricolageGrotesque_Condensed-Bold.ttf",
       "Bric",
       "normal",
-      "bold",
+      "bold"
     ),
   ]);
 
@@ -118,7 +121,7 @@ export async function jsPdfGenerator(
       songTitle.textContent + " - " + songArtist.textContent,
       cdoc.margins.left + cdoc.mediaWidth() / 2,
       cdoc.maxY(),
-      { align: "center", baseline: "top" },
+      { align: "center", baseline: "top" }
     );
   }
   placeFooter();
@@ -173,12 +176,12 @@ export async function jsPdfGenerator(
     cdoc.setFont(...BricBold, fos.section);
     advance_y += cdoc.textLine(
       section.querySelector("h3")?.innerText,
-      simulate,
+      simulate
     ).h;
     cdoc.setFont(...Bric, fos.text);
     advance_y += cdoc.textLine(
       section.querySelector("h4")?.innerText,
-      simulate,
+      simulate
     ).h;
 
     const lines = section.querySelectorAll("span.line");
@@ -188,7 +191,7 @@ export async function jsPdfGenerator(
       const chords = line.querySelectorAll("i");
       const fragments = Array.from(chords).map((c) => ({
         text: c.innerText,
-        chord: libChrod.transpose(c.dataset?.chord, key, settings.transpose),
+        chord: Chord.from(c.dataset?.chord), // libChrod.transpose(c.dataset?.chord, key, settings.transpose),
       }));
       advance_y += cdoc.placeChords(fragments, colWidth, simulate).advance_y;
     }
@@ -197,7 +200,7 @@ export async function jsPdfGenerator(
       cdoc.setFont(...Bric, fos.text);
       const texts: string[] = cdoc.doc.splitTextToSize(
         section.textContent,
-        colWidth,
+        colWidth
       );
       advance_y += texts
         .map((l) => cdoc.textLine(l, simulate).h)
@@ -218,7 +221,7 @@ export async function jsPdfGenerator(
         i + " / " + total,
         cdoc.margins.left + cdoc.mediaWidth(),
         cdoc.maxY(),
-        { align: "right", baseline: "top" },
+        { align: "right", baseline: "top" }
       );
     }
   }
@@ -228,7 +231,7 @@ export async function jsPdfGenerator(
   // Save the Data
   const pdfData = doc.output("arraybuffer");
   const pdfBlobUrl = window.URL.createObjectURL(
-    new Blob([pdfData], { type: "application/pdf" }),
+    new Blob([pdfData], { type: "application/pdf" })
   );
   return pdfBlobUrl;
 

@@ -22,7 +22,7 @@ import {
 } from "react-icons/md";
 import { usePinch } from "@use-gesture/react";
 
-interface ViewerProps {
+export interface ViewerProps {
   song: Song;
 }
 
@@ -151,10 +151,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const { setShowMenu } = useContext(MenuContext);
 
-  const chords = song
-    .getChords()
-    .map((chord) => Chord.from(chord))
-    .filter((chord: Chord | undefined): chord is Chord => chord !== undefined);
+  const chords = parseChords(song.getChords());
   return (
     <VideoContext.Provider
       value={{
@@ -181,10 +178,10 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
             <MdEdit />
           </Button>
         )}
-        <Button onClick={()=> navigateTo(history, View.print, song) }>
+        <Button onClick={() => navigateTo(history, View.print, song)}>
           <MdPrint className="iconbutton" />
         </Button>
-        <Button onClick={()=> navigateTo(history, View.pdf, song) }>
+        <Button onClick={() => navigateTo(history, View.pdf, song)}>
           <MdPictureAsPdf />
         </Button>
         {!song.has_video ? null : isVideoActive ? (
@@ -225,3 +222,9 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 };
 
 export default Viewer;
+
+export function parseChords(chords: string[]) {
+  return chords
+    .map((chord) => Chord.from(chord))
+    .filter((chord: Chord | undefined): chord is Chord => chord !== undefined);
+}

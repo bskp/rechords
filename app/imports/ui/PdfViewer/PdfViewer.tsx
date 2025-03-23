@@ -1,12 +1,9 @@
 import * as React from "react";
-
 import { ViewerProps } from "../Viewer";
 import { PdfObject } from "./PdfObject";
 import { IPdfViewerSettings, PdfSettings } from "./PdfSettings";
 import { jsPdfGenerator } from "./PdfRenderer";
 import { debounce } from "underscore";
-import Drawer from "../Drawer";
-import { NavLink } from "react-router-dom";
 import "./PdfViewerStyle.less";
 import classNames from "classnames";
 export class PdfViewer extends React.Component<
@@ -63,9 +60,6 @@ export class PdfViewer extends React.Component<
     if (s._id) {
       return (
         <>
-          <Drawer open={true} id="pdfsettings" className={""}>
-            <NavLink to={`/view/${s.author_}/${s.title_}`}>x</NavLink>
-          </Drawer>
           <div
             className={classNames({
               pdfgrid: true,
