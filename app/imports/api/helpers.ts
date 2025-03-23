@@ -12,6 +12,7 @@ export enum View {
   view = "view",
   edit = "edit",
   print = "print",
+  pdf = "pdf",
   home = "/",
 }
 

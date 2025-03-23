@@ -14,7 +14,12 @@ import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
-import { MdEdit } from "react-icons/md";
+import {
+  MdEdit,
+  MdOutlinePictureAsPdf,
+  MdPictureAsPdf,
+  MdPrint,
+} from "react-icons/md";
 import { usePinch } from "@use-gesture/react";
 
 interface ViewerProps {
@@ -171,6 +176,17 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         <Button onClick={() => setShowMenu(true)} phoneOnly>
           <ReactSVG src="/svg/menu.svg" />
         </Button>
+        {userMayWrite() && (
+          <Button onClick={handleContextMenu} hideOnPhone>
+            <MdEdit />
+          </Button>
+        )}
+        <Button onClick={()=> navigateTo(history, View.print, song) }>
+          <MdPrint className="iconbutton" />
+        </Button>
+        <Button onClick={()=> navigateTo(history, View.pdf, song) }>
+          <MdPictureAsPdf />
+        </Button>
         {!song.has_video ? null : isVideoActive ? (
           <Button onClick={() => setIsVideoActive(false)}>
             <ReactSVG src="/svg/yt-close.svg" />
@@ -192,11 +208,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         <Button onClick={() => setShowTransposer(true)}>
           <ReactSVG src="/svg/transposer.svg" />
         </Button>
-        {userMayWrite() && (
-          <Button onClick={handleContextMenu} hideOnPhone>
-            <MdEdit />
-          </Button>
-        )}
         <Button onClick={toggleAutoScroll}>
           {autoScroll ? (
             <ReactSVG src="/svg/conveyor_active.svg" />
