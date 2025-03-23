@@ -3,7 +3,7 @@ import { ViewerProps } from "../Viewer";
 import { PdfObject } from "./PdfObject";
 import { IPdfViewerSettings, PdfSettings } from "./PdfSettings";
 import { jsPdfGenerator } from "./PdfRenderer";
-import { debounce } from "underscore";
+import { debounce, throttle } from "underscore";
 import "./PdfViewerStyle.less";
 import classNames from "classnames";
 export class PdfViewer extends React.Component<
@@ -38,7 +38,7 @@ export class PdfViewer extends React.Component<
     }, 2e3);
   };
 
-  _setSettings = debounce((a: IPdfViewerSettings) => this.generatePdf(a), 500);
+  _setSettings = throttle((a: IPdfViewerSettings) => this.generatePdf(a), 1000, {leading:true,trailing:true});
 
   setSettings = (settings: IPdfViewerSettings) => {
     if (this.first) {

@@ -1,11 +1,14 @@
 import { ChordPdfJs } from "/imports/api/comfyPdfJs";
 import { refPrefix } from "/imports/api/showdown-rechords";
 import { IPdfViewerSettings } from "../PdfSettings";
-import { guessKeyFromChordCounts } from "/imports/api/libchr0d/helpers";
+import {
+  guessKeyFromChordCounts,
+  notationPreferenceFor,
+} from "/imports/api/libchr0d/helpers";
 import { Song } from "/imports/api/collections";
 import Chord from "/imports/api/libchr0d/chord";
 import { parseChords } from "../../Viewer";
-import { countChords, countChords } from "../../Transposer";
+import { countChords } from "../../Transposer";
 
 /**
  *
@@ -31,9 +34,7 @@ export async function jsPdfGenerator(
   // this PDF rendering  will obliviate
   const mdHtml = new DOMParser().parseFromString(song.getHtml(), "text/html");
 
-  const chords = parseChords(song.getChords());
-  const counts = countChords(chords);
-  const key = guessKeyFromChordCounts(Object.entries(counts));
+  const notation = getNotation(song, settings.transpose);
 
   const sections_ = mdHtml.body.children;
 
@@ -191,7 +192,10 @@ export async function jsPdfGenerator(
       const chords = line.querySelectorAll("i");
       const fragments = Array.from(chords).map((c) => ({
         text: c.innerText,
-        chord: Chord.from(c.dataset?.chord), // libChrod.transpose(c.dataset?.chord, key, settings.transpose),
+        chord: Chord.from(c.dataset?.chord)?.transposed(
+          settings.transpose,
+          notation
+        ), // libChrod.transpose(c.dataset?.chord, key, settings.transpose),
       }));
       advance_y += cdoc.placeChords(fragments, colWidth, simulate).advance_y;
     }
@@ -239,3 +243,20 @@ export async function jsPdfGenerator(
     cdoc.cursor.x = x0;
   }
 }
+function getNotation(song: Song, semitones: number) {
+  const chords = parseChords(song.getChords());
+  const counts = countChords(chords);
+  const keyTag = song.getTag("tonart");
+  const keyHint = Chord.from(keyTag);
+  const { isMinor, keyValue } = keyHint === undefined
+    ? guessKeyFromChordCounts(Object.entries(counts))
+    : {
+      keyValue: (keyHint.key.value + (keyHint.quality === "minor" ? 3 : 0)) % 12,
+      isMinor: keyHint.quality === "minor",
+    };
+
+  const targetKeyValue = (((keyValue + semitones - (isMinor ? 3 : 0)) % 12) + 12) % 12;
+  const notation = notationPreferenceFor(targetKeyValue, isMinor);
+  return notation;
+}
+
