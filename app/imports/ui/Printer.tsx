@@ -16,14 +16,14 @@ import Transposer, { Transpose } from "./Transposer";
 import { bool } from "prop-types";
 import Chord from "../api/libchr0d/chord";
 import { getTransposeFromTag, parseChords } from "./Viewer";
+import { Notation } from "../api/libchr0d/note";
+import { SliderWithInput } from "./PdfViewer/SliderWithInput";
 
 type PrinterProps = {
   song: Song;
 };
 
 const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
-  
-
   const [cols, setCols] = React.useState(2);
   const [scale, setScale] = React.useState(100);
   const [lineHeight, setLineHeight] = React.useState(1.35);
@@ -31,14 +31,22 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
   const [hideFrets, setHideFrets] = React.useState(false);
 
   const [showTransposer, setShowTransposer] = React.useState(false);
-  const [transpose, setTranspose] = React.useState<Transpose>({
-    semitones: getTransposeFromTag(song.getTags()),
+  const [transpose, setTranspose] = React.useState<{
+    semitones: number;
+    notation: Notation;
+  }>({
+    semitones: getTransposeFromTag(song.getTags()) || 0,
     notation: "undetermined",
   });
 
   const refChordsheet = React.createRef<HTMLDivElement>();
 
-  const hideChordsId = React.useId();
+  let normedSemitones = transpose.semitones % 12;
+  if (normedSemitones > 6) {
+    normedSemitones -= 12;
+  }
+  const sign = Math.sign(normedSemitones) >= 0 ? "+" : "-";
+  const displayTranspose = `${sign} ${Math.abs(normedSemitones)}`;
 
   const settings = (
     <aside id="rightSettings">
@@ -47,6 +55,10 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
       </Button>
       <div className="pdfSettings">
         <div className="grid">
+          <div className="title">Zoom</div>
+          <div className="table">
+            <SliderWithInput max={200} min={10} onChange={setScale} value={scale} ></SliderWithInput>
+          </div>
           <div className="title">Columns</div>
           <div className="setting columns">
             <ColumnSetter
@@ -68,19 +80,24 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
               </HlbCheckbox>
             </div>
           </div>
-        </div>
-        <div className="title">Transpose</div>
-        <div className="fullwidth">
-        <Button onClick={() => setShowTransposer(true)}>
-          <ReactSVG src="/svg/transposer.svg" />
-        </Button>
-        {showTransposer && <Transposer
-            transposeSetter={ev => setTranspose(ev)}
-            transpose={transpose.semitones}
-            keyHint={Chord.from(song.getTag("tonart"))}
-            close={() => setShowTransposer(false)}
-            chords={parseChords(song.getChords())}
-          />}
+          <div className="title">Transpose</div>
+          <div className="setting">
+            <div className="fullwidth">
+              <Button onClick={() => setShowTransposer(true)}>
+                <ReactSVG src="/svg/transposer.svg" />
+              </Button>
+              <div>{displayTranspose}</div>
+              {showTransposer && (
+                <Transposer
+                  transposeSetter={(ev) => setTranspose(ev)}
+                  transpose={transpose.semitones}
+                  keyHint={Chord.from(song.getTag("tonart"))}
+                  close={() => setShowTransposer(false)}
+                  chords={parseChords(song.getChords())}
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -102,7 +119,7 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
             song={song}
             transpose={{
               semitones: transpose.semitones,
-              notation: transpose.notation
+              notation: transpose.notation,
             }}
             hideChords={hideChords}
             style={sheetStyle}

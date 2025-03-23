@@ -17,7 +17,7 @@ export const transposeToRotation = (semitones: number) =>
   semitones - (semitones % 2 == 0 ? 0 : Math.sign(semitones) * 6);
 
 export type Transpose = {
-  semitones: number | undefined;
+  semitones: number;
   notation: Notation;
 };
 

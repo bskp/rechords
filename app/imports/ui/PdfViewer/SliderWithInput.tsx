@@ -10,14 +10,17 @@ export type SliderWithInputProps = {
   min: number;
   value: number;
   onChange: (v: number) => void;
-  id: string;
+  id?: string;
 };
 
-export const SliderWithInput: FunctionComponent<SliderWithInputProps> = (p) => (
-  <>
-    <Slider {...p} />
-    <QuickInput id={p.id} onChange={p.onChange} value={p.value} />
-  </>
-);
+export const SliderWithInput: FunctionComponent<SliderWithInputProps> = (p) => {
+  const id = p.id || React.useId()
+  return (
+    <>
+      <Slider {...p} />
+      <QuickInput id={id} onChange={p.onChange} value={p.value} />
+    </>
+  );
+};
 
 SliderWithInput.defaultProps = defaultProps;
