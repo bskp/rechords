@@ -1,0 +1,307 @@
+.pdfgrid {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  grid-auto-flow: row;
+
+  > * {
+    grid-column: ~"1 / 1";
+    grid-row: ~"1 / 1";
+    align-self: center;
+    justify-self: center;
+  }
+
+  object {
+    opacity: 0;
+    animation: fadein 0.5s linear 0.2s forwards;
+  }
+
+  .spinner {
+    pointer-events: none;
+    opacity: 0;
+    width: 10%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+      fill: var(--accent);
+      stroke: none;
+    }
+  }
+
+  &.loading {
+    .spinner {
+      transform: scale(1);
+      opacity: 1;
+      animation: scale-up 0.7s ease-in-out forwards;
+    }
+  }
+}
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-up {
+  0% {
+    transform: scale(0.1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(200);
+  }
+}
+
+@qb: 2px;
+@qh: 30px;
+
+#pdfsettings {
+  background-color: var(--bg-list);
+}
+
+.pdfSettings {
+  .quickinput svg {
+    stroke-width: 2px;
+    fill: var(--text-sidebar);
+
+    polygon:hover {
+      fill: var(--accent);
+    }
+  }
+
+  svg {
+    stroke: var(--text-sidebar);
+    fill: none;
+
+    .fine {
+      stroke-width: 1px;
+    }
+
+    .medium {
+      stroke-width: 2px;
+    }
+
+    .bold {
+      stroke-width: 4px;
+    }
+  }
+
+  box-sizing: border-box;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .icon {
+    width: 40px;
+    height: 40px;
+    font-weight: bold;
+    color: var(--accent);
+
+    svg {
+      width: inherit;
+      height: inherit;
+      fill: var(--gray);
+      stroke: none;
+    }
+  }
+
+  .save-row {
+    display: flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    margin: 10px;
+  }
+
+  .buttons {
+    flex: 1;
+
+    border-radius: 3px;
+    border: var(--text-sidebar) solid @qb;
+
+    .icon :hover {
+      fill: var(--accent);
+    }
+
+    margin: 0 10px;
+    padding: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+  }
+
+  input[type="checkbox"] {
+    display: none;
+
+    &:checked + label {
+      color: var(--accent);
+
+      svg {
+        .cross {
+          stroke: var(--accent);
+        }
+        .box {
+          stroke: var(--gray-dark);
+        }
+      }
+    }
+
+    + label {
+      .settingTitle();
+
+      svg {
+        stroke-width: 3px;
+
+        .cross {
+          stroke: none;
+        }
+        .box {
+          stroke: var(--gray-dark);
+        }
+      }
+    }
+  }
+
+  input[type="radio"] {
+    display: none;
+
+    &:checked + label {
+      svg {
+        stroke: var(--accent);
+      }
+    }
+
+    + label:hover {
+      svg {
+        stroke: var(--accent-flat);
+      }
+    }
+  }
+
+  // --- NUMBER INPUTS --- //
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0;
+    /* <-- Apparently some margin are still there even though it's hidden */
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+  }
+
+  .settingTitle {
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 12px;
+    margin-top: 10px;
+    color: var(--text-sidebar);
+  }
+
+  .grid {
+    display: flex;
+    flex-flow: column nowrap;
+
+    .title {
+      .settingTitle();
+    }
+
+    .setting {
+      border: var(--text-sidebar) solid 2px;
+      border-radius: 4px;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-evenly;
+      padding: 10px;
+      margin-bottom: 10px;
+
+      &.orientations {
+        align-items: center;
+      }
+
+      &.columns {
+        align-items: flex-start;
+      }
+
+      &.buttons {
+        gap: 10px;
+      }
+    }
+  }
+
+  .fontsize {
+    .settingTitle();
+
+    margin: 0;
+
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 5px;
+
+    label {
+      flex: 0 0 50px;
+    }
+
+    div.rc-slider {
+      width: 50px;
+      flex: 1 0 auto;
+
+      .rc-slider-rail {
+        background-color: var(--gray-light);
+      }
+
+      .rc-slider-track {
+        background-color: var(--gray-dark);
+      }
+
+      .rc-slider-handle {
+        border-color: var(--gray-dark);
+        background-color: var(--text-inverted);
+      }
+    }
+
+    input[type="number"] {
+      flex: 0 0 20px;
+      width: 0px;
+      text-align: right;
+
+      &::selection {
+        background-color: var(--gray-light);
+      }
+
+      &:focus {
+        outline-offset: 1px;
+        outline-style: solid;
+        outline-width: 1px;
+        outline-color: var(--gray-dark);
+      }
+    }
+  }
+
+  .fullwidth {
+    width: 100%;
+    display: flex;
+    justify-items: flex-start;
+    align-items: center;
+    gap: 10px;
+  }
+}
