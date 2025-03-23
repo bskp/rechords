@@ -28,7 +28,7 @@ export interface ViewerProps {
 
 const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const [transpose, setTranspose] = useState<Transpose>({
-    semitones: getTransposeFromTag(),
+    semitones: getTransposeFromTag(song.getTags()),
     notation: "undetermined",
   });
   const [showChords, setShowChords] = useState<boolean>(true);
@@ -64,7 +64,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     updateDuration();
     document.scrollingElement?.scrollTo(0, 0);
     setTranspose({
-      semitones: getTransposeFromTag(),
+      semitones: getTransposeFromTag(song.getTags()),
       notation: "undetermined",
     });
     stopAutoScroll();
@@ -95,15 +95,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     document.addEventListener("keydown", globalKeyHandler);
     return () => document.removeEventListener("keydown", globalKeyHandler);
   });
-
-  function getTransposeFromTag(): number | undefined {
-    const transposeTag = song
-      .getTags()
-      .find((tag) => tag.startsWith("transponierung:"));
-    if (!transposeTag) return undefined;
-    let dt = parseInt(transposeTag.split(":")[1], 10);
-    return isNaN(dt) ? undefined : dt;
-  }
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
     if (userMayWrite()) {
@@ -227,4 +218,11 @@ export function parseChords(chords: string[]) {
   return chords
     .map((chord) => Chord.from(chord))
     .filter((chord: Chord | undefined): chord is Chord => chord !== undefined);
+}
+
+export function getTransposeFromTag(tags: string[]): number | undefined {
+  const transposeTag = tags.find((tag) => tag.startsWith("transponierung:"));
+  if (!transposeTag) return undefined;
+  let dt = parseInt(transposeTag.split(":")[1], 10);
+  return isNaN(dt) ? undefined : dt;
 }

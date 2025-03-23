@@ -87,11 +87,11 @@ export const PdfSettings: FunctionComponent<{
   const handleTransposeChange = (ev: number) => {
     set({ ...state, transpose: ev });
   };
-  const handleColChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    set({ ...state, numCols: parseInt(ev.currentTarget.value) });
+  const handleColChange = (cols: number) => {
+    set({ ...state, numCols: cols });
   };
   const handleOrientationChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
@@ -111,7 +111,7 @@ export const PdfSettings: FunctionComponent<{
     newFontSizes[name] = value;
     set(
       // copying object in order not having to detect the state change in deep @componentDidUpdate
-      { ...state, sizes: newFontSizes },
+      { ...state, sizes: newFontSizes }
     );
   };
 
@@ -145,26 +145,11 @@ export const PdfSettings: FunctionComponent<{
             id={"font" + fs}
             // marks={marks}
           />
-        </div>,
+        </div>
       );
     }
   }
   const [listener, Outlet] = useClickIndicator();
-  const cross = (
-    <svg width="20px" height="20px">
-      <rect
-        className="box"
-        x="0"
-        y="0"
-        width="20px"
-        height="20px"
-        rx="5px"
-        ry="5px"
-      />
-      <line className="cross" x1="4" y1="4" x2="16px" y2="16px" />
-      <line className="cross" x1="4" y2="4" x2="16px" y1="16px" />
-    </svg>
-  );
   const ok = <ReactSVG src="/svg/ok.svg" />;
   const cancel = <ReactSVG src="/svg/cancel.svg" />;
 
@@ -207,21 +192,11 @@ export const PdfSettings: FunctionComponent<{
         </div>
         <div className="title">Columns</div>
         <div className="setting columns">
-          {[...new Array(4).keys()].map((idx) => (
-            <>
-              <input
-                onChange={handleColChange}
-                checked={idx + 1 === state.numCols}
-                type="radio"
-                id={`numColumns${idx}`}
-                name="numColumns"
-                value={idx + 1}
-              />
-              <label htmlFor={"numColumns" + idx} title={`${idx + 1}`}>
-                <Columns numCols={idx + 1} colWidth={10} gap={2} />
-              </label>
-            </>
-          ))}
+          <ColumnSetter
+            cols={4}
+            setCols={handleColChange}
+            numCols={state.numCols}
+          ></ColumnSetter>
         </div>
 
         <div className="table">{fontSizeHandles}</div>
@@ -229,34 +204,14 @@ export const PdfSettings: FunctionComponent<{
         <div className="title">Text</div>
         <div className="setting">
           <div className="fullwidth">
-            <input
-              id="inlineShit"
-              checked={state.inlineReferences}
-              type="checkbox"
-              onClick={(e) => setInlineRefs(e.target.checked)}
-            />
-            <label
-              htmlFor="inlineShit"
-              title="Repeat text of each Reference?"
-              className="fullwidth"
-            >
-              {cross}Inline References
-            </label>
+            <HlbCheckbox setter={setInlineRefs} value={state.inlineReferences}>
+              Inline References
+            </HlbCheckbox>
           </div>
           <div className="fullwidth">
-            <input
-              id="includeComments"
-              checked={state.includeComments}
-              type="checkbox"
-              onClick={(e) => setComments(e.target.checked)}
-            />
-            <label
-              htmlFor="includeComments"
-              title="Repeat text of each Reference?"
-              className="fullwidth"
-            >
-              {cross}Show Comments
-            </label>
+            <HlbCheckbox setter={setComments} value={state.includeComments}>
+              Include Comments
+            </HlbCheckbox>
           </div>
         </div>
 
@@ -298,5 +253,73 @@ export const PdfSettings: FunctionComponent<{
         </div>
       </div>
     </div>
+  );
+};
+
+export const ColumnSetter = ({
+  cols,
+  setCols,
+  numCols,
+}: {
+  cols: number;
+  setCols: Function;
+  numCols: number;
+}) => (
+  <>
+    {[...new Array(cols).keys()].map((idx) => (
+      <>
+        <input
+          onChange={(ev) => setCols(parseInt(ev.currentTarget.value))}
+          checked={idx + 1 === numCols}
+          type="radio"
+          id={`numColumns${idx}`}
+          name="numColumns"
+          value={idx + 1}
+        />
+        <label htmlFor={"numColumns" + idx} title={`${idx + 1}`}>
+          <Columns numCols={idx + 1} colWidth={10} gap={2} />
+        </label>
+      </>
+    ))}
+  </>
+);
+
+const Cross: React.FC = () => <svg width="20px" height="20px">
+    <rect
+      className="box"
+      x="0"
+      y="0"
+      width="20px"
+      height="20px"
+      rx="5px"
+      ry="5px"
+    />
+    <line className="cross" x1="4" y1="4" x2="16px" y2="16px" />
+    <line className="cross" x1="4" y2="4" x2="16px" y1="16px" />
+  </svg>
+
+export const HlbCheckbox = (
+  props: {
+    value: boolean;
+    setter: (a: boolean) => void;
+  } & React.PropsWithChildren
+) => {
+  const id = React.useId()
+  return (
+    <>
+      <input
+        id={id}
+        checked={props.value}
+        type="checkbox"
+        onClick={(e) => props.setter(e.currentTarget.checked)}
+      />
+      <label
+        htmlFor={id}
+        title="Repeat text of each Reference?"
+        className="fullwidth"
+      >
+        <Cross></Cross> {props.children}
+      </label>
+    </>
   );
 };
