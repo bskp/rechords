@@ -20,12 +20,12 @@ import { countChords } from "../../Transposer";
 export async function jsPdfGenerator(
   song: Song,
   settings: IPdfViewerSettings,
-  debug = false
+  debug = false,
 ): Promise<string> {
   if (!song) return "";
 
   /** font sizes  */
-  const fos = settings.sizes;
+  const fos = settings.fontSizes;
 
   // Hm. Reusing reactParser would make alot more sense...
   // But hey... here we are...
@@ -78,27 +78,7 @@ export async function jsPdfGenerator(
 
   let x0 = cdoc.margins.left;
 
-  const [Coo, Sh, Bric, BricBold] = await Promise.all([
-    cdoc.addFontXhr("/fonts/pdf/CooperK-Black-w.ttf", "Coo", "normal", "light"),
-    cdoc.addFontXhr(
-      "/fonts/pdf/ShantellSans-SemiBold.ttf",
-      "Sh",
-      "normal",
-      "light"
-    ),
-    cdoc.addFontXhr(
-      "/fonts/pdf/BricolageGrotesque_Condensed-Regular.ttf",
-      "Bric",
-      "normal",
-      "regular"
-    ),
-    cdoc.addFontXhr(
-      "/fonts/pdf/BricolageGrotesque_Condensed-Bold.ttf",
-      "Bric",
-      "normal",
-      "bold"
-    ),
-  ]);
+  const [Coo, Sh, Bric, BricBold] = await loadFonts(cdoc);
 
   cdoc.chordFont = [...Sh, fos.chord];
   cdoc.textFont = [...Bric, fos.text];
@@ -122,7 +102,7 @@ export async function jsPdfGenerator(
       songTitle.textContent + " - " + songArtist.textContent,
       cdoc.margins.left + cdoc.mediaWidth() / 2,
       cdoc.maxY(),
-      { align: "center", baseline: "top" }
+      { align: "center", baseline: "top" },
     );
   }
   placeFooter();
@@ -177,12 +157,12 @@ export async function jsPdfGenerator(
     cdoc.setFont(...BricBold, fos.section);
     advance_y += cdoc.textLine(
       section.querySelector("h3")?.innerText,
-      simulate
+      simulate,
     ).h;
     cdoc.setFont(...Bric, fos.text);
     advance_y += cdoc.textLine(
       section.querySelector("h4")?.innerText,
-      simulate
+      simulate,
     ).h;
 
     const lines = section.querySelectorAll("span.line");
@@ -194,7 +174,7 @@ export async function jsPdfGenerator(
         text: c.innerText,
         chord: Chord.from(c.dataset?.chord)?.transposed(
           settings.transpose,
-          notation
+          notation,
         ), // libChrod.transpose(c.dataset?.chord, key, settings.transpose),
       }));
       advance_y += cdoc.placeChords(fragments, colWidth, simulate).advance_y;
@@ -204,7 +184,7 @@ export async function jsPdfGenerator(
       cdoc.setFont(...Bric, fos.text);
       const texts: string[] = cdoc.doc.splitTextToSize(
         section.textContent,
-        colWidth
+        colWidth,
       );
       advance_y += texts
         .map((l) => cdoc.textLine(l, simulate).h)
@@ -225,7 +205,7 @@ export async function jsPdfGenerator(
         i + " / " + total,
         cdoc.margins.left + cdoc.mediaWidth(),
         cdoc.maxY(),
-        { align: "right", baseline: "top" }
+        { align: "right", baseline: "top" },
       );
     }
   }
@@ -235,7 +215,7 @@ export async function jsPdfGenerator(
   // Save the Data
   const pdfData = doc.output("arraybuffer");
   const pdfBlobUrl = window.URL.createObjectURL(
-    new Blob([pdfData], { type: "application/pdf" })
+    new Blob([pdfData], { type: "application/pdf" }),
   );
   return pdfBlobUrl;
 
@@ -243,6 +223,31 @@ export async function jsPdfGenerator(
     cdoc.cursor.x = x0;
   }
 }
+async function loadFonts(cdoc: ChordPdfJs) {
+  const out = Promise.all([
+    cdoc.addFontXhr("/fonts/pdf/CooperK-Black-w.ttf", "Coo", "normal", "light"),
+    cdoc.addFontXhr(
+      "/fonts/pdf/ShantellSans-SemiBold.ttf",
+      "Sh",
+      "normal",
+      "light",
+    ),
+    cdoc.addFontXhr(
+      "/fonts/pdf/BricolageGrotesque_Condensed-Regular.ttf",
+      "Bric",
+      "normal",
+      "regular",
+    ),
+    cdoc.addFontXhr(
+      "/fonts/pdf/BricolageGrotesque_Condensed-Bold.ttf",
+      "Bric",
+      "normal",
+      "bold",
+    ),
+  ]);
+  return out;
+}
+
 function getNotation(song: Song, semitones: number) {
   const chords = parseChords(song.getChords());
   const counts = countChords(chords);

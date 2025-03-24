@@ -38,7 +38,11 @@ export class PdfViewer extends React.Component<
     }, 2e3);
   };
 
-  _setSettings = throttle((a: IPdfViewerSettings) => this.generatePdf(a), 1000, {leading:true,trailing:true});
+  _setSettings = throttle(
+    (a: IPdfViewerSettings) => this.generatePdf(a),
+    1000,
+    { leading: true, trailing: true },
+  );
 
   setSettings = (settings: IPdfViewerSettings) => {
     if (this.first) {

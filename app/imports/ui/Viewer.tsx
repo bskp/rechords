@@ -27,7 +27,7 @@ export interface ViewerProps {
 }
 
 const Viewer: React.FC<ViewerProps> = ({ song }) => {
-  const transposeState = useTranspose(getTransposeFromTag(song.getTags()))
+  const transposeState = useTranspose(getTransposeFromTag(song.getTags()));
 
   const [showChords, setShowChords] = useState<boolean>(true);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
@@ -155,7 +155,11 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         style={{ fontSize: textZoom + "em" }}
         onContextMenu={handleContextMenu}
       >
-        <Sheet song={song} transpose={transposeState.transpose} hideChords={!showChords} />
+        <Sheet
+          song={song}
+          transpose={transposeState.transpose}
+          hideChords={!showChords}
+        />
       </div>
       <aside id="rightSettings">
         <Button onClick={() => setShowMenu(true)} phoneOnly>

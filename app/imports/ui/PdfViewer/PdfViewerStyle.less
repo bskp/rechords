@@ -215,10 +215,16 @@
 
   .settingTitle {
     text-transform: uppercase;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 12px;
     margin-top: 10px;
     color: var(--text-sidebar);
+  }
+  .settingBase {
+    border: var(--text-sidebar) solid 2px;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
   }
 
   .grid {
@@ -227,18 +233,15 @@
 
     .title {
       .settingTitle();
+      padding-left: 10px;
     }
 
     .setting {
-      border: var(--text-sidebar) solid 2px;
-      border-radius: 4px;
+      .settingBase();
       display: flex;
       flex-flow: row wrap;
       justify-content: space-evenly;
-      padding: 10px;
-      margin-bottom: 10px;
       align-items: center;
-
 
       &.columns {
         align-items: flex-start;
@@ -248,7 +251,15 @@
         gap: 10px;
       }
     }
+
+    .settingtable {
+      .settingBase();
+      display: flex;
+      flex-flow: column nowrap;
+    }
+
     .transpose {
+      color: var(--text-sidebar);
       font-size: 30px;
     }
   }
@@ -266,12 +277,16 @@
     label {
       flex: 0 0 50px;
     }
+    .slidecontainer {
+      flex: 1 1 100px;
+    }
 
     input[type="number"] {
       font-size: 18px;
+      font-weight: 500;
       height: 22px;
+      min-width: 0;
       flex: 0 0 20px;
-      width: 0px;
       text-align: right;
 
       &::selection {
@@ -285,6 +300,56 @@
         outline-color: var(--gray-dark);
       }
     }
+    input[type="range"] {
+      appearance: none;
+      -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+      width: 100%; /* Specific width is required for Firefox. */
+      background: transparent; /* Otherwise white in Chrome */
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]:focus {
+      outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+    }
+
+    input[type="range"]::-ms-track {
+      width: 100%;
+      cursor: pointer;
+
+      /* Hides the slider so custom styles can be added */
+      background: transparent;
+      border-color: transparent;
+      color: transparent;
+    }
+    /* Special styling for WebKit/Blink */
+    input[type="range"]::-moz-range-thumb,
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      border: 0px;
+      background-color: var(--accent-flat);
+      height: 14px;
+      width: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track,
+    input[type="range"]::-moz-range-track {
+      width: 100%;
+      height: 6px;
+      cursor: pointer;
+      background: var(--gray);
+      border-radius: 1.3px;
+      border: 0.2px solid #010101;
+    }
+    input[type="range"]:focus::-moz-range-track,
+    input[type="range"]:focus::-webkit-slider-runnable-track {
+      background: var(--gray-dark)
+    }
   }
 
   .fullwidth {
@@ -292,6 +357,6 @@
     display: flex;
     justify-items: flex-start;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
   }
 }

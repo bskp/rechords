@@ -8,7 +8,6 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import {
   ColumnSetter,
-  HlbCheckbox,
   IPdfViewerSettings,
   PdfSettings,
 } from "./PdfViewer/PdfSettings";
@@ -18,14 +17,14 @@ import Chord from "../api/libchr0d/chord";
 import { getTransposeFromTag, parseChords } from "./Viewer";
 import { Notation } from "../api/libchr0d/note";
 import { SliderWithInput } from "./GuiElements/SliderWithInput";
+import { HlbCheckbox } from "./GuiElements/HlbCheckbox";
 
 type PrinterProps = {
   song: Song;
 };
 
 const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
-
-  const ts = useTranspose(getTransposeFromTag(song.getTags()))
+  const ts = useTranspose(getTransposeFromTag(song.getTags()));
 
   const [cols, setCols] = React.useState(2);
   const [scale, setScale] = React.useState(100);

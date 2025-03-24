@@ -1,16 +1,15 @@
-import { useTracker } from "meteor/react-meteor-data";
 import * as React from "react";
 import { useEffect } from "react";
 import { FunctionComponent, ReactElement, useState } from "react";
 import { Columns, Landscape, Portrait } from "../GuiElements/SettingIcons";
 import { SliderWithInput } from "../GuiElements/SliderWithInput";
-import { Meteor } from "meteor/meteor";
 import { ReactSVG } from "react-svg";
 import Transposer, { useTranspose } from "../Transposer";
 import { getTransposeFromTag, parseChords } from "../Viewer";
 import { Song } from "/imports/api/collections";
 import Chord from "/imports/api/libchr0d/chord";
 import { Button } from "../Button";
+import { HlbCheckbox } from "../GuiElements/HlbCheckbox";
 
 // Using provider in order to guarantee
 // new properties each time
@@ -20,12 +19,16 @@ const PdfViewerStates: () => IPdfViewerSettings = () => ({
   inlineReferences: false,
   includeComments: false,
   transpose: 0,
-  sizes: {
+  fontSizes: {
     header: 25,
     section: 16,
     text: 16,
     chord: 11,
-    gap: 3,
+  },
+  layoutSettings: {
+    margin: 10,
+    section: 5,
+    colgap: 3,
   },
 });
 
@@ -34,25 +37,26 @@ export interface IPdfViewerSettings {
   orientation: "l" | "p";
   inlineReferences: boolean;
   includeComments: boolean;
-  sizes: ITextSizes;
+  fontSizes: ITextSizes;
+  layoutSettings: ILayoutSettings;
   transpose: number;
+}
+export interface ILayoutSettings extends Record<string, number> {
+  colgap: number;
+  margin: number;
+  section: number;
 }
 export interface ITextSizes extends Record<string, number> {
   header: number;
   section: number;
   text: number;
   chord: number;
-  gap: number;
 }
 
 export const PdfSettings: FunctionComponent<{
   song: Song;
   consumer: (s: IPdfViewerSettings) => void;
 }> = ({ song, consumer }) => {
-  const { user } = useTracker(() => ({ user: Meteor.user() }));
-
-  type sug = "s" | "u" | "g";
-
   // on purpose a single state to save / deserialize easily
   const [state, setState] = useState(PdfViewerStates());
 
@@ -83,11 +87,19 @@ export const PdfSettings: FunctionComponent<{
   };
 
   const handleFontSize = (name, value) => {
-    const newFontSizes = state.sizes;
+    const newFontSizes = state.fontSizes;
     newFontSizes[name] = value;
     set(
       // copying object in order not having to detect the state change in deep @componentDidUpdate
-      { ...state, sizes: newFontSizes }
+      { ...state, fontSizes: newFontSizes }
+    );
+  };
+  const handleLayoutSize = (name, value) => {
+    const newFontSizes = state.layoutSettings;
+    newFontSizes[name] = value;
+    set(
+      // copying object in order not having to detect the state change in deep @componentDidUpdate
+      { ...state, layoutSettings: newFontSizes }
     );
   };
 
@@ -98,27 +110,36 @@ export const PdfSettings: FunctionComponent<{
   ];
 
   const fontSizeHandles = [];
+  const layoutHandles = [];
 
   const baseSizes = PdfViewerStates();
-  for (const fs in state.sizes) {
-    if (Object.prototype.hasOwnProperty.call(state.sizes, fs)) {
-      // const marks = {}
-      // for( const k of Object.keys(settings) ) {
-      //   if( settings[k]?.sizes ) {
-      //     const sizes = settings[k as sug].sizes
-      //     const size = sizes[fs]
-      //     marks[size]= k
-      //   }
-      // }
-
+  for (const fs in state.fontSizes) {
+    if (Object.prototype.hasOwnProperty.call(state.fontSizes, fs)) {
       fontSizeHandles.push(
         <div className="fontsize">
           <label htmlFor={"font" + fs}>{fs}</label>
           <SliderWithInput
             min={1}
-            max={baseSizes.sizes[fs] * 3 - 1}
-            value={state.sizes[fs]}
+            max={baseSizes.fontSizes[fs] * 3 - 1}
+            value={state.fontSizes[fs]}
             onChange={(s) => handleFontSize(fs, s)}
+            id={"font" + fs}
+            // marks={marks}
+          />
+        </div>
+      );
+    }
+  }
+  for (const fs in state.layoutSettings) {
+    if (Object.prototype.hasOwnProperty.call(state.layoutSettings, fs)) {
+      layoutHandles.push(
+        <div className="fontsize">
+          <label htmlFor={"font" + fs}>{fs}</label>
+          <SliderWithInput
+            min={1}
+            max={baseSizes.layoutSettings[fs] * 3 - 1}
+            value={state.layoutSettings[fs]}
+            onChange={(s) => handleLayoutSize(fs, s)}
             id={"font" + fs}
             // marks={marks}
           />
@@ -174,9 +195,12 @@ export const PdfSettings: FunctionComponent<{
             ></ColumnSetter>
           </div>
 
-          <div className="table">{fontSizeHandles}</div>
+          <div className="title">Font Sizes</div>
+          <div className="settingtable">{fontSizeHandles}</div>
+          <div className="title">Layout</div>
+          <div className="settingtable">{layoutHandles}</div>
 
-          <div className="title">Text</div>
+          <div className="title">Lyrics</div>
           <div className="setting">
             <div className="fullwidth">
               <HlbCheckbox
@@ -236,44 +260,5 @@ export const ColumnSetter = ({
   </>
 );
 
-const Cross: React.FC = () => (
-  <svg width="20px" height="20px">
-    <rect
-      className="box"
-      x="0"
-      y="0"
-      width="20px"
-      height="20px"
-      rx="5px"
-      ry="5px"
-    />
-    <line className="cross" x1="4" y1="4" x2="16px" y2="16px" />
-    <line className="cross" x1="4" y2="4" x2="16px" y1="16px" />
-  </svg>
-);
 
-export const HlbCheckbox = (
-  props: {
-    value: boolean;
-    setter: (a: boolean) => void;
-  } & React.PropsWithChildren
-) => {
-  const id = React.useId();
-  return (
-    <>
-      <input
-        id={id}
-        checked={props.value}
-        type="checkbox"
-        onClick={(e) => props.setter(e.currentTarget.checked)}
-      />
-      <label
-        htmlFor={id}
-        title="Repeat text of each Reference?"
-        className="fullwidth"
-      >
-        <Cross></Cross> {props.children}
-      </label>
-    </>
-  );
-};
+

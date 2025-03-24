@@ -13,7 +13,7 @@ export class Margins {
 export class Cursor {
   constructor(
     public x = 0,
-    public y = 0,
+    public y = 0
   ) {}
 }
 
@@ -79,7 +79,7 @@ export class ComfyPdfJs {
     p,
     fontname,
     style,
-    weight,
+    weight
   ): Promise<[string, string, string]> {
     const filename = basename(p);
     const blob = await fetch(p).then((response) => response.blob());
@@ -103,6 +103,7 @@ type ChordBaseSuff = {
 };
 
 export class ChordPdfJs extends ComfyPdfJs {
+  // todo: better font object
   chordFont: [string, string, string, number] = ["RoCo", "regular", "bold", 9];
   textFont: [string, string, string, number] = [
     "RoCo",
@@ -122,7 +123,7 @@ export class ChordPdfJs extends ComfyPdfJs {
   placeChords(
     fragments: { text: string; chord: Chord }[],
     width: number,
-    simulate = false,
+    simulate = false
   ): { advance_y: number; numlineBreaksInserted: number; intCursor: Cursor } {
     let w = 0,
       br = 0;
@@ -149,7 +150,7 @@ export class ChordPdfJs extends ComfyPdfJs {
     const lines_: string[] = this.doc.splitTextToSize(accText, width);
     const notFirstLines = this.doc.splitTextToSize(
       lines_.slice(1).join(""),
-      width - einzug,
+      width - einzug
     );
     const lines = lines_.length > 1 ? [lines_[0], ...notFirstLines] : lines_;
 
@@ -183,7 +184,7 @@ export class ChordPdfJs extends ComfyPdfJs {
         this.setFont(...this.textFont);
         const wtext = this.doc.getTextWidth(text);
         this.setFont(...this.chordFont);
-        const chord_ =  chord.toStringKey() + chord.toStringTensionsAndSlash()
+        const chord_ = chord.toStringKey() + chord.toStringTensionsAndSlash();
         const wbase = this.doc.getTextWidth(chord.toStringKey());
         xpos += firstChord
           ? wtext
@@ -197,7 +198,7 @@ export class ChordPdfJs extends ComfyPdfJs {
             xpos + wbase,
             intCursor.y -
               tfs -
-              (this.chordFont[3] / this.doc.internal.scaleFactor) * 0.3,
+              (this.chordFont[3] / this.doc.internal.scaleFactor) * 0.3
           );
           this.doc.setTextColor(0);
         }
