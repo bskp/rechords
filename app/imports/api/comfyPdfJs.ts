@@ -67,6 +67,7 @@ export class ComfyPdfJs {
   }
   pageHeight = () => this.doc.internal.pageSize.getHeight();
   pageWidth = () => this.doc.internal.pageSize.getWidth();
+  // todo: minX, minY
   maxY = () => this.pageHeight() - this.margins.bottom;
   maxX = () => this.pageWidth() - this.margins.bottom;
   mediaWidth = () => this.doc.internal.pageSize.getWidth() - this.margins.lr();

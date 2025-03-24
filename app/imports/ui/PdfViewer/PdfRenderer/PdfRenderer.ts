@@ -26,6 +26,7 @@ export async function jsPdfGenerator(
 
   /** font sizes  */
   const fos = settings.fontSizes;
+  const los = settings.layoutSettings;
 
   // Hm. Reusing reactParser would make alot more sense...
   // But hey... here we are...
@@ -74,7 +75,7 @@ export async function jsPdfGenerator(
 
   const doc = cdoc.doc;
   const cols = settings.numCols;
-  const colWidth = (cdoc.mediaWidth() - (cols - 1) * fos.gap) / cols;
+  const colWidth = (cdoc.mediaWidth() - (cols - 1) * los.colgap) / cols;
 
   let x0 = cdoc.margins.left;
 
@@ -83,13 +84,13 @@ export async function jsPdfGenerator(
   cdoc.chordFont = [...Sh, fos.chord];
   cdoc.textFont = [...Bric, fos.text];
 
+  cdoc.setFont(...Coo, fos.header);
+
   const songArtist = mdHtml.querySelector(".sd-header>h2");
-  cdoc.setFont(...Coo, fos.section);
   const dima = cdoc.textLine(songArtist.textContent);
   cdoc.cursor.y += fos.section / doc.internal.scaleFactor;
 
   const songTitle = mdHtml.querySelector(".sd-header>h1");
-  cdoc.setFont(...Coo, fos.header);
   cdoc.doc.setTextColor("rgb(221, 68, 7)");
   const dimt = cdoc.textLine(songTitle.textContent);
   cdoc.doc.setTextColor(0);
@@ -97,7 +98,7 @@ export async function jsPdfGenerator(
   const header = { y: cdoc.cursor.y, x: x0 + Math.max(dima.w, dimt.w) };
 
   function placeFooter() {
-    cdoc.setFont(...Coo, fos.chord);
+    cdoc.setFont(...Coo, fos.footer);
     doc.text(
       songTitle.textContent + " - " + songArtist.textContent,
       cdoc.margins.left + cdoc.mediaWidth() / 2,
@@ -119,7 +120,7 @@ export async function jsPdfGenerator(
 
     if (cdoc.cursor.y + simHeight > cdoc.maxY()) {
       const c = cdoc.cursor;
-      const g = fos.gap;
+      const g = los.colgap;
       x0 += colWidth + g;
       cdoc.cursor.y = x0 > header.x ? cdoc.margins.top : header.y;
       if (debug) {
@@ -200,12 +201,18 @@ export async function jsPdfGenerator(
 
     for (let i = 1; i <= total; i++) {
       doc.setPage(i);
-      cdoc.setFont(...Coo, fos.chord);
+      cdoc.setFont(...Coo, fos.footer);
       doc.text(
         i + " / " + total,
-        cdoc.margins.left + cdoc.mediaWidth(),
+        cdoc.maxX(),
         cdoc.maxY(),
         { align: "right", baseline: "top" },
+      );
+      doc.text(
+        new Date().toLocaleString(),
+        cdoc.margins.left,
+        cdoc.maxY(),
+        { align: "left", baseline: "top" },
       );
     }
   }

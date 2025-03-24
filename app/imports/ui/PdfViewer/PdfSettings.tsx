@@ -24,6 +24,7 @@ const PdfViewerStates: () => IPdfViewerSettings = () => ({
     section: 16,
     text: 16,
     chord: 11,
+    footer: 8,
   },
   layoutSettings: {
     margin: 10,
@@ -41,16 +42,17 @@ export interface IPdfViewerSettings {
   layoutSettings: ILayoutSettings;
   transpose: number;
 }
-export interface ILayoutSettings extends Record<string, number> {
+export interface ILayoutSettings  {
   colgap: number;
   margin: number;
   section: number;
 }
-export interface ITextSizes extends Record<string, number> {
+export interface ITextSizes {
   header: number;
   section: number;
   text: number;
   chord: number;
+  footer: number;
 }
 
 export const PdfSettings: FunctionComponent<{
@@ -86,7 +88,7 @@ export const PdfSettings: FunctionComponent<{
     set({ ...state, includeComments: val });
   };
 
-  const handleFontSize = (name, value) => {
+  const handleFontSize = (name: keyof ITextSizes, value:number) => {
     const newFontSizes = state.fontSizes;
     newFontSizes[name] = value;
     set(
@@ -94,7 +96,7 @@ export const PdfSettings: FunctionComponent<{
       { ...state, fontSizes: newFontSizes }
     );
   };
-  const handleLayoutSize = (name, value) => {
+  const handleLayoutSize = (name: keyof ILayoutSettings, value:number) => {
     const newFontSizes = state.layoutSettings;
     newFontSizes[name] = value;
     set(
