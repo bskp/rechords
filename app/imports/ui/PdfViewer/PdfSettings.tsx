@@ -2,11 +2,15 @@ import { useTracker } from "meteor/react-meteor-data";
 import * as React from "react";
 import { useEffect } from "react";
 import { FunctionComponent, ReactElement, useState } from "react";
-import { useClickIndicator } from "./ClickIndicator";
-import { Columns, Landscape, Portrait } from "./SettingIcons";
-import { SliderWithInput } from "./SliderWithInput";
+import { Columns, Landscape, Portrait } from "../GuiElements/SettingIcons";
+import { SliderWithInput } from "../GuiElements/SliderWithInput";
 import { Meteor } from "meteor/meteor";
 import { ReactSVG } from "react-svg";
+import Transposer, { useTranspose } from "../Transposer";
+import { getTransposeFromTag, parseChords } from "../Viewer";
+import { Song } from "/imports/api/collections";
+import Chord from "/imports/api/libchr0d/chord";
+import { Button } from "../Button";
 
 // Using provider in order to guarantee
 // new properties each time
@@ -42,40 +46,15 @@ export interface ITextSizes extends Record<string, number> {
 }
 
 export const PdfSettings: FunctionComponent<{
-  songId: string;
+  song: Song;
   consumer: (s: IPdfViewerSettings) => void;
-}> = ({ songId, consumer }) => {
+}> = ({ song, consumer }) => {
   const { user } = useTracker(() => ({ user: Meteor.user() }));
 
   type sug = "s" | "u" | "g";
 
-  const settings: Record<sug, IPdfViewerSettings> = {
-    s: user?.profile?.pdfSettings?.[songId],
-    u: user?.profile?.pdfSettings?.___,
-    g: PdfViewerStates(),
-  };
-  const getInitialState: () => IPdfViewerSettings = () =>
-    settings.s || settings.u || settings.g;
-
-  const [state, setState] = useState(getInitialState());
-
-  const saveSettings = (_songId) => {
-    const pdfSettings: { [k: string]: IPdfViewerSettings } =
-      user?.profile?.pdfSettings || {};
-    user.profile.pdfSettings = pdfSettings;
-    pdfSettings[_songId] = JSON.parse(JSON.stringify(state));
-    Meteor.call("saveUser", user, (error) => console.log(error));
-  };
-
-  const loadSongDefaults = () => {
-    set(getInitialState());
-  };
-  const loadUserDefaults = () => {
-    set(settings.u || settings.g);
-  };
-  const loadStaticDefaults = () => {
-    set(PdfViewerStates());
-  };
+  // on purpose a single state to save / deserialize easily
+  const [state, setState] = useState(PdfViewerStates());
 
   const set = (a: IPdfViewerSettings) => {
     setState(a);
@@ -84,9 +63,6 @@ export const PdfSettings: FunctionComponent<{
 
   useEffect(() => set(state), []);
 
-  const handleTransposeChange = (ev: number) => {
-    set({ ...state, transpose: ev });
-  };
   const handleColChange = (cols: number) => {
     set({ ...state, numCols: cols });
   };
@@ -123,6 +99,7 @@ export const PdfSettings: FunctionComponent<{
 
   const fontSizeHandles = [];
 
+  const baseSizes = PdfViewerStates();
   for (const fs in state.sizes) {
     if (Object.prototype.hasOwnProperty.call(state.sizes, fs)) {
       // const marks = {}
@@ -139,7 +116,7 @@ export const PdfSettings: FunctionComponent<{
           <label htmlFor={"font" + fs}>{fs}</label>
           <SliderWithInput
             min={1}
-            max={settings.g.sizes[fs] * 2 - 1}
+            max={baseSizes.sizes[fs] * 3 - 1}
             value={state.sizes[fs]}
             onChange={(s) => handleFontSize(fs, s)}
             id={"font" + fs}
@@ -149,110 +126,85 @@ export const PdfSettings: FunctionComponent<{
       );
     }
   }
-  const [listener, Outlet] = useClickIndicator();
+
   const ok = <ReactSVG src="/svg/ok.svg" />;
   const cancel = <ReactSVG src="/svg/cancel.svg" />;
 
+  const ts = useTranspose(getTransposeFromTag(song.getTags()));
+
   return (
-    <div className="pdfSettings">
-      <div className="grid">
-        <div className="table">
-          <div className="fontsize">
-            <label htmlFor="transposeInp">Pitch</label>
-            <SliderWithInput
-              id="transposeInp"
-              min={-12}
-              max={12}
-              value={state.transpose}
-              onChange={handleTransposeChange}
-            />
+    <>
+      <div className="pdfSettings">
+        <div className="grid">
+          <div className="title">Transpose</div>
+          <div className="setting">
+            <div>
+              <Button onClick={() => ts.setShowTransposer(true)}>
+                <ReactSVG src="/svg/transposer.svg" />
+              </Button>
+            </div>
+            <div className="transpose">{ts.displayTranspose}</div>
           </div>
-        </div>
 
-        <div className="title">Orientation</div>
-        <div className="setting orientations">
-          {orientations.map(([value, icon, help], idx) => (
-            <>
-              <input
-                onClick={listener}
-                alt={help}
-                id={"or" + value}
-                type="radio"
-                name="orientation"
-                value={value}
-                checked={state.orientation == value}
-                onChange={handleOrientationChange}
-              />
-              <label title={help} htmlFor={"or" + value} key={idx}>
-                {icon}
-              </label>
-              <Outlet />
-            </>
-          ))}
-        </div>
-        <div className="title">Columns</div>
-        <div className="setting columns">
-          <ColumnSetter
-            cols={4}
-            setCols={handleColChange}
-            numCols={state.numCols}
-          ></ColumnSetter>
-        </div>
+          <div className="title">Orientation</div>
+          <div className="setting orientations">
+            {orientations.map(([value, icon, help], idx) => (
+              <>
+                <input
+                  alt={help}
+                  id={"or" + value}
+                  type="radio"
+                  name="orientation"
+                  value={value}
+                  checked={state.orientation == value}
+                  onChange={handleOrientationChange}
+                />
+                <label title={help} htmlFor={"or" + value} key={idx}>
+                  {icon}
+                </label>
+              </>
+            ))}
+          </div>
+          <div className="title">Columns</div>
+          <div className="setting columns">
+            <ColumnSetter
+              cols={4}
+              setCols={handleColChange}
+              numCols={state.numCols}
+            ></ColumnSetter>
+          </div>
 
-        <div className="table">{fontSizeHandles}</div>
+          <div className="table">{fontSizeHandles}</div>
 
-        <div className="title">Text</div>
-        <div className="setting">
-          <div className="fullwidth">
-            <HlbCheckbox setter={setInlineRefs} value={state.inlineReferences}>
-              Inline References
-            </HlbCheckbox>
-          </div>
-          <div className="fullwidth">
-            <HlbCheckbox setter={setComments} value={state.includeComments}>
-              Include Comments
-            </HlbCheckbox>
-          </div>
-        </div>
-
-        <div className="save-row">
-          <div className="icon">
-            <ReactSVG src="/svg/note.svg" />
-          </div>
-          <div className="buttons">
-            <button onClick={() => saveSettings(songId)} className="icon">
-              {ok}
-            </button>
-            <button onClick={loadSongDefaults} className="icon">
-              {cancel}
-            </button>
-          </div>
-        </div>
-        <div className="save-row">
-          <div className="icon">
-            <ReactSVG src="/svg/user.svg" />
-          </div>
-          <div className="buttons">
-            <button onClick={() => saveSettings("___")} className="icon">
-              {ok}
-            </button>
-            <button onClick={loadUserDefaults} className="icon">
-              {cancel}
-            </button>
-          </div>
-        </div>
-        <div className="save-row">
-          <div className="icon">
-            <ReactSVG src="/svg/globe.svg" />
-          </div>
-          <div className="buttons">
-            <button onClick={loadStaticDefaults} className="icon">
-              {cancel}
-            </button>
+          <div className="title">Text</div>
+          <div className="setting">
+            <div className="fullwidth">
+              <HlbCheckbox
+                setter={setInlineRefs}
+                value={state.inlineReferences}
+              >
+                Inline References
+              </HlbCheckbox>
+            </div>
+            <div className="fullwidth">
+              <HlbCheckbox setter={setComments} value={state.includeComments}>
+                Include Comments
+              </HlbCheckbox>
+            </div>
+            {/* todo: chords */}
           </div>
         </div>
       </div>
-    </div>
+      {ts.showTransposer && (
+        <Transposer
+          transposeSetter={(ev) => ts.setTranspose(ev)}
+          transpose={ts.transpose.semitones}
+          keyHint={Chord.from(song.getTag("tonart"))}
+          close={() => ts.setShowTransposer(false)}
+          chords={parseChords(song.getChords())}
+        />
+      )}
+    </>
   );
 };
 
@@ -284,7 +236,8 @@ export const ColumnSetter = ({
   </>
 );
 
-const Cross: React.FC = () => <svg width="20px" height="20px">
+const Cross: React.FC = () => (
+  <svg width="20px" height="20px">
     <rect
       className="box"
       x="0"
@@ -297,6 +250,7 @@ const Cross: React.FC = () => <svg width="20px" height="20px">
     <line className="cross" x1="4" y1="4" x2="16px" y2="16px" />
     <line className="cross" x1="4" y2="4" x2="16px" y1="16px" />
   </svg>
+);
 
 export const HlbCheckbox = (
   props: {
@@ -304,7 +258,7 @@ export const HlbCheckbox = (
     setter: (a: boolean) => void;
   } & React.PropsWithChildren
 ) => {
-  const id = React.useId()
+  const id = React.useId();
   return (
     <>
       <input

@@ -1,6 +1,4 @@
 import React, { MouseEventHandler } from "react";
-import "rc-slider/assets/index.css";
-import "rc-tooltip/assets/bootstrap.css";
 
 import "./transposerStyle.less";
 import Chord from "/imports/api/libchr0d/chord";
@@ -332,3 +330,29 @@ export function countChords(chords: Chord[]) {
   return counts;
 }
 
+
+export function useTranspose(initialSemitones = 0) {
+
+  const [showTransposer, setShowTransposer] = React.useState(false);
+  const [transpose, setTranspose] = React.useState<{
+    semitones: number;
+    notation: Notation;
+  }>({
+    semitones: initialSemitones,
+    notation: "undetermined",
+  });
+
+  const refChordsheet = React.createRef<HTMLDivElement>();
+
+  let normedSemitones = transpose.semitones % 12;
+  if (normedSemitones > 6) {
+    normedSemitones -= 12;
+  }
+  const sign = Math.sign(normedSemitones) >= 0 ? "+" : "-";
+  const displayTranspose = `${sign} ${Math.abs(normedSemitones)}`;
+  return {
+    showTransposer,setShowTransposer
+    transpose, setTranspose,
+    displayTranspose
+  }
+}

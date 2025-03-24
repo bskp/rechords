@@ -3,7 +3,7 @@ import { ViewerProps } from "../Viewer";
 import { PdfObject } from "./PdfObject";
 import { IPdfViewerSettings, PdfSettings } from "./PdfSettings";
 import { jsPdfGenerator } from "./PdfRenderer";
-import { debounce, throttle } from "underscore";
+import { throttle } from "underscore";
 import "./PdfViewerStyle.less";
 import classNames from "classnames";
 export class PdfViewer extends React.Component<
@@ -70,7 +70,7 @@ export class PdfViewer extends React.Component<
               <PdfObject key={u} url={u}></PdfObject>
             ))}
           </div>
-          <PdfSettings consumer={this.setSettings} songId={s._id} />
+          <PdfSettings consumer={this.setSettings} song={s} />
         </>
       );
     }

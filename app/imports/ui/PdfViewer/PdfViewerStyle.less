@@ -73,6 +73,9 @@
 }
 
 .pdfSettings {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 30px;
   .quickinput svg {
     stroke-width: 2px;
     fill: var(--text-sidebar);
@@ -205,6 +208,7 @@
   }
 
   input[type="number"] {
+    appearance: textfield;
     -moz-appearance: textfield;
     -webkit-appearance: textfield;
   }
@@ -233,10 +237,8 @@
       justify-content: space-evenly;
       padding: 10px;
       margin-bottom: 10px;
+      align-items: center;
 
-      &.orientations {
-        align-items: center;
-      }
 
       &.columns {
         align-items: flex-start;
@@ -245,6 +247,9 @@
       &.buttons {
         gap: 10px;
       }
+    }
+    .transpose {
+      font-size: 30px;
     }
   }
 
@@ -262,25 +267,9 @@
       flex: 0 0 50px;
     }
 
-    div.rc-slider {
-      width: 50px;
-      flex: 1 0 auto;
-
-      .rc-slider-rail {
-        background-color: var(--gray-light);
-      }
-
-      .rc-slider-track {
-        background-color: var(--gray-dark);
-      }
-
-      .rc-slider-handle {
-        border-color: var(--gray-dark);
-        background-color: var(--text-inverted);
-      }
-    }
-
     input[type="number"] {
+      font-size: 18px;
+      height: 22px;
       flex: 0 0 20px;
       width: 0px;
       text-align: right;

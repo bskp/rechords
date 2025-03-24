@@ -248,15 +248,17 @@ function getNotation(song: Song, semitones: number) {
   const counts = countChords(chords);
   const keyTag = song.getTag("tonart");
   const keyHint = Chord.from(keyTag);
-  const { isMinor, keyValue } = keyHint === undefined
-    ? guessKeyFromChordCounts(Object.entries(counts))
-    : {
-      keyValue: (keyHint.key.value + (keyHint.quality === "minor" ? 3 : 0)) % 12,
-      isMinor: keyHint.quality === "minor",
-    };
+  const { isMinor, keyValue } =
+    keyHint === undefined
+      ? guessKeyFromChordCounts(Object.entries(counts))
+      : {
+          keyValue:
+            (keyHint.key.value + (keyHint.quality === "minor" ? 3 : 0)) % 12,
+          isMinor: keyHint.quality === "minor",
+        };
 
-  const targetKeyValue = (((keyValue + semitones - (isMinor ? 3 : 0)) % 12) + 12) % 12;
+  const targetKeyValue =
+    (((keyValue + semitones - (isMinor ? 3 : 0)) % 12) + 12) % 12;
   const notation = notationPreferenceFor(targetKeyValue, isMinor);
   return notation;
 }
-

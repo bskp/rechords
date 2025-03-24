@@ -1,4 +1,3 @@
-import Slider from "rc-slider/lib/Slider";
 import * as React from "react";
 import { FunctionComponent } from "react";
 import { QuickInput } from "./QuickInput";
@@ -14,10 +13,20 @@ export type SliderWithInputProps = {
 };
 
 export const SliderWithInput: FunctionComponent<SliderWithInputProps> = (p) => {
-  const id = p.id || React.useId()
+  const id = p.id || React.useId();
   return (
     <>
-      <Slider {...p} />
+      <div className="slidecontainer">
+        <input
+          type="range"
+          min={p.min}
+          max={p.max}
+          value={p.value}
+          className="slider"
+          id="myRange"
+          onChange={(v) => p.onChange(parseInt(v.currentTarget.value))}
+        ></input>
+      </div>
       <QuickInput id={id} onChange={p.onChange} value={p.value} />
     </>
   );

@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import Transposer, { Transpose } from "./Transposer";
+import Transposer, { Transpose, useTranspose } from "./Transposer";
 import Chord from "../api/libchr0d/chord";
 import { Song } from "../api/collections";
 import {
@@ -27,12 +27,9 @@ export interface ViewerProps {
 }
 
 const Viewer: React.FC<ViewerProps> = ({ song }) => {
-  const [transpose, setTranspose] = useState<Transpose>({
-    semitones: getTransposeFromTag(song.getTags()),
-    notation: "undetermined",
-  });
+  const transposeState = useTranspose(getTransposeFromTag(song.getTags()))
+
   const [showChords, setShowChords] = useState<boolean>(true);
-  const [showTransposer, setShowTransposer] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
   const [isVideoActive, setIsVideoActive] = useState<boolean>(false);
   const [textZoom, setTextZoom] = useState<number>(1);
@@ -63,7 +60,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   useEffect(() => {
     updateDuration();
     document.scrollingElement?.scrollTo(0, 0);
-    setTranspose({
+    transposeState.setTranspose({
       semitones: getTransposeFromTag(song.getTags()),
       notation: "undetermined",
     });
@@ -87,7 +84,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     }
     if (e.key === "t") {
       e.preventDefault();
-      setShowTransposer(!showTransposer);
+      transposeState.setShowTransposer(!transposeState.showTransposer);
     }
   };
 
@@ -158,7 +155,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         style={{ fontSize: textZoom + "em" }}
         onContextMenu={handleContextMenu}
       >
-        <Sheet song={song} transpose={transpose} hideChords={!showChords} />
+        <Sheet song={song} transpose={transposeState.transpose} hideChords={!showChords} />
       </div>
       <aside id="rightSettings">
         <Button onClick={() => setShowMenu(true)} phoneOnly>
@@ -184,16 +181,16 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
             <ReactSVG src="/svg/yt.svg" />
           </Button>
         )}
-        {showTransposer && (
+        {transposeState.showTransposer && (
           <Transposer
-            transposeSetter={setTranspose}
-            transpose={transpose.semitones}
+            transposeSetter={transposeState.setTranspose}
+            transpose={transposeState.transpose.semitones}
             keyHint={Chord.from(keyTag)}
-            close={() => setShowTransposer(false)}
+            close={() => transposeState.setShowTransposer(false)}
             chords={chords}
           />
         )}
-        <Button onClick={() => setShowTransposer(true)}>
+        <Button onClick={() => transposeState.setShowTransposer(true)}>
           <ReactSVG src="/svg/transposer.svg" />
         </Button>
         <Button onClick={toggleAutoScroll}>
