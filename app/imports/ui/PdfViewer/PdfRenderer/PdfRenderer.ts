@@ -79,21 +79,21 @@ export async function jsPdfGenerator(
   let x0 = cdoc.margins.left;
 
   const [Coo, Sh, Bric, BricBold] = await Promise.all([
-    cdoc.addFontXhr("/fonts/CooperK-Black-w.ttf", "Coo", "normal", "light"),
+    cdoc.addFontXhr("/fonts/pdf/CooperK-Black-w.ttf", "Coo", "normal", "light"),
     cdoc.addFontXhr(
-      "/fonts/Shantell_Sans/static/ShantellSans-SemiBold.ttf",
+      "/fonts/pdf/ShantellSans-SemiBold.ttf",
       "Sh",
       "normal",
       "light"
     ),
     cdoc.addFontXhr(
-      "/fonts/Bricolage_Grotesque/static/BricolageGrotesque_Condensed-Regular.ttf",
+      "/fonts/pdf/BricolageGrotesque_Condensed-Regular.ttf",
       "Bric",
       "normal",
       "regular"
     ),
     cdoc.addFontXhr(
-      "/fonts/Bricolage_Grotesque/static/BricolageGrotesque_Condensed-Bold.ttf",
+      "/fonts/pdf/BricolageGrotesque_Condensed-Bold.ttf",
       "Bric",
       "normal",
       "bold"
