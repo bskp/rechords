@@ -1,4 +1,4 @@
-import { ChordPdfJs } from "/imports/api/comfyPdfJs";
+import { ChordPdfJs, Margins } from "/imports/api/comfyPdfJs";
 import { refPrefix } from "/imports/api/showdown-rechords";
 import { IPdfViewerSettings } from "../PdfSettings";
 import {
@@ -71,7 +71,7 @@ export async function jsPdfGenerator(
     }
   }
 
-  const cdoc = new ChordPdfJs({}, [settings.orientation, "mm", "a4"]);
+  const cdoc = new ChordPdfJs({margins: new Margins(los.margin)}, [settings.orientation, "mm", "a4"]);
 
   const doc = cdoc.doc;
   const cols = settings.numCols;
@@ -149,7 +149,7 @@ export async function jsPdfGenerator(
     let advance_y = 0;
 
     resetX();
-    const lineHeight = (fos.section * 2) / doc.internal.scaleFactor;
+    const lineHeight = los.section  / doc.internal.scaleFactor;
     if (!cdoc.isTop()) {
       advance_y += lineHeight;
       if (!simulate) cdoc.cursor.y += lineHeight; // fonts are in point...

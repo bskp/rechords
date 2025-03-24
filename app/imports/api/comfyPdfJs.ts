@@ -1,10 +1,17 @@
 import { jsPDF } from "jspdf";
 import Chord from "./libchr0d/chord";
 export class Margins {
-  top = 10;
-  right = 10;
-  bottom = 10;
-  left = 10;
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+  constructor(scale:number) {
+  this.top = 0.8*scale;
+  this.right = 1*scale;
+  this.bottom = 1.2*scale;
+  this.left = 1*scale;
+
+  }
 
   tb = () => this.top + this.bottom;
   lr = () => this.left + this.right;
@@ -174,8 +181,8 @@ export class ChordPdfJs extends ComfyPdfJs {
 
     let first = true;
     for (const [line, chords] of chordLines) {
-      intCursor.y += tfs * 1.2;
-      if (chords.length) intCursor.y += cfs;
+      intCursor.y += tfs *.8 ;
+      if (chords.length) intCursor.y += cfs*.8;
       this.setFont(...this.chordFont);
       let xpos = intCursor.x,
         lastidx = 0;
@@ -192,7 +199,7 @@ export class ChordPdfJs extends ComfyPdfJs {
           : Math.max(wtext, this.doc.getTextWidth(chord_) + 0.5 * tfs);
         if (!simulate) {
           this.doc.setTextColor("rgb(221, 68, 7)");
-          this.doc.text(chord.toStringKey(), xpos, intCursor.y - tfs);
+          this.doc.text(chord.toStringKey(), xpos, intCursor.y - tfs*.8);
           this.doc.setFontSize(this.chordFont[3] * 0.7);
           this.doc.text(
             chord.toStringTensionsAndSlash(),
