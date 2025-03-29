@@ -196,17 +196,15 @@ export class ChordPdfJs extends ComfyPdfJs {
         const wbase = this.doc.getTextWidth(chord.toStringKey());
         xpos += firstChord
           ? wtext
-          : Math.max(wtext, this.doc.getTextWidth(chord_) + 0.5 * tfs);
+          : Math.max(wtext, this.doc.getTextWidth(chord_) + 0.5 * tfs*.8);
         if (!simulate) {
           this.doc.setTextColor("rgb(221, 68, 7)");
           this.doc.text(chord.toStringKey(), xpos, intCursor.y - tfs*.8);
-          this.doc.setFontSize(this.chordFont[3] * 0.7);
+          this.doc.setFontSize(this.chordFont[3] * 0.8);
           this.doc.text(
             chord.toStringTensionsAndSlash(),
             xpos + wbase,
-            intCursor.y -
-              tfs -
-              (this.chordFont[3] / this.doc.internal.scaleFactor) * 0.3
+            intCursor.y - (tfs - cfs * 0.3)*.8
           );
           this.doc.setTextColor(0);
         }

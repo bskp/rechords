@@ -26,6 +26,9 @@ const PdfViewerStates: () => IPdfViewerSettings = () => ({
     chord: 11,
     footer: 8,
   },
+  factors: {
+    line: 1,
+  },
   layoutSettings: {
     margin: 10,
     section: 5,
@@ -41,8 +44,11 @@ export interface IPdfViewerSettings {
   fontSizes: ITextSizes;
   layoutSettings: ILayoutSettings;
   transpose: number;
+  factors: {
+    line: number;
+  };
 }
-export interface ILayoutSettings  {
+export interface ILayoutSettings {
   colgap: number;
   margin: number;
   section: number;
@@ -88,7 +94,7 @@ export const PdfSettings: FunctionComponent<{
     set({ ...state, includeComments: val });
   };
 
-  const handleFontSize = (name: keyof ITextSizes, value:number) => {
+  const handleFontSize = (name: keyof ITextSizes, value: number) => {
     const newFontSizes = state.fontSizes;
     newFontSizes[name] = value;
     set(
@@ -96,12 +102,20 @@ export const PdfSettings: FunctionComponent<{
       { ...state, fontSizes: newFontSizes }
     );
   };
-  const handleLayoutSize = (name: keyof ILayoutSettings, value:number) => {
+  const handleLayoutSize = (name: keyof ILayoutSettings, value: number) => {
     const newFontSizes = state.layoutSettings;
     newFontSizes[name] = value;
     set(
       // copying object in order not having to detect the state change in deep @componentDidUpdate
       { ...state, layoutSettings: newFontSizes }
+    );
+  };
+  const handleFactors = (name: 'line', value: number) => {
+    const newFontSizes = state.factors;
+    newFontSizes[name] = value;
+    set(
+      // copying object in order not having to detect the state change in deep @componentDidUpdate
+      { ...state, factors: newFontSizes }
     );
   };
 
@@ -112,6 +126,7 @@ export const PdfSettings: FunctionComponent<{
   ];
 
   const fontSizeHandles = [];
+  const factors = [];
   const layoutHandles = [];
 
   const baseSizes = PdfViewerStates();
@@ -121,10 +136,28 @@ export const PdfSettings: FunctionComponent<{
         <div className="fontsize">
           <label htmlFor={"font" + fs}>{fs}</label>
           <SliderWithInput
-            min={1}
+            min={0}
             max={baseSizes.fontSizes[fs] * 3 - 1}
             value={state.fontSizes[fs]}
             onChange={(s) => handleFontSize(fs, s)}
+            id={"font" + fs}
+            // marks={marks}
+          />
+        </div>
+      );
+    }
+  }
+  for (const fs in state.factors) {
+    if (Object.prototype.hasOwnProperty.call(state.factors, fs)) {
+      factors.push(
+        <div className="fontsize">
+          <label htmlFor={"font" + fs}>{fs}</label>
+          <SliderWithInput
+            min={0.05}
+            max={baseSizes.factors[fs] * 3}
+            value={state.factors[fs]}
+            step={0.1}
+            onChange={(s) => handleFactors(fs, s)}
             id={"font" + fs}
             // marks={marks}
           />
@@ -139,7 +172,7 @@ export const PdfSettings: FunctionComponent<{
           <label htmlFor={"font" + fs}>{fs}</label>
           <SliderWithInput
             min={1}
-            max={baseSizes.layoutSettings[fs] * 3 - 1}
+            max={baseSizes.layoutSettings[fs] * 5}
             value={state.layoutSettings[fs]}
             onChange={(s) => handleLayoutSize(fs, s)}
             id={"font" + fs}
@@ -199,6 +232,8 @@ export const PdfSettings: FunctionComponent<{
 
           <div className="title">Font Sizes</div>
           <div className="settingtable">{fontSizeHandles}</div>
+          <div className="title">Lineheight</div>
+          <div className="settingtable">{factors}</div>
           <div className="title">Layout</div>
           <div className="settingtable">{layoutHandles}</div>
 
@@ -209,7 +244,7 @@ export const PdfSettings: FunctionComponent<{
                 setter={setInlineRefs}
                 value={state.inlineReferences}
               >
-                Inline References
+                Expand Repetitions
               </HlbCheckbox>
             </div>
             <div className="fullwidth">
@@ -261,6 +296,3 @@ export const ColumnSetter = ({
     ))}
   </>
 );
-
-
-

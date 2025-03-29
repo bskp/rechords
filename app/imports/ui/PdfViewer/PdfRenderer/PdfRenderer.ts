@@ -26,7 +26,8 @@ export async function jsPdfGenerator(
 
   /** font sizes  */
   const fos = settings.fontSizes;
-  const los = settings.layoutSettings;
+  const las = settings.layoutSettings;
+  const fas = settings.factors;
 
   // Hm. Reusing reactParser would make alot more sense...
   // But hey... here we are...
@@ -40,42 +41,23 @@ export async function jsPdfGenerator(
   const sections_ = mdHtml.body.children;
 
   const sections: Element[] = [];
-  const lookupMap = new Map<string, Element>();
   for (const el of sections_) {
     if (el.tagName == "SECTION") {
-      lookupMap.set(el.id, el);
-      sections.push(el);
-      continue;
-    }
-    if (el.classList.contains("ref")) {
-      const uuid = refPrefix + el.querySelector("strong").textContent.trim();
-      const otherContent = el.childNodes[1];
-      const content = lookupMap.get(uuid);
-      if (settings.inlineReferences && content) {
-        const cloneContent = content.cloneNode(true) as Element;
-        if (otherContent) {
-          const addText = document.createElement("h4");
-          addText.textContent = otherContent.textContent;
-          cloneContent.appendChild(addText);
-        }
-        sections.push(cloneContent);
-      } else {
-        const section = document.createElement("section");
-        const h3 = document.createElement("h3");
-        h3.textContent = "|: " + el.textContent + " :|";
-        section.appendChild(h3);
-        sections.push(section);
+      if (!el.classList.contains("inlineReference") || settings.inlineReferences ) {
+      sections.push(el.cloneNode(true) as Element);
       }
-    } else if (el.tagName == "P") {
-      sections.push(el);
+    } else if (settings.includeComments && el.tagName == "P") {
+      const div = document.createElement("DIV")
+      div.appendChild(el.cloneNode(true))
+      sections.push(div);
     }
   }
 
-  const cdoc = new ChordPdfJs({margins: new Margins(los.margin)}, [settings.orientation, "mm", "a4"]);
+  const cdoc = new ChordPdfJs({margins: new Margins(las.margin)}, [settings.orientation, "mm", "a4"]);
 
   const doc = cdoc.doc;
   const cols = settings.numCols;
-  const colWidth = (cdoc.mediaWidth() - (cols - 1) * los.colgap) / cols;
+  const colWidth = (cdoc.mediaWidth() - (cols - 1) * las.colgap) / cols;
 
   let x0 = cdoc.margins.left;
 
@@ -120,7 +102,7 @@ export async function jsPdfGenerator(
 
     if (cdoc.cursor.y + simHeight > cdoc.maxY()) {
       const c = cdoc.cursor;
-      const g = los.colgap;
+      const g = las.colgap;
       x0 += colWidth + g;
       cdoc.cursor.y = x0 > header.x ? cdoc.margins.top : header.y;
       if (debug) {
@@ -149,7 +131,7 @@ export async function jsPdfGenerator(
     let advance_y = 0;
 
     resetX();
-    const lineHeight = los.section  / doc.internal.scaleFactor;
+    const lineHeight =  las.section  / doc.internal.scaleFactor;
     if (!cdoc.isTop()) {
       advance_y += lineHeight;
       if (!simulate) cdoc.cursor.y += lineHeight; // fonts are in point...

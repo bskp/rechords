@@ -10,6 +10,7 @@ export type SliderWithInputProps = {
   value: number;
   onChange: (v: number) => void;
   id?: string;
+  step?: number
 };
 
 export const SliderWithInput: FunctionComponent<SliderWithInputProps> = (p) => {
@@ -19,12 +20,12 @@ export const SliderWithInput: FunctionComponent<SliderWithInputProps> = (p) => {
       <div className="slidecontainer">
         <input
           type="range"
+          step={p.step||1}
           min={p.min}
           max={p.max}
           value={p.value}
           className="slider"
-          id="myRange"
-          onChange={(v) => p.onChange(parseInt(v.currentTarget.value))}
+          onChange={(v) => p.onChange(parseFloat(v.currentTarget.value))}
         ></input>
       </div>
       <QuickInput id={id} onChange={p.onChange} value={p.value} />
