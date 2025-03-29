@@ -20,7 +20,7 @@ import { countChords } from "../../Transposer";
 export async function jsPdfGenerator(
   song: Song,
   settings: IPdfViewerSettings,
-  debug = false,
+  debug = false
 ): Promise<string> {
   if (!song) return "";
 
@@ -43,17 +43,24 @@ export async function jsPdfGenerator(
   const sections: Element[] = [];
   for (const el of sections_) {
     if (el.tagName == "SECTION") {
-      if (!el.classList.contains("inlineReference") || settings.inlineReferences ) {
-      sections.push(el.cloneNode(true) as Element);
+      if (
+        !el.classList.contains("inlineReference") ||
+        settings.inlineReferences
+      ) {
+        sections.push(el.cloneNode(true) as Element);
       }
     } else if (settings.includeComments && el.tagName == "P") {
-      const div = document.createElement("DIV")
-      div.appendChild(el.cloneNode(true))
+      const div = document.createElement("DIV");
+      div.appendChild(el.cloneNode(true));
       sections.push(div);
     }
   }
 
-  const cdoc = new ChordPdfJs({margins: new Margins(las.margin)}, [settings.orientation, "mm", "a4"]);
+  const cdoc = new ChordPdfJs({ margins: new Margins(las.margin) }, [
+    settings.orientation,
+    "mm",
+    "a4",
+  ]);
 
   const doc = cdoc.doc;
   const cols = settings.numCols;
@@ -67,25 +74,36 @@ export async function jsPdfGenerator(
   cdoc.textFont = [...Bric, fos.text];
 
   cdoc.setFont(...Coo, fos.header);
+  const songArtist = mdHtml.querySelector(".sd-header>h2")?.textContent || "";
+  const songTitle = mdHtml.querySelector(".sd-header>h1")?.textContent || "";
 
-  const songArtist = mdHtml.querySelector(".sd-header>h2");
-  const dima = cdoc.textLine(songArtist.textContent);
-  cdoc.cursor.y += fos.section / doc.internal.scaleFactor;
+  let header;
+  if (cols > 2) {
+    const dima = cdoc.textLine(songArtist);
+    cdoc.cursor.y += (fos.header * 0.2) / doc.internal.scaleFactor;
 
-  const songTitle = mdHtml.querySelector(".sd-header>h1");
-  cdoc.doc.setTextColor("rgb(221, 68, 7)");
-  const dimt = cdoc.textLine(songTitle.textContent);
-  cdoc.doc.setTextColor(0);
+    cdoc.doc.setTextColor("rgb(221, 68, 7)");
+    const dimt = cdoc.textLine(songTitle);
+    cdoc.doc.setTextColor(0);
 
-  const header = { y: cdoc.cursor.y, x: x0 + Math.max(dima.w, dimt.w) };
+    header = { y: cdoc.cursor.y, x: x0 + Math.max(dima.w, dimt.w) };
+  } else {
+    const dima = cdoc.textFragment(songArtist + "  ");
+
+    cdoc.doc.setTextColor("rgb(221, 68, 7)");
+    const dimt = cdoc.textFragment(songTitle);
+    cdoc.doc.setTextColor(0);
+
+    header = { y: cdoc.cursor.y, x: x0 + Math.max(dima.w, dimt.w) };
+  }
 
   function placeFooter() {
-    cdoc.setFont(...Coo, fos.footer);
+    cdoc.setFont(...Bric, fos.footer);
     doc.text(
-      songTitle.textContent + " - " + songArtist.textContent,
+      songTitle+ " - " + songArtist,
       cdoc.margins.left + cdoc.mediaWidth() / 2,
       cdoc.maxY(),
-      { align: "center", baseline: "top" },
+      { align: "center", baseline: "top" }
     );
   }
   placeFooter();
@@ -131,7 +149,7 @@ export async function jsPdfGenerator(
     let advance_y = 0;
 
     resetX();
-    const lineHeight =  las.section  / doc.internal.scaleFactor;
+    const lineHeight = (las.section + fos.chord) / doc.internal.scaleFactor;
     if (!cdoc.isTop()) {
       advance_y += lineHeight;
       if (!simulate) cdoc.cursor.y += lineHeight; // fonts are in point...
@@ -140,12 +158,12 @@ export async function jsPdfGenerator(
     cdoc.setFont(...BricBold, fos.section);
     advance_y += cdoc.textLine(
       section.querySelector("h3")?.innerText,
-      simulate,
+      simulate
     ).h;
     cdoc.setFont(...Bric, fos.text);
     advance_y += cdoc.textLine(
       section.querySelector("h4")?.innerText,
-      simulate,
+      simulate
     ).h;
 
     const lines = section.querySelectorAll("span.line");
@@ -157,17 +175,17 @@ export async function jsPdfGenerator(
         text: c.innerText,
         chord: Chord.from(c.dataset?.chord)?.transposed(
           settings.transpose,
-          notation,
+          notation
         ), // libChrod.transpose(c.dataset?.chord, key, settings.transpose),
       }));
-      advance_y += cdoc.placeChords(fragments, colWidth, simulate).advance_y;
+      advance_y += cdoc.placeChords(fragments, colWidth, simulate, fas).advance_y;
     }
 
     if (settings.includeComments && section.tagName == "P") {
       cdoc.setFont(...Bric, fos.text);
       const texts: string[] = cdoc.doc.splitTextToSize(
         section.textContent,
-        colWidth,
+        colWidth
       );
       advance_y += texts
         .map((l) => cdoc.textLine(l, simulate).h)
@@ -183,19 +201,15 @@ export async function jsPdfGenerator(
 
     for (let i = 1; i <= total; i++) {
       doc.setPage(i);
-      cdoc.setFont(...Coo, fos.footer);
-      doc.text(
-        i + " / " + total,
-        cdoc.maxX(),
-        cdoc.maxY(),
-        { align: "right", baseline: "top" },
-      );
-      doc.text(
-        new Date().toLocaleString(),
-        cdoc.margins.left,
-        cdoc.maxY(),
-        { align: "left", baseline: "top" },
-      );
+      cdoc.setFont(...Bric, fos.footer);
+      doc.text(i + " / " + total, cdoc.maxX(), cdoc.maxY(), {
+        align: "right",
+        baseline: "top",
+      });
+      doc.text(new Date().toLocaleString(), cdoc.margins.left, cdoc.maxY(), {
+        align: "left",
+        baseline: "top",
+      });
     }
   }
 
@@ -204,7 +218,7 @@ export async function jsPdfGenerator(
   // Save the Data
   const pdfData = doc.output("arraybuffer");
   const pdfBlobUrl = window.URL.createObjectURL(
-    new Blob([pdfData], { type: "application/pdf" }),
+    new Blob([pdfData], { type: "application/pdf" })
   );
   return pdfBlobUrl;
 
@@ -219,19 +233,19 @@ async function loadFonts(cdoc: ChordPdfJs) {
       "/fonts/pdf/ShantellSans-SemiBold.ttf",
       "Sh",
       "normal",
-      "light",
+      "light"
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Regular.ttf",
       "Bric",
       "normal",
-      "regular",
+      "regular"
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Bold.ttf",
       "Bric",
       "normal",
-      "bold",
+      "bold"
     ),
   ]);
   return out;

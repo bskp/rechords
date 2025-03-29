@@ -25,14 +25,15 @@ const PdfViewerStates: () => IPdfViewerSettings = () => ({
     section: 16,
     text: 16,
     chord: 11,
-    footer: 8,
+    footer: 9,
   },
   factors: {
-    line: 1,
+    text: 1,
+    chord: 1,
   },
   layoutSettings: {
-    margin: 10,
-    section: 5,
+    margin: 12,
+    section: 10,
     colgap: 3,
   },
 });
@@ -46,7 +47,8 @@ export interface IPdfViewerSettings {
   layoutSettings: ILayoutSettings;
   transpose: number;
   factors: {
-    line: number;
+    text: number;
+    chord: number
   };
 }
 export interface ILayoutSettings {
@@ -111,7 +113,7 @@ export const PdfSettings: FunctionComponent<{
       { ...state, layoutSettings: newFontSizes }
     );
   };
-  const handleFactors = (name: 'line', value: number) => {
+  const handleFactors = (name: 'chord'|'text', value: number) => {
     const newFontSizes = state.factors;
     newFontSizes[name] = value;
     set(
@@ -133,6 +135,7 @@ export const PdfSettings: FunctionComponent<{
   const layoutHandles = [];
 
   const baseSizes = PdfViewerStates();
+
   for (const fs in state.fontSizes) {
     if (Object.prototype.hasOwnProperty.call(state.fontSizes, fs)) {
       fontSizeHandles.push(
@@ -150,6 +153,7 @@ export const PdfSettings: FunctionComponent<{
       );
     }
   }
+
   for (const fs in state.factors) {
     if (Object.prototype.hasOwnProperty.call(state.factors, fs)) {
       factors.push(
@@ -174,10 +178,11 @@ export const PdfSettings: FunctionComponent<{
         <div className="fontsize">
           <label htmlFor={"font" + fs}>{fs}</label>
           <SliderWithInput
-            min={1}
+            min={0}
             max={baseSizes.layoutSettings[fs] * 5}
             value={state.layoutSettings[fs]}
             onChange={(s) => handleLayoutSize(fs, s)}
+            step={0.5}
             id={"font" + fs}
             // marks={marks}
           />

@@ -6,16 +6,10 @@ import { navigateCallback, View } from "../api/helpers";
 import { Button } from "./Button";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { ReactSVG } from "react-svg";
-import {
-  ColumnSetter,
-  IPdfViewerSettings,
-  PdfSettings,
-} from "./PdfViewer/PdfSettings";
-import Transposer, { Transpose, useTranspose } from "./Transposer";
-import { bool } from "prop-types";
+import { ColumnSetter } from "./PdfViewer/PdfSettings";
+import Transposer, { useTranspose } from "./Transposer";
 import Chord from "../api/libchr0d/chord";
 import { getTransposeFromTag, parseChords } from "./Viewer";
-import { Notation } from "../api/libchr0d/note";
 import { SliderWithInput } from "./GuiElements/SliderWithInput";
 import { HlbCheckbox } from "./GuiElements/HlbCheckbox";
 
@@ -45,6 +39,15 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
               max={200}
               min={10}
               onChange={setScale}
+              value={scale}
+            ></SliderWithInput>
+          </div>
+          <div className="title">Lineheight</div>
+          <div className="table">
+            <SliderWithInput
+              max={200}
+              min={10}
+              onChange={setLineHeight}
               value={scale}
             ></SliderWithInput>
           </div>
@@ -107,8 +110,8 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
           <Sheet
             song={song}
             transpose={{
-              semitones: transpose.semitones,
-              notation: transpose.notation,
+              semitones: ts.transpose.semitones,
+              notation: ts.transpose.notation,
             }}
             hideChords={hideChords}
             style={sheetStyle}

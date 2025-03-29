@@ -5,12 +5,11 @@ export class Margins {
   right: number;
   bottom: number;
   left: number;
-  constructor(scale:number) {
-  this.top = 0.8*scale;
-  this.right = 1*scale;
-  this.bottom = 1.2*scale;
-  this.left = 1*scale;
-
+  constructor(scale: number) {
+    this.top = 0.8 * scale;
+    this.right = 1 * scale;
+    this.bottom = 1 * scale;
+    this.left = 1 * scale;
   }
 
   tb = () => this.top + this.bottom;
@@ -131,10 +130,10 @@ export class ChordPdfJs extends ComfyPdfJs {
   placeChords(
     fragments: { text: string; chord: Chord }[],
     width: number,
-    simulate = false
+    simulate = false,
+    lineheigts = {chord:1, text:1} 
   ): { advance_y: number; numlineBreaksInserted: number; intCursor: Cursor } {
-    let w = 0,
-      br = 0;
+    let w = 0, br = 0;
 
     const intCursor = new Cursor(this.cursor.x, this.cursor.y);
 
@@ -181,8 +180,9 @@ export class ChordPdfJs extends ComfyPdfJs {
 
     let first = true;
     for (const [line, chords] of chordLines) {
-      intCursor.y += tfs *.8 ;
-      if (chords.length) intCursor.y += cfs*.8;
+      intCursor.y += tfs * lineheigts.text;
+      // may be constant line height (even without chords) is more readable?
+      if (chords.length) intCursor.y += cfs * lineheigts.chord;
       this.setFont(...this.chordFont);
       let xpos = intCursor.x,
         lastidx = 0;
@@ -196,15 +196,15 @@ export class ChordPdfJs extends ComfyPdfJs {
         const wbase = this.doc.getTextWidth(chord.toStringKey());
         xpos += firstChord
           ? wtext
-          : Math.max(wtext, this.doc.getTextWidth(chord_) + 0.5 * tfs*.8);
+          : Math.max(wtext, this.doc.getTextWidth(chord_) + 0.5 * tfs );
         if (!simulate) {
           this.doc.setTextColor("rgb(221, 68, 7)");
-          this.doc.text(chord.toStringKey(), xpos, intCursor.y - tfs*.8);
-          this.doc.setFontSize(this.chordFont[3] * 0.8);
+          this.doc.text(chord.toStringKey(), xpos, intCursor.y - tfs);
+          this.doc.setFontSize(this.chordFont[3] * 0.7);
           this.doc.text(
             chord.toStringTensionsAndSlash(),
             xpos + wbase,
-            intCursor.y - (tfs - cfs * 0.3)*.8
+            intCursor.y - (tfs - cfs * 0.3)  
           );
           this.doc.setTextColor(0);
         }
