@@ -45,10 +45,11 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
           <div className="title">Lineheight</div>
           <div className="table">
             <SliderWithInput
-              max={200}
-              min={10}
+              max={3}
+              min={0.1}
+              step={0.05}
               onChange={setLineHeight}
-              value={scale}
+              value={lineHeight}
             ></SliderWithInput>
           </div>
           <div className="title">Columns</div>
