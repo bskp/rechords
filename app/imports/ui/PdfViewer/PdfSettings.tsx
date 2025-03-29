@@ -10,6 +10,7 @@ import { Song } from "/imports/api/collections";
 import Chord from "/imports/api/libchr0d/chord";
 import { Button } from "../Button";
 import { HlbCheckbox } from "../GuiElements/HlbCheckbox";
+import { stat } from "fs";
 
 // Using provider in order to guarantee
 // new properties each time
@@ -118,6 +119,8 @@ export const PdfSettings: FunctionComponent<{
       { ...state, factors: newFontSizes }
     );
   };
+  
+
 
   const orientations: [string, ReactElement, string][] = [
     // eslint-disable-next-line react/jsx-key
@@ -187,6 +190,9 @@ export const PdfSettings: FunctionComponent<{
   const cancel = <ReactSVG src="/svg/cancel.svg" />;
 
   const ts = useTranspose(getTransposeFromTag(song.getTags()));
+  useEffect(()=> {
+    set({...state, transpose: ts.transpose.semitones})
+  },[ts.transpose.semitones])
 
   return (
     <>
