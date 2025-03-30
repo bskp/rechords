@@ -1,4 +1,4 @@
-import React, { MouseEventHandler } from "react";
+import React, { useState } from "react";
 
 import "./transposerStyle.less";
 import Chord from "/imports/api/libchr0d/chord";
@@ -14,8 +14,16 @@ export const rotToTranspose = (rotation: number) =>
 export const transposeToRotation = (semitones: number) =>
   semitones - (semitones % 2 == 0 ? 0 : Math.sign(semitones) * 6);
 
+export const countChords = (chords: Chord[]) => {
+  const counts: Record<string, number> = {};
+  chords
+    .map((c) => c.asCode())
+    .forEach((code) => (counts[code] = counts[code] ? counts[code] + 1 : 1));
+  return counts;
+};
+
 export type Transpose = {
-  semitones: number;
+  semitones: number | undefined;
   notation: Notation;
 };
 
@@ -50,7 +58,7 @@ const Transposer = (props: {
   const rotKey = transposeToRotation(keyValue ?? 0);
 
   const semiTones = props.transpose ?? 0;
-  const [rotation, setRotation] = React.useState<number>(
+  const [rotation, setRotation] = useState<number>(
     transposeToRotation(semiTones),
   );
 
@@ -322,37 +330,27 @@ const Transposer = (props: {
 
 export default Transposer;
 
-export function countChords(chords: Chord[]) {
-  const counts: Record<string,number> = {};
-  chords
-    .map((c) => c.asCode())
-    .forEach((code) => (counts[code] = counts[code] ? counts[code] + 1 : 1));
-  return counts;
-}
-
-
-export function useTranspose(initialSemitones = 0) {
-
-  const [showTransposer, setShowTransposer] = React.useState(false);
-  const [transpose, setTranspose] = React.useState<{
-    semitones: number;
+export const useTranspose = (initialSemitones = 0) => {
+  const [showTransposer, setShowTransposer] = useState(false);
+  const [transpose, setTranspose] = useState<{
+    semitones: number | undefined;
     notation: Notation;
   }>({
     semitones: initialSemitones,
     notation: "undetermined",
   });
 
-  const refChordsheet = React.createRef<HTMLDivElement>();
-
-  let normedSemitones = transpose.semitones % 12;
+  let normedSemitones = (transpose.semitones ?? 0) % 12;
   if (normedSemitones > 6) {
     normedSemitones -= 12;
   }
   const sign = Math.sign(normedSemitones) >= 0 ? "+" : "-";
-  const displayTranspose = `${sign} ${Math.abs(normedSemitones)}`;
+  const displayTranspose = `${sign} ${Math.abs(normedSemitones)}`;
   return {
-    showTransposer,setShowTransposer
-    transpose, setTranspose,
-    displayTranspose
-  }
-}
+    showTransposer,
+    setShowTransposer,
+    transpose,
+    setTranspose,
+    displayTranspose,
+  };
+};

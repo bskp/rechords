@@ -1,6 +1,5 @@
 import * as React from "react";
-import { useEffect } from "react";
-import { FunctionComponent, ReactElement, useState } from "react";
+import { FunctionComponent, ReactElement, useEffect, useState } from "react";
 import { Columns, Landscape, Portrait } from "../GuiElements/SettingIcons";
 import { SliderWithInput } from "../GuiElements/SliderWithInput";
 import { ReactSVG } from "react-svg";
@@ -10,7 +9,6 @@ import { Song } from "/imports/api/collections";
 import Chord from "/imports/api/libchr0d/chord";
 import { Button } from "../Button";
 import { HlbCheckbox } from "../GuiElements/HlbCheckbox";
-import { stat } from "fs";
 
 // Using provider in order to guarantee
 // new properties each time
@@ -45,17 +43,19 @@ export interface IPdfViewerSettings {
   includeComments: boolean;
   fontSizes: ITextSizes;
   layoutSettings: ILayoutSettings;
-  transpose: number;
+  transpose: number | undefined;
   factors: {
     text: number;
-    chord: number
+    chord: number;
   };
 }
+
 export interface ILayoutSettings {
   colgap: number;
   margin: number;
   section: number;
 }
+
 export interface ITextSizes {
   header: number;
   section: number;
@@ -82,7 +82,7 @@ export const PdfSettings: FunctionComponent<{
     set({ ...state, numCols: cols });
   };
   const handleOrientationChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
@@ -102,7 +102,7 @@ export const PdfSettings: FunctionComponent<{
     newFontSizes[name] = value;
     set(
       // copying object in order not having to detect the state change in deep @componentDidUpdate
-      { ...state, fontSizes: newFontSizes }
+      { ...state, fontSizes: newFontSizes },
     );
   };
   const handleLayoutSize = (name: keyof ILayoutSettings, value: number) => {
@@ -110,19 +110,17 @@ export const PdfSettings: FunctionComponent<{
     newFontSizes[name] = value;
     set(
       // copying object in order not having to detect the state change in deep @componentDidUpdate
-      { ...state, layoutSettings: newFontSizes }
+      { ...state, layoutSettings: newFontSizes },
     );
   };
-  const handleFactors = (name: 'chord'|'text', value: number) => {
+  const handleFactors = (name: "chord" | "text", value: number) => {
     const newFontSizes = state.factors;
     newFontSizes[name] = value;
     set(
       // copying object in order not having to detect the state change in deep @componentDidUpdate
-      { ...state, factors: newFontSizes }
+      { ...state, factors: newFontSizes },
     );
   };
-  
-
 
   const orientations: [string, ReactElement, string][] = [
     // eslint-disable-next-line react/jsx-key
@@ -130,74 +128,61 @@ export const PdfSettings: FunctionComponent<{
     ["l", Landscape, "Landscape: 297mm x 210mm"],
   ];
 
-  const fontSizeHandles = [];
-  const factors = [];
-  const layoutHandles = [];
-
   const baseSizes = PdfViewerStates();
 
-  for (const fs in state.fontSizes) {
-    if (Object.prototype.hasOwnProperty.call(state.fontSizes, fs)) {
-      fontSizeHandles.push(
-        <div className="fontsize">
-          <label htmlFor={"font" + fs}>{fs}</label>
-          <SliderWithInput
-            min={0}
-            max={baseSizes.fontSizes[fs] * 3 - 1}
-            value={state.fontSizes[fs]}
-            onChange={(s) => handleFontSize(fs, s)}
-            id={"font" + fs}
-            // marks={marks}
-          />
-        </div>
-      );
-    }
-  }
+  // Assuming fontSizes is an object
+  const fontSizeHandles = (
+    Object.keys(state.fontSizes) as (keyof ITextSizes)[]
+  ).map((fs) => (
+    <div className="fontsize" key={fs}>
+      <label htmlFor={"font" + fs}>{fs}</label>
+      <SliderWithInput
+        min={0}
+        max={baseSizes.fontSizes[fs] * 3 - 1}
+        value={state.fontSizes[fs]}
+        onChange={(s) => handleFontSize(fs, s)}
+        id={"font" + fs}
+      />
+    </div>
+  ));
 
-  for (const fs in state.factors) {
-    if (Object.prototype.hasOwnProperty.call(state.factors, fs)) {
-      factors.push(
-        <div className="fontsize">
-          <label htmlFor={"font" + fs}>{fs}</label>
-          <SliderWithInput
-            min={0.05}
-            max={baseSizes.factors[fs] * 3}
-            value={state.factors[fs]}
-            step={0.1}
-            onChange={(s) => handleFactors(fs, s)}
-            id={"font" + fs}
-            // marks={marks}
-          />
-        </div>
-      );
-    }
-  }
-  for (const fs in state.layoutSettings) {
-    if (Object.prototype.hasOwnProperty.call(state.layoutSettings, fs)) {
-      layoutHandles.push(
-        <div className="fontsize">
-          <label htmlFor={"font" + fs}>{fs}</label>
-          <SliderWithInput
-            min={0}
-            max={baseSizes.layoutSettings[fs] * 5}
-            value={state.layoutSettings[fs]}
-            onChange={(s) => handleLayoutSize(fs, s)}
-            step={0.5}
-            id={"font" + fs}
-            // marks={marks}
-          />
-        </div>
-      );
-    }
-  }
+  const factors = (Object.keys(state.factors) as ("text" | "chord")[]).map(
+    (fs) => (
+      <div className="fontsize">
+        <label htmlFor={"font" + fs}>{fs}</label>
+        <SliderWithInput
+          min={0.05}
+          max={baseSizes.factors[fs] * 3}
+          value={state.factors[fs]}
+          step={0.1}
+          onChange={(s) => handleFactors(fs, s)}
+          id={"font" + fs}
+        />
+      </div>
+    ),
+  );
 
-  const ok = <ReactSVG src="/svg/ok.svg" />;
-  const cancel = <ReactSVG src="/svg/cancel.svg" />;
+  const layoutHandles = (
+    Object.keys(state.layoutSettings) as (keyof ILayoutSettings)[]
+  ).map((fs) => (
+    <div className="fontsize">
+      <label htmlFor={"font" + fs}>{fs}</label>
+      <SliderWithInput
+        min={0}
+        max={baseSizes.layoutSettings[fs] * 5}
+        value={state.layoutSettings[fs]}
+        onChange={(s) => handleLayoutSize(fs, s)}
+        step={0.5}
+        id={"font" + fs}
+        // marks={marks}
+      />
+    </div>
+  ));
 
   const ts = useTranspose(getTransposeFromTag(song.getTags()));
-  useEffect(()=> {
-    set({...state, transpose: ts.transpose.semitones})
-  },[ts.transpose.semitones])
+  useEffect(() => {
+    set({ ...state, transpose: ts.transpose.semitones });
+  }, [ts.transpose.semitones]);
 
   return (
     <>

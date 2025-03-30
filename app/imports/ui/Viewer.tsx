@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import Transposer, { Transpose, useTranspose } from "./Transposer";
+import Transposer, { useTranspose } from "./Transposer";
 import Chord from "../api/libchr0d/chord";
 import { Song } from "../api/collections";
 import {
@@ -14,12 +14,7 @@ import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
-import {
-  MdEdit,
-  MdOutlinePictureAsPdf,
-  MdPictureAsPdf,
-  MdPrint,
-} from "react-icons/md";
+import { MdEdit, MdPictureAsPdf, MdPrint } from "react-icons/md";
 import { usePinch } from "@use-gesture/react";
 
 export interface ViewerProps {
@@ -29,7 +24,7 @@ export interface ViewerProps {
 const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const transposeState = useTranspose(getTransposeFromTag(song.getTags()));
 
-  const [showChords, setShowChords] = useState<boolean>(true);
+  const [showChords] = useState<boolean>(true);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
   const [isVideoActive, setIsVideoActive] = useState<boolean>(false);
   const [textZoom, setTextZoom] = useState<number>(1);
@@ -66,7 +61,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     });
     stopAutoScroll();
     setIsVideoActive(false);
-    const preventDefault = (e) => e.preventDefault();
+    const preventDefault = (e: Event) => e.preventDefault();
     document.addEventListener("gesturestart", preventDefault);
     document.addEventListener("gesturechange", preventDefault);
     return () => {
