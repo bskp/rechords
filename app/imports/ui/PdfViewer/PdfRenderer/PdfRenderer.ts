@@ -42,17 +42,25 @@ export async function jsPdfGenerator(
 
   const sections: Element[] = [];
   for (const el of sections_) {
-    if (el.tagName == "SECTION") {
+    if (el.tagName === "SECTION") {
       if (
         !el.classList.contains("inlineReference") ||
         settings.inlineReferences
       ) {
         sections.push(el.cloneNode(true) as Element);
       }
-    } else if (settings.includeComments && el.tagName == "P") {
+    } else if (settings.includeComments && el.tagName === "P") {
       const div = document.createElement("DIV");
       div.appendChild(el.cloneNode(true));
       sections.push(div);
+    } else if (
+      !settings.inlineReferences &&
+      el.tagName === "DIV" &&
+      el.classList.contains("ref")
+    ) {
+      const div = document.createElement("DIV");
+      div.appendChild(el.cloneNode(true));
+      sections.push(div as Element);
     }
   }
 
@@ -100,7 +108,7 @@ export async function jsPdfGenerator(
   function placeFooter() {
     cdoc.setFont(...Bric, fos.footer);
     doc.text(
-      songTitle+ " - " + songArtist,
+      songTitle + " - " + songArtist,
       cdoc.margins.left + cdoc.mediaWidth() / 2,
       cdoc.maxY(),
       { align: "center", baseline: "top" }
@@ -160,6 +168,30 @@ export async function jsPdfGenerator(
       section.querySelector("h3")?.innerText,
       simulate
     ).h;
+
+    if (section.classList.contains("ref")) {
+      const [strong, adm] = section.childNodes;
+      if (!simulate) {
+        doc.triangle(
+          cdoc.cursor.x,
+          cdoc.cursor.y,
+          cdoc.cursor.x,
+          cdoc.cursor.y - 4,
+          cdoc.cursor.x + 3,
+          cdoc.cursor.y - 2,
+          "FD"
+        );
+      }
+      cdoc.cursor.x += 5;
+
+      const sdf = cdoc.textFragment(strong.textContent, simulate);
+      if (adm) {
+        cdoc.setFont(...Bric, fos.text);
+        const df = cdoc.textFragment("  " + adm.textContent, simulate);
+      }
+      advance_y += sdf.h;
+    }
+
     cdoc.setFont(...Bric, fos.text);
     advance_y += cdoc.textLine(
       section.querySelector("h4")?.innerText,
@@ -178,7 +210,12 @@ export async function jsPdfGenerator(
           notation
         ), // libChrod.transpose(c.dataset?.chord, key, settings.transpose),
       }));
-      advance_y += cdoc.placeChords(fragments, colWidth, simulate, fas).advance_y;
+      advance_y += cdoc.placeChords(
+        fragments,
+        colWidth,
+        simulate,
+        fas
+      ).advance_y;
     }
 
     if (settings.includeComments && section.tagName == "P") {
