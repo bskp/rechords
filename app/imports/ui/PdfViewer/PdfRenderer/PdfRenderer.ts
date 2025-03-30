@@ -219,6 +219,7 @@ export async function jsPdfGenerator(
     }
 
     if (settings.includeComments && section.tagName == "P") {
+      doc.setTextColor("rgb(120,120,120)")
       cdoc.setFont(...Bric, fos.text);
       const texts: string[] = cdoc.doc.splitTextToSize(
         section.textContent,
@@ -229,6 +230,7 @@ export async function jsPdfGenerator(
         .reduce((sum, current) => sum + current, 0);
     }
 
+      doc.setTextColor(0)
     return advance_y;
   }
 
