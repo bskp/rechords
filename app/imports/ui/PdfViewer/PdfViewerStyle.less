@@ -68,14 +68,11 @@
 @qb: 2px;
 @qh: 30px;
 
-#pdfsettings {
-  background-color: var(--bg-list);
-}
-
 .pdfSettings {
   margin-top: auto;
   margin-bottom: auto;
   padding: 30px;
+
   .quickinput svg {
     stroke-width: 2px;
     fill: var(--text-sidebar);
@@ -123,7 +120,6 @@
   }
 
   .save-row {
-    display: flex;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -190,6 +186,10 @@
       }
     }
 
+    + label {
+      cursor: pointer;
+    }
+
     + label:hover {
       svg {
         stroke: var(--accent-flat);
@@ -220,6 +220,7 @@
     margin-top: 10px;
     color: var(--text-sidebar);
   }
+
   .settingBase {
     border: var(--text-sidebar) solid 2px;
     border-radius: 4px;
@@ -282,11 +283,11 @@
     }
 
     input[type="number"] {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 500;
       height: 22px;
       min-width: 0;
-      flex: 0 0 20px;
+      flex: 0 0 22px;
       text-align: right;
 
       &::selection {
@@ -324,6 +325,7 @@
       border-color: transparent;
       color: transparent;
     }
+
     /* Special styling for WebKit/Blink */
     input[type="range"]::-moz-range-thumb,
     input[type="range"]::-webkit-slider-thumb {
@@ -332,7 +334,7 @@
       background-color: var(--accent-flat);
       height: 14px;
       width: 14px;
-      border-radius: 4px;
+      border-radius: 7px;
       cursor: pointer;
       margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
     }
