@@ -160,49 +160,53 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         <Button onClick={() => setShowMenu(true)} phoneOnly>
           <ReactSVG src="/svg/menu.svg" />
         </Button>
-        {userMayWrite() && (
-          <Button onClick={handleContextMenu} hideOnPhone>
-            <MdEdit />
+        <div className="actions-navigate hideOnPhone">
+          {userMayWrite() && (
+            <Button onClick={handleContextMenu} hideOnPhone>
+              <MdEdit />
+            </Button>
+          )}
+          <Button onClick={() => navigateTo(history, View.print, song)}>
+            <MdPrint className="iconbutton" />
           </Button>
-        )}
-        <Button onClick={() => navigateTo(history, View.print, song)}>
-          <MdPrint className="iconbutton" />
-        </Button>
-        <Button onClick={() => navigateTo(history, View.pdf, song)}>
-          <MdPictureAsPdf />
-        </Button>
-        {!song.has_video ? null : isVideoActive ? (
-          <Button onClick={() => setIsVideoActive(false)}>
-            <ReactSVG src="/svg/yt-close.svg" />
+          <Button onClick={() => navigateTo(history, View.pdf, song)}>
+            <MdPictureAsPdf />
           </Button>
-        ) : (
-          <Button onClick={() => setIsVideoActive(true)}>
-            <ReactSVG src="/svg/yt.svg" />
-          </Button>
-        )}
-        {transposeState.showTransposer && (
-          <Transposer
-            transposeSetter={transposeState.setTranspose}
-            transpose={transposeState.transpose.semitones}
-            keyHint={Chord.from(keyTag)}
-            close={() => transposeState.setShowTransposer(false)}
-            chords={chords}
-          />
-        )}
-        <Button onClick={() => transposeState.setShowTransposer(true)}>
-          <ReactSVG src="/svg/transposer.svg" />
-        </Button>
-        <Button onClick={toggleAutoScroll}>
-          {autoScroll ? (
-            <ReactSVG src="/svg/conveyor_active.svg" />
+        </div>
+        <div className="actions-do">
+          {!song.has_video ? null : isVideoActive ? (
+            <Button onClick={() => setIsVideoActive(false)}>
+              <ReactSVG src="/svg/yt-close.svg" />
+            </Button>
           ) : (
-            <ReactSVG
-              src="/svg/conveyor.svg"
-              data-tooltip-content="Auto-Scroll"
-              data-tooltip-id="tt"
+            <Button onClick={() => setIsVideoActive(true)}>
+              <ReactSVG src="/svg/yt.svg" />
+            </Button>
+          )}
+          {transposeState.showTransposer && (
+            <Transposer
+              transposeSetter={transposeState.setTranspose}
+              transpose={transposeState.transpose.semitones}
+              keyHint={Chord.from(keyTag)}
+              close={() => transposeState.setShowTransposer(false)}
+              chords={chords}
             />
           )}
-        </Button>
+          <Button onClick={() => transposeState.setShowTransposer(true)}>
+            <ReactSVG src="/svg/transposer.svg" />
+          </Button>
+          <Button onClick={toggleAutoScroll}>
+            {autoScroll ? (
+              <ReactSVG src="/svg/conveyor_active.svg" />
+            ) : (
+              <ReactSVG
+                src="/svg/conveyor.svg"
+                data-tooltip-content="Auto-Scroll"
+                data-tooltip-id="tt"
+              />
+            )}
+          </Button>
+        </div>
       </aside>
     </VideoContext.Provider>
   );
