@@ -20,8 +20,8 @@ const PdfViewerStates: () => IPdfViewerSettings = () => ({
   transpose: 0,
   fontSizes: {
     header: 25,
-    section: 16,
-    text: 16,
+    section: 15,
+    text: 13,
     chord: 11,
     footer: 9,
   },
