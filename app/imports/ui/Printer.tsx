@@ -10,7 +10,7 @@ import { ColumnSetter } from "./PdfViewer/PdfSettings";
 import Transposer, { useTranspose } from "./Transposer";
 import Chord from "../api/libchr0d/chord";
 import { getTransposeFromTag, parseChords } from "./Viewer";
-import { SliderWithInput } from "./GuiElements/SliderWithInput";
+import { HlbSliderWithInput } from "./GuiElements/HlbSliderWithInput";
 import { HlbCheckbox } from "./GuiElements/HlbCheckbox";
 
 type PrinterProps = {
@@ -33,24 +33,24 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
       </Button>
       <div className="pdfSettings">
         <div className="grid">
-          <div className="title">Zoom</div>
+          <div className="title">Schriftgrösse</div>
           <div className="table">
-            <SliderWithInput
+            <HlbSliderWithInput
               max={200}
               min={10}
               onChange={setScale}
               value={scale}
-            ></SliderWithInput>
+            ></HlbSliderWithInput>
           </div>
-          <div className="title">Lineheight</div>
+          <div className="title">Zeilenabstand</div>
           <div className="table">
-            <SliderWithInput
+            <HlbSliderWithInput
               max={3}
               min={0.1}
               step={0.05}
               onChange={setLineHeight}
               value={lineHeight}
-            ></SliderWithInput>
+            ></HlbSliderWithInput>
           </div>
           <div className="title">Columns</div>
           <div className="setting columns">

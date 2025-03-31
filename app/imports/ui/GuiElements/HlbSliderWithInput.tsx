@@ -1,6 +1,7 @@
 import * as React from "react";
 import { FunctionComponent } from "react";
-import { QuickInput } from "./QuickInput";
+import { HlbInput } from "./HlbInput";
+import "./HlbSliderWithInputStyle.less"
 
 const defaultProps = { max: 10, min: 1, onChange: () => undefined };
 
@@ -13,7 +14,8 @@ export type SliderWithInputProps = {
   step?: number;
 };
 
-export const SliderWithInput: FunctionComponent<SliderWithInputProps> = (p) => {
+export const HlbSliderWithInput: FunctionComponent<SliderWithInputProps> = (props) => {
+  const p = {...defaultProps, ...props}
   const id = p.id || React.useId();
   return (
     <>
@@ -28,9 +30,8 @@ export const SliderWithInput: FunctionComponent<SliderWithInputProps> = (p) => {
           onChange={(v) => p.onChange(parseFloat(v.currentTarget.value))}
         ></input>
       </div>
-      <QuickInput id={id} onChange={p.onChange} value={p.value} />
+      <HlbInput id={id} onChange={p.onChange} value={p.value} />
     </>
   );
 };
 
-SliderWithInput.defaultProps = defaultProps;

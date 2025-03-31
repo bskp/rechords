@@ -1,3 +1,4 @@
+import "./HlbCheckboxStyle.less"
 import * as React from "react";
 
 export const HlbCheckbox = (
@@ -17,7 +18,6 @@ export const HlbCheckbox = (
       />
       <label
         htmlFor={id}
-        title="Repeat text of each Reference?"
         className="fullwidth"
       >
         <Cross></Cross> {props.children}

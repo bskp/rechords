@@ -1,0 +1,15 @@
+  input[type="radio"] {
+    display: none;
+
+    &:checked + label {
+      svg {
+        stroke: var(--accent);
+      }
+    }
+
+    + label:hover {
+      svg {
+        stroke: var(--accent-flat);
+      }
+    }
+  }

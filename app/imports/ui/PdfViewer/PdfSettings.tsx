@@ -1,7 +1,7 @@
 import * as React from "react";
 import { FunctionComponent, ReactElement, useEffect, useState } from "react";
 import { Columns, Landscape, Portrait } from "../GuiElements/SettingIcons";
-import { SliderWithInput } from "../GuiElements/SliderWithInput";
+import { HlbSliderWithInput } from "../GuiElements/HlbSliderWithInput";
 import { ReactSVG } from "react-svg";
 import Transposer, { useTranspose } from "../Transposer";
 import { getTransposeFromTag, parseChords } from "../Viewer";
@@ -136,7 +136,7 @@ export const PdfSettings: FunctionComponent<{
   ).map((fs) => (
     <div className="fontsize" key={fs}>
       <label htmlFor={"font" + fs}>{fs}</label>
-      <SliderWithInput
+      <HlbSliderWithInput
         min={0}
         max={baseSizes.fontSizes[fs] * 3 - 1}
         value={state.fontSizes[fs]}
@@ -150,7 +150,7 @@ export const PdfSettings: FunctionComponent<{
     (fs) => (
       <div className="fontsize">
         <label htmlFor={"font" + fs}>{fs}</label>
-        <SliderWithInput
+        <HlbSliderWithInput
           min={0.05}
           max={baseSizes.factors[fs] * 3}
           value={state.factors[fs]}
@@ -167,7 +167,7 @@ export const PdfSettings: FunctionComponent<{
   ).map((fs) => (
     <div className="fontsize">
       <label htmlFor={"font" + fs}>{fs}</label>
-      <SliderWithInput
+      <HlbSliderWithInput
         min={0}
         max={baseSizes.layoutSettings[fs] * 5}
         value={state.layoutSettings[fs]}

@@ -1,0 +1,34 @@
+
+@import (reference) "./settings.less";
+
+  input[type="checkbox"] {
+    display: none;
+
+    &:checked + label {
+      color: var(--accent);
+
+      svg {
+        .cross {
+          stroke: var(--accent);
+        }
+        .box {
+          stroke: var(--gray-dark);
+        }
+      }
+    }
+
+    + label {
+      .settingTitle();
+
+      svg {
+        stroke-width: 3px;
+
+        .cross {
+          stroke: none;
+        }
+        .box {
+          stroke: var(--gray-dark);
+        }
+      }
+    }
+  }

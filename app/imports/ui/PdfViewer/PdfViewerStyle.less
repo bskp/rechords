@@ -1,3 +1,4 @@
+@import (reference) "../GuiElements/settings.less";
 .pdfgrid {
   z-index: 1;
   width: 100%;
@@ -68,11 +69,14 @@
 @qb: 2px;
 @qh: 30px;
 
+#pdfsettings {
+  background-color: var(--bg-list);
+}
+
 .pdfSettings {
   margin-top: auto;
   margin-bottom: auto;
   padding: 30px;
-
   .quickinput svg {
     stroke-width: 2px;
     fill: var(--text-sidebar);
@@ -121,6 +125,7 @@
 
   .save-row {
     display: flex;
+    display: flex;
     justify-content: center;
     align-items: center;
     padding: 5px;
@@ -145,57 +150,7 @@
     font-size: 14px;
   }
 
-  input[type="checkbox"] {
-    display: none;
 
-    &:checked + label {
-      color: var(--accent);
-
-      svg {
-        .cross {
-          stroke: var(--accent);
-        }
-        .box {
-          stroke: var(--gray-dark);
-        }
-      }
-    }
-
-    + label {
-      .settingTitle();
-
-      svg {
-        stroke-width: 3px;
-
-        .cross {
-          stroke: none;
-        }
-        .box {
-          stroke: var(--gray-dark);
-        }
-      }
-    }
-  }
-
-  input[type="radio"] {
-    display: none;
-
-    &:checked + label {
-      svg {
-        stroke: var(--accent);
-      }
-    }
-
-    + label {
-      cursor: pointer;
-    }
-
-    + label:hover {
-      svg {
-        stroke: var(--accent-flat);
-      }
-    }
-  }
 
   // --- NUMBER INPUTS --- //
 
@@ -211,14 +166,6 @@
     appearance: textfield;
     -moz-appearance: textfield;
     -webkit-appearance: textfield;
-  }
-
-  .settingTitle {
-    text-transform: uppercase;
-    font-weight: 700;
-    font-size: 12px;
-    margin-top: 10px;
-    color: var(--text-sidebar);
   }
 
   .settingBase {
@@ -283,11 +230,11 @@
     }
 
     input[type="number"] {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 500;
       height: 22px;
       min-width: 0;
-      flex: 0 0 22px;
+      flex: 0 0 20px;
       text-align: right;
 
       &::selection {
@@ -300,57 +247,6 @@
         outline-width: 1px;
         outline-color: var(--gray-dark);
       }
-    }
-    input[type="range"] {
-      appearance: none;
-      -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
-      width: 100%; /* Specific width is required for Firefox. */
-      background: transparent; /* Otherwise white in Chrome */
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-    }
-
-    input[type="range"]:focus {
-      outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
-    }
-
-    input[type="range"]::-ms-track {
-      width: 100%;
-      cursor: pointer;
-
-      /* Hides the slider so custom styles can be added */
-      background: transparent;
-      border-color: transparent;
-      color: transparent;
-    }
-
-    /* Special styling for WebKit/Blink */
-    input[type="range"]::-moz-range-thumb,
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      border: 0px;
-      background-color: var(--accent-flat);
-      height: 14px;
-      width: 14px;
-      border-radius: 7px;
-      cursor: pointer;
-      margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
-    }
-
-    input[type="range"]::-webkit-slider-runnable-track,
-    input[type="range"]::-moz-range-track {
-      width: 100%;
-      height: 6px;
-      cursor: pointer;
-      background: var(--gray);
-      border-radius: 1.3px;
-      border: 0.2px solid #010101;
-    }
-    input[type="range"]:focus::-moz-range-track,
-    input[type="range"]:focus::-webkit-slider-runnable-track {
-      background: var(--gray-dark);
     }
   }
 

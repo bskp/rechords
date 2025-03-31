@@ -1,3 +1,4 @@
+import "./SettingIconsStyle.less"
 import * as React from "react";
 import { FunctionComponent, memo } from "react";
 

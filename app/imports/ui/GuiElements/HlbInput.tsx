@@ -34,7 +34,7 @@ const updowns: dec[] = [
   [() => true, "+", "-", 1, 1],
 ];
 
-export const QuickInput: FunctionComponent<{
+export const HlbInput: FunctionComponent<{
   id: string;
   value: number;
   onChange: (a: number) => void;
@@ -81,7 +81,6 @@ export const QuickInput: FunctionComponent<{
     }
   };
 
-  const intensity = 1.2;
   return (
     <input
       type="number"
