@@ -160,7 +160,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         <Button onClick={() => setShowMenu(true)} phoneOnly>
           <ReactSVG src="/svg/menu.svg" />
         </Button>
-        <div className="actions-navigate hideOnPhone">
+        <div className="actions-navigate hideOnMobile">
           {userMayWrite() && (
             <Button onClick={handleContextMenu} hideOnPhone>
               <MdEdit />

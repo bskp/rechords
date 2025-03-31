@@ -143,13 +143,15 @@
 
 @media screen {
   #rightSettings {
-    z-index: 1;
+    &.printer--settings {
+      z-index: 3;
+    }
     .pp--settings {
       border-top-left-radius: 10px;
     }
   }
   .simulate-print {
-    z-index: 1;
+    z-index: 3;
     .printify;
     .override-colors;
 
