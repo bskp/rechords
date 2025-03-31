@@ -9,6 +9,7 @@ import { Song } from "/imports/api/collections";
 import Chord from "/imports/api/libchr0d/chord";
 import { parseChords } from "../../Viewer";
 import { countChords } from "../../Transposer";
+import { parseToIntermediateFormat } from "./jsonHoeli";
 
 const ORANGE = "rgb(221, 68, 7)";
 
@@ -25,6 +26,9 @@ export async function jsPdfGenerator(
   debug = false,
 ): Promise<string> {
   if (!song) return "";
+
+  const out = parseToIntermediateFormat(song)
+  console.log(out)
 
   /** font sizes  */
   const fos = settings.fontSizes;
