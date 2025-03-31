@@ -20,7 +20,7 @@ import { countChords } from "../../Transposer";
 export async function jsPdfGenerator(
   song: Song,
   settings: IPdfViewerSettings,
-  debug = false
+  debug = false,
 ): Promise<string> {
   if (!song) return "";
 
@@ -94,16 +94,20 @@ export async function jsPdfGenerator(
     const dimt = cdoc.textLine(songTitle);
     cdoc.doc.setTextColor(0);
 
-    header = { y: cdoc.cursor.y, x: x0 + Math.max(dima.w, dimt.w) };
+    header = { y: cdoc.cursor.y + dima.h, x: x0 + Math.max(dima.w, dimt.w) };
   } else {
+    const dim = cdoc.textFragment(songArtist, true);
+    cdoc.cursor.y += dim.h * 0.6;
     const dima = cdoc.textFragment(songArtist + "  ");
 
     cdoc.doc.setTextColor("rgb(221, 68, 7)");
     const dimt = cdoc.textFragment(songTitle);
     cdoc.doc.setTextColor(0);
+    cdoc.cursor.y += dim.h;
 
-    header = { y: cdoc.cursor.y, x: x0 + Math.max(dima.w, dimt.w) };
+    header = { y: cdoc.cursor.y, x: cdoc.cursor.x };
   }
+  cdoc.cursor.y = header.y;
 
   function placeFooter() {
     cdoc.setFont(...Bric, fos.footer);
@@ -111,7 +115,7 @@ export async function jsPdfGenerator(
       songTitle + " - " + songArtist,
       cdoc.margins.left + cdoc.mediaWidth() / 2,
       cdoc.maxY(),
-      { align: "center", baseline: "top" }
+      { align: "center", baseline: "top" },
     );
   }
   placeFooter();
@@ -119,12 +123,15 @@ export async function jsPdfGenerator(
   const splitSections = sections.flatMap((s) => [...s.children]);
 
   for (const section of splitSections) {
-    const simHeight = placeSection(section, true);
+    let simHeight = placeSection(section, true);
     if (debug) {
       const y0 = cdoc.cursor.y;
       doc.setDrawColor("green");
-      doc.line(x0 - 1, y0, x0 - 1, y0 + simHeight);
+      doc.line(x0, y0, x0, y0 + simHeight);
     }
+    const lineHeight =
+      (las.section + fos.chord) / cdoc.doc.internal.scaleFactor;
+    simHeight += lineHeight;
 
     if (cdoc.cursor.y + simHeight > cdoc.maxY()) {
       const c = cdoc.cursor;
@@ -132,8 +139,8 @@ export async function jsPdfGenerator(
       x0 += colWidth + g;
       cdoc.cursor.y = x0 > header.x ? cdoc.margins.top : header.y;
       if (debug) {
-        // doc.line(x0 - g, c.y, x0 - g, c.y + cdoc.mediaHeight())
-        // doc.line(x0, c.y, x0, c.y + cdoc.mediaHeight())
+        doc.line(x0 - g, c.y, x0 - g, c.y + cdoc.mediaHeight());
+        doc.line(x0, c.y, x0, c.y + cdoc.mediaHeight());
       }
       if (x0 > cdoc.maxX()) {
         doc.addPage();
@@ -149,6 +156,7 @@ export async function jsPdfGenerator(
       doc.line(x0, y0, x0, y0 + simHeight);
     }
     placeSection(section);
+    cdoc.cursor.y += lineHeight; // fonts are in point...
   }
 
   // to think about: instead of simulation flag simulation cursor. that
@@ -157,21 +165,17 @@ export async function jsPdfGenerator(
     let advance_y = 0;
 
     resetX();
-    const lineHeight = (las.section + fos.chord) / doc.internal.scaleFactor;
-    if (!cdoc.isTop()) {
-      advance_y += lineHeight;
-      if (!simulate) cdoc.cursor.y += lineHeight; // fonts are in point...
-    }
 
     cdoc.setFont(...BricBold, fos.section);
     advance_y += cdoc.textLine(
       section.querySelector("h3")?.innerText,
-      simulate
+      simulate,
     ).h;
 
     if (section.classList.contains("ref")) {
       const [strong, adm] = section.childNodes;
       if (!simulate) {
+        cdoc.cursor.y += las.section;
         doc.triangle(
           cdoc.cursor.x,
           cdoc.cursor.y,
@@ -179,7 +183,7 @@ export async function jsPdfGenerator(
           cdoc.cursor.y - 4,
           cdoc.cursor.x + 3,
           cdoc.cursor.y - 2,
-          "FD"
+          "FD",
         );
       }
       cdoc.cursor.x += 5;
@@ -195,7 +199,7 @@ export async function jsPdfGenerator(
     cdoc.setFont(...Bric, fos.text);
     advance_y += cdoc.textLine(
       section.querySelector("h4")?.innerText,
-      simulate
+      simulate,
     ).h;
 
     const lines = section.querySelectorAll("span.line");
@@ -207,30 +211,30 @@ export async function jsPdfGenerator(
         text: c.innerText,
         chord: Chord.from(c.dataset?.chord)?.transposed(
           settings.transpose,
-          notation
+          notation,
         ), // libChrod.transpose(c.dataset?.chord, key, settings.transpose),
       }));
       advance_y += cdoc.placeChords(
         fragments,
         colWidth,
         simulate,
-        fas
+        fas,
       ).advance_y;
     }
 
     if (settings.includeComments && section.tagName == "P") {
-      doc.setTextColor("rgb(120,120,120)")
+      doc.setTextColor("rgb(120,120,120)");
       cdoc.setFont(...Bric, fos.text);
       const texts: string[] = cdoc.doc.splitTextToSize(
         section.textContent,
-        colWidth
+        colWidth,
       );
       advance_y += texts
         .map((l) => cdoc.textLine(l, simulate).h)
         .reduce((sum, current) => sum + current, 0);
     }
 
-      doc.setTextColor(0)
+    doc.setTextColor(0);
     return advance_y;
   }
 
@@ -257,7 +261,7 @@ export async function jsPdfGenerator(
   // Save the Data
   const pdfData = doc.output("arraybuffer");
   const pdfBlobUrl = window.URL.createObjectURL(
-    new Blob([pdfData], { type: "application/pdf" })
+    new Blob([pdfData], { type: "application/pdf" }),
   );
   return pdfBlobUrl;
 
@@ -272,19 +276,19 @@ async function loadFonts(cdoc: ChordPdfJs) {
       "/fonts/pdf/ShantellSans-SemiBold.ttf",
       "Sh",
       "normal",
-      "light"
+      "light",
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Regular.ttf",
       "Bric",
       "normal",
-      "regular"
+      "regular",
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Bold.ttf",
       "Bric",
       "normal",
-      "bold"
+      "bold",
     ),
   ]);
   return out;

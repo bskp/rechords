@@ -10,7 +10,7 @@ export type SliderWithInputProps = {
   value: number;
   onChange: (v: number) => void;
   id?: string;
-  step?: number
+  step?: number;
 };
 
 export const SliderWithInput: FunctionComponent<SliderWithInputProps> = (p) => {
@@ -20,7 +20,7 @@ export const SliderWithInput: FunctionComponent<SliderWithInputProps> = (p) => {
       <div className="slidecontainer">
         <input
           type="range"
-          step={p.step||1}
+          step={p.step || 1}
           min={p.min}
           max={p.max}
           value={p.value}

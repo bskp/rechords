@@ -19,7 +19,7 @@ export class Margins {
 export class Cursor {
   constructor(
     public x = 0,
-    public y = 0
+    public y = 0,
   ) {}
 }
 
@@ -86,7 +86,7 @@ export class ComfyPdfJs {
     p,
     fontname,
     style,
-    weight
+    weight,
   ): Promise<[string, string, string]> {
     const filename = basename(p);
     const blob = await fetch(p).then((response) => response.blob());
@@ -131,9 +131,10 @@ export class ChordPdfJs extends ComfyPdfJs {
     fragments: { text: string; chord: Chord }[],
     width: number,
     simulate = false,
-    lineheigts = {chord:1, text:1} 
+    lineheigts = { chord: 1, text: 1 },
   ): { advance_y: number; numlineBreaksInserted: number; intCursor: Cursor } {
-    let w = 0, br = 0;
+    let w = 0,
+      br = 0;
 
     const intCursor = new Cursor(this.cursor.x, this.cursor.y);
 
@@ -157,7 +158,7 @@ export class ChordPdfJs extends ComfyPdfJs {
     const lines_: string[] = this.doc.splitTextToSize(accText, width);
     const notFirstLines = this.doc.splitTextToSize(
       lines_.slice(1).join(""),
-      width - einzug
+      width - einzug,
     );
     const lines = lines_.length > 1 ? [lines_[0], ...notFirstLines] : lines_;
 
@@ -196,7 +197,7 @@ export class ChordPdfJs extends ComfyPdfJs {
         const wbase = this.doc.getTextWidth(chord.toStringKey());
         xpos += firstChord
           ? wtext
-          : Math.max(wtext, this.doc.getTextWidth(chord_) + 0.5 * tfs );
+          : Math.max(wtext, this.doc.getTextWidth(chord_) + 0.5 * tfs);
         if (!simulate) {
           this.doc.setTextColor("rgb(221, 68, 7)");
           this.doc.text(chord.toStringKey(), xpos, intCursor.y - tfs);
@@ -204,7 +205,7 @@ export class ChordPdfJs extends ComfyPdfJs {
           this.doc.text(
             chord.toStringTensionsAndSlash(),
             xpos + wbase,
-            intCursor.y - (tfs - cfs * 0.3)  
+            intCursor.y - (tfs - cfs * 0.3),
           );
           this.doc.setTextColor(0);
         }
