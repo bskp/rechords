@@ -22,7 +22,7 @@ const ORANGE = "rgb(221, 68, 7)";
 export async function jsPdfGenerator(
   song: Song,
   settings: IPdfViewerSettings,
-  debug = false
+  debug = false,
 ): Promise<string> {
   if (!song) return "";
 
@@ -118,7 +118,7 @@ export async function jsPdfGenerator(
       songTitle + " - " + songArtist,
       cdoc.margins.left + cdoc.mediaWidth() / 2,
       cdoc.maxY(),
-      { align: "center", baseline: "top" }
+      { align: "center", baseline: "top" },
     );
   }
   placeFooter();
@@ -172,7 +172,7 @@ export async function jsPdfGenerator(
     cdoc.setFont(...BricBold, fos.section);
     advance_y += cdoc.textLine(
       section.querySelector("h3")?.innerText,
-      simulate
+      simulate,
     ).h;
 
     if (section.classList.contains("ref")) {
@@ -180,11 +180,12 @@ export async function jsPdfGenerator(
       if (!simulate) {
         cdoc.cursor.y += las.section;
         doc.setFillColor(ORANGE);
-        const w = fos.section/15 , h = fos.section/2 
-        doc.rect(cdoc.cursor.x, cdoc.cursor.y-h*.75, w, h, "F");
+        const w = fos.section / 15,
+          h = fos.section / 2;
+        doc.rect(cdoc.cursor.x, cdoc.cursor.y - h * 0.75, w, h, "F");
       }
       // optically smaller sizes need more gap hence fixed part
-      cdoc.cursor.x += 2+ fos.section/10;
+      cdoc.cursor.x += 2 + fos.section / 10;
 
       const sdf = cdoc.textFragment(strong.textContent, simulate);
       if (adm) {
@@ -197,7 +198,7 @@ export async function jsPdfGenerator(
     cdoc.setFont(...Bric, fos.text);
     advance_y += cdoc.textLine(
       section.querySelector("h4")?.innerText,
-      simulate
+      simulate,
     ).h;
 
     const lines = section.querySelectorAll("span.line");
@@ -209,14 +210,14 @@ export async function jsPdfGenerator(
         text: c.innerText,
         chord: Chord.from(c.dataset?.chord)?.transposed(
           settings.transpose,
-          notation
+          notation,
         ), // libChrod.transpose(c.dataset?.chord, key, settings.transpose),
       }));
       advance_y += cdoc.placeChords(
         fragments,
         colWidth,
         simulate,
-        fas
+        fas,
       ).advance_y;
     }
 
@@ -225,7 +226,7 @@ export async function jsPdfGenerator(
       cdoc.setFont(...Bric, fos.text);
       const texts: string[] = cdoc.doc.splitTextToSize(
         section.textContent,
-        colWidth
+        colWidth,
       );
       advance_y += texts
         .map((l) => cdoc.textLine(l, simulate).h)
@@ -259,7 +260,7 @@ export async function jsPdfGenerator(
   // Save the Data
   const pdfData = doc.output("arraybuffer");
   const pdfBlobUrl = window.URL.createObjectURL(
-    new Blob([pdfData], { type: "application/pdf" })
+    new Blob([pdfData], { type: "application/pdf" }),
   );
   return pdfBlobUrl;
 
@@ -274,19 +275,19 @@ async function loadFonts(cdoc: ChordPdfJs) {
       "/fonts/pdf/ShantellSans-SemiBold.ttf",
       "Sh",
       "normal",
-      "light"
+      "light",
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Regular.ttf",
       "Bric",
       "normal",
-      "regular"
+      "regular",
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Bold.ttf",
       "Bric",
       "normal",
-      "bold"
+      "bold",
     ),
   ]);
   return out;

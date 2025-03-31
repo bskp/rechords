@@ -1,0 +1,302 @@
+.settingTitle {
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  margin-top: 10px;
+  color: var(--text-sidebar);
+}
+
+.pp--settings {
+  background-color: var(--bg-list);
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 30px;
+  .quickinput svg {
+    stroke-width: 2px;
+    fill: var(--text-sidebar);
+
+    polygon:hover {
+      fill: var(--accent);
+    }
+  }
+
+  @qb: 2px;
+  @qh: 30px;
+
+  svg {
+    stroke: var(--text-sidebar);
+    fill: none;
+
+    .fine {
+      stroke-width: 1px;
+    }
+
+    .medium {
+      stroke-width: 2px;
+    }
+
+    .bold {
+      stroke-width: 4px;
+    }
+  }
+
+  box-sizing: border-box;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .icon {
+    width: 40px;
+    height: 40px;
+    font-weight: bold;
+    color: var(--accent);
+
+    svg {
+      width: inherit;
+      height: inherit;
+      fill: var(--gray);
+      stroke: none;
+    }
+  }
+
+  .buttons {
+    flex: 1;
+
+    border-radius: 3px;
+    border: var(--text-sidebar) solid @qb;
+
+    .icon :hover {
+      fill: var(--accent);
+    }
+
+    margin: 0 10px;
+    padding: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+  }
+
+  .settingBase {
+    border: var(--text-sidebar) solid 2px;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .grid {
+    display: flex;
+    flex-flow: column nowrap;
+
+    .title {
+      .settingTitle();
+      padding-left: 10px;
+    }
+
+    .setting {
+      .settingBase();
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-evenly;
+      align-items: center;
+
+      &.columns {
+        align-items: flex-start;
+      }
+
+      &.buttons {
+        gap: 10px;
+      }
+    }
+
+    .settingtable {
+      .settingBase();
+      display: flex;
+      flex-flow: column nowrap;
+    }
+
+    .transpose {
+      color: var(--text-sidebar);
+      font-size: 30px;
+    }
+  }
+
+  .fontsize {
+    .settingTitle();
+
+    margin: 0;
+
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 5px;
+
+    label {
+      flex: 0 0 50px;
+    }
+    .slidecontainer {
+      flex: 1 1 100px;
+    }
+
+    input[type="number"] {
+      font-size: 18px;
+      font-weight: 500;
+      height: 22px;
+      min-width: 0;
+      flex: 0 0 35px;
+      text-align: right;
+
+      &::selection {
+        background-color: var(--gray-light);
+      }
+
+      &:focus {
+        outline-offset: 1px;
+        outline-style: solid;
+        outline-width: 1px;
+        outline-color: var(--gray-dark);
+      }
+    }
+  }
+
+  .fullwidth {
+    width: 100%;
+    display: flex;
+    justify-items: flex-start;
+    align-items: center;
+    gap: 20px;
+  }
+
+  ///  Checkbox //////////
+
+  input[type="checkbox"] {
+    display: none;
+
+    &:checked + label {
+      color: var(--accent);
+
+      svg {
+        .cross {
+          stroke: var(--accent);
+        }
+        .box {
+          stroke: var(--gray-dark);
+        }
+      }
+    }
+
+    + label {
+      .settingTitle();
+      svg {
+        stroke-width: 3px;
+
+        .cross {
+          stroke: none;
+        }
+        .box {
+          stroke: var(--gray-dark);
+        }
+      }
+    }
+  }
+
+  ///// End Checkbox ////////////////////////////////////////
+
+  ///// Number input ////////////////////////////////////////
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0;
+    /* <-- Apparently some margin are still there even though it's hidden */
+  }
+
+  input[type="number"] {
+    cursor: pointer;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+  }
+  /// end number input //////////////////////////////
+
+  //// slider //////////////////////////////
+
+  .slidecontainer {
+    cursor: pointer;
+  }
+  input[type="range"] {
+    appearance: none;
+    -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+    width: 100%; /* Specific width is required for Firefox. */
+    background: transparent; /* Otherwise white in Chrome */
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+  }
+
+  input[type="range"]:focus {
+    outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+  }
+
+  input[type="range"]::-ms-track {
+    width: 100%;
+    cursor: pointer;
+
+    /* Hides the slider so custom styles can be added */
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+  }
+  /* Special styling for WebKit/Blink */
+  input[type="range"]::-moz-range-thumb,
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: 0px;
+    background-color: var(--accent-flat);
+    height: 14px;
+    width: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track,
+  input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    background: var(--gray);
+    border: 0px;
+    border-radius: 1.3px;
+  }
+  input[type="range"]:focus::-moz-range-track,
+  input[type="range"]:focus::-webkit-slider-runnable-track {
+    background: var(--gray-dark);
+  }
+
+  ///////// end slider ////////////////////////////////////////
+
+  ///////// icons /////////////////////////////////////////////
+
+  input[type="radio"] {
+    display: none;
+
+    &:checked + label {
+      svg {
+        stroke: var(--accent);
+      }
+    }
+
+    + label:hover {
+      svg {
+        cursor: pointer;
+        stroke: var(--accent-flat);
+      }
+    }
+  }
+
+  ///////// end icons //////////////////////////////////////////////////
+}

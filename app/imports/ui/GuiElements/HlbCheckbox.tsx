@@ -1,11 +1,10 @@
-import "./HlbCheckboxStyle.less"
 import * as React from "react";
 
 export const HlbCheckbox = (
   props: {
     value: boolean;
     setter: (a: boolean) => void;
-  } & React.PropsWithChildren,
+  } & React.PropsWithChildren
 ) => {
   const id = React.useId();
   return (
@@ -16,10 +15,7 @@ export const HlbCheckbox = (
         type="checkbox"
         onClick={(e) => props.setter(e.currentTarget.checked)}
       />
-      <label
-        htmlFor={id}
-        className="fullwidth"
-      >
+      <label htmlFor={id} className="fullwidth">
         <Cross></Cross> {props.children}
       </label>
     </>

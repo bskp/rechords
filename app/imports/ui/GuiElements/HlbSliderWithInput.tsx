@@ -1,7 +1,6 @@
 import * as React from "react";
 import { FunctionComponent } from "react";
 import { HlbInput } from "./HlbInput";
-import "./HlbSliderWithInputStyle.less"
 
 const defaultProps = { max: 10, min: 1, onChange: () => undefined };
 
@@ -14,8 +13,10 @@ export type SliderWithInputProps = {
   step?: number;
 };
 
-export const HlbSliderWithInput: FunctionComponent<SliderWithInputProps> = (props) => {
-  const p = {...defaultProps, ...props}
+export const HlbSliderWithInput: FunctionComponent<SliderWithInputProps> = (
+  props,
+) => {
+  const p = { ...defaultProps, ...props };
   const id = p.id || React.useId();
   return (
     <>
@@ -34,4 +35,3 @@ export const HlbSliderWithInput: FunctionComponent<SliderWithInputProps> = (prop
     </>
   );
 };
-

@@ -26,33 +26,40 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
   const [hideChords, setHideChords] = React.useState(false);
   const [hideFrets, setHideFrets] = React.useState(false);
 
+  const sizeId = React.useId();
+  const lineId = React.useId();
   const settings = (
     <aside id="rightSettings">
       <Button onClick={navigateCallback(history, View.view, song)}>
         <ReactSVG src="/svg/cancel.svg" />
       </Button>
-      <div className="pdfSettings">
+      <div className="pp--settings">
         <div className="grid">
-          <div className="title">Schriftgrösse</div>
-          <div className="table">
-            <HlbSliderWithInput
-              max={200}
-              min={10}
-              onChange={setScale}
-              value={scale}
-            ></HlbSliderWithInput>
+        <div className="title">Schrift</div>
+          <div className="settingtable">
+            <div className="fontsize">
+              <label htmlFor={sizeId}>Schriftgrösse</label>
+              <HlbSliderWithInput
+                max={200}
+                min={10}
+                onChange={setScale}
+                value={scale}
+                id={sizeId}
+              ></HlbSliderWithInput>
+            </div>
+            <div className="fontsize">
+              <label htmlFor={lineId}>Zeilenabstand</label>
+              <HlbSliderWithInput
+                max={3}
+                min={0.1}
+                step={0.05}
+                onChange={setLineHeight}
+                value={lineHeight}
+                id={lineId}
+              ></HlbSliderWithInput>
+            </div>
           </div>
-          <div className="title">Zeilenabstand</div>
-          <div className="table">
-            <HlbSliderWithInput
-              max={3}
-              min={0.1}
-              step={0.05}
-              onChange={setLineHeight}
-              value={lineHeight}
-            ></HlbSliderWithInput>
-          </div>
-          <div className="title">Columns</div>
+          <div className="title">Spalten</div>
           <div className="setting columns">
             <ColumnSetter
               cols={3}
@@ -60,7 +67,7 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
               numCols={cols}
             ></ColumnSetter>
           </div>
-          <div className="title">Misc.</div>
+          <div className="title">Inhalt</div>
           <div className="setting">
             <div className="fullwidth">
               <HlbCheckbox setter={setHideChords} value={hideChords}>
@@ -73,7 +80,7 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
               </HlbCheckbox>
             </div>
           </div>
-          <div className="title">Transpose</div>
+          <div className="title">Transponieren</div>
           <div className="setting">
             <div className="fullwidth">
               <Button onClick={() => ts.setShowTransposer(true)}>

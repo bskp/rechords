@@ -186,7 +186,7 @@ export const PdfSettings: FunctionComponent<{
 
   return (
     <>
-      <div className="pdfSettings">
+      <div className="pp--settings">
         <div className="grid">
           <div className="title">Transpose</div>
           <div className="setting">
