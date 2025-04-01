@@ -4,7 +4,7 @@ export const HlbCheckbox = (
   props: {
     value: boolean;
     setter: (a: boolean) => void;
-  } & React.PropsWithChildren
+  } & React.PropsWithChildren,
 ) => {
   const id = React.useId();
   return (

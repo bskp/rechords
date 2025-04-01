@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import Chord from "./libchr0d/chord";
+import { Line } from "../ui/PdfViewer/PdfRenderer/jsonHoeli";
 export class Margins {
   top: number;
   right: number;
@@ -19,7 +20,7 @@ export class Margins {
 export class Cursor {
   constructor(
     public x = 0,
-    public y = 0,
+    public y = 0
   ) {}
 }
 
@@ -47,7 +48,7 @@ export class ComfyPdfJs {
    * Advances the cursor in y-direction
    * @param content
    */
-  textLine(content: string, simulate = false): { w: number; h: number } {
+  textLine(content?: string, simulate = false): { w: number; h: number } {
     if (!content) {
       return { w: 0, h: 0 };
     }
@@ -86,7 +87,7 @@ export class ComfyPdfJs {
     p,
     fontname,
     style,
-    weight,
+    weight
   ): Promise<[string, string, string]> {
     const filename = basename(p);
     const blob = await fetch(p).then((response) => response.blob());
@@ -127,14 +128,14 @@ export class ChordPdfJs extends ComfyPdfJs {
    *
    * @returns distance moved in y direction // tbd internal cursor?
    */
-  placeChords(
-    fragments: { text: string; chord: Chord }[],
+  // todo: why is this here?
+  placeLine(
+    line: { text: string | undefined; chord: Chord | undefined }[],
     width: number,
     simulate = false,
-    lineheigts = { chord: 1, text: 1 },
+    lineheigts = { chord: 1, text: 1 }
   ): { advance_y: number; numlineBreaksInserted: number; intCursor: Cursor } {
-    let w = 0,
-      br = 0;
+    let br = 0;
 
     const intCursor = new Cursor(this.cursor.x, this.cursor.y);
 
@@ -146,7 +147,7 @@ export class ChordPdfJs extends ComfyPdfJs {
     const chordMap = new Map<number, Chord>();
     let charCnt = 0;
     let accText = "";
-    for (const { text, chord } of fragments) {
+    for (const { text, chord } of line) {
       if (chord) {
         chordMap.set(charCnt, chord);
       }
@@ -158,7 +159,7 @@ export class ChordPdfJs extends ComfyPdfJs {
     const lines_: string[] = this.doc.splitTextToSize(accText, width);
     const notFirstLines = this.doc.splitTextToSize(
       lines_.slice(1).join(""),
-      width - einzug,
+      width - einzug
     );
     const lines = lines_.length > 1 ? [lines_[0], ...notFirstLines] : lines_;
 
@@ -205,7 +206,7 @@ export class ChordPdfJs extends ComfyPdfJs {
           this.doc.text(
             chord.toStringTensionsAndSlash(),
             xpos + wbase,
-            intCursor.y - (tfs - cfs * 0.3),
+            intCursor.y - (tfs - cfs * 0.3)
           );
           this.doc.setTextColor(0);
         }

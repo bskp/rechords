@@ -1,5 +1,4 @@
 import { ChordPdfJs, Margins } from "/imports/api/comfyPdfJs";
-import { refPrefix } from "/imports/api/showdown-rechords";
 import { IPdfViewerSettings } from "../PdfSettings";
 import {
   guessKeyFromChordCounts,
@@ -9,7 +8,7 @@ import { Song } from "/imports/api/collections";
 import Chord from "/imports/api/libchr0d/chord";
 import { parseChords } from "../../Viewer";
 import { countChords } from "../../Transposer";
-import { parseToIntermediateFormat } from "./jsonHoeli";
+import { AllBlocks, Line, parseToIntermediateFormat } from "./jsonHoeli";
 
 const ORANGE = "rgb(221, 68, 7)";
 
@@ -23,53 +22,18 @@ const ORANGE = "rgb(221, 68, 7)";
 export async function jsPdfGenerator(
   song: Song,
   settings: IPdfViewerSettings,
-  debug = false,
+  debug = false
 ): Promise<string> {
   if (!song) return "";
 
-  const out = parseToIntermediateFormat(song)
-  console.log(out)
-
-  /** font sizes  */
   const fos = settings.fontSizes;
   const las = settings.layoutSettings;
   const fas = settings.factors;
 
-  // Hm. Reusing reactParser would make alot more sense...
-  // But hey... here we are...
-  // There is even a plugin to convert svg (notes + fret diagrams)
-  // to PDF. However, if printing via CSS finally succeeds (2030 maybe ;-) )
-  // this PDF rendering  will obliviate
   // starting point would be: intermediate format
-  const mdHtml = new DOMParser().parseFromString(song.getHtml(), "text/html");
+  const out = parseToIntermediateFormat(song);
 
-  const notation = getNotation(song, settings.transpose);
-
-  const sections_ = mdHtml.body.children;
-
-  const sections: Element[] = [];
-  for (const el of sections_) {
-    if (el.tagName === "SECTION") {
-      if (
-        !el.classList.contains("inlineReference") ||
-        settings.inlineReferences
-      ) {
-        sections.push(el.cloneNode(true) as Element);
-      }
-    } else if (settings.includeComments && el.tagName === "P") {
-      const div = document.createElement("DIV");
-      div.appendChild(el.cloneNode(true));
-      sections.push(div);
-    } else if (
-      !settings.inlineReferences &&
-      el.tagName === "DIV" &&
-      el.classList.contains("ref")
-    ) {
-      const div = document.createElement("DIV");
-      div.appendChild(el.cloneNode(true));
-      sections.push(div as Element);
-    }
-  }
+  const notation = getNotation(song, settings.transpose || 0);
 
   const cdoc = new ChordPdfJs({ margins: new Margins(las.margin) }, [
     settings.orientation,
@@ -81,6 +45,16 @@ export async function jsPdfGenerator(
   const cols = settings.numCols;
   const colWidth = (cdoc.mediaWidth() - (cols - 1) * las.colgap) / cols;
 
+  function placeFooter() {
+    cdoc.setFont(...Bric, fos.footer);
+    doc.text(
+      songTitle + " - " + songArtist,
+      cdoc.margins.left + cdoc.mediaWidth() / 2,
+      cdoc.maxY(),
+      { align: "center", baseline: "top" }
+    );
+  }
+
   let x0 = cdoc.margins.left;
 
   const [Coo, Sh, Bric, BricBold] = await loadFonts(cdoc);
@@ -89,8 +63,8 @@ export async function jsPdfGenerator(
   cdoc.textFont = [...Bric, fos.text];
 
   cdoc.setFont(...Coo, fos.header);
-  const songArtist = mdHtml.querySelector(".sd-header>h2")?.textContent || "";
-  const songTitle = mdHtml.querySelector(".sd-header>h1")?.textContent || "";
+  const songArtist = out.author;
+  const songTitle = out.title;
 
   let header;
   if (cols > 2) {
@@ -116,20 +90,9 @@ export async function jsPdfGenerator(
   }
   cdoc.cursor.y = header.y;
 
-  function placeFooter() {
-    cdoc.setFont(...Bric, fos.footer);
-    doc.text(
-      songTitle + " - " + songArtist,
-      cdoc.margins.left + cdoc.mediaWidth() / 2,
-      cdoc.maxY(),
-      { align: "center", baseline: "top" },
-    );
-  }
   placeFooter();
 
-  const splitSections = sections.flatMap((s) => [...s.children]);
-
-  for (const section of splitSections) {
+  for (const section of out.sections) {
     let simHeight = placeSection(section, true);
     if (debug) {
       const y0 = cdoc.cursor.y;
@@ -168,19 +131,17 @@ export async function jsPdfGenerator(
 
   // to think about: instead of simulation flag simulation cursor. that
   // would simplify everthingj
-  function placeSection(section: Element, simulate = false): number {
+  function placeSection(section: AllBlocks, simulate = false): number {
     let advance_y = 0;
 
     resetX();
 
-    cdoc.setFont(...BricBold, fos.section);
-    advance_y += cdoc.textLine(
-      section.querySelector("h3")?.innerText,
-      simulate,
-    ).h;
+    if (section.type === "chordblock") {
+      cdoc.setFont(...BricBold, fos.section);
+      advance_y += cdoc.textLine(section?.content?.title, simulate).h;
+    }
 
-    if (section.classList.contains("ref")) {
-      const [strong, adm] = section.childNodes;
+    if (section.type === "repetition") {
       if (!simulate) {
         cdoc.cursor.y += las.section;
         doc.setFillColor(ORANGE);
@@ -191,46 +152,26 @@ export async function jsPdfGenerator(
       // optically smaller sizes need more gap hence fixed part
       cdoc.cursor.x += 2 + fos.section / 10;
 
-      const sdf = cdoc.textFragment(strong.textContent, simulate);
-      if (adm) {
+      const sdf = cdoc.textFragment(section.content.ref, simulate);
+      if (section.content.adm) {
         cdoc.setFont(...Bric, fos.text);
-        const df = cdoc.textFragment("  " + adm.textContent, simulate);
+        const df = cdoc.textFragment("  " + section.content.adm, simulate);
       }
       advance_y += sdf.h;
     }
-
-    cdoc.setFont(...Bric, fos.text);
-    advance_y += cdoc.textLine(
-      section.querySelector("h4")?.innerText,
-      simulate,
-    ).h;
-
-    const lines = section.querySelectorAll("span.line");
-
-    for (const line of lines) {
-      resetX();
-      const chords = line.querySelectorAll("i");
-      const fragments = Array.from(chords).map((c) => ({
-        text: c.innerText,
-        chord: Chord.from(c.dataset?.chord)?.transposed(
-          settings.transpose,
-          notation,
-        ), // libChrod.transpose(c.dataset?.chord, key, settings.transpose),
-      }));
-      advance_y += cdoc.placeChords(
-        fragments,
-        colWidth,
-        simulate,
-        fas,
-      ).advance_y;
+    if (section.type === "chordblock" || section.type === "repetition") {
+      const lines = section.content.lines;
+      if (lines) {
+        placeLines(lines, simulate);
+      }
     }
 
-    if (settings.includeComments && section.tagName == "P") {
+    if (section.type === "comment" && settings.includeComments) {
       doc.setTextColor("rgb(120,120,120)");
       cdoc.setFont(...Bric, fos.text);
       const texts: string[] = cdoc.doc.splitTextToSize(
-        section.textContent,
-        colWidth,
+        section.content,
+        colWidth
       );
       advance_y += texts
         .map((l) => cdoc.textLine(l, simulate).h)
@@ -241,8 +182,22 @@ export async function jsPdfGenerator(
     return advance_y;
   }
 
+  function placeLines(lines: Line[], simulate: boolean) {
+    let advance_y = 0;
+    for (const line of lines) {
+      resetX();
+      const fragments = Array.from(line.fragments).map((c) => ({
+        text: c.text,
+        chord: Chord.from(c.chord)?.transposed(
+          settings.transpose || 0,
+          notation
+        ),
+      }));
+      advance_y += cdoc.placeLine(fragments, colWidth, simulate, fas).advance_y;
+    }
+  }
+
   function placePageNumbers() {
-    //@ts-ignore not yet added to types :( )
     const total = doc.getNumberOfPages();
 
     for (let i = 1; i <= total; i++) {
@@ -264,7 +219,7 @@ export async function jsPdfGenerator(
   // Save the Data
   const pdfData = doc.output("arraybuffer");
   const pdfBlobUrl = window.URL.createObjectURL(
-    new Blob([pdfData], { type: "application/pdf" }),
+    new Blob([pdfData], { type: "application/pdf" })
   );
   return pdfBlobUrl;
 
@@ -279,19 +234,19 @@ async function loadFonts(cdoc: ChordPdfJs) {
       "/fonts/pdf/ShantellSans-SemiBold.ttf",
       "Sh",
       "normal",
-      "light",
+      "light"
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Regular.ttf",
       "Bric",
       "normal",
-      "regular",
+      "regular"
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Bold.ttf",
       "Bric",
       "normal",
-      "bold",
+      "bold"
     ),
   ]);
   return out;

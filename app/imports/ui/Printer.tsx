@@ -35,7 +35,7 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
       </Button>
       <div className="pp--settings">
         <div className="grid">
-        <div className="title">Schrift</div>
+          <div className="title">Schrift</div>
           <div className="settingtable">
             <div className="fontsize">
               <label htmlFor={sizeId}>Schriftgrösse</label>
