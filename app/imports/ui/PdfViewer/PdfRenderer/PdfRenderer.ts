@@ -13,6 +13,7 @@ import Chord from "/imports/api/libchr0d/chord";
 import { parseChords } from "../../Viewer";
 import { countChords } from "../../Transposer";
 import { AllBlocks, Line, parseToIntermediateFormat } from "./JHoeli";
+import jsPDF from "jspdf";
 
 const ORANGE = "rgb(221, 68, 7)";
 export type JSong = {
@@ -30,7 +31,7 @@ export type JSong = {
  */
 export async function jsPdfGenerator(
   song: Song,
-  settings: IPdfViewerSettings,
+  settings: IPdfViewerSettings
 ): Promise<string> {
   if (!song) return "";
 
@@ -44,7 +45,7 @@ export async function jsPdfGenerator(
       ...c,
       chordT: Chord.from(c.chord)?.transposed(
         settings.transpose || 0,
-        notation,
+        notation
       ),
     })),
   });
@@ -79,19 +80,19 @@ async function loadFonts(cdoc: ChordPdfJs) {
       "/fonts/pdf/ShantellSans-SemiBold.ttf",
       "Sh",
       "normal",
-      "light",
+      "light"
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Regular.ttf",
       "Bric",
       "normal",
-      "regular",
+      "regular"
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Bold.ttf",
       "Bric",
       "normal",
-      "bold",
+      "bold"
     ),
   ]);
   return out;
@@ -121,33 +122,19 @@ export type FontRefwS = FontRef & {
   size: number;
 };
 class ChordPdfRenderer {
-  debug = true;
+  debug = false;
   header = { x: 0, y: 0 };
   f!: { Coo: FontRef; Sh: FontRef; Bric: FontRef; BricBold: FontRef };
+  /**
+   * current column position
+   */
+  x0!: number;
 
-  async render(o: JSong) {
-    const [Coo, Sh, Bric, BricBold] = await loadFonts(this.cdoc);
-    this.f = { Coo, Sh, Bric, BricBold };
-
-    this.cdoc.chordFont = { ...Sh, size: this.fos.chord };
-    this.cdoc.textFont = { ...Bric, size: this.fos.text };
-
-    this.cdoc.setFont({ ...Coo, size: this.fos.header });
-
-    this.placeHeader(o.author, o.title);
-    this.placeSections(o);
-
-    const pdfData = this.doc.output("arraybuffer");
-    const pdfBlobUrl = window.URL.createObjectURL(
-      new Blob([pdfData], { type: "application/pdf" }),
-    );
-    return pdfBlobUrl;
-  }
   fos: ITextSizes;
   las: ILayoutSettings;
   fas: { text: number; chord: number };
   cdoc: ChordPdfJs;
-  doc: any;
+  doc: jsPDF;
   cols: number;
   colWidth: number;
 
@@ -166,33 +153,59 @@ class ChordPdfRenderer {
       (this.cdoc.mediaWidth() - (this.cols - 1) * this.las.colgap) / this.cols;
   }
 
+  async render(o: JSong) {
+    const [Coo, Sh, Bric, BricBold] = await loadFonts(this.cdoc);
+    this.f = { Coo, Sh, Bric, BricBold };
+
+    this.cdoc.chordFont = { ...Sh, size: this.fos.chord };
+    this.cdoc.textFont = { ...Bric, size: this.fos.text };
+
+    this.cdoc.setFont({ ...Coo, size: this.fos.header });
+
+    this.x0 = this.cdoc.minX();
+    this.placeHeader(o.author, o.title);
+    this.placeSections(o);
+
+    const pdfData = this.doc.output("arraybuffer");
+    const pdfBlobUrl = window.URL.createObjectURL(
+      new Blob([pdfData], { type: "application/pdf" })
+    );
+    return pdfBlobUrl;
+  }
+
   private placeSections(o: JSong) {
-    let x0 = this.cdoc.minX();
     for (const section of o.sections) {
       let simHeight = this.placeSection(section, true);
       if (this.debug) {
         const y0 = this.cdoc.cursor.y;
-        this.doc.setDrawColor("green");
-        this.doc.line(x0, y0, x0, y0 + simHeight);
+        this.doc.setDrawColor("blue");
+        this.doc.setLineWidth(3);
+        this.doc.line(this.x0, y0, this.x0, y0 + simHeight);
       }
-      const lineHeight =
+      const sectionGap =
         (this.las.section + this.fos.chord) /
         this.cdoc.doc.internal.scaleFactor;
-      simHeight += lineHeight;
+      simHeight += sectionGap;
 
+      // would the next section overlap the page?
       if (this.cdoc.cursor.y + simHeight > this.cdoc.maxY()) {
         const c = this.cdoc.cursor;
         const g = this.las.colgap;
-        x0 += this.colWidth + g;
+        this.x0 += this.colWidth + g;
         this.cdoc.cursor.y =
-          x0 > this.header.x ? this.cdoc.margins.top : this.header.y;
+          this.x0 > this.header.x ? this.cdoc.margins.top : this.header.y;
         if (this.debug) {
-          this.doc.line(x0 - g, c.y, x0 - g, c.y + this.cdoc.mediaHeight());
-          this.doc.line(x0, c.y, x0, c.y + this.cdoc.mediaHeight());
+          this.doc.line(
+            this.x0 - g,
+            c.y,
+            this.x0 - g,
+            c.y + this.cdoc.mediaHeight()
+          );
+          this.doc.line(this.x0, c.y, this.x0, c.y + this.cdoc.mediaHeight());
         }
-        if (x0 > this.cdoc.maxX()) {
+        if (this.x0 > this.cdoc.maxX()) {
           this.doc.addPage();
-          x0 = this.cdoc.margins.left;
+          this.x0 = this.cdoc.margins.left;
           this.header.y = this.cdoc.margins.top;
           this.placeFooter(o.author, o.title);
         }
@@ -201,13 +214,113 @@ class ChordPdfRenderer {
       if (this.debug) {
         const y0 = this.cdoc.cursor.y;
         this.doc.setDrawColor("red");
-        this.doc.line(x0, y0, x0, y0 + simHeight);
+        this.doc.setLineWidth(1);
+        this.doc.line(this.x0, y0, this.x0, y0 + simHeight);
       }
       this.placeSection(section);
-      this.cdoc.cursor.y += lineHeight;
+      this.cdoc.cursor.y += sectionGap;
     }
   }
 
+  placeSection(section: AllBlocks, simulate = false): number {
+    let advance_y = 0;
+
+    this.resetX();
+
+    this.cdoc.setFont({ ...this.f.BricBold, size: this.fos.section });
+    if (section.type === "chordblock") {
+      advance_y += this.cdoc.textLine(section?.content?.title, simulate).h;
+    }
+
+    if (section.type === "repetition") {
+      // line
+      if (!simulate) {
+        this.cdoc.cursor.y += this.las.section;
+        if (!this.settings.inlineReferences) {
+          this.doc.setFillColor(ORANGE);
+          const w = this.fos.section / 15,
+            h = this.fos.section / 2;
+          this.doc.rect(
+            this.cdoc.cursor.x,
+            this.cdoc.cursor.y - h * 0.75,
+            w,
+            h,
+            "F"
+          );
+          // optically smaller sizes need more gap hence fixed part
+          this.cdoc.cursor.x += 2 + this.fos.section / 10;
+        }
+      }
+
+      const sdf = this.cdoc.textFragment(section.content.ref, simulate);
+      if (section.content.adm) {
+        this.cdoc.setFont({ ...this.f.Bric, size: this.fos.text });
+        const df = this.cdoc.textFragment("  " + section.content.adm, simulate);
+      }
+      advance_y += sdf.h;
+    }
+    if (
+      section.type === "chordblock" ||
+      (section.type === "repetition" && this.settings.inlineReferences)
+    ) {
+      const lines = section.content.lines;
+      if (lines) {
+        const dimensions = this.placeLines(lines, simulate);
+        advance_y += dimensions;
+      }
+    }
+
+    if (section.type === "comment" && this.settings.includeComments) {
+      this.doc.setTextColor("rgb(120,120,120)");
+      this.cdoc.setFont({ ...this.f.Bric, size: this.fos.text });
+      const texts: string[] = this.cdoc.doc.splitTextToSize(
+        section.content,
+        this.colWidth
+      );
+      advance_y += texts
+        .map((l) => this.cdoc.textLine(l, simulate).h)
+        .reduce((sum, current) => sum + current, 0);
+    }
+
+    this.doc.setTextColor(0);
+    return advance_y;
+  }
+  ƒ;
+  placeLines(lines: Line[], simulate: boolean) {
+    let advance_y = 0;
+    for (const line of lines) {
+      this.resetX();
+      advance_y += this.cdoc.placeLine(
+        line.fragments,
+        this.colWidth,
+        simulate,
+        this.fas
+      ).advance_y;
+    }
+    return advance_y;
+  }
+
+  placePageNumbers() {
+    const total = this.doc.getNumberOfPages();
+
+    for (let i = 1; i <= total; i++) {
+      this.doc.setPage(i);
+      this.cdoc.setFont({ ...this.f.Bric, size: this.fos.footer });
+      this.doc.text(i + " / " + total, this.cdoc.maxX(), this.cdoc.maxY(), {
+        align: "right",
+        baseline: "top",
+      });
+      this.doc.text(
+        new Date().toLocaleString(),
+        this.cdoc.margins.left,
+        this.cdoc.maxY(),
+        {
+          align: "left",
+          baseline: "top",
+        }
+      );
+    }
+  }
   private placeHeader(songArtist: string, songTitle: string) {
     if (this.cols > 2) {
       const dima = this.cdoc.textLine(songArtist);
@@ -244,100 +357,10 @@ class ChordPdfRenderer {
       title + " - " + author,
       this.cdoc.margins.left + this.cdoc.mediaWidth() / 2,
       this.cdoc.maxY(),
-      { align: "center", baseline: "top" },
+      { align: "center", baseline: "top" }
     );
   }
-
-  placeSection(section: AllBlocks, simulate = false): number {
-    let advance_y = 0;
-
-    this.resetX();
-
-    if (section.type === "chordblock") {
-      this.cdoc.setFont({ ...this.f.BricBold, size: this.fos.section });
-      advance_y += this.cdoc.textLine(section?.content?.title, simulate).h;
-    }
-
-    if (section.type === "repetition") {
-      if (!simulate) {
-        this.cdoc.cursor.y += this.las.section;
-        this.doc.setFillColor(ORANGE);
-        const w = this.fos.section / 15,
-          h = this.fos.section / 2;
-        this.doc.rect(
-          this.cdoc.cursor.x,
-          this.cdoc.cursor.y - h * 0.75,
-          w,
-          h,
-          "F",
-        );
-      }
-      // optically smaller sizes need more gap hence fixed part
-      this.cdoc.cursor.x += 2 + this.fos.section / 10;
-
-      const sdf = this.cdoc.textFragment(section.content.ref, simulate);
-      if (section.content.adm) {
-        this.cdoc.setFont({ ...this.f.Bric, size: this.fos.text });
-        const df = this.cdoc.textFragment("  " + section.content.adm, simulate);
-      }
-      advance_y += sdf.h;
-    }
-    if (section.type === "chordblock" || section.type === "repetition") {
-      const lines = section.content.lines;
-      if (lines) {
-        this.placeLines(lines, simulate);
-      }
-    }
-
-    if (section.type === "comment" && this.settings.includeComments) {
-      this.doc.setTextColor("rgb(120,120,120)");
-      this.cdoc.setFont({ ...this.f.Bric, size: this.fos.text });
-      const texts: string[] = this.cdoc.doc.splitTextToSize(
-        section.content,
-        this.colWidth,
-      );
-      advance_y += texts
-        .map((l) => this.cdoc.textLine(l, simulate).h)
-        .reduce((sum, current) => sum + current, 0);
-    }
-
-    this.doc.setTextColor(0);
-    return advance_y;
-  }
-  placeLines(lines: Line[], simulate: boolean) {
-    let advance_y = 0;
-    for (const line of lines) {
-      this.resetX();
-      advance_y += this.cdoc.placeLine(
-        line.fragments,
-        this.colWidth,
-        simulate,
-        this.fas,
-      ).advance_y;
-    }
-  }
-  placePageNumbers() {
-    const total = this.doc.getNumberOfPages();
-
-    for (let i = 1; i <= total; i++) {
-      this.doc.setPage(i);
-      this.cdoc.setFont({ ...this.f.Bric, size: this.fos.footer });
-      this.doc.text(i + " / " + total, this.cdoc.maxX(), this.cdoc.maxY(), {
-        align: "right",
-        baseline: "top",
-      });
-      this.doc.text(
-        new Date().toLocaleString(),
-        this.cdoc.margins.left,
-        this.cdoc.maxY(),
-        {
-          align: "left",
-          baseline: "top",
-        },
-      );
-    }
-  }
   resetX() {
-    this.cdoc.cursor.x = this.cdoc.minX();
+    this.cdoc.cursor.x = this.x0;
   }
 }
