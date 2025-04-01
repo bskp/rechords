@@ -2,7 +2,7 @@ import * as React from "react";
 import { ViewerProps } from "../Viewer";
 import { PdfObject } from "./PdfObject";
 import { IPdfViewerSettings, PdfSettings } from "./PdfSettings";
-import { jsPdfGenerator } from "./PdfRenderer";
+import { jsPdfGenerator } from "./PdfRenderer/PdfRenderer";
 import { throttle } from "underscore";
 import "./PdfViewerStyle.less";
 import classNames from "classnames";

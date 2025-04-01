@@ -1,8 +1,10 @@
 import { Song } from "/imports/api/collections";
+import Chord from "/imports/api/libchr0d/chord";
 
 export type Fragment = {
   chord?: string;
   text?: string;
+  chordT?: Chord;
 };
 export type Line = { fragments: Fragment[]; canbreak?: boolean };
 
@@ -27,7 +29,7 @@ export type Repetition = {
 
 export type AllBlocks = ChordBlock | Comment | Repetition;
 
-export type BlockTypes  = AllBlocks['type']
+export type BlockTypes = AllBlocks["type"];
 
 export function parseToIntermediateFormat(song: Song) {
   const mdHtml = new DOMParser().parseFromString(song.getHtml(), "text/html");
