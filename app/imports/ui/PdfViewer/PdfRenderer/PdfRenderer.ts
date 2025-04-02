@@ -67,6 +67,7 @@ export async function jsPdfGenerator(
 
   const out: typeof out_ = { ...out_, sections: out_.sections.map(mapSection) };
 
+  console.log(out)
   const renderer = new ChordPdfRenderer(settings);
 
   return await renderer.render(out);
@@ -285,7 +286,6 @@ class ChordPdfRenderer {
     this.doc.setTextColor(0);
     return advance_y;
   }
-  ƒ;
   placeLines(lines: Line[], simulate: boolean) {
     let advance_y = 0;
     for (const line of lines) {

@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf";
 import Chord from "./libchr0d/chord";
 import { FontRefwS } from "../ui/PdfViewer/PdfRenderer/PdfRenderer";
 import { Fragment } from "../ui/PdfViewer/PdfRenderer/JHoeli";
+import { keys } from "underscore";
 export class Margins {
   top: number;
   right: number;
@@ -21,7 +22,7 @@ export class Margins {
 export class Cursor {
   constructor(
     public x = 0,
-    public y = 0,
+    public y = 0
   ) {}
 }
 
@@ -90,7 +91,7 @@ export class ComfyPdfJs {
     p: string,
     fontname: string,
     style: string,
-    weight: string,
+    weight: string
   ): Promise<FontRef> {
     const filename = basename(p);
     const blob = await fetch(p).then((response) => response.blob());
@@ -122,10 +123,10 @@ export class ChordPdfJs extends ComfyPdfJs {
    */
   // todo: why is this here?
   placeLine(
-    line: Fragment[],
+    line_: Fragment[],
     width: number,
     simulate = false,
-    lineheigts = { chord: 1, text: 1 },
+    lineheigts = { chord: 1, text: 1 }
   ): { advance_y: number; numlineBreaksInserted: number; intCursor: Cursor } {
     let br = 0;
 
@@ -133,89 +134,68 @@ export class ChordPdfJs extends ComfyPdfJs {
 
     const tfs = this.textFont.size / this.doc.internal.scaleFactor;
     const cfs = this.chordFont.size / this.doc.internal.scaleFactor;
-    const einzug = 1.5 * tfs;
 
-    // character position in line
-    const chordMap = new Map<number, Chord>();
-    let charCnt = 0;
-    let accText = "";
-    for (const { text, chordT: chord } of line) {
-      if (chord) {
-        chordMap.set(charCnt, chord);
-      }
-      accText += text;
-      charCnt += text?.length || 0;
-    }
+    const cumy = tfs * lineheigts.text + cfs * lineheigts.chord;
+    // may be constant line height (even without chords) is more readable?
+    intCursor.y += cumy;
 
-    this.setFont(this.textFont);
-    const textLines_: string[] = this.doc.splitTextToSize(accText, width);
-    const notFirstLines = this.doc.splitTextToSize(
-      textLines_.slice(1).join(""),
-      width - einzug,
-    ) as string[];
-    const textLines =
-      textLines_.length > 1 ? [textLines_[0], ...notFirstLines] : textLines_;
-
-    br = textLines.length - 1;
-
-    const keys = Array.from(chordMap.keys());
-
-    const chordLines: [string, [number, Chord][]][] = [];
-
-    let minPos = 0,
-      maxPos = 0;
-    for (const line of textLines) {
-      maxPos = minPos + line.length;
-      const lineChords: [number, Chord][] = keys
-        .filter((v) => minPos <= v && maxPos > v)
-        .flatMap((v) => {
-          const c = chordMap.get(v);
-          return c ? [[v - minPos, c]] : [];
-        });
-      minPos = maxPos;
-      chordLines.push([line, lineChords]);
-    }
-
-    let first = true;
-    for (const [line, chords] of chordLines) {
-      intCursor.y += tfs * lineheigts.text;
-      // may be constant line height (even without chords) is more readable?
-      if (chords.length) intCursor.y += cfs * lineheigts.chord;
-      this.setFont(this.chordFont);
-      let xpos = intCursor.x,
-        lastidx = 0;
-      let firstChord = true;
-      for (const [idx, chord] of chords) {
-        const text = line.substring(lastidx, idx - lastidx) || "";
-        this.setFont(this.textFont);
-        const wtext = this.doc.getTextWidth(text);
-        this.setFont(this.chordFont);
-        const chord_ = chord.toStringKey() + chord.toStringTensionsAndSlash();
-        const wbase = this.doc.getTextWidth(chord.toStringKey());
-        xpos += firstChord
-          ? wtext
-          : Math.max(wtext, this.doc.getTextWidth(chord_) + 0.5 * tfs);
-        if (!simulate) {
-          this.doc.setTextColor("rgb(221, 68, 7)");
-          this.doc.text(chord.toStringKey(), xpos, intCursor.y - tfs);
-          this.doc.setFontSize(this.chordFont.size * 0.7);
-          this.doc.text(
-            chord.toStringTensionsAndSlash(),
-            xpos + wbase,
-            intCursor.y - (tfs - cfs * 0.3),
-          );
-          this.doc.setTextColor(0);
+    const line = line_.flatMap((f) => {
+      if (f.text) {
+        const splits = f.text.split(/(\s)/);
+        const [first, ...others] = splits;
+        if (others.length) {
+          return [{ ...f, text: first }, ...others.map((t) => ({ text: t }))];
         }
-        lastidx = idx;
-        firstChord = false;
+      }
+      return [f];
+    });
+
+    for (const { chordT, text } of line) {
+      let wbase = 0,
+        wtext = 0,
+        wchord = 0;
+
+      if (text) {
+        this.setFont(this.textFont);
+        wtext = this.doc.getTextWidth(text);
       }
 
-      this.setFont(this.textFont);
-      if (!simulate) this.doc.text(line, intCursor.x, intCursor.y);
-      if (first) {
-        intCursor.x += einzug;
-        first = false;
+      if (chordT) {
+        const chord = chordT;
+        this.setFont(this.chordFont);
+        const key = chord.toStringKey();
+        const sup = chord.toStringTensionsAndSlash();
+        wbase = this.doc.getTextWidth(key);
+        this.doc.setFontSize(this.chordFont.size * 0.7);
+        const wsup = this.doc.getTextWidth(sup);
+        wchord = wbase + wsup;
+        if (!text || !text.trim()) {
+          wchord += 3;
+        }
       }
+
+      const wmax = Math.max(wtext, wchord);
+      if (intCursor.x + wmax - this.cursor.x > width) {
+        intCursor.x = this.cursor.x;
+        intCursor.y += cumy;
+      }
+      if (!simulate && chordT) {
+        const chord = chordT;
+        const key = chord.toStringKey();
+        const sup = chord.toStringTensionsAndSlash();
+        this.doc.setFontSize(this.chordFont.size);
+        this.doc.setTextColor("rgb(221, 68, 7)");
+        this.doc.text(key, intCursor.x, intCursor.y - tfs);
+        this.doc.setFontSize(this.chordFont.size * 0.7);
+        this.doc.text(sup, intCursor.x + wbase, intCursor.y - tfs);
+        this.doc.setTextColor(0);
+      }
+      if (!simulate && text) {
+        this.setFont(this.textFont);
+        this.doc.text(text, intCursor.x, intCursor.y);
+      }
+
+      intCursor.x += wmax;
     }
 
     const returnValue = {
@@ -223,11 +203,12 @@ export class ChordPdfJs extends ComfyPdfJs {
       numlineBreaksInserted: br,
       intCursor: intCursor,
     };
-    if (!simulate) Object.assign(this.cursor, intCursor);
 
+    if (!simulate) Object.assign(this.cursor, intCursor);
     return returnValue;
   }
 }
+
 function basename(path: string) {
   return path.split("/").reverse()[0];
 }
