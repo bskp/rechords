@@ -4,7 +4,7 @@ import { FunctionComponent, memo } from "react";
 export const PdfObject: FunctionComponent<{ url: string }> = memo(({ url }) => {
   return (
     <object
-      key={1}
+      key={url}
       data={url}
       width="100%"
       height="100%"

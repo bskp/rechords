@@ -22,7 +22,7 @@ import {
 } from "react-router-dom";
 import TrackingDocumentTitle from "./TrackingDocumentTitle";
 import { Meteor } from "meteor/meteor";
-import Printer from "/imports/ui/Printer";
+import {Printer} from "/imports/ui/Printer";
 import { Button } from "/imports/ui/Button";
 import { ReactSVG } from "react-svg";
 import { useContext } from "react";
@@ -242,7 +242,7 @@ class App extends React.Component<AppProps, AppStates> {
                               "Hölibu | " + song.author + ": " + song.title
                             }
                           />
-                          <Printer song={song} {...routerProps} />
+                          <Printer song={song} />
                         </>
                       );
                     }}

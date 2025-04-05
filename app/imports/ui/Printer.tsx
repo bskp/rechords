@@ -2,9 +2,9 @@ import * as React from "react";
 import { Song } from "../api/collections";
 
 import Sheet from "./Sheet";
-import { navigateCallback, View } from "../api/helpers";
+import { navigateCallback, navigateTo, View } from "../api/helpers";
 import { Button } from "./Button";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useHistory, withRouter } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import { ColumnSetter } from "./PdfViewer/PdfSettings";
 import Transposer, { useTranspose } from "./Transposer";
@@ -12,12 +12,14 @@ import Chord from "../api/libchr0d/chord";
 import { getTransposeFromTag, parseChords } from "./Viewer";
 import { HlbSliderWithInput } from "./GuiElements/HlbSliderWithInput";
 import { HlbCheckbox } from "./GuiElements/HlbCheckbox";
+import Drawer from "./Drawer";
+import { MouseEventHandler } from "react";
 
 type PrinterProps = {
   song: Song;
 };
 
-const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
+export const Printer = ({ song }: PrinterProps) => {
   const ts = useTranspose(getTransposeFromTag(song.getTags()));
 
   const [cols, setCols] = React.useState(2);
@@ -28,11 +30,9 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
 
   const sizeId = React.useId();
   const lineId = React.useId();
+  const history = useHistory();
   const settings = (
     <aside id="rightSettings" className="printer--settings">
-      <Button onClick={navigateCallback(history, View.view, song)}>
-        <ReactSVG src="/svg/cancel.svg" />
-      </Button>
       <div className="pp--settings">
         <div className="grid">
           <div className="title">Schrift</div>
@@ -111,9 +111,21 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
 
   const colMode = cols == 1 ? " singleCol" : "";
 
+  const handleContextMenu: MouseEventHandler = (event) => {
+    navigateTo(history, View.view, song);
+    event.preventDefault();
+  };
+
   return (
-    <>
-      <div className="simulate-print">
+    <div  style={{"display": "contents"}} onContextMenu={handleContextMenu}>
+      <Drawer
+        onClick={navigateCallback(history, View.view, song)}
+        className="list-colors"
+      >
+        <h1>Zurück</h1>
+        <p>Schneller: Rechtsklick!</p>
+      </Drawer>
+      <div className="simulate-print" >
         <div className={"content" + colMode} id="chordsheet">
           <Sheet
             song={song}
@@ -127,8 +139,7 @@ const Printer = ({ song, history }: PrinterProps & RouteComponentProps) => {
         </div>
       </div>
       {settings}
-    </>
+    <div/>
+    </div>
   );
 };
-
-export default withRouter(Printer);
