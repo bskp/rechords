@@ -121,23 +121,14 @@ export class ChordPdfJs extends ComfyPdfJs {
    *
    * @returns distance moved in y direction // tbd internal cursor?
    */
-  // todo: why is this here?
   placeLine(
     line_: Fragment[],
     width: number,
     simulate = false,
-    lineheigts = { chord: 1, text: 1 }
+    lineheigts = { chord: 1, text: 1 },
+    debug=false
   ): { advance_y: number; numlineBreaksInserted: number; intCursor: Cursor } {
     let br = 0;
-
-    const intCursor = new Cursor(this.cursor.x, this.cursor.y);
-
-    const tfs = this.textFont.size / this.doc.internal.scaleFactor;
-    const cfs = this.chordFont.size / this.doc.internal.scaleFactor;
-
-    const cumy = tfs * lineheigts.text + cfs * lineheigts.chord;
-    // may be constant line height (even without chords) is more readable?
-    intCursor.y += cumy;
 
     const line = line_.flatMap((f) => {
       if (f.text) {
@@ -150,7 +141,19 @@ export class ChordPdfJs extends ComfyPdfJs {
       return [f];
     });
 
-    for (const { chordT, text } of line) {
+    const tfs = this.textFont.size / this.doc.internal.scaleFactor;
+    const cfs = this.chordFont.size / this.doc.internal.scaleFactor;
+
+    const cumy = tfs * lineheigts.text + cfs * lineheigts.chord;
+    // may be constant line height (even without chords) is more readable?
+    const intCursor = {
+      xchord: this.cursor.x,
+      xtext: this.cursor.x,
+      y: this.cursor.y,
+    };
+    intCursor.y += cumy;
+
+    for (const { chordT, text, chord: c } of line) {
       let wbase = 0,
         wtext = 0,
         wchord = 0;
@@ -168,34 +171,54 @@ export class ChordPdfJs extends ComfyPdfJs {
         wbase = this.doc.getTextWidth(key);
         this.doc.setFontSize(this.chordFont.size * 0.7);
         const wsup = this.doc.getTextWidth(sup);
-        wchord = wbase + wsup;
-        if (!text || !text.trim()) {
-          wchord += 3;
-        }
+        wchord = wbase + wsup + lineheigts.chord;
+      }
+
+      let x;
+
+      if (chordT) {
+        x = Math.max(intCursor.xchord, intCursor.xtext);
+        intCursor.xchord = x;
+        intCursor.xtext = x;
+      } else {
+        x = intCursor.xtext;
       }
 
       const wmax = Math.max(wtext, wchord);
-      if (intCursor.x + wmax - this.cursor.x > width) {
-        intCursor.x = this.cursor.x;
+      if (x + wmax - this.cursor.x > width) {
+        intCursor.xchord = this.cursor.x;
+        intCursor.xtext = this.cursor.x;
         intCursor.y += cumy;
       }
+
       if (!simulate && chordT) {
+        if(debug) {
+          const height = this.chordFont.size / this.doc.internal.scaleFactor;
+          this.doc.setFillColor('beige')
+          this.doc.rect(x, intCursor.y-height-tfs, wchord, height, "F")
+        }
         const chord = chordT;
         const key = chord.toStringKey();
         const sup = chord.toStringTensionsAndSlash();
         this.doc.setFontSize(this.chordFont.size);
         this.doc.setTextColor("rgb(221, 68, 7)");
-        this.doc.text(key, intCursor.x, intCursor.y - tfs);
+        this.doc.text(key, x, intCursor.y - tfs);
         this.doc.setFontSize(this.chordFont.size * 0.7);
-        this.doc.text(sup, intCursor.x + wbase, intCursor.y - tfs);
+        this.doc.text(sup, x + wbase, intCursor.y - tfs);
         this.doc.setTextColor(0);
       }
       if (!simulate && text) {
+        if(debug) {
+          const height = this.textFont.size / this.doc.internal.scaleFactor;
+          this.doc.setFillColor('beige')
+          this.doc.rect(x, intCursor.y-height, wtext, height, "F")
+        }
         this.setFont(this.textFont);
-        this.doc.text(text, intCursor.x, intCursor.y);
+        this.doc.text(text, x, intCursor.y);
       }
 
-      intCursor.x += wmax;
+      intCursor.xchord += wchord;
+      intCursor.xtext += wtext;
     }
 
     const returnValue = {
