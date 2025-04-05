@@ -188,6 +188,9 @@ class App extends React.Component<AppProps, AppStates> {
       });
     };
 
+    const songList = (
+      <List songs={this.props.songs} key={list_key} user={this.props.user} />
+    );
     return (
       <ThemeContext.Provider
         value={{
@@ -206,14 +209,10 @@ class App extends React.Component<AppProps, AppStates> {
               id="body"
               className={classnames({ noScroll: this.state.showMenu })}
             >
-              <List
-                songs={this.props.songs}
-                key={list_key}
-                user={this.props.user}
-              />
               <Switch>
                 <ErrorBoundary fallback={<NA400 />}>
                   <Route exact={true} path="/">
+                    {songList}
                     <TrackingDocumentTitle title="Hölibu 3000" />
                     <Hallo />
                     <MenuBurger />
@@ -281,6 +280,7 @@ class App extends React.Component<AppProps, AppStates> {
 
                       return (
                         <>
+                          {songList}
                           <TrackingDocumentTitle
                             title={
                               "Hölibu | " + song.author + ": " + song.title

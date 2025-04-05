@@ -6,78 +6,80 @@ import { jsPdfGenerator } from "./PdfRenderer/PdfRenderer";
 import { throttle } from "underscore";
 import "./PdfViewerStyle.less";
 import classNames from "classnames";
-export class PdfViewer extends React.Component<
-  ViewerProps,
-  { loading: boolean; urls: string[] }
-> {
-  first: boolean = false;
-  constructor(props: ViewerProps) {
-    super(props);
-    this.state = { loading: true, urls: [] };
-  }
+import Drawer from "../Drawer";
+import { navigateCallback, View } from "/imports/api/helpers";
+import { FunctionComponent, useEffect, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
+export const PdfViewer: FunctionComponent<ViewerProps> = (props) => {
+  {
+    const [loading, setLoading] = useState(true);
+    const urls = useRef<string[]>([]);
 
-  componentDidMount = () => {
-    this.first = true;
-  };
+    const first = useRef(true);
 
-  generatePdf = async (settings: IPdfViewerSettings): Promise<void> => {
-    const pdfBlobUrl = await jsPdfGenerator(this.props.song, settings);
+    const generatePdf = async (settings: IPdfViewerSettings): Promise<void> => {
+      const pdfBlobUrl = await jsPdfGenerator(props.song, settings);
 
-    this.setState((s) => {
-      s.urls.push(pdfBlobUrl);
-      console.log(s.urls);
-      return { urls: s.urls };
-    });
+      urls.current.push(pdfBlobUrl);
+      console.log(urls);
 
-    setTimeout(() => {
-      if (this.state.urls.length > 1) {
-        const url = this.state.urls.shift();
-        url && URL.revokeObjectURL(url); // freeing old url from memory
+      setTimeout(() => {
+        if (urls.current.length > 1) {
+          const url = urls.current.shift();
+          url && URL.revokeObjectURL(url); // freeing old url from memory
+        }
+        setLoading(false);
+      }, 2000);
+    };
+
+    const _setSettings = throttle(
+      (a: IPdfViewerSettings) => generatePdf(a),
+      500,
+      { leading: true, trailing: true }
+    );
+
+    const setSettings = (settings: IPdfViewerSettings) => {
+      if (first.current) {
+        first.current = false;
+        generatePdf(settings);
+      } else {
+        setLoading(true);
+        _setSettings(settings);
       }
-      this.setState({ loading: false });
-    }, 2e3);
-  };
+    };
 
-  _setSettings = throttle(
-    (a: IPdfViewerSettings) => this.generatePdf(a),
-    1000,
-    { leading: true, trailing: true },
-  );
-
-  setSettings = (settings: IPdfViewerSettings) => {
-    if (this.first) {
-      this.first = false;
-      this.generatePdf(settings);
-    } else {
-      this.setState({ loading: true });
-      this._setSettings(settings);
-    }
-  };
-
-  render(): JSX.Element {
     // let pdfBlob =
 
     console.log("render");
 
-    const s = this.props.song;
+    const s = props.song;
+    const history = useHistory();
 
     if (s._id) {
       return (
         <>
+          <Drawer
+            onClick={navigateCallback(history, View.view, s)}
+            className="list-colors"
+          >
+            <h1>Zurück</h1>
+            <p>Schneller: Rechtsklick!</p>
+          </Drawer>
           <div
             className={classNames({
               pdfgrid: true,
-              loading: this.state.loading,
+              loading: loading,
             })}
           >
-            {this.state.urls.map((u) => (
+            {urls.current.map((u) => (
               <PdfObject key={u} url={u}></PdfObject>
             ))}
           </div>
-          <PdfSettings consumer={this.setSettings} song={s} />
+          <PdfSettings consumer={setSettings} song={s} />
+            <h1>{loading&&"loading..."}</h1>
         </>
       );
     }
     return <div>No Song</div>;
   }
-}
+};
