@@ -14,6 +14,7 @@ import { parseChords } from "../../Viewer";
 import { countChords } from "../../Transposer";
 import { AllBlocks, Line, parseToIntermediateFormat } from "./JHoeli";
 import jsPDF from "jspdf";
+import { title } from "process";
 
 const ORANGE = "rgb(221, 68, 7)";
 export type JSong = {
@@ -67,7 +68,7 @@ export async function jsPdfGenerator(
 
   const out: typeof out_ = { ...out_, sections: out_.sections.map(mapSection) };
 
-  console.log(out)
+  console.log(out);
   const renderer = new ChordPdfRenderer(settings);
 
   return await renderer.render(out);
@@ -174,52 +175,81 @@ class ChordPdfRenderer {
     return pdfBlobUrl;
   }
 
+  splitSection(section: AllBlocks) {
+    const out = new Array<AllBlocks>();
+    if (section.type === "chordblock" || section.type === "repetition") {
+      let collect = {
+        ...section,
+        content: { ...section.content, lines: new Array<Line>() },
+      };
+      if (section.content.lines) {
+        for (const line of section.content.lines) {
+          collect.content.lines.push(line);
+          if (line.canbreak) {
+            // @ts-expect-error
+            out.push(collect);
+            collect = {
+              ...section, type: "chordblock",
+              content: { lines: new Array<Line>() },
+            };
+          }
+        }
+      }
+      return out;
+    } else {
+      return [section];
+    }
+  }
+
   private placeSections(o: JSong) {
-    for (const section of o.sections) {
-      let simHeight = this.placeSection(section, true);
-      if (this.debug) {
-        const y0 = this.cdoc.cursor.y;
-        this.doc.setDrawColor("blue");
-        this.doc.setLineWidth(3);
-        this.doc.line(this.x0, y0, this.x0, y0 + simHeight);
-      }
-      const sectionGap =
-        (this.las.section + this.fos.chord) /
-        this.cdoc.doc.internal.scaleFactor;
-      simHeight += sectionGap;
-
-      // would the next section overlap the page?
-      if (this.cdoc.cursor.y + simHeight > this.cdoc.maxY()) {
-        const c = this.cdoc.cursor;
-        const g = this.las.colgap;
-        this.x0 += this.colWidth + g;
-        this.cdoc.cursor.y =
-          this.x0 > this.header.x ? this.cdoc.margins.top : this.header.y;
+    for (const section_ of o.sections) {
+      const splits = this.splitSection(section_);
+      for (const section of splits) {
+        let simHeight = this.placeSection(section, true);
         if (this.debug) {
-          this.doc.line(
-            this.x0 - g,
-            c.y,
-            this.x0 - g,
-            c.y + this.cdoc.mediaHeight()
-          );
-          this.doc.line(this.x0, c.y, this.x0, c.y + this.cdoc.mediaHeight());
+          const y0 = this.cdoc.cursor.y;
+          this.doc.setDrawColor("blue");
+          this.doc.setLineWidth(3);
+          this.doc.line(this.x0, y0, this.x0, y0 + simHeight);
         }
-        if (this.x0 > this.cdoc.maxX()) {
-          this.doc.addPage();
-          this.x0 = this.cdoc.margins.left;
-          this.header.y = this.cdoc.margins.top;
-          this.placeFooter(o.author, o.title);
-        }
-      }
+        const sectionGap =
+          (this.las.section + this.fos.chord) /
+          this.cdoc.doc.internal.scaleFactor;
+        simHeight += sectionGap;
 
-      if (this.debug) {
-        const y0 = this.cdoc.cursor.y;
-        this.doc.setDrawColor("red");
-        this.doc.setLineWidth(1);
-        this.doc.line(this.x0, y0, this.x0, y0 + simHeight);
+        // would the next section overlap the page?
+        if (this.cdoc.cursor.y + simHeight > this.cdoc.maxY()) {
+          const c = this.cdoc.cursor;
+          const g = this.las.colgap;
+          this.x0 += this.colWidth + g;
+          this.cdoc.cursor.y =
+            this.x0 > this.header.x ? this.cdoc.margins.top : this.header.y;
+          if (this.debug) {
+            this.doc.line(
+              this.x0 - g,
+              c.y,
+              this.x0 - g,
+              c.y + this.cdoc.mediaHeight()
+            );
+            this.doc.line(this.x0, c.y, this.x0, c.y + this.cdoc.mediaHeight());
+          }
+          if (this.x0 > this.cdoc.maxX()) {
+            this.doc.addPage();
+            this.x0 = this.cdoc.margins.left;
+            this.header.y = this.cdoc.margins.top;
+            this.placeFooter(o.author, o.title);
+          }
+        }
+
+        if (this.debug) {
+          const y0 = this.cdoc.cursor.y;
+          this.doc.setDrawColor("red");
+          this.doc.setLineWidth(1);
+          this.doc.line(this.x0, y0, this.x0, y0 + simHeight);
+        }
+        this.placeSection(section);
+        this.cdoc.cursor.y += sectionGap;
       }
-      this.placeSection(section);
-      this.cdoc.cursor.y += sectionGap;
     }
   }
 
@@ -253,12 +283,17 @@ class ChordPdfRenderer {
         }
       }
 
-      const sdf = this.cdoc.textFragment(section.content.ref, simulate);
-      if (section.content.adm) {
-        this.cdoc.setFont({ ...this.f.Bric, size: this.fos.text });
-        const df = this.cdoc.textFragment("  " + section.content.adm, simulate);
+      if (section.content.ref) {
+        const sdf = this.cdoc.textFragment(section.content.ref, simulate);
+        if (section.content.adm) {
+          this.cdoc.setFont({ ...this.f.Bric, size: this.fos.text });
+          const df = this.cdoc.textFragment(
+            "  " + section.content.adm,
+            simulate
+          );
+        }
+        advance_y += sdf.h;
       }
-      advance_y += sdf.h;
     }
     if (
       section.type === "chordblock" ||
