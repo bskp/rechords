@@ -8,10 +8,15 @@ export type Fragment = {
 };
 export type Line = { fragments: Fragment[]; canbreak?: boolean };
 
-export type ChordBlock = {
+export type ChordSection = {
   type: "chordblock";
   content: { title?: string; lines: Line[] };
 };
+
+export type ChordLines = {
+  type: "chordline";
+  content: { lines: Line[] };
+}
 export type Comment = {
   type: "comment";
   content: string;
@@ -27,7 +32,7 @@ export type Repetition = {
   };
 };
 
-export type AllBlocks = ChordBlock | Comment | Repetition;
+export type AllBlocks = ChordSection | ChordLines | Comment | Repetition;
 
 export type BlockTypes = AllBlocks["type"];
 

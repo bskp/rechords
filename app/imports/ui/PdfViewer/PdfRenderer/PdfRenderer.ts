@@ -12,7 +12,14 @@ import { Song } from "/imports/api/collections";
 import Chord from "/imports/api/libchr0d/chord";
 import { parseChords } from "../../Viewer";
 import { countChords } from "../../Transposer";
-import { AllBlocks, Line, parseToIntermediateFormat } from "./JHoeli";
+import {
+  AllBlocks,
+  ChordLines,
+  ChordSection,
+  Line,
+  parseToIntermediateFormat,
+  Repetition,
+} from "./JHoeli";
 import jsPDF from "jspdf";
 import { title } from "process";
 
@@ -123,6 +130,13 @@ function getNotation(song: Song, semitones: number) {
 export type FontRefwS = FontRef & {
   size: number;
 };
+type AllBlocksGap = AllBlocks & {
+  gaps: {
+    before: number;
+    after: number;
+  };
+};
+
 class ChordPdfRenderer {
   debug = false;
   header = { x: 0, y: 0 };
@@ -175,11 +189,15 @@ class ChordPdfRenderer {
     return pdfBlobUrl;
   }
 
-  splitSection(section: AllBlocks) {
-    const out = new Array<AllBlocks>();
+  mapt2layoutFormat(section: AllBlocks): AllBlocksGap[] {
+    let sectionGap =
+      (this.las.section + this.fos.chord) / this.cdoc.doc.internal.scaleFactor;
+    const gaps = { before: sectionGap / 2, after: sectionGap / 2 };
+    const out = new Array<AllBlocksGap>();
     if (section.type === "chordblock" || section.type === "repetition") {
       let collect = {
         ...section,
+        gaps,
         content: { ...section.content, lines: new Array<Line>() },
       };
       if (section.content.lines) {
@@ -189,33 +207,41 @@ class ChordPdfRenderer {
             // @ts-expect-error
             out.push(collect);
             collect = {
-              ...section, type: "chordblock",
-              content: { lines: new Array<Line>() },
+              ...section,
+              gaps: { before: 0, after: sectionGap / 2 },
+              content: {
+                lines: new Array<Line>(),
+              },
             };
           }
         }
       }
+      if (collect.content.lines.length > 0) {
+        // @ts-expect-error
+        out.push(collect);
+      }
       return out;
     } else {
-      return [section];
+      return [{ ...section, gaps }];
     }
   }
 
   private placeSections(o: JSong) {
     for (const section_ of o.sections) {
-      const splits = this.splitSection(section_);
+      const splits = this.mapt2layoutFormat(section_);
       for (const section of splits) {
         let simHeight = this.placeSection(section, true);
+        simHeight += section.gaps.before + section.gaps.after;
+        if (!this.cdoc.isTop()) {
+          // todo: how about just set the value in section?
+          this.cdoc.cursor.y += section.gaps.before;
+        }
         if (this.debug) {
           const y0 = this.cdoc.cursor.y;
           this.doc.setDrawColor("blue");
           this.doc.setLineWidth(3);
           this.doc.line(this.x0, y0, this.x0, y0 + simHeight);
         }
-        const sectionGap =
-          (this.las.section + this.fos.chord) /
-          this.cdoc.doc.internal.scaleFactor;
-        simHeight += sectionGap;
 
         // would the next section overlap the page?
         if (this.cdoc.cursor.y + simHeight > this.cdoc.maxY()) {
@@ -248,7 +274,7 @@ class ChordPdfRenderer {
           this.doc.line(this.x0, y0, this.x0, y0 + simHeight);
         }
         this.placeSection(section);
-        this.cdoc.cursor.y += sectionGap;
+        this.cdoc.cursor.y += section.gaps.after;
       }
     }
   }
@@ -259,31 +285,31 @@ class ChordPdfRenderer {
     this.resetX();
 
     this.cdoc.setFont({ ...this.f.BricBold, size: this.fos.section });
-    if (section.type === "chordblock") {
+    if (section.type === "chordblock" && section.content.title) {
       advance_y += this.cdoc.textLine(section?.content?.title, simulate).h;
     }
 
     if (section.type === "repetition") {
-      // line
-      if (!simulate) {
-        this.cdoc.cursor.y += this.las.section;
-        if (!this.settings.inlineReferences) {
-          this.doc.setFillColor(ORANGE);
-          const w = this.fos.section / 15,
-            h = this.fos.section / 2;
-          this.doc.rect(
-            this.cdoc.cursor.x,
-            this.cdoc.cursor.y - h * 0.75,
-            w,
-            h,
-            "F"
-          );
-          // optically smaller sizes need more gap hence fixed part
-          this.cdoc.cursor.x += 2 + this.fos.section / 10;
-        }
-      }
-
       if (section.content.ref) {
+        // line
+        if (!simulate) {
+          this.cdoc.cursor.y += this.fos.section/2
+          if (!this.settings.inlineReferences) {
+            this.doc.setFillColor(ORANGE);
+            const w = this.fos.section / 15,
+              h = this.fos.section / 2;
+            this.doc.rect(
+              this.cdoc.cursor.x,
+              this.cdoc.cursor.y - h * 0.75,
+              w,
+              h,
+              "F"
+            );
+            // optically smaller sizes need more gap hence fixed part
+            this.cdoc.cursor.x += 2 + this.fos.section / 10;
+          }
+        }
+
         const sdf = this.cdoc.textFragment(section.content.ref, simulate);
         if (section.content.adm) {
           this.cdoc.setFont({ ...this.f.Bric, size: this.fos.text });
@@ -292,15 +318,16 @@ class ChordPdfRenderer {
             simulate
           );
         }
-        advance_y += sdf.h;
+        advance_y += sdf.h 
       }
     }
     if (
+      section.type === "chordline" ||
       section.type === "chordblock" ||
       (section.type === "repetition" && this.settings.inlineReferences)
     ) {
       const lines = section.content.lines;
-      if (lines) {
+      if (lines?.length) {
         const dimensions = this.placeLines(lines, simulate);
         advance_y += dimensions;
       }

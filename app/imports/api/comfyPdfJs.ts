@@ -126,7 +126,7 @@ export class ChordPdfJs extends ComfyPdfJs {
     width: number,
     simulate = false,
     lineheigts = { chord: 1, text: 1 },
-    debug=false
+    debug = false
   ): { advance_y: number; numlineBreaksInserted: number; intCursor: Cursor } {
     let br = 0;
 
@@ -141,10 +141,12 @@ export class ChordPdfJs extends ComfyPdfJs {
       return [f];
     });
 
-    const tfs = this.textFont.size / this.doc.internal.scaleFactor;
-    const cfs = this.chordFont.size / this.doc.internal.scaleFactor;
+    const tfs =
+      (this.textFont.size / this.doc.internal.scaleFactor) * lineheigts.text;
+    const cfs =
+      (this.chordFont.size / this.doc.internal.scaleFactor) * lineheigts.chord;
 
-    const cumy = tfs * lineheigts.text + cfs * lineheigts.chord;
+    const cumy = tfs+cfs
     // may be constant line height (even without chords) is more readable?
     const intCursor = {
       xchord: this.cursor.x,
@@ -188,14 +190,15 @@ export class ChordPdfJs extends ComfyPdfJs {
       if (x + wmax - this.cursor.x > width) {
         intCursor.xchord = this.cursor.x;
         intCursor.xtext = this.cursor.x;
+        x = this.cursor.x
         intCursor.y += cumy;
       }
 
       if (!simulate && chordT) {
-        if(debug) {
+        if (debug) {
           const height = this.chordFont.size / this.doc.internal.scaleFactor;
-          this.doc.setFillColor('beige')
-          this.doc.rect(x, intCursor.y-height-tfs, wchord, height, "F")
+          this.doc.setFillColor("beige");
+          this.doc.rect(x, intCursor.y - height - tfs, wchord, height, "F");
         }
         const chord = chordT;
         const key = chord.toStringKey();
@@ -208,10 +211,10 @@ export class ChordPdfJs extends ComfyPdfJs {
         this.doc.setTextColor(0);
       }
       if (!simulate && text) {
-        if(debug) {
+        if (debug) {
           const height = this.textFont.size / this.doc.internal.scaleFactor;
-          this.doc.setFillColor('beige')
-          this.doc.rect(x, intCursor.y-height, wtext, height, "F")
+          this.doc.setFillColor("beige");
+          this.doc.rect(x, intCursor.y - height, wtext, height, "F");
         }
         this.setFont(this.textFont);
         this.doc.text(text, x, intCursor.y);
