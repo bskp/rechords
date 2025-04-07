@@ -4,7 +4,7 @@
 #transposer {
   position: fixed;
   top: 0;
-  left: @drawer-open;
+  left: 0; //@drawer-open; for pdf / print but why should the menu be not blurred?
   right: 0;
   bottom: 0;
   background-color: color-mix(in hsl, var(--bg-list), transparent 70%);
@@ -126,7 +126,6 @@
       transform: rotate(var(--rotKey));
       transform-origin: center;
     }
-
 
     #fields path {
       fill: color-mix(in hsl, var(--gray-light), var(--accent) var(--v, 0.1%));

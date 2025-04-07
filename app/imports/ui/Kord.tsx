@@ -1,6 +1,6 @@
 // import * as db from '@tombatossals/chords-db';
 import * as React from "react";
-import Chord from "./Chord/Chord";
+import Chord from "./Frets/Chord";
 
 interface ChordProps {
   frets: string;

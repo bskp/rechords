@@ -51,6 +51,19 @@
         color: var(--ink) !important;
       }
     }
+
+    p {
+      margin-top: 0;
+    }
+
+    .inlineRefs .ref[id],
+    h3 {
+      text-align: unset;
+      height: unset;
+      width: unset;
+      margin-left: 0;
+      margin-bottom: 0;
+    }
   }
 
   #chordsheet.content.singleCol {
@@ -129,6 +142,13 @@
 }
 
 @media screen {
+  #rightSettings {
+    &.printer--settings {
+    }
+    .pp--settings {
+      border-top-left-radius: 10px;
+    }
+  }
   .simulate-print {
     .printify;
     .override-colors;
@@ -142,9 +162,9 @@
     #chordsheet.content {
       background-color: white;
       width: 210mm;
-      height: 296mm;
+      height: 297mm;
 
-      transform: rotate(-2deg);
+      transform: rotate(-1.5deg);
       border-radius: 3pt;
 
       overflow: hidden;

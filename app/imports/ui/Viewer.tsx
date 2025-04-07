@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import Transposer, { Transpose } from "./Transposer";
+import Transposer, { useTranspose } from "./Transposer";
 import Chord from "../api/libchr0d/chord";
 import { Song } from "../api/collections";
 import {
@@ -14,20 +14,17 @@ import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdPictureAsPdf, MdPrint } from "react-icons/md";
 import { usePinch } from "@use-gesture/react";
 
-interface ViewerProps {
+export interface ViewerProps {
   song: Song;
 }
 
 const Viewer: React.FC<ViewerProps> = ({ song }) => {
-  const [transpose, setTranspose] = useState<Transpose>({
-    semitones: getTransposeFromTag(),
-    notation: "undetermined",
-  });
-  const [showChords, setShowChords] = useState<boolean>(true);
-  const [showTransposer, setShowTransposer] = useState<boolean>(false);
+  const transposeState = useTranspose(getTransposeFromTag(song.getTags()));
+
+  const [showChords] = useState<boolean>(true);
   const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
   const [isVideoActive, setIsVideoActive] = useState<boolean>(false);
   const [textZoom, setTextZoom] = useState<number>(1);
@@ -58,13 +55,13 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   useEffect(() => {
     updateDuration();
     document.scrollingElement?.scrollTo(0, 0);
-    setTranspose({
-      semitones: getTransposeFromTag(),
+    transposeState.setTranspose({
+      semitones: getTransposeFromTag(song.getTags()),
       notation: "undetermined",
     });
     stopAutoScroll();
     setIsVideoActive(false);
-    const preventDefault = (e) => e.preventDefault();
+    const preventDefault = (e: Event) => e.preventDefault();
     document.addEventListener("gesturestart", preventDefault);
     document.addEventListener("gesturechange", preventDefault);
     return () => {
@@ -82,7 +79,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     }
     if (e.key === "t") {
       e.preventDefault();
-      setShowTransposer(!showTransposer);
+      transposeState.setShowTransposer(!transposeState.showTransposer);
     }
   };
 
@@ -90,15 +87,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     document.addEventListener("keydown", globalKeyHandler);
     return () => document.removeEventListener("keydown", globalKeyHandler);
   });
-
-  function getTransposeFromTag(): number | undefined {
-    const transposeTag = song
-      .getTags()
-      .find((tag) => tag.startsWith("transponierung:"));
-    if (!transposeTag) return undefined;
-    let dt = parseInt(transposeTag.split(":")[1], 10);
-    return isNaN(dt) ? undefined : dt;
-  }
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
     if (userMayWrite()) {
@@ -146,10 +134,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const { setShowMenu } = useContext(MenuContext);
 
-  const chords = song
-    .getChords()
-    .map((chord) => Chord.from(chord))
-    .filter((chord: Chord | undefined): chord is Chord => chord !== undefined);
+  const chords = parseChords(song.getChords());
   return (
     <VideoContext.Provider
       value={{
@@ -165,52 +150,79 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         style={{ fontSize: textZoom + "em" }}
         onContextMenu={handleContextMenu}
       >
-        <Sheet song={song} transpose={transpose} hideChords={!showChords} />
+        <Sheet
+          song={song}
+          transpose={transposeState.transpose}
+          hideChords={!showChords}
+        />
       </div>
       <aside id="rightSettings">
         <Button onClick={() => setShowMenu(true)} phoneOnly>
           <ReactSVG src="/svg/menu.svg" />
         </Button>
-        {!song.has_video ? null : isVideoActive ? (
-          <Button onClick={() => setIsVideoActive(false)}>
-            <ReactSVG src="/svg/yt-close.svg" />
+        <div className="actions-navigate hideOnMobile">
+          {userMayWrite() && (
+            <Button onClick={handleContextMenu} hideOnPhone>
+              <MdEdit />
+            </Button>
+          )}
+          <Button onClick={() => navigateTo(history, View.print, song)}>
+            <MdPrint className="iconbutton" />
           </Button>
-        ) : (
-          <Button onClick={() => setIsVideoActive(true)}>
-            <ReactSVG src="/svg/yt.svg" />
+          <Button onClick={() => navigateTo(history, View.pdf, song)}>
+            <MdPictureAsPdf />
           </Button>
-        )}
-        {showTransposer && (
-          <Transposer
-            transposeSetter={setTranspose}
-            transpose={transpose.semitones}
-            keyHint={Chord.from(keyTag)}
-            close={() => setShowTransposer(false)}
-            chords={chords}
-          />
-        )}
-        <Button onClick={() => setShowTransposer(true)}>
-          <ReactSVG src="/svg/transposer.svg" />
-        </Button>
-        {userMayWrite() && (
-          <Button onClick={handleContextMenu} hideOnPhone>
-            <MdEdit />
-          </Button>
-        )}
-        <Button onClick={toggleAutoScroll}>
-          {autoScroll ? (
-            <ReactSVG src="/svg/conveyor_active.svg" />
+        </div>
+        <div className="actions-do">
+          {!song.has_video ? null : isVideoActive ? (
+            <Button onClick={() => setIsVideoActive(false)}>
+              <ReactSVG src="/svg/yt-close.svg" />
+            </Button>
           ) : (
-            <ReactSVG
-              src="/svg/conveyor.svg"
-              data-tooltip-content="Auto-Scroll"
-              data-tooltip-id="tt"
+            <Button onClick={() => setIsVideoActive(true)}>
+              <ReactSVG src="/svg/yt.svg" />
+            </Button>
+          )}
+          {transposeState.showTransposer && (
+            <Transposer
+              transposeSetter={transposeState.setTranspose}
+              transpose={transposeState.transpose.semitones}
+              keyHint={Chord.from(keyTag)}
+              close={() => transposeState.setShowTransposer(false)}
+              chords={chords}
             />
           )}
-        </Button>
+          <Button onClick={() => transposeState.setShowTransposer(true)}>
+            <ReactSVG src="/svg/transposer.svg" />
+          </Button>
+          <Button onClick={toggleAutoScroll}>
+            {autoScroll ? (
+              <ReactSVG src="/svg/conveyor_active.svg" />
+            ) : (
+              <ReactSVG
+                src="/svg/conveyor.svg"
+                data-tooltip-content="Auto-Scroll"
+                data-tooltip-id="tt"
+              />
+            )}
+          </Button>
+        </div>
       </aside>
     </VideoContext.Provider>
   );
 };
 
 export default Viewer;
+
+export function parseChords(chords: string[]) {
+  return chords
+    .map((chord) => Chord.from(chord))
+    .filter((chord: Chord | undefined): chord is Chord => chord !== undefined);
+}
+
+export function getTransposeFromTag(tags: string[]): number | undefined {
+  const transposeTag = tags.find((tag) => tag.startsWith("transponierung:"));
+  if (!transposeTag) return undefined;
+  let dt = parseInt(transposeTag.split(":")[1], 10);
+  return isNaN(dt) ? undefined : dt;
+}

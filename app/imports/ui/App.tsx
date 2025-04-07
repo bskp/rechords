@@ -22,11 +22,12 @@ import {
 } from "react-router-dom";
 import TrackingDocumentTitle from "./TrackingDocumentTitle";
 import { Meteor } from "meteor/meteor";
-import Printer from "/imports/ui/Printer";
+import {Printer} from "/imports/ui/Printer";
 import { Button } from "/imports/ui/Button";
 import { ReactSVG } from "react-svg";
 import { useContext } from "react";
 import classnames from "classnames";
+import { PdfViewer } from "./PdfViewer/PdfViewer";
 
 export const ThemeContext = React.createContext<{
   toggleTheme: () => void;
@@ -187,6 +188,9 @@ class App extends React.Component<AppProps, AppStates> {
       });
     };
 
+    const songList = (
+      <List songs={this.props.songs} key={list_key} user={this.props.user} />
+    );
     return (
       <ThemeContext.Provider
         value={{
@@ -205,14 +209,10 @@ class App extends React.Component<AppProps, AppStates> {
               id="body"
               className={classnames({ noScroll: this.state.showMenu })}
             >
-              <List
-                songs={this.props.songs}
-                key={list_key}
-                user={this.props.user}
-              />
               <Switch>
                 <ErrorBoundary fallback={<NA400 />}>
                   <Route exact={true} path="/">
+                    {songList}
                     <TrackingDocumentTitle title="Hölibu 3000" />
                     <Hallo />
                     <MenuBurger />
@@ -242,7 +242,28 @@ class App extends React.Component<AppProps, AppStates> {
                               "Hölibu | " + song.author + ": " + song.title
                             }
                           />
-                          <Printer song={song} {...routerProps} />
+                          <Printer song={song} />
+                        </>
+                      );
+                    }}
+                  />
+                  <Route
+                    path="/pdf/:author/:title"
+                    render={(routerProps) => {
+                      const song = getSong(routerProps.match.params);
+
+                      if (song === undefined) {
+                        return nA404;
+                      }
+
+                      return (
+                        <>
+                          <TrackingDocumentTitle
+                            title={
+                              "Hölibu | " + song.author + ": " + song.title
+                            }
+                          />
+                          <PdfViewer song={song} {...routerProps} />
                         </>
                       );
                     }}
@@ -259,6 +280,7 @@ class App extends React.Component<AppProps, AppStates> {
 
                       return (
                         <>
+                          {songList}
                           <TrackingDocumentTitle
                             title={
                               "Hölibu | " + song.author + ": " + song.title
