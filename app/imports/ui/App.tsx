@@ -22,7 +22,7 @@ import {
 } from "react-router-dom";
 import TrackingDocumentTitle from "./TrackingDocumentTitle";
 import { Meteor } from "meteor/meteor";
-import {Printer} from "/imports/ui/Printer";
+import { Printer } from "/imports/ui/Printer";
 import { Button } from "/imports/ui/Button";
 import { ReactSVG } from "react-svg";
 import { useContext } from "react";
@@ -212,8 +212,8 @@ class App extends React.Component<AppProps, AppStates> {
               <Switch>
                 <ErrorBoundary fallback={<NA400 />}>
                   <Route exact={true} path="/">
-                    {songList}
                     <TrackingDocumentTitle title="Hölibu 3000" />
+                    {songList}
                     <Hallo />
                     <MenuBurger />
                   </Route>
@@ -280,12 +280,12 @@ class App extends React.Component<AppProps, AppStates> {
 
                       return (
                         <>
-                          {songList}
                           <TrackingDocumentTitle
                             title={
                               "Hölibu | " + song.author + ": " + song.title
                             }
                           />
+                          {songList}
                           <Viewer song={song} {...routerProps} />
                         </>
                       );
@@ -313,13 +313,7 @@ class App extends React.Component<AppProps, AppStates> {
                       return (
                         <>
                           <TrackingDocumentTitle
-                            title={
-                              "Hölibu | " +
-                              song.author +
-                              ": " +
-                              song.title +
-                              " (bearbeiten)"
-                            }
+                            title={`Hölibu | ${song.author}: ${song.title} (bearbeiten)`}
                           />
                           {editor}
                         </>
@@ -355,6 +349,7 @@ class App extends React.Component<AppProps, AppStates> {
                       return (
                         <>
                           <TrackingDocumentTitle title="Hölibu | Lieder-Fortschritt" />
+                          {songList}
                           {content}
                           <MenuBurger />
                         </>
@@ -369,6 +364,7 @@ class App extends React.Component<AppProps, AppStates> {
                       return (
                         <>
                           <TrackingDocumentTitle title="Hölibu | Alle Benutzer" />
+                          {songList}
                           <Users users={users} />
                           <MenuBurger />
                         </>
@@ -386,6 +382,7 @@ class App extends React.Component<AppProps, AppStates> {
                       }
                       return (
                         <>
+                          {songList}
                           <TrackingDocumentTitle
                             title={"Hölibu | " + user.profile.name}
                           />

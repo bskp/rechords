@@ -6,47 +6,45 @@
   font-weight: normal;
 }
 
-// Dark color scheme
 html.dark {
-  // Color swatches
-  @accent: #ffcb00; // for text.
-  @h: hsvhue(@accent);
-  @accent-flat: hsv(
-    @h - 5,
-    0.8,
-    0.85
-  ); // duller and lighter variant of @accent for big areas
+  color-scheme: dark;
+}
 
-  @ink: white; // for text.
-  @void: black; // for big areas.
-  @dirt: hsv(@h, 0, 0.1); // a shaded @void, for areas
-  @gray: hsv(@h - 10, 0.2, 0.6); // perceptively neutral gray
+html {
+  --accent: light-dark(rgb(221, 68, 7), #ffcb00);
+
+  --ink: light-dark(black, white);
+  --void: light-dark(white, black);
+
+  --midpoint: color-mix(in oklab, white, black 35%);
+  --gray: color-mix(in oklab, var(--accent), var(--midpoint) 80%);
+  --accent-flat: color-mix(in oklab, var(--accent), var(--midpoint) 20%);
+
+  --dirt: color-mix(in oklab, var(--void), var(--gray) 30%);
+
 
   // Derived color variables
 
-  --bg-list: @void;
-  --bg-sheet: @dirt;
+  // swap roles of bg-list & bg-sheet in dark/light theme
+  --bg-list: light-dark(var(--dirt), var(--void));
+  --bg-sheet: light-dark(var(--void), var(--dirt));
 
-  --accent: @accent;
-  --accent-flat: @accent-flat;
+  --gray-dark: color-mix(in oklab, var(--gray) 66%, var(--ink));
+  --gray-light: color-mix(in oklab, var(--gray) 66%, var(--void));
 
-  --ink: @ink;
-  --gray: @gray;
-  --gray-dark: mix(@gray, @ink, 66%);
-  --gray-light: mix(@gray, @void, 50%);
+  --text: var(--ink);
+  --text-inverted: var(--void);
 
-  --text: @ink;
-  --text-inverted: @void;
-  --text-sidebar: hsv(@h, 0.2, 0.4);
+  --text-sidebar: color-mix(in oklab, var(--gray) 70%, black);
 
-  --bg-rev: hsv(hsvhue(@accent-flat), 0.7, 0.4);
-  --text-rev: mix(@accent-flat, white);
+  --bg-rev: color-mix(in oklab, var(--accent-flat), black 50%);
 
-  --text-revs: mix(@accent-flat, white);
-  --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
+  --text-rev: color-mix(in oklab, var(--accent-flat), white);
 
-  --bg-filter-translucent: fade(@void, 40%);
-  --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
+  --bg-revs: color-mix(in oklab, var(--accent-flat), black 60%);
+
+  --bg-filter-translucent: color-mix(in oklab, var(--void), transparent 60%);
+  --bg-filter-opaque: color-mix(in oklab, var(--void), var(--dirt), transparent 10%);
 
   // Theme variations
   aside.drawer#list li a.selected {
@@ -61,50 +59,6 @@ html.dark {
       stroke: var(--accent);
     }
   }
-}
-
-// Light color scheme
-html.light {
-  // Color swatches
-
-  @accent: rgb(221, 68, 7); // for text.
-  @h: hsvhue(@accent);
-  @accent-flat: hsv(
-    @h,
-    0.7,
-    0.8
-  ); // duller and lighter variant of @accent for big areas
-
-  @ink: black; // for text.
-  @void: white; // for big areas.
-  @dirt: hsv(@h, 0.05, 0.9); // a shaded @void, for areas
-  @gray: hsv(@h, 0.2, 0.6); // perceptively neutral gray
-
-  // Derived color variables
-
-  --bg-list: @dirt;
-  --bg-sheet: @void;
-
-  --accent: @accent;
-  --accent-flat: @accent-flat;
-
-  --ink: @ink;
-  --gray: @gray;
-  --gray-dark: mix(@gray, @ink, 66%);
-  --gray-light: mix(@gray, @dirt, 60%);
-
-  --text: @ink;
-  --text-inverted: @void;
-  --text-sidebar: hsv(@h, 0.2, 0.4);
-
-  --bg-rev: hsv(hsvhue(@accent-flat), 0.7, 0.4);
-  --text-rev: mix(@accent-flat, white);
-
-  --text-revs: mix(@accent-flat, white);
-  --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
-
-  --bg-filter-translucent: fade(@dirt, 60%);
-  --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
 }
 
 .prettyScrollbars(@bg) {
@@ -170,14 +124,13 @@ html.light {
 
 .revisions-colors {
   // ie. the list of revisions
-  color: var(--text-revs);
+  color: var(--text-rev);
   background-color: var(--bg-revs);
 }
 
 .select(@mode: none;) {
   -webkit-touch-callout: @mode; /* iOS Safari */
   -webkit-user-select: @mode; /* Safari */
-  -khtml-user-select: @mode; /* Konqueror HTML */
   -moz-user-select: @mode; /* Firefox */
   -ms-user-select: @mode; /* Internet Explorer/Edge */
   user-select: @mode; /* Non-prefixed version, currently supported by Chrome and Opera */
