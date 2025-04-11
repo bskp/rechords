@@ -44,7 +44,7 @@ export const Columns: FunctionComponent<ColumnProps> = memo(
       colWidth = (width - (numCols + 3) * gap) / numCols;
     }
     return (
-      <svg width={width} height={height}>
+      <svg width="100%" viewBox={`0 0 ${width} ${height}`}>
         {idxes.map((idx) => (
           <g
             key={idx}

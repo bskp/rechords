@@ -1,13 +1,17 @@
-.settingTitle {
+@import "./variables.import.less";
+
+.settingLabel {
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 10px;
   color: var(--text-sidebar);
 }
 
 .pp--settings {
   height: 100%;
+  width: 350px;
+  flex-shrink: 0;
   background-color: var(--bg-list);
   margin-top: 0;
   margin-bottom: 0;
@@ -15,19 +19,10 @@
   display: flex;
   align-items: center;
 
-  .quickinput svg {
-    stroke-width: 2px;
-    fill: var(--text-sidebar);
-
-    polygon:hover {
-      fill: var(--accent);
-    }
-  }
-
   @qb: 2px;
   @qh: 30px;
 
-  svg {
+  label svg {
     stroke: var(--text-sidebar);
     fill: none;
 
@@ -82,31 +77,34 @@
     font-size: 14px;
   }
 
-  .settingBase {
-    border: var(--text-sidebar) solid 2px;
-    border-radius: 4px;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-
   .grid {
     display: flex;
     flex-flow: column nowrap;
 
     .title {
-      .settingTitle();
-      padding-left: 10px;
+      .cooperate();
+      font-size: 26px;
+      color: var(--gray);
+      margin: 1.4em 0 0.4em;
     }
 
     .setting {
-      .settingBase();
       display: flex;
       flex-flow: row wrap;
-      justify-content: space-evenly;
-      align-items: center;
 
       &.columns {
-        align-items: flex-start;
+        gap: 1em;
+
+        svg {
+          height: 3em;
+        }
+
+        label {
+          width: 3em;
+          height: 3em;
+          background-color: white;
+          border-radius: 5px;
+        }
       }
 
       &.buttons {
@@ -115,7 +113,6 @@
     }
 
     .settingtable {
-      .settingBase();
       display: flex;
       flex-flow: column nowrap;
     }
@@ -127,7 +124,7 @@
   }
 
   .fontsize {
-    .settingTitle();
+    .settingLabel();
 
     margin: 0;
 
@@ -139,6 +136,7 @@
     label {
       flex: 0 0 50px;
     }
+
     .slidecontainer {
       flex: 1 1 100px;
     }
@@ -167,9 +165,8 @@
   .fullwidth {
     width: 100%;
     display: flex;
-    justify-items: flex-start;
     align-items: center;
-    gap: 20px;
+    gap: 5px;
   }
 
   ///  Checkbox //////////
@@ -177,32 +174,46 @@
   input[type="checkbox"] {
     display: none;
 
+    + label {
+      .settingLabel();
+      cursor: pointer;
+
+      svg {
+        border-radius: 3px;
+
+        .cross {
+          stroke: none;
+        }
+
+        .box {
+          fill: white;
+          stroke: none;
+        }
+      }
+    }
+
+    &:hover + label {
+      color: var(--accent);
+    }
+
     &:checked + label {
       color: var(--accent);
 
       svg {
         .cross {
           stroke: var(--accent);
+          stroke-width: 3px;
         }
+
         .box {
-          stroke: var(--gray-dark);
         }
       }
     }
+  }
 
-    + label {
-      .settingTitle();
-      svg {
-        stroke-width: 3px;
-
-        .cross {
-          stroke: none;
-        }
-        .box {
-          stroke: var(--gray-dark);
-        }
-      }
-    }
+  .display-transpose {
+    font-family: "Shantell Sans";
+    font-weight: 500;
   }
 
   ///// End Checkbox ////////////////////////////////////////
@@ -223,6 +234,7 @@
     -moz-appearance: textfield;
     -webkit-appearance: textfield;
   }
+
   /// end number input //////////////////////////////
 
   //// slider //////////////////////////////
@@ -230,6 +242,7 @@
   .slidecontainer {
     cursor: pointer;
   }
+
   input[type="range"] {
     appearance: none;
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
@@ -254,7 +267,9 @@
     border-color: transparent;
     color: transparent;
   }
+
   /* Special styling for WebKit/Blink */
+
   input[type="range"]::-moz-range-thumb,
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -276,6 +291,7 @@
     border: 0px;
     border-radius: 1.3px;
   }
+
   input[type="range"]:focus::-moz-range-track,
   input[type="range"]:focus::-webkit-slider-runnable-track {
     background: var(--gray-dark);

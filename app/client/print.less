@@ -1,3 +1,6 @@
+@import (reference) "./responsive.import.less";
+@import (reference) "./variables.import.less";
+
 .printify {
   .tags {
     display: none !important;
@@ -145,15 +148,14 @@
   #rightSettings {
     &.printer--settings {
     }
-    .pp--settings {
-      border-top-left-radius: 10px;
-    }
   }
   .simulate-print {
     .printify;
     .override-colors;
+    margin-left: @drawer-closed;
 
     background-color: #99837a;
+    background-color: #beb4b0;
     padding: 2em;
     width: 100%;
 

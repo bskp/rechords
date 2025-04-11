@@ -345,7 +345,7 @@ export const useTranspose = (initialSemitones = 0) => {
     normedSemitones -= 12;
   }
   const sign = Math.sign(normedSemitones) >= 0 ? "+" : "-";
-  const displayTranspose = `${sign} ${Math.abs(normedSemitones)}`;
+  const displayTranspose = `${sign}${Math.abs(normedSemitones)}`;
   return {
     showTransposer,
     setShowTransposer,
