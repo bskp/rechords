@@ -85,7 +85,14 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   React.useEffect(() => {
     document.addEventListener("keydown", globalKeyHandler);
-    return () => document.removeEventListener("keydown", globalKeyHandler);
+    const navigateToPrint = () => {
+      navigateTo(history, View.print, song);
+    };
+    window.addEventListener("beforeprint", navigateToPrint);
+    return () => {
+      document.removeEventListener("keydown", globalKeyHandler);
+      window.removeEventListener("beforeprint", navigateToPrint);
+    };
   });
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {

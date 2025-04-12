@@ -21,6 +21,7 @@
   #chordsheet.content {
     font-size: 12pt;
     padding: 0;
+    padding-left: 25pt;
 
     min-height: unset;
 
@@ -44,6 +45,10 @@
       margin-top: 0;
     }
 
+    p:has(.chord-container, .abc-notation) {
+      column-span: all;
+    }
+
     .inlineRefs .ref[id],
     h3 {
       text-align: unset;
@@ -61,10 +66,7 @@
       margin-bottom: 0;
       margin-bottom: -1.3em;
       text-align: right;
-    }
-
-    .abc-notation {
-      column-span: all;
+      font-variation-settings: "wdth" 70;
     }
 
     .chord-container .kord .chord-diag {
@@ -93,59 +95,12 @@
   }
 }
 
-.override-colors {
-  // Color swatches
-  @accent: rgb(221, 68, 7); // for text.
-  @h: hsvhue(@accent);
-  @accent-flat: hsv(
-    @h,
-    0.7,
-    0.8
-  ); // duller and lighter variant of @accent for big areas
-
-  @ink: black; // for text.
-  @void: white; // for big areas.
-  @dirt: hsv(@h, 0.05, 0.9); // a shaded @void, for areas
-  @gray: hsv(@h, 0, 0.5); // perceptively neutral gray
-
-  // Derived color variables
-
-  --bg-list: @void;
-  --bg-sheet: @void;
-
-  --accent: @accent;
-  --accent-flat: @accent-flat;
-
-  --ink: @ink;
-  --gray: @gray;
-  --gray-dark: mix(@gray, @ink, 66%);
-  --gray-light: mix(@gray, @void, 45%);
-
-  --text: @ink;
-  --text-inverted: @void;
-  --text-sidebar: hsv(@h, 0.2, 0.4);
-
-  --bg-rev: hsv(hsvhue(@accent-flat), 0.7, 0.4);
-  --text-rev: mix(@accent-flat, white);
-
-  --text-revs: mix(@accent-flat, white);
-  --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
-
-  --bg-filter-translucent: fade(@void, 40%);
-  --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
-}
-
 @media print {
   .printify;
 
   aside,
   #transposer {
     display: none !important;
-  }
-
-  #app div.dark,
-  #app div.light {
-    .override-colors;
   }
 }
 
@@ -156,12 +111,12 @@
   }
   .simulate-print {
     .printify;
-    .override-colors;
     margin-left: @drawer-closed;
 
     background-color: #beb4b0;
     padding: 2em;
     width: 100%;
+    padding-right: 400px; // TODO
 
     overflow: scroll;
 
@@ -174,12 +129,13 @@
       border-radius: 3pt;
 
       overflow: hidden;
+      margin: 0 auto;
     }
 
     #chordsheetContent {
       margin: 1.2cm;
       height: 100%;
-      width: calc(100% - 2.4cm);
+      width: calc(210mm - 24mm);
     }
   }
 }
