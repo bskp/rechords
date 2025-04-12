@@ -545,12 +545,6 @@ export default (props: P) => {
   useDocumentListener("keydown", handleSpecialKey);
   useDocumentListener("keyup", handleSpecialKey);
 
-  // // changing window or going into iframe otherwise leaves last pressed key
-  // useDocumentListener("blur", () => {
-  //   setSpecialKey("");
-  // });
-  // needs a better / more general solution
-
   return (
     <VideoContext.Provider
       value={{

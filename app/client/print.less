@@ -1,6 +1,17 @@
+@import (reference) "./responsive.import.less";
+@import (reference) "./variables.import.less";
+
 .printify {
   .tags {
     display: none !important;
+  }
+
+  #chordsheet.content {
+    font-size: 12pt;
+    padding: 0;
+    padding-left: 25pt;
+
+    min-height: unset;
   }
 
   #chordsheetContent {
@@ -12,29 +23,6 @@
     }
 
     margin-bottom: 0 !important;
-
-    .ref.open,
-    h3 {
-      width: 3em;
-      margin-left: -4em;
-      overflow: hidden;
-    }
-
-    .abc-notation {
-      column-span: all;
-    }
-
-    .chord-container .kord .chord-diag {
-      width: 50pt;
-    }
-  }
-
-  #chordsheet.content {
-    font-size: 12pt;
-    padding: 0;
-    padding-left: 25pt;
-
-    min-height: unset;
 
     .sd-header {
       column-span: all;
@@ -56,6 +44,10 @@
       margin-top: 0;
     }
 
+    p:has(.chord-container, .abc-notation) {
+      column-span: all;
+    }
+
     .inlineRefs .ref[id],
     h3 {
       text-align: unset;
@@ -63,6 +55,21 @@
       width: unset;
       margin-left: 0;
       margin-bottom: 0;
+    }
+
+    .ref.open,
+    h3 {
+      width: 3em;
+      margin-left: -4em;
+      overflow: hidden;
+      margin-bottom: 0;
+      margin-bottom: -1.3em;
+      text-align: right;
+      font-variation-settings: "wdth" 70;
+    }
+
+    .chord-container .kord .chord-diag {
+      width: 50pt;
     }
   }
 
@@ -77,6 +84,8 @@
     h3 {
       width: 4em;
       margin-left: -5em;
+      margin-bottom: -1.3em;
+      text-align: left;
     }
   }
 
@@ -85,46 +94,9 @@
   }
 }
 
-.override-colors {
-  // Color swatches
-  @accent: rgb(221, 68, 7); // for text.
-  @h: hsvhue(@accent);
-  @accent-flat: hsv(
-    @h,
-    0.7,
-    0.8
-  ); // duller and lighter variant of @accent for big areas
-
-  @ink: black; // for text.
-  @void: white; // for big areas.
-  @dirt: hsv(@h, 0.05, 0.9); // a shaded @void, for areas
-  @gray: hsv(@h, 0, 0.5); // perceptively neutral gray
-
-  // Derived color variables
-
-  --bg-list: @void;
-  --bg-sheet: @void;
-
-  --accent: @accent;
-  --accent-flat: @accent-flat;
-
-  --ink: @ink;
-  --gray: @gray;
-  --gray-dark: mix(@gray, @ink, 66%);
-  --gray-light: mix(@gray, @void, 45%);
-
-  --text: @ink;
-  --text-inverted: @void;
-  --text-sidebar: hsv(@h, 0.2, 0.4);
-
-  --bg-rev: hsv(hsvhue(@accent-flat), 0.7, 0.4);
-  --text-rev: mix(@accent-flat, white);
-
-  --text-revs: mix(@accent-flat, white);
-  --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
-
-  --bg-filter-translucent: fade(@void, 40%);
-  --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
+@page {
+  size: A4;
+  margin: 2cm;
 }
 
 @media print {
@@ -134,44 +106,28 @@
   #transposer {
     display: none !important;
   }
+}
 
-  #app div.dark,
-  #app div.light {
-    .override-colors;
-  }
+.pagedjs_page {
+  background-color: white;
+  margin-bottom: 1em;
+}
+
+#sheetSource {
+  display: none;
 }
 
 @media screen {
   #rightSettings {
     &.printer--settings {
     }
-    .pp--settings {
-      border-top-left-radius: 10px;
-    }
   }
-  .simulate-print {
-    .printify;
-    .override-colors;
+  .desk {
+    margin-left: @drawer-closed;
+    padding-right: 400px; // TODO
 
-    background-color: #99837a;
+    background-color: #beb4b0;
     padding: 2em;
     width: 100%;
-
-    overflow: scroll;
-
-    #chordsheet.content {
-      background-color: white;
-      width: 210mm;
-      height: 297mm;
-
-      transform: rotate(-1.5deg);
-      border-radius: 3pt;
-
-      overflow: hidden;
-    }
-
-    #chordsheetContent {
-      margin: 1.2cm;
-    }
   }
 }

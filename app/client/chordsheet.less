@@ -1,10 +1,11 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
 
-#chordsheet {
+#chordsheetContent, .pagedjs_page {
   box-sizing: border-box;
   .chordsheet-colors;
   color: var(--gray);
+  margin-bottom: 10em;
 
   a {
     transition: filter ease-out 1s;
@@ -18,8 +19,17 @@
     }
   }
 
-  #chordsheetContent {
-    margin-bottom: 10em;
+  h1, h2 {
+    .cooperate;
+    font-size: 3em;
+    line-height: 1em;
+    overflow-wrap: anywhere;
+    display: inline-block;
+    margin-bottom: 0;
+    margin-top: 0;
+  }
+  h1:first-child, .sd-header h1 {
+    margin-right: 0.5em;
   }
 
   h2 {

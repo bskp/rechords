@@ -1,10 +1,11 @@
 import * as React from "react";
+import { MouseEventHandler, useEffect, useRef } from "react";
 import { Song } from "../api/collections";
 
 import Sheet from "./Sheet";
 import { navigateCallback, navigateTo, View } from "../api/helpers";
 import { Button } from "./Button";
-import { useHistory, withRouter } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import { ColumnSetter } from "./PdfViewer/PdfSettings";
 import Transposer, { useTranspose } from "./Transposer";
@@ -13,7 +14,7 @@ import { getTransposeFromTag, parseChords } from "./Viewer";
 import { HlbSliderWithInput } from "./GuiElements/HlbSliderWithInput";
 import { HlbCheckbox } from "./GuiElements/HlbCheckbox";
 import Drawer from "./Drawer";
-import { MouseEventHandler } from "react";
+import { Previewer } from "pagedjs";
 
 type PrinterProps = {
   song: Song;
@@ -22,7 +23,7 @@ type PrinterProps = {
 export const Printer = ({ song }: PrinterProps) => {
   const ts = useTranspose(getTransposeFromTag(song.getTags()));
 
-  const [cols, setCols] = React.useState(2);
+  const [cols, setCols] = React.useState(1);
   const [scale, setScale] = React.useState(100);
   const [lineHeight, setLineHeight] = React.useState(1.35);
   const [hideChords, setHideChords] = React.useState(false);
@@ -40,8 +41,8 @@ export const Printer = ({ song }: PrinterProps) => {
             <div className="fontsize">
               <label htmlFor={sizeId}>Schriftgrösse</label>
               <HlbSliderWithInput
-                max={200}
-                min={10}
+                max={140}
+                min={71}
                 onChange={setScale}
                 value={scale}
                 id={sizeId}
@@ -50,8 +51,8 @@ export const Printer = ({ song }: PrinterProps) => {
             <div className="fontsize">
               <label htmlFor={lineId}>Zeilenabstand</label>
               <HlbSliderWithInput
-                max={3}
-                min={0.1}
+                max={2}
+                min={0.8}
                 step={0.05}
                 onChange={setLineHeight}
                 value={lineHeight}
@@ -71,12 +72,12 @@ export const Printer = ({ song }: PrinterProps) => {
           <div className="setting">
             <div className="fullwidth">
               <HlbCheckbox setter={setHideChords} value={hideChords}>
-                Hide Chords
+                Akkorde ausblenden
               </HlbCheckbox>
             </div>
             <div className="fullwidth">
               <HlbCheckbox setter={setHideFrets} value={hideFrets}>
-                Hide Frets
+                Griffdiagramme ausblenden
               </HlbCheckbox>
             </div>
           </div>
@@ -86,7 +87,7 @@ export const Printer = ({ song }: PrinterProps) => {
               <Button onClick={() => ts.setShowTransposer(true)}>
                 <ReactSVG src="/svg/transposer.svg" />
               </Button>
-              <div>{ts.displayTranspose}</div>
+              <div className="display-transpose">{ts.displayTranspose}</div>
               {ts.showTransposer && (
                 <Transposer
                   transposeSetter={(ev) => ts.setTranspose(ev)}
@@ -116,30 +117,48 @@ export const Printer = ({ song }: PrinterProps) => {
     event.preventDefault();
   };
 
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const targetRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const previewer = new Previewer();
+
+    if (targetRef.current) {
+      targetRef.current.innerHTML = "";
+    }
+    previewer.preview(sheetRef.current, [], targetRef.current).then((flow) => {
+      console.log("Pagination complete!", flow.total, "pages");
+    });
+  }, [song]);
+
   return (
-    <div  style={{"display": "contents"}} onContextMenu={handleContextMenu}>
+    <div style={{ display: "contents" }} onContextMenu={handleContextMenu}>
       <Drawer
         onClick={navigateCallback(history, View.view, song)}
         className="list-colors"
       >
-        <h1>Zurück</h1>
-        <p>Schneller: Rechtsklick!</p>
+        <h1>
+          {" "}
+          zurück <br /> zum Lied{" "}
+        </h1>
       </Drawer>
-      <div className="simulate-print" >
-        <div className={"content" + colMode} id="chordsheet">
-          <Sheet
-            song={song}
-            transpose={{
-              semitones: ts.transpose.semitones,
-              notation: ts.transpose.notation,
-            }}
-            hideChords={hideChords}
-            style={sheetStyle}
-          />
-        </div>
+
+      <div ref={sheetRef} id="sheetSource">
+        <Sheet
+          song={song}
+          transpose={{
+            semitones: ts.transpose.semitones,
+            notation: ts.transpose.notation,
+          }}
+          hideChords={hideChords}
+          style={sheetStyle}
+        />
+      </div>
+
+      <div className="desk">
+        <div ref={targetRef} className={colMode}></div>
       </div>
       {settings}
-    <div/>
+      <div />
     </div>
   );
 };

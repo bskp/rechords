@@ -27,6 +27,7 @@
     "meteor-node-stubs": "^1.2.7",
     "moment": "^2.29.1",
     "node-html-parser": "^7.0.1",
+    "pagedjs": "^0.4.3",
     "react": "^18.2.0",
     "react-autosuggest": "^10.1.0",
     "react-document-title": "^2.0.3",
