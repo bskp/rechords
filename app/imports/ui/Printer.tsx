@@ -24,6 +24,7 @@ export const Printer = ({ song }: PrinterProps) => {
 
   const [cols, setCols] = React.useState(2);
   const [scale, setScale] = React.useState(100);
+  const [fontWidth, setFontWidth] = React.useState(100);
   const [lineHeight, setLineHeight] = React.useState(1.35);
   const [hideChords, setHideChords] = React.useState(false);
   const [hideFrets, setHideFrets] = React.useState(false);
@@ -31,6 +32,7 @@ export const Printer = ({ song }: PrinterProps) => {
 
   const sizeId = React.useId();
   const lineId = React.useId();
+  const widthId = React.useId();
   const history = useHistory();
   const settings = (
     <aside id="rightSettings" className="printer--settings">
@@ -46,6 +48,16 @@ export const Printer = ({ song }: PrinterProps) => {
                 onChange={setScale}
                 value={scale}
                 id={sizeId}
+              ></HlbSliderWithInput>
+            </div>
+            <div className="fontsize">
+              <label htmlFor={widthId}>Laufweite</label>
+              <HlbSliderWithInput
+                max={100}
+                min={75}
+                onChange={setFontWidth}
+                value={fontWidth}
+                id={widthId}
               ></HlbSliderWithInput>
             </div>
             <div className="fontsize">
@@ -113,6 +125,7 @@ export const Printer = ({ song }: PrinterProps) => {
     columns: cols,
     fontSize: scale * 0.8 + "%",
     lineHeight: lineHeight,
+    "--fontWidth": fontWidth,
   };
 
   const colMode = cols == 1 ? " singleCol" : "";
