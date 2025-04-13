@@ -213,7 +213,12 @@ export const PdfSettings: FunctionComponent<{
                   checked={state.orientation == value}
                   onChange={handleOrientationChange}
                 />
-                <label title={help} htmlFor={"or" + value} key={idx}>
+                <label
+                  title={help}
+                  className={"orientation-" + value}
+                  htmlFor={"or" + value}
+                  key={idx}
+                >
                   {icon}
                 </label>
               </>

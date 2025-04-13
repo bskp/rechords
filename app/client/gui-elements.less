@@ -22,6 +22,10 @@
   @qb: 2px;
   @qh: 30px;
 
+  label {
+    .select(none);
+  }
+
   label svg {
     stroke: var(--text-sidebar);
     fill: none;
@@ -32,10 +36,6 @@
 
     .medium {
       stroke-width: 2px;
-    }
-
-    .bold {
-      stroke-width: 4px;
     }
   }
 
@@ -91,12 +91,13 @@
     .setting {
       display: flex;
       flex-flow: row wrap;
+      align-items: center;
 
-      &.columns {
+      &:has(input[type=radio]) {
         gap: 1em;
 
         svg {
-          height: 3em;
+          height: 100%;
         }
 
         label {
@@ -194,8 +195,6 @@
     }
 
     &:checked + label {
-      color: var(--accent);
-
       svg {
         .cross {
           stroke: var(--accent);
@@ -268,9 +267,25 @@
   input[type="radio"] {
     display: none;
 
-    &:checked + label {
-      svg {
-        stroke: var(--accent);
+    + label {
+      &.orientation-p {
+        width: 2em !important;
+      }
+
+      &.orientation-l {
+        height: 2em !important;
+      }
+    }
+
+    &:checked  {
+      & + label {
+        background-color: var(--gray-light) !important;
+
+        &:hover {
+          svg {
+            stroke: var(--gray-dark) !important;
+          }
+        }
       }
     }
 
