@@ -21,7 +21,7 @@ type SheetProps = {
   hideChords?: boolean;
   processVdom?: (vdom: any) => any;
   style?: CSSProperties;
-  multicolumns?: boolean;
+  classes?: any;
 };
 const Sheet = ({
   song,
@@ -29,6 +29,7 @@ const Sheet = ({
   hideChords,
   processVdom,
   style,
+  classes = [],
 }: SheetProps) => {
   const [inlineRefs, setInlineRefs] = useState(true);
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
@@ -217,6 +218,7 @@ const Sheet = ({
         inlineRefs,
         hideRefs: !inlineRefs,
         hasVideo: isActive,
+        ...classes,
       })}
     >
       {vdom}

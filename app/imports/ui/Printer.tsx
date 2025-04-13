@@ -111,7 +111,7 @@ export const Printer = ({ song }: PrinterProps) => {
 
   const sheetStyle = {
     columns: cols,
-    fontSize: scale + "%",
+    fontSize: scale * 0.8 + "%",
     lineHeight: lineHeight,
   };
 
@@ -143,6 +143,7 @@ export const Printer = ({ song }: PrinterProps) => {
             }}
             hideChords={hideChords}
             style={sheetStyle}
+            classes={{ hideAbc, hideFrets }}
           />
         </div>
       </div>

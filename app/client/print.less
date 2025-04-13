@@ -6,24 +6,29 @@
     display: none !important;
   }
 
-  #chordsheetContent {
-    columns: 2;
-    column-gap: 3em;
-
-    section > div {
-      break-inside: avoid;
-    }
-
-    margin-bottom: 0 !important;
-
-  }
-
   #chordsheet.content {
     font-size: 12pt;
     padding: 0;
     padding-left: 25pt;
 
     min-height: unset;
+  }
+
+  #chordsheetContent {
+    columns: 2;
+    column-gap: 3em;
+
+    &.hideFrets .chord-container {
+      display: none;
+    }
+
+    &.hideAbc .abc-notation {
+      display: none;
+    }
+
+    section > div {
+      break-inside: avoid;
+    }
 
     .sd-header {
       column-span: all;
@@ -49,15 +54,7 @@
       column-span: all;
     }
 
-    .inlineRefs .ref[id],
-    h3 {
-      text-align: unset;
-      height: unset;
-      width: unset;
-      margin-left: 0;
-      margin-bottom: 0;
-    }
-
+    &.inlineRefs .ref[id],
     .ref.open,
     h3 {
       width: 4em;
@@ -66,6 +63,10 @@
       margin-bottom: -1.3em;
       text-align: right;
       font-variation-settings: "wdth" 70;
+    }
+
+    &.inlineRefs .ref[id] {
+      margin-bottom: -3.2em;
     }
 
     .chord-container .kord .chord-diag {
@@ -130,9 +131,8 @@
     }
 
     #chordsheetContent {
-      margin: 1.2cm;
+      padding: 1.2cm;
       height: 100%;
-      width: calc(210mm - 24mm);
     }
   }
 }
