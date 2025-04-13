@@ -27,6 +27,7 @@ export const Printer = ({ song }: PrinterProps) => {
   const [lineHeight, setLineHeight] = React.useState(1.35);
   const [hideChords, setHideChords] = React.useState(false);
   const [hideFrets, setHideFrets] = React.useState(false);
+  const [hideAbc, setHideAbc] = React.useState(false);
 
   const sizeId = React.useId();
   const lineId = React.useId();
@@ -77,6 +78,11 @@ export const Printer = ({ song }: PrinterProps) => {
             <div className="fullwidth">
               <HlbCheckbox setter={setHideFrets} value={hideFrets}>
                 Griffdiagramme ausblenden
+              </HlbCheckbox>
+            </div>
+            <div className="fullwidth">
+              <HlbCheckbox setter={setHideAbc} value={hideAbc}>
+                Noten ausblenden
               </HlbCheckbox>
             </div>
           </div>

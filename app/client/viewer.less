@@ -50,3 +50,18 @@ a.iconbutton {
     align-items: end;
   }
 }
+
+#howToPrint {
+  display: none;
+}
+
+@media print {
+  #chordsheetContent {
+    display: none;
+  }
+
+  #howToPrint {
+    display: block;
+    text-align: right
+  }
+}

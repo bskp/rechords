@@ -85,8 +85,10 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   React.useEffect(() => {
     document.addEventListener("keydown", globalKeyHandler);
-    const navigateToPrint = () => {
+    const navigateToPrint: EventListener = (event: Event) => {
       navigateTo(history, View.print, song);
+      event.preventDefault();
+      return false;
     };
     window.addEventListener("beforeprint", navigateToPrint);
     return () => {
@@ -162,7 +164,12 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
           transpose={transposeState.transpose}
           hideChords={!showChords}
         />
+        <h1 id="howToPrint">
+          Bitte schliess das Druckfenster prüfe deine Druckeinstellungen. Dann
+          geht's los!
+        </h1>
       </div>
+      it.
       <aside id="rightSettings">
         <Button onClick={() => setShowMenu(true)} phoneOnly>
           <ReactSVG src="/svg/menu.svg" />

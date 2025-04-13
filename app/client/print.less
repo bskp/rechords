@@ -60,10 +60,9 @@
 
     .ref.open,
     h3 {
-      width: 3em;
-      margin-left: -4em;
+      width: 4em;
+      margin-left: -5em;
       overflow: hidden;
-      margin-bottom: 0;
       margin-bottom: -1.3em;
       text-align: right;
       font-variation-settings: "wdth" 70;
@@ -80,14 +79,6 @@
     .sd-header {
       margin-left: -50pt;
     }
-
-    .ref.open,
-    h3 {
-      width: 4em;
-      margin-left: -5em;
-      margin-bottom: -1.3em;
-      text-align: left;
-    }
   }
 
   .chord-container {
@@ -96,7 +87,13 @@
 }
 
 @media print {
-  .printify;
+  .simulate-print {
+    .printify;
+    #chordsheetContent {
+      display: block;
+    }
+  }
+
 
   aside,
   #transposer {
