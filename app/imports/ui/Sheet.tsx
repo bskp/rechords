@@ -22,6 +22,7 @@ type SheetProps = {
   processVdom?: (vdom: any) => any;
   style?: CSSProperties;
   classes?: any;
+  inlineRefState: [boolean, (inlineRef: boolean) => void];
 };
 const Sheet = ({
   song,
@@ -30,8 +31,9 @@ const Sheet = ({
   processVdom,
   style,
   classes = [],
+  inlineRefState = useState(true),
 }: SheetProps) => {
-  const [inlineRefs, setInlineRefs] = useState(true);
+  const [inlineRefs, setInlineRefs] = inlineRefState;
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
   // from UI

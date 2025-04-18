@@ -29,6 +29,7 @@ export const Printer = ({ song }: PrinterProps) => {
   const [hideChords, setHideChords] = React.useState(false);
   const [hideFrets, setHideFrets] = React.useState(false);
   const [hideAbc, setHideAbc] = React.useState(false);
+  const [inlineRefs, setInlineRefs] = React.useState(false);
 
   const sizeId = React.useId();
   const lineId = React.useId();
@@ -97,6 +98,11 @@ export const Printer = ({ song }: PrinterProps) => {
                 Noten ausblenden
               </HlbCheckbox>
             </div>
+            <div className="fullwidth">
+              <HlbCheckbox setter={setInlineRefs} value={inlineRefs}>
+                Wiederholungen einbetten
+              </HlbCheckbox>
+            </div>
           </div>
           <div className="title">Transponieren</div>
           <div className="setting">
@@ -157,6 +163,7 @@ export const Printer = ({ song }: PrinterProps) => {
             hideChords={hideChords}
             style={sheetStyle}
             classes={{ hideAbc, hideFrets }}
+            inlineRefState={[inlineRefs, setInlineRefs]}
           />
         </div>
       </div>

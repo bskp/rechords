@@ -169,7 +169,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
           geht's los!
         </h1>
       </div>
-      it.
       <aside id="rightSettings">
         <Button onClick={() => setShowMenu(true)} phoneOnly>
           <ReactSVG src="/svg/menu.svg" />
