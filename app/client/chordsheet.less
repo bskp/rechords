@@ -1,7 +1,7 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
 
-#chordsheet {
+#chordsheetContent {
   box-sizing: border-box;
   .chordsheet-colors;
   color: var(--gray);
@@ -18,10 +18,6 @@
     }
   }
 
-  #chordsheetContent {
-    margin-bottom: 10em;
-  }
-
   h2 {
     color: var(--gray);
   }
@@ -31,8 +27,8 @@
     color: var(--text);
   }
 
-  .hideRefs .ref,
-  .inlineRefs .ref:not([id]) {
+  &.hideRefs .ref,
+  &.inlineRefs .ref:not([id]) {
     color: var(--text);
     padding-left: 8px;
     margin-left: -12px;
@@ -50,7 +46,7 @@
     }
   }
 
-  .inlineRefs .ref:not([id]) {
+  &.inlineRefs .ref:not([id]) {
     border-color: var(--gray);
 
     :hover {
@@ -58,7 +54,7 @@
     }
   }
 
-  .inlineRefs .ref[id] {
+  &.inlineRefs .ref[id] {
     color: var(--gray);
 
     strong {
@@ -71,7 +67,7 @@
     }
   }
 
-  .inlineRefs .ref[id],
+  &.inlineRefs .ref[id],
   h3 {
     font-size: 1em;
     margin: 0;
@@ -87,8 +83,6 @@
     border: none; // concerns .refs only
     padding-left: 0;
 
-    clear: both; // Clear floated chords diagrams
-
     .phone({
       margin: 2em 0 0;
       width: auto;
@@ -102,10 +96,9 @@
   p {
     margin: 1.33em 0;
     max-width: 40em;
-    clear: both; // for the floated chord-diagrams
   }
 
-  .inlineRefs {
+  &.inlineRefs {
     .inlineReference {
       h3 {
         display: none;
@@ -113,7 +106,7 @@
     }
   }
 
-  .hideRefs {
+  &.hideRefs {
     .inlineReference {
       display: none;
     }
@@ -208,12 +201,8 @@
     }
   }
 
-  p:has(> .chord-container) {
-    display: flex;
-  }
-
   .chord-container {
-    display: flex;
+    display: inline-flex;
     flex-direction: column-reverse;
     text-align: center;
 
@@ -273,14 +262,6 @@
     }
   }
 
-  // .addanchor {
-  //   .line:hover {
-  //     border-top: 2px solid var(--accent);
-  //     &::before {
-  //       content: "+" attr(data-line-cnt);
-  //     }
-  //   }
-  // }
   .playfromline {
     .line {
       i {

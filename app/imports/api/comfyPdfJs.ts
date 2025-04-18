@@ -1,8 +1,7 @@
 import { jsPDF } from "jspdf";
-import Chord from "./libchr0d/chord";
 import { FontRefwS } from "../ui/PdfViewer/PdfRenderer/PdfRenderer";
 import { Fragment } from "../ui/PdfViewer/PdfRenderer/JHoeli";
-import { keys } from "underscore";
+
 export class Margins {
   top: number;
   right: number;
@@ -22,7 +21,7 @@ export class Margins {
 export class Cursor {
   constructor(
     public x = 0,
-    public y = 0
+    public y = 0,
   ) {}
 }
 
@@ -91,7 +90,7 @@ export class ComfyPdfJs {
     p: string,
     fontname: string,
     style: string,
-    weight: string
+    weight: string,
   ): Promise<FontRef> {
     const filename = basename(p);
     const blob = await fetch(p).then((response) => response.blob());
@@ -126,7 +125,7 @@ export class ChordPdfJs extends ComfyPdfJs {
     width: number,
     simulate = false,
     lineheigts = { chord: 1, text: 1 },
-    debug = false
+    debug = false,
   ): { advance_y: number; numlineBreaksInserted: number; intCursor: Cursor } {
     let br = 0;
 
@@ -146,7 +145,7 @@ export class ChordPdfJs extends ComfyPdfJs {
     const cfs =
       (this.chordFont.size / this.doc.internal.scaleFactor) * lineheigts.chord;
 
-    const cumy = tfs+cfs
+    const cumy = tfs + cfs;
     // may be constant line height (even without chords) is more readable?
     const intCursor = {
       xchord: this.cursor.x,
@@ -190,7 +189,7 @@ export class ChordPdfJs extends ComfyPdfJs {
       if (x + wmax - this.cursor.x > width) {
         intCursor.xchord = this.cursor.x;
         intCursor.xtext = this.cursor.x;
-        x = this.cursor.x
+        x = this.cursor.x;
         intCursor.y += cumy;
       }
 
