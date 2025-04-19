@@ -25,7 +25,7 @@ export type Comment = {
 export type Repetition = {
   type: "repetition";
   content: {
-    ref: string;
+    ref?: string;
     adm?: string;
     title?: string;
     lines?: Line[];

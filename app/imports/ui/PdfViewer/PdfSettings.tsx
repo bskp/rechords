@@ -15,6 +15,7 @@ import { HlbCheckbox } from "../GuiElements/HlbCheckbox";
 const PdfViewerStates: () => IPdfViewerSettings = () => ({
   numCols: 3,
   orientation: "l",
+  compactChordonly: true,
   inlineReferences: false,
   includeComments: false,
   transpose: 0,
@@ -41,6 +42,7 @@ export interface IPdfViewerSettings {
   orientation: "l" | "p";
   inlineReferences: boolean;
   includeComments: boolean;
+  compactChordonly: boolean;
   fontSizes: ITextSizes;
   layoutSettings: ILayoutSettings;
   transpose: number | undefined;
@@ -95,6 +97,10 @@ export const PdfSettings: FunctionComponent<{
 
   const setComments = (val: boolean) => {
     set({ ...state, includeComments: val });
+  };
+
+  const setCompactness = (val: boolean) => {
+    set({ ...state, compactChordonly: val });
   };
 
   const handleFontSize = (name: keyof ITextSizes, value: number) => {
@@ -255,7 +261,12 @@ export const PdfSettings: FunctionComponent<{
                 Include Comments
               </HlbCheckbox>
             </div>
-            {/* todo: chords */}
+            <div className="fullwidth">
+              <HlbCheckbox setter={setCompactness} value={state.compactChordonly}>
+                Compactize Chord Lines
+              </HlbCheckbox>
+            </div>
+            {/* todo: hide chords */}
           </div>
         </div>
       </div>

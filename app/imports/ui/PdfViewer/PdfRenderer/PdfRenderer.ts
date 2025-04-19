@@ -190,11 +190,11 @@ class ChordPdfRenderer {
   }
 
   mapt2layoutFormat(section: AllBlocks): AllBlocksGap[] {
-    let sectionGap =
-      (this.las.section + this.fos.chord) / this.cdoc.doc.internal.scaleFactor;
+    let sectionGap = this.sectionGap();
     const gaps = { before: sectionGap / 2, after: sectionGap / 2 };
     const out = new Array<AllBlocksGap>();
     if (section.type === "chordblock" || section.type === "repetition") {
+      // todo: make afterwards
       let collect = {
         ...section,
         gaps,
@@ -204,7 +204,6 @@ class ChordPdfRenderer {
         for (const line of section.content.lines) {
           collect.content.lines.push(line);
           if (line.canbreak) {
-            // @ts-expect-error
             out.push(collect);
             collect = {
               ...section,
@@ -217,7 +216,6 @@ class ChordPdfRenderer {
         }
       }
       if (collect.content.lines.length > 0) {
-        // @ts-expect-error
         out.push(collect);
       }
       return out;
@@ -226,10 +224,32 @@ class ChordPdfRenderer {
     }
   }
 
+  private sectionGap() {
+    return (
+      (this.las.section + this.fos.chord) / this.cdoc.doc.internal.scaleFactor
+    );
+  }
+
   private placeSections(o: JSong) {
     for (const section_ of o.sections) {
       const splits = this.mapt2layoutFormat(section_);
-      for (const section of splits) {
+      for (let section of splits) {
+        if (
+          this.settings.compactChordonly &&
+          section.type !== "comment" &&
+          section.content.lines?.every((l) =>
+            l.fragments.every((f) => !f.text?.trim())
+          )
+        ) {
+          const allFragments: Line = {
+            fragments: section.content.lines.flatMap((l) => l.fragments),
+          };
+          section = {
+            ...section,
+            gaps: { before: this.las.section/4, after:0 },
+            content: { ...section.content, lines: [allFragments] },
+          };
+        }
         let simHeight = this.placeSection(section, true);
         simHeight += section.gaps.before + section.gaps.after;
         if (!this.cdoc.isTop()) {
@@ -293,7 +313,7 @@ class ChordPdfRenderer {
       if (section.content.ref) {
         // line
         if (!simulate) {
-          this.cdoc.cursor.y += this.fos.section/2
+          this.cdoc.cursor.y += this.fos.section / 2;
           if (!this.settings.inlineReferences) {
             this.doc.setFillColor(ORANGE);
             const w = this.fos.section / 15,
@@ -318,7 +338,7 @@ class ChordPdfRenderer {
             simulate
           );
         }
-        advance_y += sdf.h 
+        advance_y += sdf.h;
       }
     }
     if (
