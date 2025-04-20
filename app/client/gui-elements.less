@@ -184,7 +184,7 @@
         }
 
         .box {
-          fill: white;
+          fill: light-dark(var(--bg-sheet), var(--gray));
           stroke: none;
         }
       }
@@ -279,11 +279,11 @@
 
     &:checked  {
       & + label {
-        background-color: var(--gray-light) !important;
+        background-color: light-dark(var(--gray-light), var(--gray-dark)) !important;
 
         &:hover {
           svg {
-            stroke: var(--gray-dark) !important;
+            stroke: light-dark(var(--gray-dark), var(--gray-light)) !important;
           }
         }
       }

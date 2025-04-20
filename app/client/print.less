@@ -2,6 +2,14 @@
 @import (reference) "./variables.import.less";
 
 .printify {
+  --accent: rgb(221, 68, 7);
+  --ink: black;
+  --void: white;
+  --midpoint: color-mix(in oklab, white, black 35%);
+  --gray: color-mix(in oklab, var(--accent), var(--midpoint) 80%);
+  --bg-sheet: var(--void);
+  --text: var(--ink);
+
   .tags {
     display: none !important;
   }
