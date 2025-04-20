@@ -34,7 +34,7 @@ interface P {
 export default (props: P) => {
   const html = useRef<HTMLElement>(null);
   const [currentPlayTime, setCurrentPlayTime] = useState<number | undefined>(0);
-  const [maxLine, setMaxLine]= useState(1)
+  const [maxLine, setMaxLine] = useState(1);
 
   const [isVideoActive, setVideoActive] = useState<boolean>(false);
 
@@ -58,18 +58,16 @@ export default (props: P) => {
     if (html?.current) traverse(html.current);
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     const current = html?.current;
     if (current) {
-      const lines = current.querySelectorAll(".line")
-      const lastLine = lines[lines.length-1] as HTMLElement
+      const lines = current.querySelectorAll(".line");
+      const lastLine = lines[lines.length - 1] as HTMLElement;
 
-      const maxLine = parseInt(lastLine.dataset.lineCnt?? "", 10)
-      setMaxLine(maxLine)
-
+      const maxLine = parseInt(lastLine.dataset.lineCnt ?? "", 10);
+      setMaxLine(maxLine);
     }
-  }, [props.md])
-
+  }, [props.md]);
 
   const chordProgressions = (md: string) => {
     const chords: string[][] = [];
@@ -115,6 +113,11 @@ export default (props: P) => {
     }
     const node: Element = event.target as Element;
     if (!(node instanceof HTMLElement) || node.tagName != "I") return;
+
+    const isInlineRef = !!node.closest('.inlineReference')
+    if(isInlineRef) {
+      return
+    }
 
     let offset = 0;
     for (const child of node.children) {
@@ -385,19 +388,31 @@ export default (props: P) => {
       if (DH.isTag(domNode)) {
         const node = domNode as DH.Element;
         if (node.name == "i") {
+          const clazz = node.parent?.parent?.parent?.parent?.attribs?.class;
+          // console.log(node)
+          let editable = true;
+          if (clazz && clazz.includes("inlineReference")) {
+            editable = false;
+          }
           let chord;
           if ("data-chord" in node.attribs) {
-            chord = (
-              <span
-                className="before"
-                contentEditable={true}
-                suppressContentEditableWarning
-                onBlur={handleChordBlur.bind(this)}
-                onKeyDown={handleChordKey.bind(this)}
-              >
-                {node.attribs["data-chord"]}
-              </span>
-            );
+            if (editable) {
+              chord = (
+                <span
+                  className="before"
+                  contentEditable={true}
+                  suppressContentEditableWarning
+                  onBlur={handleChordBlur.bind(this)}
+                  onKeyDown={handleChordKey.bind(this)}
+                >
+                  {node.attribs["data-chord"]}
+                </span>
+              );
+            } else {
+              chord = (
+                <span className="before">{node.attribs["data-chord"]}</span>
+              );
+            }
           }
           if (!("data" in node.children[0])) return node;
           const lyrics = nodeText(node);
@@ -434,7 +449,10 @@ export default (props: P) => {
           node.name == "span" &&
           "attribs" in node &&
           "class" in node.attribs &&
-          "line" == node.attribs.class
+          "line" == node.attribs.class &&
+          !node.parent?.parent?.parent?.attribs?.class?.includes(
+            "inlineReference"
+          )
         ) {
           // Fakey syllable to allow appended chords
           node.children.push(<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>);

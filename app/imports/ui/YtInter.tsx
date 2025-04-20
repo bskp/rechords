@@ -55,7 +55,7 @@ export const YtInter: FC<{
     }
 
     internalPlayer.getDuration().then((duration) => {
-      const anchors = [[0 -1], ...anchors_, [maxLine+1,duration+1]];
+      const anchors = [[0, -1], ...anchors_, [maxLine+1,duration+1]];
       const estimatedTime = linInterpolation(
         anchors,
         currentLine.selectedLine,
