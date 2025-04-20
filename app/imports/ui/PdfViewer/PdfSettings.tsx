@@ -190,12 +190,14 @@ export const PdfSettings: FunctionComponent<{
         <div className="grid">
           <div className="title">Transpose</div>
           <div className="setting">
-            <div>
-              <Button onClick={() => ts.setShowTransposer(true)}>
-                <ReactSVG src="/svg/transposer.svg" />
-              </Button>
+            <div className="fullwidth">
+              <div>
+                <Button onClick={() => ts.setShowTransposer(true)}>
+                  <ReactSVG src="/svg/transposer.svg" />
+                </Button>
+              </div>
+              <div className="display-transpose">{ts.displayTranspose}</div>
             </div>
-            <div className="transpose">{ts.displayTranspose}</div>
           </div>
 
           <div className="title">Orientation</div>
@@ -211,7 +213,12 @@ export const PdfSettings: FunctionComponent<{
                   checked={state.orientation == value}
                   onChange={handleOrientationChange}
                 />
-                <label title={help} htmlFor={"or" + value} key={idx}>
+                <label
+                  title={help}
+                  className={"orientation-" + value}
+                  htmlFor={"or" + value}
+                  key={idx}
+                >
                   {icon}
                 </label>
               </>

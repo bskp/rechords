@@ -1,32 +1,17 @@
+@import (reference) "./responsive.import.less";
+@import (reference) "./variables.import.less";
+
 .printify {
+  --accent: rgb(221, 68, 7);
+  --ink: black;
+  --void: white;
+  --midpoint: color-mix(in oklab, white, black 35%);
+  --gray: color-mix(in oklab, var(--accent), var(--midpoint) 80%);
+  --bg-sheet: var(--void);
+  --text: var(--ink);
+
   .tags {
     display: none !important;
-  }
-
-  #chordsheetContent {
-    columns: 2;
-    column-gap: 3em;
-
-    section > div {
-      break-inside: avoid;
-    }
-
-    margin-bottom: 0 !important;
-
-    .ref.open,
-    h3 {
-      width: 3em;
-      margin-left: -4em;
-      overflow: hidden;
-    }
-
-    .abc-notation {
-      column-span: all;
-    }
-
-    .chord-container .kord .chord-diag {
-      width: 50pt;
-    }
   }
 
   #chordsheet.content {
@@ -35,6 +20,23 @@
     padding-left: 25pt;
 
     min-height: unset;
+  }
+
+  #chordsheetContent {
+    columns: 2;
+    column-gap: 3em;
+
+    &.hideFrets .chord-container {
+      display: none;
+    }
+
+    &.hideAbc .abc-notation {
+      display: none;
+    }
+
+    section > div {
+      break-inside: avoid;
+    }
 
     .sd-header {
       column-span: all;
@@ -56,13 +58,28 @@
       margin-top: 0;
     }
 
-    .inlineRefs .ref[id],
+    .line {
+      font-variation-settings: "wdth" var(--fontWidth, 100);
+    }
+
+    p:has(.chord-container, .abc-notation) {
+      column-span: all;
+    }
+
+    &.inlineRefs .ref[id],
+    .ref.open,
     h3 {
-      text-align: unset;
-      height: unset;
-      width: unset;
-      margin-left: 0;
-      margin-bottom: 0;
+      width: 4em;
+      height: 3em;
+      margin-left: -5em;
+      overflow: hidden;
+      margin-bottom: -3em;
+      text-align: right;
+      font-variation-settings: "wdth" 70;
+    }
+
+    .chord-container .kord .chord-diag {
+      width: 50pt;
     }
   }
 
@@ -72,12 +89,6 @@
     .sd-header {
       margin-left: -50pt;
     }
-
-    .ref.open,
-    h3 {
-      width: 4em;
-      margin-left: -5em;
-    }
   }
 
   .chord-container {
@@ -85,59 +96,18 @@
   }
 }
 
-.override-colors {
-  // Color swatches
-  @accent: rgb(221, 68, 7); // for text.
-  @h: hsvhue(@accent);
-  @accent-flat: hsv(
-    @h,
-    0.7,
-    0.8
-  ); // duller and lighter variant of @accent for big areas
-
-  @ink: black; // for text.
-  @void: white; // for big areas.
-  @dirt: hsv(@h, 0.05, 0.9); // a shaded @void, for areas
-  @gray: hsv(@h, 0, 0.5); // perceptively neutral gray
-
-  // Derived color variables
-
-  --bg-list: @void;
-  --bg-sheet: @void;
-
-  --accent: @accent;
-  --accent-flat: @accent-flat;
-
-  --ink: @ink;
-  --gray: @gray;
-  --gray-dark: mix(@gray, @ink, 66%);
-  --gray-light: mix(@gray, @void, 45%);
-
-  --text: @ink;
-  --text-inverted: @void;
-  --text-sidebar: hsv(@h, 0.2, 0.4);
-
-  --bg-rev: hsv(hsvhue(@accent-flat), 0.7, 0.4);
-  --text-rev: mix(@accent-flat, white);
-
-  --text-revs: mix(@accent-flat, white);
-  --bg-revs: hsv(hsvhue(@accent-flat), 0.5, 0.2);
-
-  --bg-filter-translucent: fade(@void, 40%);
-  --bg-filter-opaque: fade(mix(@void, @dirt), 90%);
-}
-
 @media print {
-  .printify;
+  .simulate-print {
+    .printify;
+    #chordsheetContent {
+      display: block;
+    }
+  }
+
 
   aside,
   #transposer {
     display: none !important;
-  }
-
-  #app div.dark,
-  #app div.light {
-    .override-colors;
   }
 }
 
@@ -145,17 +115,15 @@
   #rightSettings {
     &.printer--settings {
     }
-    .pp--settings {
-      border-top-left-radius: 10px;
-    }
   }
   .simulate-print {
     .printify;
-    .override-colors;
+    margin-left: @drawer-closed;
 
-    background-color: #99837a;
+    background-color: #beb4b0;
     padding: 2em;
     width: 100%;
+    padding-right: 400px; // TODO
 
     overflow: scroll;
 
@@ -168,10 +136,12 @@
       border-radius: 3pt;
 
       overflow: hidden;
+      margin: 0 auto;
     }
 
     #chordsheetContent {
-      margin: 1.2cm;
+      padding: 1.2cm;
+      height: 100%;
     }
   }
 }

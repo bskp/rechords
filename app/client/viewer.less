@@ -15,8 +15,13 @@ a.iconbutton {
   svg {
     width: 1.8em;
     font-size: 2.4em;
+    stroke: none;
 
     .applySchemeColors;
+
+    &:hover .fillGrayLight {
+      fill: var(--gray-dark);
+    }
 
     &[fill] {
       // Selects Material Design Icons only
@@ -43,5 +48,20 @@ a.iconbutton {
     flex-grow: 1;
     display: flex;
     align-items: end;
+  }
+}
+
+#howToPrint {
+  display: none;
+}
+
+@media print {
+  #chordsheetContent {
+    display: none;
+  }
+
+  #howToPrint {
+    display: block;
+    text-align: right
   }
 }

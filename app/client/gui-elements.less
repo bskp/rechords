@@ -1,13 +1,17 @@
-.settingTitle {
+@import "./variables.import.less";
+
+.settingLabel {
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 10px;
   color: var(--text-sidebar);
 }
 
 .pp--settings {
   height: 100%;
+  width: 350px;
+  flex-shrink: 0;
   background-color: var(--bg-list);
   margin-top: 0;
   margin-bottom: 0;
@@ -15,19 +19,14 @@
   display: flex;
   align-items: center;
 
-  .quickinput svg {
-    stroke-width: 2px;
-    fill: var(--text-sidebar);
-
-    polygon:hover {
-      fill: var(--accent);
-    }
-  }
-
   @qb: 2px;
   @qh: 30px;
 
-  svg {
+  label {
+    .select(none);
+  }
+
+  label svg {
     stroke: var(--text-sidebar);
     fill: none;
 
@@ -37,10 +36,6 @@
 
     .medium {
       stroke-width: 2px;
-    }
-
-    .bold {
-      stroke-width: 4px;
     }
   }
 
@@ -82,31 +77,35 @@
     font-size: 14px;
   }
 
-  .settingBase {
-    border: var(--text-sidebar) solid 2px;
-    border-radius: 4px;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-
   .grid {
     display: flex;
     flex-flow: column nowrap;
 
     .title {
-      .settingTitle();
-      padding-left: 10px;
+      .cooperate();
+      font-size: 26px;
+      color: var(--gray);
+      margin: 1.4em 0 0.4em;
     }
 
     .setting {
-      .settingBase();
       display: flex;
       flex-flow: row wrap;
-      justify-content: space-evenly;
       align-items: center;
 
-      &.columns {
-        align-items: flex-start;
+      &:has(input[type=radio]) {
+        gap: 1em;
+
+        svg {
+          height: 100%;
+        }
+
+        label {
+          width: 3em;
+          height: 3em;
+          background-color: white;
+          border-radius: 5px;
+        }
       }
 
       &.buttons {
@@ -115,7 +114,6 @@
     }
 
     .settingtable {
-      .settingBase();
       display: flex;
       flex-flow: column nowrap;
     }
@@ -127,18 +125,16 @@
   }
 
   .fontsize {
-    .settingTitle();
+    .settingLabel();
 
     margin: 0;
 
     display: flex;
     flex-wrap: nowrap;
+    align-items: center;
     justify-content: space-between;
     gap: 5px;
 
-    label {
-      flex: 0 0 50px;
-    }
     .slidecontainer {
       flex: 1 1 100px;
     }
@@ -167,9 +163,8 @@
   .fullwidth {
     width: 100%;
     display: flex;
-    justify-items: flex-start;
     align-items: center;
-    gap: 20px;
+    gap: 5px;
   }
 
   ///  Checkbox //////////
@@ -177,32 +172,44 @@
   input[type="checkbox"] {
     display: none;
 
-    &:checked + label {
-      color: var(--accent);
-
-      svg {
-        .cross {
-          stroke: var(--accent);
-        }
-        .box {
-          stroke: var(--gray-dark);
-        }
-      }
-    }
-
     + label {
-      .settingTitle();
+      .settingLabel();
+      cursor: pointer;
+
       svg {
-        stroke-width: 3px;
+        border-radius: 3px;
 
         .cross {
           stroke: none;
         }
+
         .box {
-          stroke: var(--gray-dark);
+          fill: light-dark(var(--bg-sheet), var(--gray));
+          stroke: none;
         }
       }
     }
+
+    &:hover + label {
+      color: var(--accent);
+    }
+
+    &:checked + label {
+      svg {
+        .cross {
+          stroke: var(--accent);
+          stroke-width: 3px;
+        }
+
+        .box {
+        }
+      }
+    }
+  }
+
+  .display-transpose {
+    font-family: "Shantell Sans";
+    font-weight: 500;
   }
 
   ///// End Checkbox ////////////////////////////////////////
@@ -223,74 +230,62 @@
     -moz-appearance: textfield;
     -webkit-appearance: textfield;
   }
+
   /// end number input //////////////////////////////
 
-  //// slider //////////////////////////////
-
-  .slidecontainer {
-    cursor: pointer;
-  }
-  input[type="range"] {
-    appearance: none;
-    -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
-    width: 100%; /* Specific width is required for Firefox. */
-    background: transparent; /* Otherwise white in Chrome */
-  }
-
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-  }
-
-  input[type="range"]:focus {
-    outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
-  }
-
-  input[type="range"]::-ms-track {
+  .react-slider {
     width: 100%;
+    height: 1em;
     cursor: pointer;
 
-    /* Hides the slider so custom styles can be added */
-    background: transparent;
-    border-color: transparent;
-    color: transparent;
-  }
-  /* Special styling for WebKit/Blink */
-  input[type="range"]::-moz-range-thumb,
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    border: 0px;
-    background-color: var(--accent-flat);
-    height: 14px;
-    width: 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+    .track {
+      height: 1em;
+      background-color: var(--bg-sheet);
+      border-radius: 0.5em;
+    }
+
+    .track-0 {
+      background-color: var(--gray-light);
+    }
+
+    .thumb {
+      height: 1em;
+      width: 1em;
+      background-color: var(--gray-dark);
+      border-radius: 0.5em;
+      outline: none;
+
+      &.active {
+        background-color: var(--accent);
+      }
+    }
   }
 
-  input[type="range"]::-webkit-slider-runnable-track,
-  input[type="range"]::-moz-range-track {
-    width: 100%;
-    height: 6px;
-    cursor: pointer;
-    background: var(--gray);
-    border: 0px;
-    border-radius: 1.3px;
-  }
-  input[type="range"]:focus::-moz-range-track,
-  input[type="range"]:focus::-webkit-slider-runnable-track {
-    background: var(--gray-dark);
-  }
-
-  ///////// end slider ////////////////////////////////////////
 
   ///////// icons /////////////////////////////////////////////
 
   input[type="radio"] {
     display: none;
 
-    &:checked + label {
-      svg {
-        stroke: var(--accent);
+    + label {
+      &.orientation-p {
+        width: 2em !important;
+      }
+
+      &.orientation-l {
+        height: 2em !important;
+      }
+    }
+
+    &:checked  {
+      & + label {
+        background-color: light-dark(var(--gray-light), var(--gray-dark)) !important;
+
+        &:hover {
+          svg {
+            stroke: light-dark(var(--gray-dark), var(--gray-light)) !important;
+          }
+        }
       }
     }
 

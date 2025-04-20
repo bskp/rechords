@@ -85,7 +85,16 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   React.useEffect(() => {
     document.addEventListener("keydown", globalKeyHandler);
-    return () => document.removeEventListener("keydown", globalKeyHandler);
+    const navigateToPrint: EventListener = (event: Event) => {
+      navigateTo(history, View.print, song);
+      event.preventDefault();
+      return false;
+    };
+    window.addEventListener("beforeprint", navigateToPrint);
+    return () => {
+      document.removeEventListener("keydown", globalKeyHandler);
+      window.removeEventListener("beforeprint", navigateToPrint);
+    };
   });
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -155,6 +164,10 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
           transpose={transposeState.transpose}
           hideChords={!showChords}
         />
+        <h1 id="howToPrint">
+          Bitte schliess das Druckfenster prüfe deine Druckeinstellungen. Dann
+          geht's los!
+        </h1>
       </div>
       <aside id="rightSettings">
         <Button onClick={() => setShowMenu(true)} phoneOnly>

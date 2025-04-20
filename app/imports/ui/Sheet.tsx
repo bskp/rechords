@@ -21,7 +21,8 @@ type SheetProps = {
   hideChords?: boolean;
   processVdom?: (vdom: any) => any;
   style?: CSSProperties;
-  multicolumns?: boolean;
+  classes?: any;
+  inlineRefState: [boolean, (inlineRef: boolean) => void];
 };
 const Sheet = ({
   song,
@@ -29,8 +30,10 @@ const Sheet = ({
   hideChords,
   processVdom,
   style,
+  classes = [],
+  inlineRefState = useState(true),
 }: SheetProps) => {
-  const [inlineRefs, setInlineRefs] = useState(true);
+  const [inlineRefs, setInlineRefs] = inlineRefState;
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
   // from UI
@@ -67,10 +70,8 @@ const Sheet = ({
 
     // <i>
     if (node.name && node.name == "i") {
-      if (hideChords) return; // swallow the chord
-
       let chord_ = null;
-      if ("data-chord" in node.attribs) {
+      if (!hideChords && "data-chord" in node.attribs) {
         const chord = node.attribs["data-chord"];
         const t = Chord.from(chord)?.transposed(
           transpose.semitones ?? 0,
@@ -219,6 +220,7 @@ const Sheet = ({
         inlineRefs,
         hideRefs: !inlineRefs,
         hasVideo: isActive,
+        ...classes,
       })}
     >
       {vdom}

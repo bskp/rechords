@@ -1,11 +1,6 @@
 import * as React from "react";
-import { Component, FC, MouseEventHandler, useEffect, useState } from "react";
-import {
-  withRouter,
-  Prompt,
-  RouteComponentProps,
-  useHistory,
-} from "react-router-dom";
+import { FC, MouseEventHandler, useEffect, useState } from "react";
+import { Prompt, useHistory } from "react-router-dom";
 
 import Source from "./Source";
 import RevBrowser from "./RevBrowser";

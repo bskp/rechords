@@ -33,45 +33,53 @@ interface ColumnProps {
   width?: number;
   gap?: number;
   colWidth?: number;
+  wrapSvg?: boolean;
 }
 
 export const Columns: FunctionComponent<ColumnProps> = memo(
-  ({ numCols = 2, height = 30, width = 20, gap = 1, colWidth }) => {
+  ({
+    numCols = 2,
+    height = 30,
+    width = 20,
+    gap = 1,
+    colWidth,
+    wrapSvg = true,
+  }) => {
     const idxes = [...new Array(numCols).keys()];
     if (colWidth) {
       width = colWidth * numCols + (numCols + 3) * gap;
     } else {
       colWidth = (width - (numCols + 3) * gap) / numCols;
     }
-    return (
-      <svg width={width} height={height}>
-        {idxes.map((idx) => (
-          <g
-            key={idx}
-            transform={`translate(${2 * gap + idx * (gap + colWidth)} ${2 * gap})`}
-          >
-            <Lines height={height - 4 * gap} width={colWidth} />
-          </g>
-        ))}
-      </svg>
-    );
+    const elements = idxes.map((idx) => (
+      <g
+        key={idx}
+        transform={`translate(${2 * gap + idx * (gap + colWidth)} ${2 * gap})`}
+      >
+        <Lines height={height - 4 * gap} width={colWidth} />
+      </g>
+    ));
+    if (wrapSvg) {
+      return (
+        <svg width="100%" viewBox={`0 0 ${width} ${height}`}>
+          {elements}
+        </svg>
+      );
+    } else {
+      return <>{elements}</>;
+    }
   },
 );
 Columns.displayName = "SvgColumns";
 
-const height = 50;
-const width = 35;
-
 export const Landscape = (
-  <svg height={width} width={height}>
-    <rect x={0} y={0} width={height} height={width} className="bold" />
-    <Columns height={width} width={height} numCols={4} gap={3} />
+  <svg width="100%" viewBox={`0 0 50 30 `}>
+    <Columns height={30} width={50} numCols={4} gap={3} wrapSvg={false} />
   </svg>
 );
 
 export const Portrait = (
-  <svg height={height} width={width}>
-    <rect x={0} y={0} width={width} height={height} className="bold" />
-    <Columns height={height} width={width} numCols={2} gap={3} />
+  <svg width="100%" viewBox={`0 0 30 50`}>
+    <Columns height={50} width={30} numCols={2} gap={3} wrapSvg={false} />
   </svg>
 );

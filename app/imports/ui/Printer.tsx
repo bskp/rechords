@@ -1,10 +1,11 @@
 import * as React from "react";
+import { MouseEventHandler } from "react";
 import { Song } from "../api/collections";
 
 import Sheet from "./Sheet";
 import { navigateCallback, navigateTo, View } from "../api/helpers";
 import { Button } from "./Button";
-import { useHistory, withRouter } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import { ColumnSetter } from "./PdfViewer/PdfSettings";
 import Transposer, { useTranspose } from "./Transposer";
@@ -13,7 +14,6 @@ import { getTransposeFromTag, parseChords } from "./Viewer";
 import { HlbSliderWithInput } from "./GuiElements/HlbSliderWithInput";
 import { HlbCheckbox } from "./GuiElements/HlbCheckbox";
 import Drawer from "./Drawer";
-import { MouseEventHandler } from "react";
 
 type PrinterProps = {
   song: Song;
@@ -24,12 +24,16 @@ export const Printer = ({ song }: PrinterProps) => {
 
   const [cols, setCols] = React.useState(2);
   const [scale, setScale] = React.useState(100);
+  const [fontWidth, setFontWidth] = React.useState(100);
   const [lineHeight, setLineHeight] = React.useState(1.35);
   const [hideChords, setHideChords] = React.useState(false);
   const [hideFrets, setHideFrets] = React.useState(false);
+  const [hideAbc, setHideAbc] = React.useState(false);
+  const [inlineRefs, setInlineRefs] = React.useState(false);
 
   const sizeId = React.useId();
   const lineId = React.useId();
+  const widthId = React.useId();
   const history = useHistory();
   const settings = (
     <aside id="rightSettings" className="printer--settings">
@@ -40,18 +44,28 @@ export const Printer = ({ song }: PrinterProps) => {
             <div className="fontsize">
               <label htmlFor={sizeId}>Schriftgrösse</label>
               <HlbSliderWithInput
-                max={200}
-                min={10}
+                max={140}
+                min={71}
                 onChange={setScale}
                 value={scale}
                 id={sizeId}
               ></HlbSliderWithInput>
             </div>
             <div className="fontsize">
+              <label htmlFor={widthId}>Laufweite</label>
+              <HlbSliderWithInput
+                max={100}
+                min={75}
+                onChange={setFontWidth}
+                value={fontWidth}
+                id={widthId}
+              ></HlbSliderWithInput>
+            </div>
+            <div className="fontsize">
               <label htmlFor={lineId}>Zeilenabstand</label>
               <HlbSliderWithInput
-                max={3}
-                min={0.1}
+                max={2}
+                min={0.8}
                 step={0.05}
                 onChange={setLineHeight}
                 value={lineHeight}
@@ -71,12 +85,22 @@ export const Printer = ({ song }: PrinterProps) => {
           <div className="setting">
             <div className="fullwidth">
               <HlbCheckbox setter={setHideChords} value={hideChords}>
-                Hide Chords
+                Akkorde ausblenden
               </HlbCheckbox>
             </div>
             <div className="fullwidth">
               <HlbCheckbox setter={setHideFrets} value={hideFrets}>
-                Hide Frets
+                Griffdiagramme ausblenden
+              </HlbCheckbox>
+            </div>
+            <div className="fullwidth">
+              <HlbCheckbox setter={setHideAbc} value={hideAbc}>
+                Noten ausblenden
+              </HlbCheckbox>
+            </div>
+            <div className="fullwidth">
+              <HlbCheckbox setter={setInlineRefs} value={inlineRefs}>
+                Wiederholungen einbetten
               </HlbCheckbox>
             </div>
           </div>
@@ -86,7 +110,7 @@ export const Printer = ({ song }: PrinterProps) => {
               <Button onClick={() => ts.setShowTransposer(true)}>
                 <ReactSVG src="/svg/transposer.svg" />
               </Button>
-              <div>{ts.displayTranspose}</div>
+              <div className="display-transpose">{ts.displayTranspose}</div>
               {ts.showTransposer && (
                 <Transposer
                   transposeSetter={(ev) => ts.setTranspose(ev)}
@@ -105,8 +129,9 @@ export const Printer = ({ song }: PrinterProps) => {
 
   const sheetStyle = {
     columns: cols,
-    fontSize: scale + "%",
+    fontSize: scale * 0.8 + "%",
     lineHeight: lineHeight,
+    "--fontWidth": fontWidth,
   };
 
   const colMode = cols == 1 ? " singleCol" : "";
@@ -117,15 +142,17 @@ export const Printer = ({ song }: PrinterProps) => {
   };
 
   return (
-    <div  style={{"display": "contents"}} onContextMenu={handleContextMenu}>
+    <div style={{ display: "contents" }} onContextMenu={handleContextMenu}>
       <Drawer
         onClick={navigateCallback(history, View.view, song)}
         className="list-colors"
       >
-        <h1>Zurück</h1>
-        <p>Schneller: Rechtsklick!</p>
+        <h1>
+          {" "}
+          zurück <br /> zum Lied{" "}
+        </h1>
       </Drawer>
-      <div className="simulate-print" >
+      <div className="simulate-print">
         <div className={"content" + colMode} id="chordsheet">
           <Sheet
             song={song}
@@ -135,11 +162,13 @@ export const Printer = ({ song }: PrinterProps) => {
             }}
             hideChords={hideChords}
             style={sheetStyle}
+            classes={{ hideAbc, hideFrets }}
+            inlineRefState={[inlineRefs, setInlineRefs]}
           />
         </div>
       </div>
       {settings}
-    <div/>
+      <div />
     </div>
   );
 };

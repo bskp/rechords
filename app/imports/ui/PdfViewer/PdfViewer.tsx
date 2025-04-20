@@ -1,15 +1,15 @@
 import * as React from "react";
+import { FunctionComponent, MouseEventHandler, useState } from "react";
 import { ViewerProps } from "../Viewer";
 import { PdfObject } from "./PdfObject";
 import { IPdfViewerSettings, PdfSettings } from "./PdfSettings";
 import { jsPdfGenerator } from "./PdfRenderer/PdfRenderer";
-import { debounce, throttle } from "underscore";
+import { debounce } from "underscore";
 import "./PdfViewerStyle.less";
-import classNames from "classnames";
 import Drawer from "../Drawer";
 import { navigateCallback, navigateTo, View } from "/imports/api/helpers";
-import { FunctionComponent, MouseEventHandler, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
+
 export const PdfViewer: FunctionComponent<ViewerProps> = (props) => {
   {
     const [urls, setUrls] = useState<string[]>([]);
@@ -17,9 +17,8 @@ export const PdfViewer: FunctionComponent<ViewerProps> = (props) => {
     const generatePdf = async (settings: IPdfViewerSettings): Promise<void> => {
       const pdfBlobUrl = await jsPdfGenerator(props.song, settings);
 
-      setUrls([urls[urls.length-1], pdfBlobUrl]);
+      setUrls([urls[urls.length - 1], pdfBlobUrl]);
       console.log(urls);
-
     };
 
     const _setSettings = debounce(
@@ -33,11 +32,10 @@ export const PdfViewer: FunctionComponent<ViewerProps> = (props) => {
 
     // let pdfBlob =
 
-
     const s = props.song;
     const history = useHistory();
 
-    console.log(urls)
+    console.log(urls);
     const handleContextMenu: MouseEventHandler = (event) => {
       navigateTo(history, View.view, s);
       event.preventDefault();
@@ -52,7 +50,7 @@ export const PdfViewer: FunctionComponent<ViewerProps> = (props) => {
           >
             <h1>Zurück</h1>
           </Drawer>
-          <div className="pdfgrid" >
+          <div className="pdfgrid">
             {urls.map((u) => (
               <PdfObject key={u} url={u}></PdfObject>
             ))}
