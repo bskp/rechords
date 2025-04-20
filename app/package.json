@@ -24,7 +24,7 @@
     "hyphenation.en-us": "^0.2.1",
     "hypher": "^0.2.5",
     "jspdf": "^3.0.1",
-    "meteor-node-stubs": "^1.2.7",
+    "meteor-node-stubs": "^1.2.13",
     "moment": "^2.29.1",
     "node-html-parser": "^7.0.1",
     "react": "^18.2.0",
