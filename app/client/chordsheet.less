@@ -99,7 +99,9 @@
     max-width: 40em;
   }
 
-  .interactive, .addanchor, .playfromline {
+  .interactive,
+  .addanchor,
+  .playfromline {
     p,
     h3 {
       margin: 0;
@@ -306,6 +308,12 @@
       line-height: 1.4em;
       text-indent: 0 !important;
       padding-left: 0 !important;
+    }
+  }
+  .interactive > *:not(.inlineReference),
+  .addanchor,
+  .playfromline {
+    i {
       cursor: pointer;
     }
   }
