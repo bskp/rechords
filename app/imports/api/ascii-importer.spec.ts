@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import assert from "assert";
-import { parseRechordsDown } from "./parseRechordsDown";
 import { describe, it } from "node:test";
 import { convertToHoelibuSyntax } from "./ascii-importer";
 

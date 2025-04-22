@@ -1,4 +1,4 @@
-const matchChord = /^\(?([a-h]([#b])?)(-|\+|m?(?!aj))([^a-z])?$/i;
+const matchChord = /^[A-H](#|b)?(?:maj|min|m|M|aug|dim|sus2|sus4|7|maj7|min7|m7|M7|add9|6|9|11|13)?(?:(#|b)\d+)?(?:(#|b)\d+)?(?:\/[A-G](#|b)?)?$/i
 
 export function convertToHoelibuSyntax(text: string) {
   const out = [];
