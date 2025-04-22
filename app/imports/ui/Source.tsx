@@ -25,12 +25,20 @@ export default class Source extends Component<SourceProps, never> {
   onPasteHandler = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     if (this.props.onPasteInterceptor) {
       const inText = e.clipboardData.getData("Text");
+      // todo: insert original text first, then apply interceptor
+      // -> should create a step for ctrl+z
       const newText = this.props.onPasteInterceptor(inText);
       if (inText != newText) {
         e.preventDefault();
         // The working way (preserving undo)
         // officially deprecated but with no replacement
+        // todo: setRangeText seems to usable.. nope still breaks undo fucntionality
+        const oldStart = this.source.current.selectionStart
+        document.execCommand("insertText", false, inText);
+
+        this.source.current?.setSelectionRange(oldStart, oldStart+inText.length)
         document.execCommand("insertText", false, newText);
+
 
         // The "new" way -- clumsy and breaking undo...
         /*         const start = this.source.current.selectionStart
