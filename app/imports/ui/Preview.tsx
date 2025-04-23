@@ -21,7 +21,7 @@ const nodeText = (node) => {
   return node.children.reduce(
     (out, child) =>
       (out += child.type == "text" ? child.data : nodeText(child)),
-    "",
+    ""
   );
 };
 
@@ -32,8 +32,9 @@ interface P {
 }
 
 export default (props: P) => {
-  const html = useRef<HTMLSelectElement>(null);
+  const html = useRef<HTMLElement>(null);
   const [currentPlayTime, setCurrentPlayTime] = useState<number | undefined>(0);
+  const [maxLine, setMaxLine] = useState(1);
 
   const [isVideoActive, setVideoActive] = useState<boolean>(false);
 
@@ -56,6 +57,17 @@ export default (props: P) => {
 
     if (html?.current) traverse(html.current);
   });
+
+  useEffect(() => {
+    const current = html?.current;
+    if (current) {
+      const lines = current.querySelectorAll(".line");
+      const lastLine = lines[lines.length - 1] as HTMLElement;
+
+      const maxLine = parseInt(lastLine.dataset.lineCnt ?? "", 10);
+      setMaxLine(maxLine);
+    }
+  }, [props.md]);
 
   const chordProgressions = (md: string) => {
     const chords: string[][] = [];
@@ -85,7 +97,7 @@ export default (props: P) => {
       (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey)
     ) {
       const line = (event.target as HTMLElement).closest(
-        "span.line",
+        "span.line"
       ) as HTMLSpanElement;
       const selectedLine = Number.parseInt(line.dataset.lineCnt ?? "", 10);
       if (event.shiftKey) {
@@ -101,6 +113,11 @@ export default (props: P) => {
     }
     const node: Element = event.target as Element;
     if (!(node instanceof HTMLElement) || node.tagName != "I") return;
+
+    const isInlineRef = !!node.closest('.inlineReference')
+    if(isInlineRef) {
+      return
+    }
 
     let offset = 0;
     for (const child of node.children) {
@@ -145,7 +162,7 @@ export default (props: P) => {
       node,
       guessedChord + "|",
       offset,
-      skipWhitespace,
+      skipWhitespace
     );
     props.updateHandler(md);
   };
@@ -180,7 +197,7 @@ export default (props: P) => {
 
   const offsetChordPosition = (
     event: React.SyntheticEvent<HTMLElement>,
-    offset: number,
+    offset: number
   ) => {
     console.log("offsetchorspos");
     event.currentTarget.removeAttribute("data-initial");
@@ -263,7 +280,7 @@ export default (props: P) => {
     segment: Element,
     chord: string,
     offset = 0,
-    skipWhitespace = true,
+    skipWhitespace = true
   ) => {
     const pos = locate(segment);
 
@@ -371,19 +388,31 @@ export default (props: P) => {
       if (DH.isTag(domNode)) {
         const node = domNode as DH.Element;
         if (node.name == "i") {
+          const clazz = node.parent?.parent?.parent?.parent?.attribs?.class;
+          // console.log(node)
+          let editable = true;
+          if (clazz && clazz.includes("inlineReference")) {
+            editable = false;
+          }
           let chord;
           if ("data-chord" in node.attribs) {
-            chord = (
-              <span
-                className="before"
-                contentEditable={true}
-                suppressContentEditableWarning
-                onBlur={handleChordBlur.bind(this)}
-                onKeyDown={handleChordKey.bind(this)}
-              >
-                {node.attribs["data-chord"]}
-              </span>
-            );
+            if (editable) {
+              chord = (
+                <span
+                  className="before"
+                  contentEditable={true}
+                  suppressContentEditableWarning
+                  onBlur={handleChordBlur.bind(this)}
+                  onKeyDown={handleChordKey.bind(this)}
+                >
+                  {node.attribs["data-chord"]}
+                </span>
+              );
+            } else {
+              chord = (
+                <span className="before">{node.attribs["data-chord"]}</span>
+              );
+            }
           }
           if (!("data" in node.children[0])) return node;
           const lyrics = nodeText(node);
@@ -420,7 +449,10 @@ export default (props: P) => {
           node.name == "span" &&
           "attribs" in node &&
           "class" in node.attribs &&
-          "line" == node.attribs.class
+          "line" == node.attribs.class &&
+          !node.parent?.parent?.parent?.attribs?.class?.includes(
+            "inlineReference"
+          )
         ) {
           // Fakey syllable to allow appended chords
           node.children.push(<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>);
@@ -475,6 +507,7 @@ export default (props: P) => {
                   data={data}
                   selectedLine={selectLine}
                   onTimeChange={setCurrentPlayTime}
+                  maxLine={maxLine}
                 />
               </div>
             );
@@ -511,12 +544,12 @@ export default (props: P) => {
 
   const [coords, setCoords] = useState({ x: 0, y: 0, h: 0 });
   const handleMouseMove = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event: React.MouseEvent<HTMLElement, MouseEvent>
   ) => {
     // next line
 
     const line = (event.target as HTMLElement).closest(
-      "span.line",
+      "span.line"
     ) as HTMLSpanElement;
 
     if (line) {

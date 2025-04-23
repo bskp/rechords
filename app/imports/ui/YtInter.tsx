@@ -9,42 +9,61 @@ export const YtInter: FC<{
   selectedLine: { selectedLine: number };
   onTimeChange?: (t?: number) => void;
   onLineChange?: (t?: number) => void;
-}> = ({ data, selectedLine: currentLine, onTimeChange, onLineChange }) => {
+  maxLine: number;
+}> = ({
+  data,
+  selectedLine: currentLine,
+  onTimeChange,
+  onLineChange,
+  maxLine,
+}) => {
   const { isActive } = useContext(VideoContext);
 
   const yPlayer = useRef<YouTube>(null);
-  const { ytId, anchors } = extractData(data);
+  const { ytId, anchors: anchors_ } = extractData(data);
 
   useEffect(() => {
     setInterval(async () => {
-      const time = await yPlayer.current?.internalPlayer?.getCurrentTime();
-      if (typeof onTimeChange === "function") {
-        onTimeChange(time);
-      }
-      if (typeof onLineChange === "function") {
-        const estimatedLine = linInterpolation(
-          anchors,
-          time,
-          (l) => l[1],
-          (l) => l[0],
-        );
-        onLineChange(estimatedLine);
+      const internalPlayer = yPlayer.current?.internalPlayer;
+      if (internalPlayer) {
+        const duration = await internalPlayer.getDuration();
+        const time = await internalPlayer.getCurrentTime();
+
+        const anchors = [[-1, -1], ...anchors_, [duration, maxLine]];
+
+        if (typeof onTimeChange === "function") {
+          onTimeChange(time);
+        }
+        if (typeof onLineChange === "function") {
+          const estimatedLine = linInterpolation(
+            anchors,
+            time,
+            (l) => l[1],
+            (l) => l[0]
+          );
+          onLineChange(estimatedLine);
+        }
       }
     }, 50);
   }, []);
 
   useEffect(() => {
     console.log(currentLine);
-    if (!currentLine.selectedLine) {
+    const internalPlayer = yPlayer.current?.internalPlayer;
+    if (!currentLine.selectedLine || !internalPlayer) {
       return;
     }
-    const estimatedTime = linInterpolation(
-      anchors,
-      currentLine.selectedLine,
-      (l) => l[0],
-      (l) => l[1],
-    );
-    yPlayer.current?.internalPlayer?.seekTo(estimatedTime ?? 0, true);
+
+    internalPlayer.getDuration().then((duration) => {
+      const anchors = [[0, -1], ...anchors_, [maxLine+1,duration+1]];
+      const estimatedTime = linInterpolation(
+        anchors,
+        currentLine.selectedLine,
+        (l) => l[0],
+        (l) => l[1]
+      );
+      yPlayer.current?.internalPlayer?.seekTo(estimatedTime ?? 0, true);
+    });
   }, [currentLine]);
 
   useEffect(() => {
@@ -64,7 +83,9 @@ export function extractData(data: string): {
   anchors: [number, number][];
 } {
   const [ytId, ..._anchors] = data.split("\n");
-  const anchors = _anchors.map((line) => line.split(/\s+/).map(parseFloat));
+  const anchors = _anchors
+  .map((line) => line.split(/\s+/).map(parseFloat))
+  .filter(line => line.every(Number.isFinite)) ;
   // @ts-ignore
   return { ytId, anchors };
 }
@@ -72,7 +93,7 @@ export function extractData(data: string): {
 export function appendTime(
   md: string,
   lastTime: number,
-  selectedLine: number,
+  selectedLine: number
 ): string | undefined {
   const rgx = /~~~yt\n(.*)\n~~~/s;
   const match = md.match(rgx);
