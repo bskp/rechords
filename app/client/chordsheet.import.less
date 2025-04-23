@@ -1,0 +1,75 @@
+.commonChordsheet {
+  .abc-notation {
+    svg {
+      .abcjs-note,
+      .abcjs-slur,
+      .abcjs-rest,
+      .abcjs-ledger,
+      .abcjs-beam-elem {
+        fill: var(--text);
+      }
+
+      .abcjs-triplet {
+        stroke: var(--text);
+
+        tspan {
+          fill: var(--text);
+        }
+      }
+
+      .abcjs-lyric,
+      .abcjs-staff,
+      .abcjs-staff-extra {
+        fill: var(--gray);
+      }
+
+      path.abcjs-ending {
+        stroke: var(--gray-dark);
+      }
+
+      text.abcjs-ending,
+      .abcjs-bar {
+        fill: var(--gray-dark);
+      }
+
+      .abcjs-note_selected {
+        fill: var(--accent);
+      }
+
+      .abcjs-annotation {
+        fill: var(--ink);
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .abcjs-chord {
+        fill: var(--accent);
+        font-size: 18px;
+        font-weight: 600;
+        font-family: "Shantell Sans", sans-serif;
+
+        tspan tspan {
+          // tensions & slash
+          font-weight: 900;
+        }
+      }
+    }
+  }
+
+  code {
+    // inline code elements
+    display: inline-block;
+    font-family:
+      "Input Mono",
+      Courier New,
+      Courier,
+      monospace;
+    font-size: 0.9em;
+    font-weight: 400;
+    padding: 0 0.5em;
+    border-radius: 0.4em;
+    line-height: 1.5em;
+    color: black;
+    background-color: var(--accent-flat);
+  }
+}

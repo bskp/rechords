@@ -1,5 +1,6 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
+@import (reference) "./chordsheet.import.less";
 @import (reference) "./main.less";
 
 #editor {
@@ -78,10 +79,27 @@ aside.drawer#revs {
   }
 }
 
- 
-
-
 #chordsheetContent.interactive {
+
+  .commonChordsheet();
+
+  // Verse container
+  p {
+    margin: 1.33em 0;
+    max-width: 40em;
+  }
+  p,
+  h3 {
+    margin: 0;
+    padding: 0;
+  }
+  p {
+    padding-bottom: 10px;
+  }
+  h3 {
+    margin-top: 10px;
+  }
+
   box-sizing: border-box;
   .chordsheet-colors;
   color: var(--gray);
@@ -107,124 +125,6 @@ aside.drawer#revs {
     color: var(--text);
   }
 
-  &.hideRefs .ref,
-  &.inlineRefs .ref:not([id]) {
-    color: var(--text);
-    padding-left: 8px;
-    margin-left: -12px;
-    border-left: 4px solid var(--accent);
-    margin-top: 2em;
-    margin-bottom: 2em;
-    cursor: pointer;
-
-    strong {
-      margin-right: 0.5em;
-    }
-
-    :hover {
-      color: var(--accent);
-    }
-  }
-
-  &.inlineRefs .ref:not([id]) {
-    border-color: var(--gray);
-
-    :hover {
-      color: var(--gray);
-    }
-  }
-
-  &.inlineRefs .ref[id] {
-    color: var(--gray);
-
-    strong {
-      cursor: pointer;
-      display: block;
-      margin-right: 0;
-    }
-    :hover {
-      color: var(--accent);
-    }
-  }
-
-  &.hideRefs h3,
-  &.inlineRefs h3,
-  &.inlineRefs .ref[id] {
-    font-size: 1em;
-    margin: 0;
-
-    height: 3em;
-    line-height: 1.1em;
-    margin-bottom: -4.5em;
-
-    text-align: right;
-    width: 5em;
-    margin-left: -6em;
-
-    border: none; // concerns .refs only
-    padding-left: 0;
-
-    .phone({
-      margin: 2em 0 0;
-      width: auto;
-      height: auto;
-      line-height: 1em;
-      text-align: left;
-    });
-  }
-
-  // Verse container
-  p {
-    margin: 1.33em 0;
-    max-width: 40em;
-  }
-
-  .interactive,
-  .addanchor,
-  .playfromline {
-    p,
-    h3 {
-      margin: 0;
-      padding: 0;
-    }
-    p {
-      padding-bottom: 10px;
-    }
-    h3 {
-      margin-top: 10px;
-    }
-  }
-
-  &.inlineRefs {
-    .inlineReference {
-      h3 {
-        display: none;
-      }
-    }
-  }
-
-  &.hideRefs {
-    .inlineReference {
-      display: none;
-    }
-  }
-
-  code {
-    // inline code elements
-    display: inline-block;
-    font-family:
-      "Input Mono",
-      Courier New,
-      Courier,
-      monospace;
-    font-size: 0.9em;
-    font-weight: 400;
-    padding: 0 0.5em;
-    border-radius: 0.4em;
-    line-height: 1.5em;
-    color: black;
-    background-color: var(--accent-flat);
-  }
 
   pre code {
     // used for preformatted strumming patterns
@@ -241,62 +141,6 @@ aside.drawer#revs {
     margin: 2em 1em;
   }
 
-  .abc-notation {
-    svg {
-      .abcjs-note,
-      .abcjs-slur,
-      .abcjs-rest,
-      .abcjs-ledger,
-      .abcjs-beam-elem {
-        fill: var(--text);
-      }
-
-      .abcjs-triplet {
-        stroke: var(--text);
-
-        tspan {
-          fill: var(--text);
-        }
-      }
-
-      .abcjs-lyric,
-      .abcjs-staff,
-      .abcjs-staff-extra {
-        fill: var(--gray);
-      }
-
-      path.abcjs-ending {
-        stroke: var(--gray-dark);
-      }
-
-      text.abcjs-ending,
-      .abcjs-bar {
-        fill: var(--gray-dark);
-      }
-
-      .abcjs-note_selected {
-        fill: var(--accent);
-      }
-
-      .abcjs-annotation {
-        fill: var(--ink);
-        font-size: 18px;
-        font-weight: 600;
-      }
-
-      .abcjs-chord {
-        fill: var(--accent);
-        font-size: 18px;
-        font-weight: 600;
-        font-family: "Shantell Sans", sans-serif;
-
-        tspan tspan {
-          // tensions & slash
-          font-weight: 900;
-        }
-      }
-    }
-  }
 
   .chord-container {
     display: inline-flex;

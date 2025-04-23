@@ -1,6 +1,7 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
 @import (reference) "./icons.less";
+@import (reference) "./chordsheet.import.less";
 
 a.iconbutton {
   display: block;
@@ -70,6 +71,9 @@ a.iconbutton {
 
 
 #chordsheetContent.view {
+
+  .commonChordsheet();
+
   box-sizing: border-box;
   .chordsheet-colors;
   color: var(--gray);
@@ -229,62 +233,6 @@ a.iconbutton {
     margin: 2em 1em;
   }
 
-  .abc-notation {
-    svg {
-      .abcjs-note,
-      .abcjs-slur,
-      .abcjs-rest,
-      .abcjs-ledger,
-      .abcjs-beam-elem {
-        fill: var(--text);
-      }
-
-      .abcjs-triplet {
-        stroke: var(--text);
-
-        tspan {
-          fill: var(--text);
-        }
-      }
-
-      .abcjs-lyric,
-      .abcjs-staff,
-      .abcjs-staff-extra {
-        fill: var(--gray);
-      }
-
-      path.abcjs-ending {
-        stroke: var(--gray-dark);
-      }
-
-      text.abcjs-ending,
-      .abcjs-bar {
-        fill: var(--gray-dark);
-      }
-
-      .abcjs-note_selected {
-        fill: var(--accent);
-      }
-
-      .abcjs-annotation {
-        fill: var(--ink);
-        font-size: 18px;
-        font-weight: 600;
-      }
-
-      .abcjs-chord {
-        fill: var(--accent);
-        font-size: 18px;
-        font-weight: 600;
-        font-family: "Shantell Sans", sans-serif;
-
-        tspan tspan {
-          // tensions & slash
-          font-weight: 900;
-        }
-      }
-    }
-  }
 
   .chord-container {
     display: inline-flex;
@@ -317,72 +265,6 @@ a.iconbutton {
       letter-spacing: 0.02em;
       padding-left: 0.1em;
       font-weight: 900;
-    }
-  }
-
-  &.interactive,
-  &.addanchor,
-  &.playfromline {
-    .select(none);
-    cursor: pointer;
-
-    .ref,
-    .inlineReference {
-      cursor: default; //haha... does not work when there are no pointer events :-)
-      // pointer-events: none;
-      // a gray box would be prefered but since reference title / content are separate elements
-      // on top level a change in parsing would be necessary... so let it be
-      filter: opacity(0.5) grayscale(0.5);
-
-      // background-color:var(--bg-list);
-      h3 {
-        display: none;
-      }
-    }
-
-    // interim UI for to know which datapoint to delete
-    .line::before {
-      content: attr(data-line-cnt);
-      opacity: 0.5;
-      position: absolute;
-      margin-left: -3.8em;
-      text-align: right;
-      width: 2em;
-      line-height: 1.4em;
-    }
-
-    .line:hover::before {
-      opacity: 1;
-    }
-  }
-
-  &.playfromline {
-    .line {
-      i {
-        transition: color 0.2s;
-      }
-
-      &:hover i {
-        color: var(--accent);
-        transition: color 0s;
-      }
-    }
-  }
-
-  &.interactive,
-  &.addanchor,
-  &.playfromline {
-    i {
-      line-height: 1.4em;
-      text-indent: 0 !important;
-      padding-left: 0 !important;
-    }
-  }
-  .interactive > *:not(.inlineReference),
-  .addanchor,
-  .playfromline {
-    i {
-      cursor: pointer;
     }
   }
 
@@ -497,11 +379,6 @@ a.iconbutton {
     } // before aka. chords
   } // i
 
-  &.interactive .line i .before {
-    // Re-allow chord text selection when editing.
-    .select(text);
-  }
-
   li {
     line-height: 1.6em;
     list-style-type: none;
@@ -555,17 +432,3 @@ a.iconbutton {
     }
   }
 } // .chordsheetContent
-
-#chordsheet .time-insert-indicator {
-  display: flex;
-  align-items: end;
-
-  span {
-    color: var(--text-inverted);
-    padding: 2px;
-    width: 50px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    background-color: var(--accent-flat);
-  }
-}
