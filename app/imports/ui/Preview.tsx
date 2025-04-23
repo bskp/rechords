@@ -597,7 +597,7 @@ export default (props: P) => {
       <div className="content" id="chordsheet">
         <section
           className={classNames({
-            interactive: specialKey === "",
+            interactive: true,
             addanchor: specialKey === "ctrl",
             playfromline: specialKey === "shift",
           })}

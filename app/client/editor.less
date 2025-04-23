@@ -77,3 +77,507 @@ aside.drawer#revs {
     margin-right: 0.4rem;
   }
 }
+
+ 
+
+
+#chordsheetContent.interactive {
+  box-sizing: border-box;
+  .chordsheet-colors;
+  color: var(--gray);
+
+  a {
+    transition: filter ease-out 1s;
+
+    &:hover {
+      // main.less
+      border: unset;
+
+      filter: brightness(1.1);
+      transition: filter cubic-bezier(0, 2.89, 0.07, 1.01) 1s;
+    }
+  }
+
+  h2 {
+    color: var(--gray);
+  }
+
+  h4,
+  h3 {
+    color: var(--text);
+  }
+
+  &.hideRefs .ref,
+  &.inlineRefs .ref:not([id]) {
+    color: var(--text);
+    padding-left: 8px;
+    margin-left: -12px;
+    border-left: 4px solid var(--accent);
+    margin-top: 2em;
+    margin-bottom: 2em;
+    cursor: pointer;
+
+    strong {
+      margin-right: 0.5em;
+    }
+
+    :hover {
+      color: var(--accent);
+    }
+  }
+
+  &.inlineRefs .ref:not([id]) {
+    border-color: var(--gray);
+
+    :hover {
+      color: var(--gray);
+    }
+  }
+
+  &.inlineRefs .ref[id] {
+    color: var(--gray);
+
+    strong {
+      cursor: pointer;
+      display: block;
+      margin-right: 0;
+    }
+    :hover {
+      color: var(--accent);
+    }
+  }
+
+  &.hideRefs h3,
+  &.inlineRefs h3,
+  &.inlineRefs .ref[id] {
+    font-size: 1em;
+    margin: 0;
+
+    height: 3em;
+    line-height: 1.1em;
+    margin-bottom: -4.5em;
+
+    text-align: right;
+    width: 5em;
+    margin-left: -6em;
+
+    border: none; // concerns .refs only
+    padding-left: 0;
+
+    .phone({
+      margin: 2em 0 0;
+      width: auto;
+      height: auto;
+      line-height: 1em;
+      text-align: left;
+    });
+  }
+
+  // Verse container
+  p {
+    margin: 1.33em 0;
+    max-width: 40em;
+  }
+
+  .interactive,
+  .addanchor,
+  .playfromline {
+    p,
+    h3 {
+      margin: 0;
+      padding: 0;
+    }
+    p {
+      padding-bottom: 10px;
+    }
+    h3 {
+      margin-top: 10px;
+    }
+  }
+
+  &.inlineRefs {
+    .inlineReference {
+      h3 {
+        display: none;
+      }
+    }
+  }
+
+  &.hideRefs {
+    .inlineReference {
+      display: none;
+    }
+  }
+
+  code {
+    // inline code elements
+    display: inline-block;
+    font-family:
+      "Input Mono",
+      Courier New,
+      Courier,
+      monospace;
+    font-size: 0.9em;
+    font-weight: 400;
+    padding: 0 0.5em;
+    border-radius: 0.4em;
+    line-height: 1.5em;
+    color: black;
+    background-color: var(--accent-flat);
+  }
+
+  pre code {
+    // used for preformatted strumming patterns
+    font-size: 1em;
+    background-color: transparent;
+    color: inherit;
+    line-height: inherit;
+  }
+
+  blockquote {
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.7;
+    margin: 2em 1em;
+  }
+
+  .abc-notation {
+    svg {
+      .abcjs-note,
+      .abcjs-slur,
+      .abcjs-rest,
+      .abcjs-ledger,
+      .abcjs-beam-elem {
+        fill: var(--text);
+      }
+
+      .abcjs-triplet {
+        stroke: var(--text);
+
+        tspan {
+          fill: var(--text);
+        }
+      }
+
+      .abcjs-lyric,
+      .abcjs-staff,
+      .abcjs-staff-extra {
+        fill: var(--gray);
+      }
+
+      path.abcjs-ending {
+        stroke: var(--gray-dark);
+      }
+
+      text.abcjs-ending,
+      .abcjs-bar {
+        fill: var(--gray-dark);
+      }
+
+      .abcjs-note_selected {
+        fill: var(--accent);
+      }
+
+      .abcjs-annotation {
+        fill: var(--ink);
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .abcjs-chord {
+        fill: var(--accent);
+        font-size: 18px;
+        font-weight: 600;
+        font-family: "Shantell Sans", sans-serif;
+
+        tspan tspan {
+          // tensions & slash
+          font-weight: 900;
+        }
+      }
+    }
+  }
+
+  .chord-container {
+    display: inline-flex;
+    flex-direction: column-reverse;
+    text-align: center;
+
+    margin-right: 2em;
+    margin-bottom: 2em;
+    margin-left: -1em;
+
+    .kord {
+      display: inline-block;
+
+      .chord-diag {
+        width: 90px;
+      }
+    }
+
+    strong {
+      font-weight: 600;
+      margin-left: 0.8em;
+    }
+  }
+
+  .chord-container strong,
+  .line i .before {
+    sup {
+      vertical-align: 0.4em;
+      font-size: 0.7em;
+      letter-spacing: 0.02em;
+      padding-left: 0.1em;
+      font-weight: 900;
+    }
+  }
+
+  &.interactive,
+  &.addanchor,
+  &.playfromline {
+    .select(none);
+    cursor: pointer;
+
+    .ref,
+    .inlineReference {
+      cursor: default; //haha... does not work when there are no pointer events :-)
+      // pointer-events: none;
+      // a gray box would be prefered but since reference title / content are separate elements
+      // on top level a change in parsing would be necessary... so let it be
+      filter: opacity(0.5) grayscale(0.5);
+
+      // background-color:var(--bg-list);
+      h3 {
+        display: none;
+      }
+    }
+
+    // interim UI for to know which datapoint to delete
+    .line::before {
+      content: attr(data-line-cnt);
+      opacity: 0.5;
+      position: absolute;
+      margin-left: -3.8em;
+      text-align: right;
+      width: 2em;
+      line-height: 1.4em;
+    }
+
+    .line:hover::before {
+      opacity: 1;
+    }
+  }
+
+  &.playfromline {
+    .line {
+      i {
+        transition: color 0.2s;
+      }
+
+      &:hover i {
+        color: var(--accent);
+        transition: color 0s;
+      }
+    }
+  }
+
+  &.interactive,
+  &.addanchor,
+  &.playfromline {
+    i {
+      line-height: 1.4em;
+      text-indent: 0 !important;
+      padding-left: 0 !important;
+    }
+  }
+  .interactive > *:not(.inlineReference),
+  .addanchor,
+  .playfromline {
+    i {
+      cursor: pointer;
+    }
+  }
+
+  &.interactive section:not(.inlineReference) i {
+    &:not(.hasChord):hover {
+      border-top: 2px solid var(--accent);
+      margin-top: -2px;
+    }
+
+    &.hasChord:hover span {
+      color: var(--text);
+    }
+  }
+
+  .line i u {
+    // prosodic annotations
+    color: var(--accent);
+    font-family: "Cardo", "Times New Roman", Times, serif;
+    font-size: 1.2em;
+    line-height: 1em;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  @continuation_pad: 0.8em; // indent for wrapping rows
+
+  &.hasVideo .line {
+    cursor: pointer;
+    transition-property: opacity, color;
+    transition-timing-function: ease-in;
+    transition-duration: 0.8s;
+    opacity: var(--ratio);
+
+    i {
+      transition: color 0.2s;
+    }
+
+    &:hover i {
+      color: var(--accent);
+      transition: color 0s;
+    }
+  }
+
+  .line {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    min-height: 1em;
+    padding-left: @continuation_pad;
+    white-space: pre-wrap;
+  }
+
+  .line i {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--text);
+
+    flex-direction: column;
+    display: flex;
+
+    &:first-child {
+      margin-left: -@continuation_pad;
+    }
+
+    .before {
+      // aka. Chords.
+
+      color: var(--accent);
+      font-weight: 600;
+      font-style: normal;
+
+      .select(none);
+      .noFocusBorder;
+
+      margin-top: 0;
+      margin-right: 0.5em;
+      margin-bottom: -0.3em;
+
+      // sup is formatted above.
+
+      font-family: "Shantell Sans";
+      transform: rotate(-3deg);
+      transform-origin: left;
+
+      &:focus {
+        background-color: var(--bg-filter-opaque);
+        min-width: 1.5em;
+
+        &:empty:before {
+          content: "\feff"; // Patches height rendering of empty contenteditables
+        }
+      }
+
+      &.optional {
+        color: var(--gray);
+
+        &:before {
+          content: "(";
+        }
+
+        &:after {
+          content: ")";
+        }
+
+        &:after,
+        &:before {
+          font-weight: 200;
+          vertical-align: 0.05em;
+        }
+      }
+    } // before aka. chords
+  } // i
+
+  &.interactive .line i .before {
+    // Re-allow chord text selection when editing.
+    .select(text);
+  }
+
+  li {
+    line-height: 1.6em;
+    list-style-type: none;
+
+    &::before {
+      content: "–";
+      display: inline-block;
+      position: relative;
+      width: 0;
+      left: -1.2em;
+    }
+  }
+
+  .song-video {
+    position: fixed;
+    top: 0;
+    right: 7em;
+
+    .phone({
+      right: unset;
+      left: 0;
+    });
+
+    iframe {
+      width: 16em;
+      height: unset;
+      aspect-ratio: 3/2;
+    }
+  }
+
+  .song-video-preview {
+    position: fixed;
+    top: 0;
+    right: 50%;
+  }
+
+  .song-video-preview.active {
+    position: fixed;
+    flex-direction: row-reverse;
+    display: flex;
+
+    .phone({
+      right: unset;
+      left: 0;
+    });
+
+    iframe {
+      height: 8em;
+      width: unset;
+      aspect-ratio: 3/2;
+    }
+  }
+} // .chordsheetContent
+
+#chordsheet .time-insert-indicator {
+  display: flex;
+  align-items: end;
+
+  span {
+    color: var(--text-inverted);
+    padding: 2px;
+    width: 50px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background-color: var(--accent-flat);
+  }
+}

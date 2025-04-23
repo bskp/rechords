@@ -21,7 +21,7 @@ type SheetProps = {
   hideChords?: boolean;
   processVdom?: (vdom: any) => any;
   style?: CSSProperties;
-  classes?: any;
+  classes?: Record<string,string>
   inlineRefState: [boolean, (inlineRef: boolean) => void];
 };
 const Sheet = ({
@@ -30,7 +30,7 @@ const Sheet = ({
   hideChords,
   processVdom,
   style,
-  classes = [],
+  classes = {},
   inlineRefState = useState(true),
 }: SheetProps) => {
   const [inlineRefs, setInlineRefs] = inlineRefState;
@@ -220,7 +220,8 @@ const Sheet = ({
         inlineRefs,
         hideRefs: !inlineRefs,
         hasVideo: isActive,
-        ...classes,
+        view: true,
+        classes,
       })}
     >
       {vdom}
