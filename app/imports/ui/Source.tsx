@@ -28,20 +28,13 @@ export default class Source extends Component<SourceProps, never> {
       const newText = this.props.onPasteInterceptor(inText);
       if (inText != newText) {
         e.preventDefault();
-        // The working way (preserving undo)
-        // officially deprecated but with no replacement
+        // inserting original text first
+        const oldStart = this.source.current.selectionStart
+        document.execCommand("insertText", false, inText);
+        // select inserted text
+        this.source.current?.setSelectionRange(oldStart, oldStart+inText.length)
+        // overwrite text with interceptor content
         document.execCommand("insertText", false, newText);
-
-        // The "new" way -- clumsy and breaking undo...
-        /*         const start = this.source.current.selectionStart
-        const end = this.source.current.selectionEnd
-
-        const valueBefore = this.props.md
-
-        const inFrontSelection = valueBefore.substring(0, start);
-        // const selectionText = valueBefore.substring(start, end);
-        const afterSelection = valueBefore.substring(end);
-        this.props.updateHandler(inFrontSelection + newText + afterSelection) */
       }
     }
   };
