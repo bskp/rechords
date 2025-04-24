@@ -62,10 +62,12 @@ export default (props: P) => {
     const current = html?.current;
     if (current) {
       const lines = current.querySelectorAll(".line");
-      const lastLine = lines[lines.length - 1] as HTMLElement;
+      if (lines.length > 0) {
+        const lastLine = lines[lines.length - 1] as HTMLElement;
 
-      const maxLine = parseInt(lastLine.dataset.lineCnt ?? "", 10);
-      setMaxLine(maxLine);
+        const maxLine = parseInt(lastLine.dataset.lineCnt ?? "", 10);
+        setMaxLine(maxLine);
+      }
     }
   }, [props.md]);
 
@@ -114,9 +116,9 @@ export default (props: P) => {
     const node: Element = event.target as Element;
     if (!(node instanceof HTMLElement) || node.tagName != "I") return;
 
-    const isInlineRef = !!node.closest('.inlineReference')
-    if(isInlineRef) {
-      return
+    const isInlineRef = !!node.closest(".inlineReference");
+    if (isInlineRef) {
+      return;
     }
 
     let offset = 0;
