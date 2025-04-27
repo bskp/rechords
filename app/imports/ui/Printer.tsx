@@ -153,7 +153,6 @@ export const Printer = ({ song }: PrinterProps) => {
         </h1>
       </Drawer>
       <div className="simulate-print">
-        <div className={"content" + colMode} id="chordsheet">
           <Sheet
             song={song}
             transpose={{
@@ -164,8 +163,8 @@ export const Printer = ({ song }: PrinterProps) => {
             style={sheetStyle}
             classes={{ hideAbc, hideFrets }}
             inlineRefState={[inlineRefs, setInlineRefs]}
+            pageSettings = {{orientation: 'landscape'}}
           />
-        </div>
       </div>
       {settings}
       <div />

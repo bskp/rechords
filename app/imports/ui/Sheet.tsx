@@ -1,5 +1,12 @@
 import * as React from "react";
-import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
+import {
+  CSSProperties,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import parse, { DOMNode, domToReact } from "html-react-parser";
 import { Song } from "../api/collections";
 import { Abcjs } from "./Abcjs";
@@ -12,6 +19,7 @@ import classNames from "classnames";
 import { YtInter } from "./YtInter";
 import { VideoContext } from "/imports/ui/App";
 import { Transpose } from "/imports/ui/Transposer";
+import { cpuUsage } from "process";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
 
@@ -21,8 +29,9 @@ type SheetProps = {
   hideChords?: boolean;
   processVdom?: (vdom: any) => any;
   style?: CSSProperties;
-  classes?: Record<string,string>
-  inlineRefState: [boolean, (inlineRef: boolean) => void];
+  classes?: Record<string, boolean>;
+  inlineRefState?: [boolean, (inlineRef: boolean) => void];
+  pageSettings: { orientation: "landscape" | "portrait" };
 };
 const Sheet = ({
   song,
@@ -32,6 +41,7 @@ const Sheet = ({
   style,
   classes = {},
   inlineRefState = useState(true),
+  pageSettings,
 }: SheetProps) => {
   const [inlineRefs, setInlineRefs] = inlineRefState;
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
@@ -58,7 +68,7 @@ const Sheet = ({
     elements?.forEach((e) => e.addEventListener("click", toggleInlineRefs));
     return () =>
       elements?.forEach((e) =>
-        e.removeEventListener("click", toggleInlineRefs),
+        e.removeEventListener("click", toggleInlineRefs)
       );
   });
 
@@ -75,7 +85,7 @@ const Sheet = ({
         const chord = node.attribs["data-chord"];
         const t = Chord.from(chord)?.transposed(
           transpose.semitones ?? 0,
-          transpose.notation,
+          transpose.notation
         );
         if (t === undefined) {
           chord_ = <span className="before">{chord}</span>;
@@ -168,7 +178,7 @@ const Sheet = ({
         return !(
           (child as DH.Element)?.name == "li" &&
           hide.includes(
-            ((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data,
+            ((child as DH.NodeWithChildren)?.firstChild as DH.DataNode)?.data
           )
         );
       });
@@ -181,7 +191,58 @@ const Sheet = ({
     postprocess = (vdom) => processVdom(populateReactNodes(vdom));
   }
 
+  console.log("rendering vdom")
   let vdom = parse(rmd_html, { replace: postprocess }) as JSX.Element[];
+
+  if (pageSettings) {
+    // split text
+    // todo: react loses track of DOM like this, since we
+    //
+    useEffect(() => {
+      const numcols = 3;
+      console.log('layouteffect')
+      const dom = chordsheetContent.current;
+      if (dom) {
+        let currentpage = createPage();
+
+        const allchildren = [...dom.children];
+
+        dom.innerHTML = "";
+        dom.append(currentpage);
+        let currentcolumn = createColumn();
+        currentpage.append(currentcolumn);
+
+        for (const child of allchildren) {
+          currentcolumn.append(child);
+
+          if (isOverflowing(currentcolumn)) {
+            console.log(" new column");
+            // currentpage.removeChild(child);
+            currentcolumn = createColumn();
+            if (currentpage.childElementCount >= numcols) {
+              currentpage = createPage();
+              dom.append(currentpage);
+            }
+            currentcolumn.appendChild(child);
+            currentpage.append(currentcolumn);
+          }
+        }
+      }
+
+      function createPage() {
+        const page = document.createElement("div");
+        page.style = "border: 2px green solid";
+        page.classList.add("preview-page");
+        return page;
+      }
+      function createColumn() {
+        const page = document.createElement("div");
+        page.style = "border: 2px red solid";
+        page.classList.add("preview-column");
+        return page;
+      }
+    }, [vdom]);
+  }
 
   useEffect(() => {
     if (hasVideo) {
@@ -189,7 +250,7 @@ const Sheet = ({
       elements?.forEach((e) => e.addEventListener("click", handleLineClick));
       return () =>
         elements?.forEach((e) =>
-          e.removeEventListener("click", handleLineClick),
+          e.removeEventListener("click", handleLineClick)
         );
     }
   });
@@ -221,7 +282,7 @@ const Sheet = ({
         hideRefs: !inlineRefs,
         hasVideo: isActive,
         view: true,
-        classes,
+        ...classes,
       })}
     >
       {vdom}
@@ -233,4 +294,17 @@ export default Sheet;
 
 function clamp(min: number, val: number, max: number) {
   return Math.max(min, Math.min(max, val));
+}
+
+function isOverflowing(el: HTMLElement) {
+  const curOverflow = el.style.overflow;
+
+  if (!curOverflow || curOverflow === "visible") el.style.overflow = "hidden";
+
+  const isOverflowing =
+    el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
+
+  el.style.overflow = curOverflow;
+
+  return isOverflowing;
 }

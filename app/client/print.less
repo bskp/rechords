@@ -23,9 +23,6 @@
   }
 
   #chordsheetContent {
-    columns: 2;
-    column-gap: 3em;
-
     &.hideFrets .chord-container {
       display: none;
     }
@@ -96,14 +93,31 @@
   }
 }
 
+@page {
+  size: landscape;
+  margin: 0;
+}
+
 @media print {
   .simulate-print {
     .printify;
-    #chordsheetContent {
-      display: block;
+    section#chordsheetContent {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+    }
+    .preview-page {
+      background-color: white;
+      height: 210mm;
+      width: 297mm;
+      display: flex;
+      flex-flow: row nowrap;
+    }
+    .preview-column {
+      width: 90mm;
+      height: 100%;
     }
   }
-
 
   aside,
   #transposer {
@@ -124,23 +138,33 @@
     padding: 2em;
     width: 100%;
     padding-right: 400px; // TODO
-
+    display: flex;
     overflow: scroll;
 
-    #chordsheet.content {
+    section#chordsheetContent {
+      background-color: #beb4b0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-page {
       background-color: white;
-      width: 210mm;
-      height: 297mm;
+      height: 210mm;
+      width: 297mm;
 
       transform: rotate(-1.5deg);
       border-radius: 3pt;
 
       overflow: hidden;
       margin: 0 auto;
+      page-break-after: always;
+      break-after: page;
+      display: flex;
+      flex-flow: row nowrap;
     }
-
-    #chordsheetContent {
-      padding: 1.2cm;
+    .preview-column {
+      width: 90mm;
       height: 100%;
     }
   }

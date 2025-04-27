@@ -163,7 +163,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
           song={song}
           transpose={transposeState.transpose}
           hideChords={!showChords}
-          classes="view"
+          classes={{ view: true }}
         />
         <h1 id="howToPrint">
           Bitte schliess das Druckfenster prüfe deine Druckeinstellungen. Dann
