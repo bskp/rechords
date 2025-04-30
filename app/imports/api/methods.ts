@@ -1,4 +1,10 @@
-import Songs, { Song, Revisions, rmd_version } from "./collections";
+import Songs, {
+  Song,
+  Revisions,
+  rmd_version,
+  Playlist,
+  Playlists,
+} from "./collections";
 import { check } from "meteor/check";
 import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
@@ -16,7 +22,7 @@ Meteor.methods({
         throw new Meteor.Error(
           "users.dup_key",
           e,
-          "der Wert wird bereits verwendet",
+          "der Wert wird bereits verwendet"
         );
       } else {
         console.log("re-thrown error: ", e);
@@ -35,7 +41,7 @@ Meteor.methods({
       throw new Meteor.Error(
         "users.invalid_secret",
         "",
-        "Gib vier Wörter an, getrennt durch Leerschläge",
+        "Gib vier Wörter an, getrennt durch Leerschläge"
       );
 
     const [new_first_word, ...secret_words] = chunks;
@@ -100,5 +106,14 @@ Meteor.methods({
 
     Revisions.insert(rev);
     return true;
+  },
+
+  savePlaylist(playlist: OptionalId<Playlist>) {
+    const user_id = Meteor.userId();
+
+    if (user_id) {
+      playlist.ownerid = user_id;
+      Playlists.insert(playlist);
+    }
   },
 });

@@ -155,7 +155,7 @@ export class Song {
         { of: this._id },
         {
           sort: { timestamp: -1 },
-        },
+        }
       ).fetch();
     }
     return this.revision_cache;
@@ -176,6 +176,15 @@ export interface Revision {
   editor?: string;
 }
 
+export interface Playlist {
+  _id: string;
+  ownerid: string;
+  name: string;
+  timestamp: Date;
+  list: { songId: string; transpose?: number };
+}
+
+const Playlists = new Mongo.Collection<Playlist>("playlists");
 const Revisions = new Mongo.Collection<Revision>("revisions");
 
 const Songs = new Mongo.Collection<Song>("songs", {
@@ -192,7 +201,7 @@ export class RmdHelpers {
       .map((li) =>
         Array.from(li.childNodes)
           .map((child) => child.textContent)
-          .join(":"),
+          .join(":")
       );
   }
 
@@ -208,6 +217,6 @@ export class RmdHelpers {
   }
 }
 
-export { Revisions };
+export { Revisions, Playlists };
 
 export default Songs;

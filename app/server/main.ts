@@ -1,6 +1,6 @@
 import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
-import Songs, { Revisions } from "../imports/api/collections";
+import Songs, { Playlists, Revisions } from "../imports/api/collections";
 import "../imports/api/methods.ts";
 
 Meteor.publish("songs", function () {
@@ -28,6 +28,13 @@ Meteor.publish("revisions", function () {
       { tags: "lizenz:frei" } /* , { fields: { _id: 1 } }*/,
     ).fetch();
     return Revisions.find({ of: { $in: songids.map((s) => s._id) } });
+  }
+});
+
+Meteor.publish("songs", function () {
+  // todo: some kind of collection
+  if (Meteor.user()?.profile) {
+    return Playlists.find({ownerid: Meteor.user()?._id})
   }
 });
 

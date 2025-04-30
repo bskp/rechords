@@ -132,4 +132,5 @@ const List = (props: ListProps) => {
   );
 };
 
+// todo: useRouter
 export default withRouter(List); // injects history, location, match

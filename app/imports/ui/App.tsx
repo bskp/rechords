@@ -28,6 +28,7 @@ import { ReactSVG } from "react-svg";
 import { useContext } from "react";
 import classnames from "classnames";
 import { PdfViewer } from "./PdfViewer/PdfViewer";
+import { Omnilist } from "./Omnilist";
 
 export const ThemeContext = React.createContext<{
   toggleTheme: () => void;
@@ -335,6 +336,17 @@ class App extends React.Component<AppProps, AppStates> {
                     }}
                   />
 
+                  <Route
+                    path="/omnilist"
+                    render={() => {
+                      return (
+                        <Omnilist
+                          songs={this.props.songs}
+                          user={this.props.user}
+                        />
+                      );
+                    }}
+                  />
                   <Route
                     path="/progress"
                     render={() => {
