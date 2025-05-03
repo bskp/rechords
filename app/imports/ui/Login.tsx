@@ -27,7 +27,11 @@ export const Login: React.FC = () => {
       (err: Meteor.Error | Error | undefined) => {
         if (!err) {
           setMsg("eingeloggt!");
-          navigateTo(history, View.home);
+          if(history.location.pathname === "/login") {
+            navigateTo(history, View.home);
+          } else {
+
+          }
         } else {
           let msg = err.message;
           if (err.reason == "Incorrect password") {

@@ -108,12 +108,35 @@ Meteor.methods({
     return true;
   },
 
-  savePlaylist(playlist: OptionalId<Playlist>) {
+  createPlaylist(playlistName: string) {
     const user_id = Meteor.userId();
 
     if (user_id) {
-      playlist.ownerid = user_id;
-      Playlists.insert(playlist);
+      Playlists.insert({
+        ownerid: user_id,
+        name: playlistName,
+        list: [],
+        timestamp: new Date(),
+      });
+    }
+  },
+  updatePlaylist(playlist: Playlist) {
+    const user_id = Meteor.userId();
+
+    if (user_id) {
+      if (playlist.ownerid !== user_id) {
+        throw new Meteor.Error("not your playlist");
+      }
+      Playlists.update(
+        { _id: playlist._id, ownerid: playlist.ownerid },
+        playlist
+      );
+    }
+  },
+  removePlaylist(playlistId: string) {
+    const user_id = Meteor.userId();
+    if (user_id) {
+      Playlists.remove({ _id: playlistId, ownerid: user_id });
     }
   },
 });

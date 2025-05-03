@@ -181,7 +181,7 @@ export interface Playlist {
   ownerid: string;
   name: string;
   timestamp: Date;
-  list: { songId: string; transpose?: number };
+  list: { songId: string; transpose?: number }[];
 }
 
 const Playlists = new Mongo.Collection<Playlist>("playlists");

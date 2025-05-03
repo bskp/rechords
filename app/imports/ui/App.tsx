@@ -15,6 +15,7 @@ import Hallo from "./Hallo";
 
 import {
   BrowserRouter,
+  NavLink,
   Redirect,
   Route,
   RouteComponentProps,
@@ -29,6 +30,8 @@ import { useContext } from "react";
 import classnames from "classnames";
 import { PdfViewer } from "./PdfViewer/PdfViewer";
 import { Omnilist } from "./Omnilist";
+import { routePath, View } from "../api/helpers";
+import { PlaylistComponent } from "./PlaylistComponent";
 
 export const ThemeContext = React.createContext<{
   toggleTheme: () => void;
@@ -46,6 +49,7 @@ export const MenuContext = React.createContext<{
   setShowMenu: () => {},
 });
 
+// todo: only editor / viewer
 export const VideoContext = React.createContext<{
   hasVideo: boolean;
   setActive: (active: boolean) => void;
@@ -69,6 +73,7 @@ const nA404 = (
       <h1>404</h1>
       <h2>n/A</h2>
     </span>
+    {Meteor.userId() ?? <Login />}
   </div>
 );
 const NA400 = () => (
@@ -189,6 +194,12 @@ class App extends React.Component<AppProps, AppStates> {
       });
     };
 
+    const getSongsForArtist = (params: { author: string }) => {
+      return Songs.find({
+        author_: params.author.toLowerCase(),
+      });
+    };
+
     const songList = (
       <List songs={this.props.songs} key={list_key} user={this.props.user} />
     );
@@ -226,6 +237,29 @@ class App extends React.Component<AppProps, AppStates> {
                     />
                     <Login />
                   </Route>
+                  <Route 
+                  path={"/playlist/:playlistid"}
+                  component={PlaylistComponent}
+                  />
+                  
+                  <Route
+                    path="/view/:author"
+                    exact={true}
+                    render={(routerProps) => {
+                      const songs = getSongsForArtist(routerProps.match.params);
+                      return (
+                        <>
+                        {/* {songList} */}
+                        {/* todo: listcontainer */}
+                        <section>
+                          {songs.map((s) => (
+                            <h4><NavLink to={routePath(View.view, s)}> {s.title}</NavLink></h4>
+                          ))}
+                        </section>
+                        </>
+                      );
+                    }}
+                  />
 
                   <Route
                     path="/print/:author/:title"
@@ -418,6 +452,7 @@ class App extends React.Component<AppProps, AppStates> {
   }
 }
 
+// todo: could be done with useTracker
 export default withTracker((_) => {
   const songHandle = Meteor.subscribe("songs");
   const revHandle = Meteor.subscribe("revisions");

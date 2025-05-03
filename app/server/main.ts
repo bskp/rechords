@@ -31,12 +31,12 @@ Meteor.publish("revisions", function () {
   }
 });
 
-Meteor.publish("songs", function () {
-  // todo: some kind of collection
+Meteor.publish("playlists", function () {
   if (Meteor.user()?.profile) {
     return Playlists.find({ownerid: Meteor.user()?._id})
   }
 });
+
 
 Meteor.startup(async () => {
   if (Meteor.users.find().count() === 0) {
