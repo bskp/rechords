@@ -69,6 +69,7 @@ const nA404 = (
       <h2>n/A</h2>
     </span>
   </div>
+  
 );
 const NA400 = () => (
   <div className="content chordsheet-colors">
@@ -176,13 +177,14 @@ class App extends React.Component<AppProps, AppStates> {
       );
     }
 
-    const getSong = (params: { title: string; author: string }) => {
+    const getSong = (params: { title: string; author: string, songbook: string }) => {
       if (params.author == "-") {
         return Songs.findOne({
           title_: params.title.toLowerCase(),
         });
       }
       return Songs.findOne({
+        songbook_: params.songbook.toLowerCase(),
         author_: params.author.toLowerCase(),
         title_: params.title.toLowerCase(),
       });
@@ -227,7 +229,7 @@ class App extends React.Component<AppProps, AppStates> {
                   </Route>
 
                   <Route
-                    path="/print/:author/:title"
+                    path="/print/:songbook/:author/:title"
                     render={(routerProps) => {
                       const song = getSong(routerProps.match.params);
 
@@ -248,7 +250,7 @@ class App extends React.Component<AppProps, AppStates> {
                     }}
                   />
                   <Route
-                    path="/pdf/:author/:title"
+                    path="/pdf/:songbook/:author/:title"
                     render={(routerProps) => {
                       const song = getSong(routerProps.match.params);
 
@@ -270,12 +272,12 @@ class App extends React.Component<AppProps, AppStates> {
                   />
 
                   <Route
-                    path="/view/:author/:title"
+                    path="/view/:songbook/:author/:title"
                     render={(routerProps) => {
                       const song = getSong(routerProps.match.params);
 
                       if (song === undefined) {
-                        return nA404;
+                        return [songList,nA404];
                       }
 
                       return (
@@ -293,7 +295,7 @@ class App extends React.Component<AppProps, AppStates> {
                   />
 
                   <WriterRoute
-                    path="/edit/:author/:title"
+                    path="/edit/:songbook/:author/:title"
                     render={(match) => {
                       const song = getSong(match.match.params);
 
