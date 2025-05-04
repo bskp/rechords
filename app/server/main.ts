@@ -1,16 +1,18 @@
 import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
-import Songs, { Revisions } from "../imports/api/collections";
+import Songs, { Songbooks, Revisions } from "../imports/api/collections";
 import "../imports/api/methods.ts";
+import slug from "slug";
 
 Meteor.publish("songs", function () {
   // todo: some kind of collection
   if (Meteor.user()?.profile) {
     return Songs.find({});
   } else {
+    const frei = Songbooks.findOne({ name_: "lizenz-frei" });
     return Songs.find({
       $or: [
-        { tags: "lizenz:frei" },
+        { songbook_: frei?._id },
         {
           author_: "meta",
           title: /^[^!]/i,
@@ -25,13 +27,43 @@ Meteor.publish("revisions", function () {
     return Revisions.find({});
   } else {
     const songids = Songs.find(
-      { tags: "lizenz:frei" } /* , { fields: { _id: 1 } }*/,
+      { tags: "lizenz:frei" } /* , { fields: { _id: 1 } }*/
     ).fetch();
     return Revisions.find({ of: { $in: songids.map((s) => s._id) } });
   }
 });
 
 Meteor.startup(async () => {
+  if (Songbooks.find().count() === 0) {
+    if (Meteor.isServer) {
+      Songbooks.createIndex({ name_: 1 }, { unique: true });
+    }
+    const frei = "lizenz-frei";
+    Songbooks.insert({
+      name: "Lizenz Frei",
+      name_: frei,
+      owners: [],
+      reader_can_invite: true,
+    });
+    Songs.update(
+      { tags: "lizenz:frei" },
+      { $set: { songbook_: frei } },
+      {multi:true}
+    );
+    const hoelibu = "hoelibu";
+    Songbooks.insert({
+      name: "Hoelibu",
+      name_: hoelibu,
+      owners: [],
+      reader_can_invite: true,
+    });
+    Songs.update(
+      { songbook_: { $exists: false } },
+      { $set: { songbook_: hoelibu}, },
+      {multi:true}
+    );
+  }
+
   if (Meteor.users.find().count() === 0) {
     Accounts.createUser({
       username: "le",
