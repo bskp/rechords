@@ -69,7 +69,6 @@ const nA404 = (
       <h2>n/A</h2>
     </span>
   </div>
-  
 );
 const NA400 = () => (
   <div className="content chordsheet-colors">
@@ -112,9 +111,6 @@ interface AppProps extends RouteComponentProps {
 
   songs: Song[];
   user: Meteor.User | null;
-
-  toggleSongList: () => void;
-  toggleTheme: () => void;
 }
 
 const MenuBurger = () => {
@@ -177,9 +173,14 @@ class App extends React.Component<AppProps, AppStates> {
       );
     }
 
-    const getSong = (params: { title: string; author: string, songbook: string }) => {
-      if (params.author == "-") {
+    const getSong = (params: {
+      songbook: string;
+      author: string;
+      title: string;
+    }) => {
+      if (params.author === "-") {
         return Songs.findOne({
+          songbook_: params.songbook.toLowerCase(),
           title_: params.title.toLowerCase(),
         });
       }
@@ -277,7 +278,7 @@ class App extends React.Component<AppProps, AppStates> {
                       const song = getSong(routerProps.match.params);
 
                       if (song === undefined) {
-                        return [songList,nA404];
+                        return [songList, nA404];
                       }
 
                       return (

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import parse, { DOMNode, domToReact } from "html-react-parser";
-import { Song } from "../api/collections";
+import { Song, Songbooks } from "../api/collections";
 import { Abcjs } from "./Abcjs";
 import Kord from "./Kord";
 import { userMayWrite } from "../api/helpers";
@@ -211,6 +211,8 @@ const Sheet = ({
     }
   }, [playedLine]);
 
+  const songbook = Songbooks.findOne(song.songbook_)?.name ?? song.songbook_;
+
   return (
     <section
       ref={chordsheetContent}
@@ -223,6 +225,7 @@ const Sheet = ({
         ...classes,
       })}
     >
+      <h1 className="songbook">{songbook}</h1>
       {vdom}
     </section>
   );
