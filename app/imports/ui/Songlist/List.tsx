@@ -17,6 +17,8 @@ import { Menu } from "./Menu";
 import { ListGroupItem } from "./ListGroupItem";
 import { MenuContext } from "/imports/ui/App";
 
+import { SongbookSelector } from "/imports/ui/Songlist/SongbookSelector";
+
 interface ListProps extends RouteComponentProps {
   songs: Song[];
   user: Meteor.User | null;
@@ -25,6 +27,7 @@ interface ListProps extends RouteComponentProps {
 
 const List = (props: ListProps) => {
   const [filter, setFilter] = useState("");
+  const [songbooks, setSongbooks] = useState<string[]>([]);
 
   // todo: upgrade to new react-router -> useNavigate can be used
   const history = useHistory();
@@ -106,6 +109,11 @@ const List = (props: ListProps) => {
         onEnter={navigateToFirstMatch}
         filter={filter}
         filterChanged={(e) => setFilter(e)}
+      />
+      <SongbookSelector
+        songbooks={songbooks}
+        setSongbooks={setSongbooks}
+        user={props.user}
       />
       <ul className="scroll">
         {addSong}

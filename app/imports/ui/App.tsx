@@ -411,11 +411,12 @@ class App extends React.Component<AppProps, AppStates> {
 
 export default withTracker((_) => {
   const songHandle = Meteor.subscribe("songs");
+  const songbookHandle = Meteor.subscribe("songbooks");
   const revHandle = Meteor.subscribe("revisions");
 
   const songs = Songs.find({}, { sort: { title: 1 } }).fetch();
   return {
-    songsLoading: !songHandle.ready(),
+    songsLoading: !songHandle.ready() || !songbookHandle.ready(),
     revisionsLoading: !revHandle.ready(),
     songs,
     user: Meteor.user(),

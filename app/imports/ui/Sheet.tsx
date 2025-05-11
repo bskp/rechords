@@ -62,6 +62,15 @@ const Sheet = ({
       );
   });
 
+  useEffect(() => {
+    const elements = chordsheetContent.current?.querySelectorAll("div.ref");
+    elements?.forEach((e) => e.addEventListener("click", toggleInlineRefs));
+    return () =>
+      elements?.forEach((e) =>
+        e.removeEventListener("click", toggleInlineRefs),
+      );
+  });
+
   const rmd_html = song.getHtml();
 
   // Postprocessing on each node from the dom-to-react parser
@@ -211,7 +220,7 @@ const Sheet = ({
     }
   }, [playedLine]);
 
-  const songbook = Songbooks.findOne(song.songbook_)?.name ?? song.songbook_;
+  const songbook = Songbooks.findOne({ name_: song.songbook_ })?.name ?? "?";
 
   return (
     <section

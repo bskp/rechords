@@ -1,7 +1,11 @@
 import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
-import Songs, { Songbooks, Revisions } from "../imports/api/collections";
+import Songs, { Songbooks, Revisions, Song } from "../imports/api/collections";
 import "../imports/api/methods.ts";
+
+Meteor.publish("songbooks", () => {
+  return Songbooks.find({});
+});
 
 Meteor.publish("songs", function () {
   const allowedSongbooks =
