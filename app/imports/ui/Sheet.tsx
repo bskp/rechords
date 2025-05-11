@@ -1,7 +1,7 @@
 import * as React from "react";
 import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import parse, { DOMNode, domToReact } from "html-react-parser";
-import { Song } from "../api/collections";
+import { Song, Songbooks } from "../api/collections";
 import { Abcjs } from "./Abcjs";
 import Kord from "./Kord";
 import { userMayWrite } from "../api/helpers";
@@ -52,6 +52,15 @@ const Sheet = ({
     }
   };
   const chordsheetContent = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const elements = chordsheetContent.current?.querySelectorAll("div.ref");
+    elements?.forEach((e) => e.addEventListener("click", toggleInlineRefs));
+    return () =>
+      elements?.forEach((e) =>
+        e.removeEventListener("click", toggleInlineRefs),
+      );
+  });
 
   useEffect(() => {
     const elements = chordsheetContent.current?.querySelectorAll("div.ref");
@@ -211,6 +220,8 @@ const Sheet = ({
     }
   }, [playedLine]);
 
+  const songbook = Songbooks.findOne({ name_: song.songbook_ })?.name ?? "?";
+
   return (
     <section
       ref={chordsheetContent}
@@ -223,6 +234,7 @@ const Sheet = ({
         ...classes,
       })}
     >
+      <h1 className="songbook">{songbook}</h1>
       {vdom}
     </section>
   );

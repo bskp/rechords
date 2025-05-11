@@ -17,8 +17,9 @@ export enum View {
 }
 
 export const routePath = (view: View, song: Song) => {
-  return generatePath("/:view/:author/:title", {
+  return generatePath("/:view/:songbook/:author/:title", {
     view: view,
+    songbook: song.songbook_,
     author: song.author_,
     title: song.title_,
   });
