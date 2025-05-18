@@ -13,6 +13,20 @@ function isDefined<T>(a: T | null | undefined): a is T {
 
 export const rmd_version = 11;
 
+export class Songbook {
+  _id?: string;
+  name!: string;
+  /**
+   * URL compatible Slug of Collection Name
+   */
+  name_!: string;
+  /**
+   * Owner Ids 
+   */
+  owners!: string[];
+  reader_can_invite = false
+}
+
 export class Song {
   _id?: string;
 
@@ -33,6 +47,11 @@ export class Song {
 
   revision_cache?: Revision[];
   has_video: boolean = false;
+
+  /**
+   * slug of the owning songbook
+   */
+  songbook_!: string
 
   constructor(doc: { text: string }) {
     Object.assign(this, doc);
@@ -178,6 +197,8 @@ export interface Revision {
 
 const Revisions = new Mongo.Collection<Revision>("revisions");
 
+const Songbooks = new Mongo.Collection<Songbook>("songbooks");
+
 const Songs = new Mongo.Collection<Song>("songs", {
   transform(doc) {
     return new Song(doc);
@@ -208,6 +229,6 @@ export class RmdHelpers {
   }
 }
 
-export { Revisions };
+export { Revisions, Songbooks };
 
 export default Songs;

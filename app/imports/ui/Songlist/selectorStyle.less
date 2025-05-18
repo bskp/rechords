@@ -1,0 +1,20 @@
+
+ul.selector {
+  gap: 0.5em;
+  display: flex;
+  overflow: scroll;
+
+  li {
+    cursor: pointer;
+    display: inline-block;
+    border: 1px solid;
+    border-radius: 0.4em;
+    padding: 0.1em 0.4em 0.1em;
+
+    &.active {
+      background-color: var(--gray);
+      color: var(--void);
+      border: none;
+    }
+  }
+}
