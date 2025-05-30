@@ -61,6 +61,10 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
   }, [saved]);
 
   const handlePaste = (text: string) => {
+    // todo: intercept urls
+    // starting with current domain -> relative md-link
+    // link in general -> md link
+    // yt-link -> video
     return convertToHoelibuSyntax(text);
   };
 
