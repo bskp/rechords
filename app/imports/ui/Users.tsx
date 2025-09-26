@@ -85,6 +85,9 @@ class EditUser extends React.Component<
   };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (this.state.user.username?.length == 0 && this.state.secret.length > 0) {
+      this.state.user.username = "tempusername";
+    }
     Meteor.call("saveUser", this.state.user, this.state.secret, (error) => {
       console.log(error);
 

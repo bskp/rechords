@@ -16,7 +16,7 @@ Meteor.methods({
         throw new Meteor.Error(
           "users.dup_key",
           e,
-          "der Wert wird bereits verwendet",
+          `der Wert "${Object.values(e.keyValue)}" wird bereits verwendet (${Object.keys(e.keyValue)})`,
         );
       } else {
         console.log("re-thrown error: ", e);
