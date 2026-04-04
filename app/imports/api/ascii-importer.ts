@@ -1,5 +1,3 @@
-const matchChord = /^[A-H](#|b)?(?:maj|min|m|M|aug|dim|sus2|sus4|7|maj7|min7|m7|M7|add9|6|9|11|13)?(?:(#|b)\d+)?(?:(#|b)\d+)?(?:\/[A-G](#|b)?)?$/i
-
 export function convertToHoelibuSyntax(text: string) {
   const out = [];
   const lines: string[] = text.split(/\r?\n/);
@@ -7,6 +5,9 @@ export function convertToHoelibuSyntax(text: string) {
   let lastChordMap: Map<number, string> | null = null;
   for (const line of lines) {
     if (isChordLine(line)) {
+      if (lastChordMap != null) {
+        out.push(pair(lastChordMap, ""));
+      }
       lastChordMap = parseChords(line);
     } else {
       if (lastChordMap) {
@@ -20,6 +21,7 @@ export function convertToHoelibuSyntax(text: string) {
   return out.join("\n");
 }
 
+const matchChord = /^[A-H](#|b)?(?:maj|min|m|M|aug|dim|sus2|sus4|7|maj7|min7|m7|M7|add9|6|9|11|13)?(?:(#|b)\d+)?(?:(#|b)\d+)?(?:\/[A-G](#|b)?)?$/i
 function isChordLine(str: string) {
   const parts = str.trim().split(/\s+/);
   let numChords = 0,
@@ -47,16 +49,18 @@ function parseChords(str: string) {
 
 function pair(map: Map<number, string>, str: string) {
   let output = "";
-  if (map.size > str.length) {
+  if (str.length === 0 || map.size > str.length) {
     return Array.from(map.values())
-      .map((c) => `[${c}]`)
+      .map(c => `[${c}]`)
       .join("");
   }
   for (let i = 0; i < str.length; i++) {
     if (map.has(i)) {
       output += `[${map.get(i)}]`;
+      map.delete(i)
     }
     output += str.charAt(i);
   }
+  output += [...map.values()].map(chord => `[${chord}]`).join();
   return output;
 }
