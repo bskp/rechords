@@ -122,6 +122,52 @@ export const PdfSettings: FunctionComponent<{
     );
   };
 
+  const adjustAllFontSizes = (direction: 1 | -1) => {
+    const newFontSizes = { ...state.fontSizes };
+    (Object.keys(newFontSizes) as (keyof ITextSizes)[]).forEach((key) => {
+      newFontSizes[key] = Math.max(0, newFontSizes[key] + direction);
+    });
+    set({ ...state, fontSizes: newFontSizes });
+  };
+
+  const adjustAllFactors = (direction: 1 | -1) => {
+    const newFactors = { ...state.factors };
+    const step = direction > 0 ? 0.1 : -0.1;
+    (Object.keys(newFactors) as ("chord" | "text")[]).forEach((key) => {
+      newFactors[key] = Math.max(0.05, newFactors[key] + step);
+    });
+    set({ ...state, factors: newFactors });
+  };
+
+  const adjustAllLayoutSettings = (direction: 1 | -1) => {
+    const newLayoutSettings = { ...state.layoutSettings };
+    (Object.keys(newLayoutSettings) as (keyof ILayoutSettings)[]).forEach(
+      (key) => {
+        newLayoutSettings[key] = Math.max(0, newLayoutSettings[key] + direction * 0.5);
+      },
+    );
+    set({ ...state, layoutSettings: newLayoutSettings });
+  };
+
+  const resetFontSizes = () => {
+    const defaults = PdfViewerStates();
+    set({ ...state, fontSizes: defaults.fontSizes });
+  };
+
+  const resetFactors = () => {
+    const defaults = PdfViewerStates();
+    set({ ...state, factors: defaults.factors });
+  };
+
+  const resetLayoutSettings = () => {
+    const defaults = PdfViewerStates();
+    set({ ...state, layoutSettings: defaults.layoutSettings });
+  };
+
+  const resetAll = () => {
+    set(PdfViewerStates());
+  };
+
   const orientations: [string, ReactElement, string][] = [
     // eslint-disable-next-line react/jsx-key
     ["p", Portrait, "Portrait: 210mm x 297mm"],
@@ -233,11 +279,26 @@ export const PdfSettings: FunctionComponent<{
             ></ColumnSetter>
           </div>
 
-          <div className="title">Font Sizes</div>
+          <div className="title">
+            Font Sizes
+            <Button onClick={() => adjustAllFontSizes(-1)}>−</Button>
+            <Button onClick={() => adjustAllFontSizes(1)}>+</Button>
+            <Button onClick={() => resetFontSizes()}>Reset</Button>
+          </div>
           <div className="settingtable">{fontSizeHandles}</div>
-          <div className="title">Lineheight</div>
+          <div className="title">
+            Lineheight
+            <Button onClick={() => adjustAllFactors(-1)}>−</Button>
+            <Button onClick={() => adjustAllFactors(1)}>+</Button>
+            <Button onClick={() => resetFactors()}>Reset</Button>
+          </div>
           <div className="settingtable">{factors}</div>
-          <div className="title">Layout</div>
+          <div className="title">
+            Layout
+            <Button onClick={() => adjustAllLayoutSettings(-1)}>−</Button>
+            <Button onClick={() => adjustAllLayoutSettings(1)}>+</Button>
+            <Button onClick={() => resetLayoutSettings()}>Reset</Button>
+          </div>
           <div className="settingtable">{layoutHandles}</div>
 
           <div className="title">Lyrics</div>
@@ -256,6 +317,10 @@ export const PdfSettings: FunctionComponent<{
               </HlbCheckbox>
             </div>
             {/* todo: chords */}
+          </div>
+          <div className="title">Reset All</div>
+          <div className="setting">
+            <Button onClick={() => resetAll()}>Reset All Settings</Button>
           </div>
         </div>
       </div>
