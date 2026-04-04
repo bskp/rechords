@@ -1,0 +1,3 @@
+[D][Am][C][Cadd9][Em]
+[D][Am][C][Em]
+[D][Am][C][Em]
