@@ -32,7 +32,8 @@ Meteor.publish("revisions", function () {
 });
 
 Meteor.startup(async () => {
-  if (Meteor.users.find().count() === 0) {
+  const userCount = await Meteor.users.rawCollection().countDocuments();
+  if (userCount === 0) {
     Accounts.createUser({
       username: "le",
       email: "bitte_noch_anpassen@chabis.ruebli",

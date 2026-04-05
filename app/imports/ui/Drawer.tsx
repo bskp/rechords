@@ -1,7 +1,6 @@
-import { withRouter, RouteComponentProps } from "react-router-dom";
 import * as React from "react";
 
-interface DrawerProps extends RouteComponentProps, React.PropsWithChildren {
+interface DrawerProps extends React.PropsWithChildren {
   id?: string;
   onClick?: React.MouseEventHandler<HTMLElement>;
   className: string;
@@ -35,4 +34,4 @@ class Drawer extends React.Component<DrawerProps> {
   }
 }
 
-export default withRouter(Drawer);
+export default Drawer;

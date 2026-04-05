@@ -1,6 +1,5 @@
-import { generatePath } from "react-router-dom";
+import { generatePath, NavigateFunction } from "react-router-dom";
 import { Song } from "./collections";
-import { History } from "history";
 import { Meteor } from "meteor/meteor";
 
 export const userMayWrite = () => {
@@ -24,26 +23,24 @@ export const routePath = (view: View, song: Song) => {
   });
 };
 
-export const navigateTo = (history: History, view: View, song?: Song) => {
+export const navigateTo = (navigate: NavigateFunction, view: View, song?: Song) => {
   if (song === undefined) {
-    history.push(view);
+    navigate(view);
     return;
   }
 
-  history.push(routePath(view, song));
+  navigate(routePath(view, song));
 };
 
-export const navigateCallback = (history: History, view: View, song?: Song) => {
-  return () => navigateTo(history, view, song);
+export const navigateCallback = (navigate: NavigateFunction, view: View, song?: Song) => {
+  return () => navigateTo(navigate, view, song);
 };
 
 export const currentFocusOnInput = (e: KeyboardEvent) => {
   const tagName = (e.target as Element)?.tagName;
-  // Do not steal focus if already on <input>
   if (["INPUT", "TEXTAREA"].includes(tagName)) return true;
   if ((e.target as Element).getAttribute("contenteditable")) return true;
 
-  // Ignore special keys
   if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return true;
   return false;
 };

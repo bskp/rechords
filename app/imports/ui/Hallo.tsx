@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import { withRouter } from "react-router-dom";
-
 import "./halloStyle.less";
 
 import "moment/locale/de";
@@ -20,4 +18,4 @@ const Hallo = () => (
   </div>
 );
 
-export default withRouter(Hallo);
+export default Hallo;

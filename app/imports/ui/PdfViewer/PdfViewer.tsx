@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FunctionComponent, MouseEventHandler, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { ViewerProps } from "../Viewer";
 import { PdfObject } from "./PdfObject";
 import { IPdfViewerSettings, PdfSettings } from "./PdfSettings";
@@ -7,8 +7,8 @@ import { jsPdfGenerator } from "./PdfRenderer/PdfRenderer";
 import { debounce } from "underscore";
 import "./PdfViewerStyle.less";
 import Drawer from "../Drawer";
-import { navigateCallback, navigateTo, View } from "/imports/api/helpers";
-import { useHistory } from "react-router-dom";
+import { navigateCallback, View } from "/imports/api/helpers";
+import { useNavigate } from "react-router-dom";
 
 export const PdfViewer: FunctionComponent<ViewerProps> = (props) => {
   {
@@ -33,19 +33,13 @@ export const PdfViewer: FunctionComponent<ViewerProps> = (props) => {
     // let pdfBlob =
 
     const s = props.song;
-    const history = useHistory();
-
-    console.log(urls);
-    const handleContextMenu: MouseEventHandler = (event) => {
-      navigateTo(history, View.view, s);
-      event.preventDefault();
-    };
+    const navigate = useNavigate();
 
     if (s._id) {
       return (
         <>
           <Drawer
-            onClick={navigateCallback(history, View.view, s)}
+            onClick={navigateCallback(navigate, View.view, s)}
             className="list-colors"
           >
             <h1>Zurück</h1>

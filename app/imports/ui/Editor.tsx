@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FC, MouseEventHandler, useEffect, useState } from "react";
-import { Prompt, useHistory } from "react-router-dom";
+import { Prompt, useNavigate } from "react-router-dom";
 
 import Source from "./Source";
 import RevBrowser from "./RevBrowser";
@@ -27,7 +27,7 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
 
   const mdServer = props.song.text;
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleContextMenu: MouseEventHandler = (event) => {
     if (revisionsTab) {
@@ -54,9 +54,9 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
   // RouterPrompt will read the old state
   useEffect(() => {
     if (saved == SaveState.SUCCESS) {
-      navigateTo(history, View.view, props.song);
+      navigateTo(navigate, View.view, props.song);
     } else if (saved == SaveState.FAILED) {
-      navigateTo(history, View.home);
+      navigateTo(navigate, View.home);
     }
   }, [saved]);
 

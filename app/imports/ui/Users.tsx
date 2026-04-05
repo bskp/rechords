@@ -2,7 +2,7 @@ import * as React from "react";
 import { withTracker } from "meteor/react-meteor-data";
 
 import Table from "./Table";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+
 
 import moment from "moment";
 import "moment/locale/de";
@@ -149,7 +149,7 @@ class EditUser extends React.Component<
 
 type UsersProps = {
   users: Meteor.User[];
-} & RouteComponentProps;
+};
 
 class Users extends React.Component<UsersProps, { user?: Meteor.User }> {
   constructor(props: UsersProps) {
@@ -244,4 +244,4 @@ const wrapped = withTracker((props: UsersProps) => {
     users: Meteor.users.find().fetch(),
   };
 })(Users);
-export default withRouter(wrapped);
+export default wrapped;
