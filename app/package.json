@@ -9,7 +9,10 @@
     "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "test": "tsx imports/tests.spec.ts",
-    "test:watch": "tsx watch --include 'imports/api/**' imports/tests.spec.ts"
+    "test:watch": "tsx watch --include 'imports/api/**' imports/tests.spec.ts",
+    "test:e2e": "playwright test --ui",
+    "ci:test:e2e": "playwright test",
+    "ci:test": "npm test"
   },
   "dependencies": {
     "@babel/runtime": "^7.23.5",

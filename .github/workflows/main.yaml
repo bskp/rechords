@@ -8,8 +8,31 @@ on:
   workflow_dispatch:
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: cd ./app && npm ci
+
+      - name: Run Unit Tests
+        run: cd ./app && npm run ci:test
+
+      - name: Install Playwright browsers
+        run: cd ./app && npx playwright install --with-deps
+
+      - name: Run e2e tests
+        run: cd ./app && npm run ci:test:e2e
+
   build_and_deploy:
     runs-on: ubuntu-latest
+    needs: test
     environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
     steps:
       - name: Install SSH key
@@ -23,7 +46,7 @@ jobs:
       - name: Test ssh key to fail fast
         run: ssh ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} -i ~/.ssh/id_rsa_github_actor -t "pwd"
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Get production dependencies only
         run: cd ./app && npm ci --omit=dev
