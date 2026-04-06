@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
-
-const METEOR_PORT = 3000;
-const METEOR_URL = `http://localhost:${METEOR_PORT}`;
+import { METEOR_URL } from "./constants";
 
 test.describe("Smoke Tests", () => {
   test("homepage loads without console errors", async ({ page }) => {

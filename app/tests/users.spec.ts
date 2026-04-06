@@ -1,17 +1,5 @@
-import { test, expect, Page } from "@playwright/test";
-
-const METEOR_PORT = 3000;
-const METEOR_URL = `http://localhost:${METEOR_PORT}`;
-
-async function login(page: Page) {
-  await page.goto(`${METEOR_URL}/login`, { waitUntil: "networkidle" });
-  await page.locator("#one").fill("le");
-  await page.locator("#two").fill("coq");
-  await page.locator("#three").fill("est");
-  await page.locator("#four").fill("mort");
-  await page.locator("#four").press("Enter");
-  await expect(page.locator('[data-tooltip-content="Einstellungen"]')).toBeVisible({ timeout: 15000 });
-}
+import { test, expect } from "@playwright/test";
+import { METEOR_URL, login } from "./constants";
 
 test.describe("User Management (admin)", () => {
   test("login with test credentials", async ({ page }) => {

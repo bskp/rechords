@@ -1,20 +1,9 @@
 import { test, expect } from "@playwright/test";
-
-const METEOR_PORT = 3000;
-const METEOR_URL = `http://localhost:${METEOR_PORT}`;
+import { METEOR_URL, login } from "./constants";
 
 test.describe("Song Creation & Editing", () => {
   test.beforeEach(async ({ page }) => {
-    // Login first
-    await page.goto(`${METEOR_URL}/login`, { waitUntil: "networkidle" });
-    await page.locator("#one").fill("le");
-    await page.locator("#two").fill("coq");
-    await page.locator("#three").fill("est");
-    await page.locator("#four").fill("mort");
-    await page.locator("#four").press("Enter");
-
-    // Wait for login to complete - URL should change or settings icon appear
-    await expect(page.locator('[data-tooltip-content="Einstellungen"]')).toBeVisible({ timeout: 10000 });
+    await login(page);
   });
 
   test("create new song page loads", async ({ page }) => {
