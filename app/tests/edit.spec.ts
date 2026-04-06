@@ -9,7 +9,6 @@ test.describe("Song Creation & Editing", () => {
   test("create new song page loads", async ({ page }) => {
     await page.goto(`${METEOR_URL}/new`, { waitUntil: "networkidle" });
 
-    // Check content is visible (not a 404)
     await expect(page.locator(".content")).toBeVisible({ timeout: 10000 });
   });
 
@@ -18,7 +17,6 @@ test.describe("Song Creation & Editing", () => {
       waitUntil: "networkidle",
     });
 
-    // Check content is visible (not a 404)
     await expect(page.locator(".content")).toBeVisible({ timeout: 10000 });
   });
 });

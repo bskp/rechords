@@ -19,7 +19,6 @@ test.describe("Song Viewing", () => {
       waitUntil: "networkidle",
     });
 
-    // Check print view content is visible
     const content = page.locator("#chordsheet");
     await expect(content).toBeVisible();
   });
