@@ -4,8 +4,7 @@ import Songs, { Revisions } from "../imports/api/collections";
 import "../imports/api/methods.ts";
 
 Meteor.publish("songs", function () {
-  // todo: some kind of collection
-  if (Meteor.user()?.profile) {
+  if (this.userId) {
     return Songs.find({});
   } else {
     return Songs.find({
@@ -21,13 +20,10 @@ Meteor.publish("songs", function () {
 });
 
 Meteor.publish("revisions", function () {
-  if (Meteor.user()?.profile) {
+  if (this.userId) {
     return Revisions.find({});
   } else {
-    const songids = Songs.find(
-      { tags: "lizenz:frei" } /* , { fields: { _id: 1 } }*/,
-    ).fetch();
-    return Revisions.find({ of: { $in: songids.map((s) => s._id) } });
+    this.ready();
   }
 });
 
@@ -55,7 +51,7 @@ Meteor.startup(async () => {
   }
 });
 
-Meteor.publish(null, function () {
+Meteor.publish(null, async function () {
   if (!this.userId) {
     this.ready();
     return;
@@ -70,7 +66,8 @@ Meteor.publish(null, function () {
     },
   };
 
-  if (Meteor.user()?.profile.role == "admin")
+  const user = await Meteor.users.findOneAsync({ _id: this.userId });
+  if (user?.profile?.role == "admin")
     return Meteor.users.find({}, fields);
 
   return Meteor.users.find({ _id: this.userId }, fields);

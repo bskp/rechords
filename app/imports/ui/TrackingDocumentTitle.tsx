@@ -1,5 +1,4 @@
 import * as React from "react";
-import DocumentTitle from "react-document-title";
 import { useMatomo } from "@datapunt/matomo-tracker-react";
 import { useLocation } from "react-router-dom";
 import { Meteor } from "meteor/meteor";
@@ -9,12 +8,21 @@ interface TrackingDocumentTitleProps {
   track_as?: string;
 }
 
+const useDocumentTitle = (title: string) => {
+  React.useEffect(() => {
+    document.title = title;
+  }, [title]);
+};
+
 const TrackingDocumentTitle = ({
   title,
   track_as,
 }: TrackingDocumentTitleProps) => {
   const location = track_as || useLocation().pathname;
   const { trackPageView } = useMatomo();
+
+  useDocumentTitle(title);
+
   React.useEffect(() => {
     trackPageView({
       customDimensions: [
@@ -30,7 +38,7 @@ const TrackingDocumentTitle = ({
     });
   }, [location]);
 
-  return <DocumentTitle title={title} />;
+  return null;
 };
 
 export default TrackingDocumentTitle;

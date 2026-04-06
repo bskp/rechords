@@ -203,96 +203,114 @@ class App extends React.Component<AppProps, AppStates> {
               className={classnames({ noScroll: this.state.showMenu })}
             >
               <Routes>
-                <ErrorBoundary fallback={<NA400 />}>
-                  <Route
-                    path="/"
-                    element={
-                      <>
-                        <TrackingDocumentTitle title="Hölibu 3000" />
-                        {songList}
-                        <Hallo />
-                        <MenuBurger />
-                      </>
-                    }
-                  />
+                <Route
+                  path="/"
+                  element={
+                    <ErrorBoundary fallback={<NA400 />}>
+                      <TrackingDocumentTitle title="Hölibu 3000" />
+                      {songList}
+                      <Hallo />
+                      <MenuBurger />
+                    </ErrorBoundary>
+                  }
+                />
 
-                  <Route
-                    path="/login"
-                    element={
-                      <>
-                        <TrackingDocumentTitle
-                          title="Hölibu"
-                          track_as="/no-login"
-                        />
-                        <Login />
-                      </>
-                    }
-                  />
+                <Route
+                  path="/login"
+                  element={
+                    <ErrorBoundary fallback={<NA400 />}>
+                      <TrackingDocumentTitle
+                        title="Hölibu"
+                        track_as="/no-login"
+                      />
+                      <Login />
+                    </ErrorBoundary>
+                  }
+                />
 
-                  <Route
-                    path="/print/:author/:title"
-                    element={<PrintRoute getSong={getSong} />}
-                  />
-                  <Route
-                    path="/pdf/:author/:title"
-                    element={<PdfRoute getSong={getSong} />}
-                  />
+                <Route
+                  path="/print/:author/:title"
+                  element={
+                    <ErrorBoundary fallback={<NA400 />}>
+                      <PrintRoute getSong={getSong} />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/pdf/:author/:title"
+                  element={
+                    <ErrorBoundary fallback={<NA400 />}>
+                      <PdfRoute getSong={getSong} />
+                    </ErrorBoundary>
+                  }
+                />
 
-                  <Route
-                    path="/view/:author/:title"
-                    element={<ViewRoute getSong={getSong} songList={songList} />}
-                  />
+                <Route
+                  path="/view/:author/:title"
+                  element={
+                    <ErrorBoundary fallback={<NA400 />}>
+                      <ViewRoute getSong={getSong} songList={songList} />
+                    </ErrorBoundary>
+                  }
+                />
 
-                  <Route
-                    path="/edit/:author/:title"
-                    element={
-                      <WriterRoute>
+                <Route
+                  path="/edit/:author/:title"
+                  element={
+                    <WriterRoute>
+                      <ErrorBoundary fallback={<NA400 />}>
                         <EditRoute getSong={getSong} />
-                      </WriterRoute>
-                    }
-                  />
+                      </ErrorBoundary>
+                    </WriterRoute>
+                  }
+                />
 
-                  <Route
-                    path="/new"
-                    element={
-                      <WriterRoute>
+                <Route
+                  path="/new"
+                  element={
+                    <WriterRoute>
+                      <ErrorBoundary fallback={<NA400 />}>
                         <TrackingDocumentTitle title="Hölibu | Neues Lied" />
                         <Editor song={new Song(empty_song)} />
-                      </WriterRoute>
-                    }
-                  />
+                      </ErrorBoundary>
+                    </WriterRoute>
+                  }
+                />
 
-                  <Route
-                    path="/progress"
-                    element={
-                      <>
-                        <TrackingDocumentTitle title="Hölibu | Lieder-Fortschritt" />
+                <Route
+                  path="/progress"
+                  element={
+                    <ErrorBoundary fallback={<NA400 />}>
+                      <TrackingDocumentTitle title="Hölibu | Lieder-Fortschritt" />
+                      {songList}
+                      <ProgressContent songs={this.props.songs} revisionsLoading={this.props.revisionsLoading} />
+                      <MenuBurger />
+                    </ErrorBoundary>
+                  }
+                />
+
+                <Route
+                  path="/users"
+                  element={
+                    <AdminRoute>
+                      <ErrorBoundary fallback={<NA400 />}>
+                        <TrackingDocumentTitle title="Hölibu | Alle Benutzer" />
                         {songList}
-                        <ProgressContent songs={this.props.songs} revisionsLoading={this.props.revisionsLoading} />
+                        <Users users={Meteor.users.find().fetch()} />
                         <MenuBurger />
-                      </>
-                    }
-                  />
+                      </ErrorBoundary>
+                    </AdminRoute>
+                  }
+                />
 
-                  <Route
-                    path="/users"
-                    element={
-                      <AdminRoute>
-                        <>
-                          <TrackingDocumentTitle title="Hölibu | Alle Benutzer" />
-                          {songList}
-                          <Users users={Meteor.users.find().fetch()} />
-                          <MenuBurger />
-                        </>
-                      </AdminRoute>
-                    }
-                  />
-
-                  <Route
-                    path="/user"
-                    element={<UserRoute songList={songList} revisionsLoading={this.props.revisionsLoading} />}
-                  />
-                </ErrorBoundary>
+                <Route
+                  path="/user"
+                  element={
+                    <ErrorBoundary fallback={<NA400 />}>
+                      <UserRoute songList={songList} revisionsLoading={this.props.revisionsLoading} />
+                    </ErrorBoundary>
+                  }
+                />
               </Routes>
             </div>
           </BrowserRouter>
