@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: cd ./app && npm ci
 
+      - name: Install Meteor
+        run: curl https://install.meteor.com/ | sh
+
       - name: Run Unit Tests
         run: cd ./app && npm run ci:test
 
