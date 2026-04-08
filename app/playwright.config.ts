@@ -10,7 +10,7 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: "meteor --production --settings settings.json --exclude-archs web.browser.legacy --port 3333",
+    command: "meteor --once --production --settings settings.json --exclude-archs web.browser.legacy --port 3333",
     url: "http://localhost:3333",
     reuseExistingServer: !process.env.CI,
     gracefulShutdown: true,
