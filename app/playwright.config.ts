@@ -10,9 +10,15 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: "meteor --settings settings.json --exclude-archs web.browser.legacy --port 3333",
+    command: "meteor --production --settings settings.json --exclude-archs web.browser.legacy --port 3333",
     url: "http://localhost:3333",
     reuseExistingServer: !process.env.CI,
-    timeout: 300000,
+    gracefulShutdown: true,
+    timeout: 50000,
+    stdout: 'pipe',
+    stderr: 'pipe',
+    wait: {
+      stdout: /=> App running at: http:\/\/localhost:(?<my_server_port>\d+)\//
+    },
   },
 });

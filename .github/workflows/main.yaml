@@ -28,7 +28,7 @@ jobs:
         run: cd ./app && npm run ci:test
 
       - name: Install Playwright browsers
-        run: cd ./app && npx playwright install --with-deps
+        run: cd ./app && npx playwright install --with-deps chromium
 
       - name: Run e2e tests
         run: cd ./app && npm run ci:test:e2e

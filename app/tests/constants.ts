@@ -1,7 +1,7 @@
 import { Page, expect } from "@playwright/test";
 
 export const E2E_TIMEOUT = parseInt(process.env.E2E_TIMEOUT || "2000", 10);
-export const METEOR_PORT = 3000;
+export const METEOR_PORT = 3333;
 export const METEOR_URL = `http://localhost:${METEOR_PORT}`;
 
 export async function login(page: Page) {
