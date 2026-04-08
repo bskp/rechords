@@ -9,7 +9,7 @@ test.describe("Song Creation & Editing", () => {
   test("create new song page loads", async ({ page }) => {
     await page.goto(`${METEOR_URL}/new`, { waitUntil: "networkidle" });
 
-    await expect(page.locator(".content")).toBeVisible({ timeout: E2E_TIMEOUT });
+    await expect(page.locator("textarea")).toBeVisible({ timeout: E2E_TIMEOUT });
   });
 
   test("edit existing song page loads", async ({ page }) => {
@@ -17,6 +17,7 @@ test.describe("Song Creation & Editing", () => {
       waitUntil: "networkidle",
     });
 
-    await expect(page.locator(".content")).toBeVisible({ timeout: E2E_TIMEOUT });
+    await expect(page.locator("textarea")).toBeVisible({ timeout: E2E_TIMEOUT });
   });
+
 });

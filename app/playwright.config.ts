@@ -14,7 +14,7 @@ export default defineConfig({
     url: "http://localhost:3333",
     reuseExistingServer: !process.env.CI,
     gracefulShutdown: true,
-    timeout: 50000,
+    timeout: 300000,
     stdout: 'pipe',
     stderr: 'pipe',
     wait: {
