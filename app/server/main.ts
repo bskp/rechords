@@ -40,6 +40,18 @@ Meteor.startup(async () => {
       profile: { name: "Housi", role: "admin" },
     });
   }
+
+  if (Songs.find().count() === 0) {
+    try {
+      const seedData = JSON.parse(Assets.getText("seed-songs.json"));
+      seedData.forEach((song: any) => {
+        console.log(Meteor.call('saveSong', song))
+      });
+      console.log(`Seeded ${seedData.length} public domain songs`);
+    } catch (e) {
+      console.log("No seed songs found:", e);
+    }
+  }
 });
 
 Meteor.publish(null, function () {

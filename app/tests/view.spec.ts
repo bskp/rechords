@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { METEOR_URL } from "./constants";
+import { METEOR_URL, E2E_TIMEOUT } from "./constants";
 
 test.describe("Song Viewing", () => {
   test("view a song", async ({ page }) => {
@@ -8,10 +8,10 @@ test.describe("Song Viewing", () => {
     });
 
     const title = page.locator("#chordsheet h1").first();
-    await expect(title).toBeVisible({ timeout: 10000 });
+    await expect(title).toBeVisible({ timeout: E2E_TIMEOUT });
 
     const content = page.locator("#chordsheetContent");
-    await expect(content).toBeVisible({ timeout: 10000 });
+    await expect(content).toBeVisible({ timeout: E2E_TIMEOUT });
   });
 
   test("print view loads", async ({ page }) => {

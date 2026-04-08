@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { METEOR_URL, login } from "./constants";
+import { METEOR_URL, login, E2E_TIMEOUT } from "./constants";
 
 test.describe("Song Creation & Editing", () => {
   test.beforeEach(async ({ page }) => {
@@ -9,7 +9,7 @@ test.describe("Song Creation & Editing", () => {
   test("create new song page loads", async ({ page }) => {
     await page.goto(`${METEOR_URL}/new`, { waitUntil: "networkidle" });
 
-    await expect(page.locator(".content")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(".content")).toBeVisible({ timeout: E2E_TIMEOUT });
   });
 
   test("edit existing song page loads", async ({ page }) => {
@@ -17,6 +17,6 @@ test.describe("Song Creation & Editing", () => {
       waitUntil: "networkidle",
     });
 
-    await expect(page.locator(".content")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(".content")).toBeVisible({ timeout: E2E_TIMEOUT });
   });
 });

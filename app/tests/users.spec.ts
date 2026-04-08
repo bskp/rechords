@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { METEOR_URL, login } from "./constants";
+import { METEOR_URL, login, E2E_TIMEOUT } from "./constants";
 
 test.describe("User Management (admin)", () => {
   test("login with test credentials", async ({ page }) => {
@@ -10,7 +10,7 @@ test.describe("User Management (admin)", () => {
 
     await login(page);
 
-    await expect(page).toHaveURL(/\/$|\/home/, { timeout: 10000 });
+    await expect(page).toHaveURL(/\/$|\/home/, { timeout: E2E_TIMEOUT });
 
     const criticalErrors = errors.filter(
       (e) =>
@@ -28,6 +28,6 @@ test.describe("User Management (admin)", () => {
 
     await page.goto(`${METEOR_URL}/users`, { waitUntil: "networkidle" });
 
-    await expect(page.locator(".content")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(".content")).toBeVisible({ timeout: E2E_TIMEOUT });
   });
 });
