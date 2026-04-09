@@ -31,8 +31,40 @@ If everything is successfull you should see the following
 ...
 ```
 
-# Running showdown tests
+# Local Development
 
+## Executing Tests
+
+### Unit Tests
+
+So far most unit tests are for the showdown parser and a few util classes.
+Behaviour of the meteor / react components is not really unit tested (yet?) but okayish handled by the playwright tests
+
+```bash
+npm test
 ```
-npm run test-showdown
+
+
+### E2E Tests
+
+To run e2e tests with playwright gui use:
+
+```bash
+npm run test:e2e
 ```
+
+And for executing playwright tests without ui, use:
+```bash
+npm run ci:test:e2e
+```
+
+
+To test as CI would (fresh clone of current branch in isolated folder):
+
+```bash
+./run-e2e.sh
+```
+
+This will locally clone your current branch into test-instances. 
+It helps you to quickly test against a clean DB without the need
+to reset your dev DB in the app folder.

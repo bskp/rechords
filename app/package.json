@@ -10,8 +10,8 @@
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "test": "tsx imports/tests.spec.ts",
     "test:watch": "tsx watch --include 'imports/api/**' imports/tests.spec.ts",
-    "test:e2e": "playwright test --ui",
-    "ci:test:e2e": "playwright test",
+    "test:e2e": "playwright install --with-deps chromium && playwright test --ui",
+    "ci:test:e2e": "playwright install --with-deps chromium && playwright test",
     "ci:test": "npm test"
   },
   "dependencies": {
