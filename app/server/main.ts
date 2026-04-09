@@ -40,10 +40,10 @@ Meteor.startup(async () => {
 
   if ((await Songs.find({}).countAsync()) === 0) {
     try {
-      const seedData = JSON.parse(Assets.getText("seed-songs.json"));
-      seedData.forEach((song: any) => {
-        console.log(Meteor.call('saveSong', song))
-      });
+      const seedData = JSON.parse(await Assets.getTextAsync("seed-songs.json"));
+      for( const song of seedData) {
+        console.log(await Meteor.call('saveSong', song))
+      }
       console.log(`Seeded ${seedData.length} public domain songs`);
     } catch (e) {
       console.log("No seed songs found:", e);
