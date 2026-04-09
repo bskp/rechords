@@ -67,7 +67,7 @@ Meteor.methods({
         storedSong?.parsed_rmd_version != rmd_version &&
         song._id !== undefined
       ) {
-        Songs.update(song._id, song);
+        await Songs.updateAsync(song._id, song);
       }
       return true; // early return, don't create revision
     }
@@ -82,7 +82,7 @@ Meteor.methods({
 
         return false; // early return, don't create revision
       } else {
-        Songs.update(song._id, song);
+        Songs.updateAsync(song._id, song);
       }
     } else {
       delete song._id;
