@@ -177,11 +177,11 @@ class User extends React.Component<
         </h2>
 
         <p>
-          <Link to="progress" className="btn">
+          <Link to="/progress" className="btn">
             Lieder-Übersicht
           </Link>
           {admin ? (
-            <Link to="users" className="btn">
+            <Link to="/users" className="btn">
               Benutzerverwaltung
             </Link>
           ) : undefined}

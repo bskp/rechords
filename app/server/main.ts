@@ -38,7 +38,7 @@ Meteor.startup(async () => {
     });
   }
 
-  if (Songs.find().count() === 0) {
+  if ((await Songs.find({}).countAsync()) === 0) {
     try {
       const seedData = JSON.parse(Assets.getText("seed-songs.json"));
       seedData.forEach((song: any) => {

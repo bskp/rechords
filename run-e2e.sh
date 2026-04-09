@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
+
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 INSTANCE_DIR="test-instances/test_${TIMESTAMP}"
 
