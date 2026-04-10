@@ -1,16 +1,27 @@
 import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
-import Songs, { Revisions } from "../imports/api/collections";
+import Songs, { Songbooks, Revisions, Song } from "../imports/api/collections";
 import "../imports/api/methods.ts";
 
+Meteor.publish("songbooks", () => {
+  return Songbooks.find({});
+});
+
 Meteor.publish("songs", function () {
-  // todo: some kind of collection
-  if (Meteor.user()?.profile) {
-    return Songs.find({});
-  } else {
+  const allowedSongbooks =
+    Meteor.user() === undefined
+      ? []
+      : Songbooks.find({ owners: Meteor.user()!._id }).map(
+          (songbook) => songbook.name_,
+        );
+
+  allowedSongbooks.push("lizenz-frei");
+
+  if (!["admin", "writer"].includes(Meteor.user()?.profile.role)) {
     return Songs.find({
+      tags: "fini",
       $or: [
-        { tags: "lizenz:frei" },
+        { songbook_: { $in: allowedSongbooks } },
         {
           author_: "meta",
           title: /^[^!]/i,
@@ -18,6 +29,16 @@ Meteor.publish("songs", function () {
       ],
     });
   }
+
+  return Songs.find({
+    $or: [
+      { songbook_: { $in: allowedSongbooks } },
+      {
+        author_: "meta",
+        title: /^[^!]/i,
+      },
+    ],
+  });
 });
 
 Meteor.publish("revisions", function () {
@@ -32,6 +53,36 @@ Meteor.publish("revisions", function () {
 });
 
 Meteor.startup(async () => {
+  if (Songbooks.find().count() === 0) {
+    if (Meteor.isServer) {
+      Songbooks.createIndex({ name_: 1 }, { unique: true });
+    }
+    const frei = "lizenz-frei";
+    Songbooks.insert({
+      name: "Lizenz Frei",
+      name_: frei,
+      owners: [],
+      reader_can_invite: true,
+    });
+    Songs.update(
+      { tags: "lizenz:frei" },
+      { $set: { songbook_: frei } },
+      { multi: true },
+    );
+    const hoelibu = "hoelibu";
+    Songbooks.insert({
+      name: "Hoelibu",
+      name_: hoelibu,
+      owners: [],
+      reader_can_invite: true,
+    });
+    Songs.update(
+      { songbook_: { $exists: false } },
+      { $set: { songbook_: hoelibu } },
+      { multi: true },
+    );
+  }
+
   if (Meteor.users.find().count() === 0) {
     Accounts.createUser({
       username: "le",

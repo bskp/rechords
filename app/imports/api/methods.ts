@@ -1,4 +1,10 @@
-import Songs, { Song, Revisions, rmd_version } from "./collections";
+import Songs, {
+  Song,
+  Revisions,
+  rmd_version,
+  Songbook,
+  Songbooks,
+} from "./collections";
 import { check } from "meteor/check";
 import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
@@ -6,6 +12,16 @@ import { Mongo } from "meteor/mongo";
 import OptionalId = Mongo.OptionalId;
 
 Meteor.methods({
+  allowUser(collection_slug: string, user: Meteor.User): boolean {
+    const collection = Songbooks.findOne({ name_: collection_slug });
+    if (!collection || collection._id === undefined) {
+      return false;
+    }
+    collection.owners.push(user._id);
+    Songbooks.update(collection._id, collection);
+    return true;
+  },
+
   saveUser(user: Meteor.User, new_secret: string) {
     const syncUpdate = Meteor.wrapAsync(Meteor.users.update, Meteor.users);
 

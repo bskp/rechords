@@ -36,3 +36,29 @@ If everything is successfull you should see the following
 ```
 npm run test-showdown
 ```
+
+# Collections [WIP]
+
+
+```mermaid
+erDiagram
+    user 
+    
+    collection 
+    song 
+
+    user ||--o{ collection : "is allowed in"
+    collection ||--o{ song : "owns"
+
+```
+
+## Slugs
+
+`/view/:collection/:artist/:title` 
+
+or
+
+`/c/:collection/view/:artist/:title`
+
+eher erstere Variante
+

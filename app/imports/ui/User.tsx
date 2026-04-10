@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import { withRouter, Link } from "react-router-dom";
-import Songs, { Revisions, Song } from "../api/collections";
+import { Link, withRouter } from "react-router-dom";
+import Songs, { Revisions, Song, Songbooks } from "../api/collections";
 
 import "moment/locale/de";
 
@@ -9,6 +9,7 @@ import { Select } from "./Users";
 import { routePath, View } from "../api/helpers";
 import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
+import { MdPerson } from "react-icons/md";
 
 class User extends React.Component<
   { user: Meteor.User; revisionsLoading: boolean },
@@ -168,6 +169,8 @@ class User extends React.Component<
       { value: "dark", label: "Nacht" },
     ];
 
+    const allowedCollections = Songbooks.find({});
+
     return (
       <div className="content" id="user">
         <h1>Benutzer</h1>
@@ -185,11 +188,23 @@ class User extends React.Component<
               Benutzerverwaltung
             </Link>
           ) : undefined}
-          <a onClick={(e) => Accounts.logout()} className="btn">
+          <a onClick={() => Accounts.logout()} className="btn">
             Abmelden
           </a>
         </p>
         <br />
+
+        <h2>Sammlungen</h2>
+        <ul>
+          {allowedCollections.map((collection) => (
+            <li>
+              {collection.name} (
+              {Songs.find({ songbook_: collection.name_ }).count()} Lieder,{" "}
+              {collection.owners.length}
+              <MdPerson />)
+            </li>
+          ))}
+        </ul>
 
         <h2>Einstellungen</h2>
 
