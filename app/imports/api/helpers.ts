@@ -23,7 +23,11 @@ export const routePath = (view: View, song: Song) => {
   });
 };
 
-export const navigateTo = (navigate: NavigateFunction, view: View, song?: Song) => {
+export const navigateTo = (
+  navigate: NavigateFunction,
+  view: View,
+  song?: Song,
+) => {
   if (song === undefined) {
     navigate(view);
     return;
@@ -32,7 +36,11 @@ export const navigateTo = (navigate: NavigateFunction, view: View, song?: Song) 
   navigate(routePath(view, song));
 };
 
-export const navigateCallback = (navigate: NavigateFunction, view: View, song?: Song) => {
+export const navigateCallback = (
+  navigate: NavigateFunction,
+  view: View,
+  song?: Song,
+) => {
   return () => navigateTo(navigate, view, song);
 };
 

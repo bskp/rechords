@@ -143,7 +143,10 @@ export const PdfSettings: FunctionComponent<{
     const newLayoutSettings = { ...state.layoutSettings };
     (Object.keys(newLayoutSettings) as (keyof ILayoutSettings)[]).forEach(
       (key) => {
-        newLayoutSettings[key] = Math.max(0, newLayoutSettings[key] + direction * 0.5);
+        newLayoutSettings[key] = Math.max(
+          0,
+          newLayoutSettings[key] + direction * 0.5,
+        );
       },
     );
     set({ ...state, layoutSettings: newLayoutSettings });

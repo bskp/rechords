@@ -15,10 +15,10 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     gracefulShutdown: true,
     timeout: 300000,
-    stdout: 'pipe',
-    stderr: 'pipe',
+    stdout: "pipe",
+    stderr: "pipe",
     wait: {
-      stdout: /=> App running at: http:\/\/localhost:(?<my_server_port>\d+)\//
+      stdout: /=> App running at: http:\/\/localhost:(?<my_server_port>\d+)\//,
     },
   },
 });

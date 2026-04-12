@@ -17,7 +17,7 @@ test.describe("User Management (admin)", () => {
         !e.includes("Warning:") &&
         !e.includes("deprecated") &&
         !e.includes("meteor-node-stubs") &&
-        !e.includes("util._extend")
+        !e.includes("util._extend"),
     );
 
     expect(criticalErrors).toHaveLength(0);
@@ -28,6 +28,8 @@ test.describe("User Management (admin)", () => {
 
     await page.goto(`${METEOR_URL}/users`, { waitUntil: "networkidle" });
 
-    await expect(page.locator(".content")).toBeVisible({ timeout: E2E_TIMEOUT });
+    await expect(page.locator(".content")).toBeVisible({
+      timeout: E2E_TIMEOUT,
+    });
   });
 });

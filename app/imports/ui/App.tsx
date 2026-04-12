@@ -283,7 +283,10 @@ class App extends React.Component<AppProps, AppStates> {
                     <ErrorBoundary fallback={<NA400 />}>
                       <TrackingDocumentTitle title="Hölibu | Lieder-Fortschritt" />
                       {songList}
-                      <ProgressContent songs={this.props.songs} revisionsLoading={this.props.revisionsLoading} />
+                      <ProgressContent
+                        songs={this.props.songs}
+                        revisionsLoading={this.props.revisionsLoading}
+                      />
                       <MenuBurger />
                     </ErrorBoundary>
                   }
@@ -307,7 +310,10 @@ class App extends React.Component<AppProps, AppStates> {
                   path="/user"
                   element={
                     <ErrorBoundary fallback={<NA400 />}>
-                      <UserRoute songList={songList} revisionsLoading={this.props.revisionsLoading} />
+                      <UserRoute
+                        songList={songList}
+                        revisionsLoading={this.props.revisionsLoading}
+                      />
                     </ErrorBoundary>
                   }
                 />
@@ -320,7 +326,11 @@ class App extends React.Component<AppProps, AppStates> {
   }
 }
 
-function PrintRoute({ getSong }: { getSong: (p: { title: string; author: string }) => Song | undefined }) {
+function PrintRoute({
+  getSong,
+}: {
+  getSong: (p: { title: string; author: string }) => Song | undefined;
+}) {
   const params = useParams<{ author: string; title: string }>();
   const song = getSong(params);
   if (song === undefined) return <>{nA404}</>;
@@ -334,7 +344,11 @@ function PrintRoute({ getSong }: { getSong: (p: { title: string; author: string 
   );
 }
 
-function PdfRoute({ getSong }: { getSong: (p: { title: string; author: string }) => Song | undefined }) {
+function PdfRoute({
+  getSong,
+}: {
+  getSong: (p: { title: string; author: string }) => Song | undefined;
+}) {
   const params = useParams<{ author: string; title: string }>();
   const song = getSong(params);
   if (song === undefined) return <>{nA404}</>;
@@ -348,7 +362,13 @@ function PdfRoute({ getSong }: { getSong: (p: { title: string; author: string })
   );
 }
 
-function ViewRoute({ getSong, songList }: { getSong: (p: { title: string; author: string }) => Song | undefined; songList: React.ReactNode }) {
+function ViewRoute({
+  getSong,
+  songList,
+}: {
+  getSong: (p: { title: string; author: string }) => Song | undefined;
+  songList: React.ReactNode;
+}) {
   const params = useParams<{ author: string; title: string }>();
   const song = getSong(params);
   if (song === undefined) return <>{nA404}</>;
@@ -363,7 +383,11 @@ function ViewRoute({ getSong, songList }: { getSong: (p: { title: string; author
   );
 }
 
-function EditRoute({ getSong }: { getSong: (p: { title: string; author: string }) => Song | undefined }) {
+function EditRoute({
+  getSong,
+}: {
+  getSong: (p: { title: string; author: string }) => Song | undefined;
+}) {
   const params = useParams<{ author: string; title: string }>();
   const song = getSong(params);
   if (song === undefined) return <>{nA404}</>;
@@ -377,29 +401,35 @@ function EditRoute({ getSong }: { getSong: (p: { title: string; author: string }
   );
 }
 
-function ProgressContent({ songs, revisionsLoading }: { songs: Song[]; revisionsLoading: boolean }) {
+function ProgressContent({
+  songs,
+  revisionsLoading,
+}: {
+  songs: Song[];
+  revisionsLoading: boolean;
+}) {
   const content = revisionsLoading ? (
-    <div className="content chordsheet-colors">
-      Lade Lieder-Fortschritt…
-    </div>
+    <div className="content chordsheet-colors">Lade Lieder-Fortschritt…</div>
   ) : (
     <Progress songs={songs} />
   );
   return content;
 }
 
-function UserRoute({ songList, revisionsLoading }: { songList: React.ReactNode; revisionsLoading: boolean }) {
+function UserRoute({
+  songList,
+  revisionsLoading,
+}: {
+  songList: React.ReactNode;
+  revisionsLoading: boolean;
+}) {
   const user = Meteor.user();
   if (!user) return <Navigate to="/" />;
   return (
     <>
       {songList}
       <TrackingDocumentTitle title={"Hölibu | " + user.profile.name} />
-      <User
-        user={user}
-        key={user._id}
-        revisionsLoading={revisionsLoading}
-      />
+      <User user={user} key={user._id} revisionsLoading={revisionsLoading} />
       <MenuBurger />
     </>
   );

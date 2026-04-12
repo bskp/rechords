@@ -3,7 +3,6 @@ import { withTracker } from "meteor/react-meteor-data";
 
 import Table from "./Table";
 
-
 import moment from "moment";
 import "moment/locale/de";
 import { Meteor } from "meteor/meteor";
