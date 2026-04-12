@@ -316,7 +316,7 @@ class App extends React.Component<AppProps, AppStates> {
                       <ErrorBoundary fallback={<NA400 />}>
                         <TrackingDocumentTitle title="Hölibu | Alle Benutzer" />
                         {songList}
-                        <Users users={Meteor.users.find().fetch()} />
+                        <Users />
                         <MenuBurger />
                       </ErrorBoundary>
                     </AdminRoute>
