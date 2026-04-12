@@ -18,9 +18,17 @@ test.describe("Song Creation & Editing", () => {
     await page.goto(`${METEOR_URL}/edit/emil-luckhard/die-internationale`, {
       waitUntil: "networkidle",
     });
-    await expect(page.locator("textarea")).toBeVisible({
+    const textarea = (page.locator("textarea")).first();
+
+    await expect(textarea).toBeVisible({
       timeout: E2E_TIMEOUT,
     });
+
+    const content = await textarea.inputValue();
+
+    expect(content).toContain("Die Internationale");
+    expect(content).toContain("Emil Luckhard");
+    expect(content).toContain("Wacht [G]auf, Verdammte");
   });
 
   test("save new song via right-click", async ({ page }) => {
