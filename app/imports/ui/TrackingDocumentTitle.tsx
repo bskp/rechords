@@ -32,12 +32,15 @@ export const usePageTracking = (title: string, track_as?: string) => {
 };
 
 /**
- * Just a wrapper element in order to use in Route Tsx 
- * 
+ * Just a wrapper element in order to use in Route Tsx
+ *
  * could probably be used directly as a hook but one step at the time
- * @returns 
+ * @returns
  */
-const TrackingDocumentTitle = ({ title, track_as }: TrackingDocumentTitleProps) => {
+const TrackingDocumentTitle = ({
+  title,
+  track_as,
+}: TrackingDocumentTitleProps) => {
   usePageTracking(title, track_as);
   return null;
 };

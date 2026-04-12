@@ -135,6 +135,7 @@ const MenuBurger = () => {
   );
 };
 
+// App component - represents the whole app
 class App extends React.Component<AppProps, AppStates> {
   constructor(props: AppProps) {
     super(props);
@@ -167,8 +168,11 @@ class App extends React.Component<AppProps, AppStates> {
     const theme =
       (themeDark ? "dark" : "light") +
       (this.state.themeTransition ? " transition" : "");
+    // Setting class on body -> used for background color of body
     document.documentElement.classList.value = theme;
 
+    // If any song's title changes, the key for the <List /> changes and flushes all states.
+    // This is a hack to easily update all internal "caching states" (matches etc.)
     const list_key = this.props.songs.map((s) => s.title).join("-");
 
     if (this.props.songsLoading) {
