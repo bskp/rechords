@@ -21,7 +21,7 @@ const nodeText = (node) => {
   return node.children.reduce(
     (out, child) =>
       (out += child.type == "text" ? child.data : nodeText(child)),
-    ""
+    "",
   );
 };
 
@@ -99,7 +99,7 @@ export default (props: P) => {
       (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey)
     ) {
       const line = (event.target as HTMLElement).closest(
-        "span.line"
+        "span.line",
       ) as HTMLSpanElement;
       const selectedLine = Number.parseInt(line.dataset.lineCnt ?? "", 10);
       if (event.shiftKey) {
@@ -164,7 +164,7 @@ export default (props: P) => {
       node,
       guessedChord + "|",
       offset,
-      skipWhitespace
+      skipWhitespace,
     );
     props.updateHandler(md);
   };
@@ -199,7 +199,7 @@ export default (props: P) => {
 
   const offsetChordPosition = (
     event: React.SyntheticEvent<HTMLElement>,
-    offset: number
+    offset: number,
   ) => {
     console.log("offsetchorspos");
     event.currentTarget.removeAttribute("data-initial");
@@ -282,7 +282,7 @@ export default (props: P) => {
     segment: Element,
     chord: string,
     offset = 0,
-    skipWhitespace = true
+    skipWhitespace = true,
   ) => {
     const pos = locate(segment);
 
@@ -453,7 +453,7 @@ export default (props: P) => {
           "class" in node.attribs &&
           "line" == node.attribs.class &&
           !node.parent?.parent?.parent?.attribs?.class?.includes(
-            "inlineReference"
+            "inlineReference",
           )
         ) {
           // Fakey syllable to allow appended chords
@@ -546,12 +546,12 @@ export default (props: P) => {
 
   const [coords, setCoords] = useState({ x: 0, y: 0, h: 0 });
   const handleMouseMove = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
   ) => {
     // next line
 
     const line = (event.target as HTMLElement).closest(
-      "span.line"
+      "span.line",
     ) as HTMLSpanElement;
 
     if (line) {

@@ -36,13 +36,10 @@ Meteor.startup(async () => {
       password: "coq-est-mort",
       profile: { name: "Housi", role: "admin" },
     });
-  }
-
-  if ((await Songs.find({}).countAsync()) === 0) {
     try {
       const seedData = JSON.parse(await Assets.getTextAsync("seed-songs.json"));
-      for( const song of seedData) {
-        console.log(await Meteor.call('saveSong', song))
+      for (const song of seedData) {
+        console.log(await Meteor.call("saveSong", song));
       }
       console.log(`Seeded ${seedData.length} public domain songs`);
     } catch (e) {
@@ -67,8 +64,7 @@ Meteor.publish(null, async function () {
   };
 
   const user = await Meteor.users.findOneAsync({ _id: this.userId });
-  if (user?.profile?.role == "admin")
-    return Meteor.users.find({}, fields);
+  if (user?.profile?.role == "admin") return Meteor.users.find({}, fields);
 
   return Meteor.users.find({ _id: this.userId }, fields);
 });

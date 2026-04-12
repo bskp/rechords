@@ -39,7 +39,7 @@ export const YtInter: FC<{
             anchors,
             time,
             (l) => l[1],
-            (l) => l[0]
+            (l) => l[0],
           );
           onLineChange(estimatedLine);
         }
@@ -55,12 +55,12 @@ export const YtInter: FC<{
     }
 
     internalPlayer.getDuration().then((duration) => {
-      const anchors = [[0, -1], ...anchors_, [maxLine+1,duration+1]];
+      const anchors = [[0, -1], ...anchors_, [maxLine + 1, duration + 1]];
       const estimatedTime = linInterpolation(
         anchors,
         currentLine.selectedLine,
         (l) => l[0],
-        (l) => l[1]
+        (l) => l[1],
       );
       yPlayer.current?.internalPlayer?.seekTo(estimatedTime ?? 0, true);
     });
@@ -84,8 +84,8 @@ export function extractData(data: string): {
 } {
   const [ytId, ..._anchors] = data.split("\n");
   const anchors = _anchors
-  .map((line) => line.split(/\s+/).map(parseFloat))
-  .filter(line => line.every(Number.isFinite)) ;
+    .map((line) => line.split(/\s+/).map(parseFloat))
+    .filter((line) => line.every(Number.isFinite));
   // @ts-ignore
   return { ytId, anchors };
 }
@@ -93,7 +93,7 @@ export function extractData(data: string): {
 export function appendTime(
   md: string,
   lastTime: number,
-  selectedLine: number
+  selectedLine: number,
 ): string | undefined {
   const rgx = /~~~yt\n(.*)\n~~~/s;
   const match = md.match(rgx);

@@ -95,7 +95,7 @@
       flex-flow: row wrap;
       align-items: center;
 
-      &:has(input[type=radio]) {
+      &:has(input[type="radio"]) {
         gap: 1em;
 
         svg {
@@ -263,7 +263,6 @@
     }
   }
 
-
   ///////// icons /////////////////////////////////////////////
 
   input[type="radio"] {
@@ -279,9 +278,12 @@
       }
     }
 
-    &:checked  {
+    &:checked {
       & + label {
-        background-color: light-dark(var(--gray-light), var(--gray-dark)) !important;
+        background-color: light-dark(
+          var(--gray-light),
+          var(--gray-dark)
+        ) !important;
 
         &:hover {
           svg {

@@ -1,9 +1,6 @@
 import * as React from "react";
 import { useContext, useMemo, useState } from "react";
-import {
-  NavLink,
-  useNavigate,
-} from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Song } from "../../api/collections";
 
 import Drawer from "../Drawer";

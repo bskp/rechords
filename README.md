@@ -15,7 +15,7 @@ A Songbook Wiki. Key features:
 # Getting Started
 
 * Install Meteor https://docs.meteor.com/install.html
-* make sure you are using an adequate node version ( 10 - 14 ) -> install nvm otherwise to switch when needed
+* make sure you are using Node.js 24 (use nvm to switch if needed)
 
 * change to app folder, install npm packages, start the App
 
@@ -32,6 +32,11 @@ If everything is successfull you should see the following
 ```
 
 # Local Development
+
+Run before committing:
+```bash
+npm run pretty:write      # Format code with Prettier
+```
 
 ## Executing Tests
 
