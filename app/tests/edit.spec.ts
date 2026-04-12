@@ -18,7 +18,7 @@ test.describe("Song Creation & Editing", () => {
     await page.goto(`${METEOR_URL}/edit/emil-luckhard/die-internationale`, {
       waitUntil: "networkidle",
     });
-    const textarea = (page.locator("textarea")).first();
+    const textarea = page.locator("textarea").first();
 
     await expect(textarea).toBeVisible({
       timeout: E2E_TIMEOUT,
