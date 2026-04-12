@@ -8,22 +8,14 @@ interface TrackingDocumentTitleProps {
   track_as?: string;
 }
 
-const useDocumentTitle = (title: string) => {
+export const usePageTracking = (title: string, track_as?: string) => {
+  const location = useLocation();
+  const { trackPageView } = useMatomo();
+  const pathname = track_as || location.pathname;
+
   React.useEffect(() => {
     document.title = title;
-  }, [title]);
-};
 
-const TrackingDocumentTitle = ({
-  title,
-  track_as,
-}: TrackingDocumentTitleProps) => {
-  const location = track_as || useLocation().pathname;
-  const { trackPageView } = useMatomo();
-
-  useDocumentTitle(title);
-
-  React.useEffect(() => {
     trackPageView({
       customDimensions: [
         {
@@ -36,8 +28,17 @@ const TrackingDocumentTitle = ({
         },
       ],
     });
-  }, [location]);
+  }, [pathname, title]);
+};
 
+/**
+ * Just a wrapper element in order to use in Route Tsx 
+ * 
+ * could probably be used directly as a hook but one step at the time
+ * @returns 
+ */
+const TrackingDocumentTitle = ({ title, track_as }: TrackingDocumentTitleProps) => {
+  usePageTracking(title, track_as);
   return null;
 };
 

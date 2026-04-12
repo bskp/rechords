@@ -36,9 +36,6 @@ Meteor.startup(async () => {
       password: "coq-est-mort",
       profile: { name: "Housi", role: "admin" },
     });
-  }
-
-  if ((await Songs.find({}).countAsync()) === 0) {
     try {
       const seedData = JSON.parse(await Assets.getTextAsync("seed-songs.json"));
       for (const song of seedData) {

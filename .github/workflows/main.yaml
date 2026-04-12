@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: cd ./app && npm ci
 
+      - name: Check formatting
+        run: cd ./app && npm run ci:formatting
+
       - name: Install Meteor
         run: curl https://install.meteor.com/ | sh
 
