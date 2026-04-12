@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,6 +24,19 @@ jobs:
       - name: Check formatting
         run: cd ./app && npm run ci:formatting
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: cd ./app && npm ci
+
       - name: Install Meteor
         run: curl https://install.meteor.com/ | sh
 
@@ -35,7 +48,7 @@ jobs:
 
   build_and_deploy:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [lint, test]
     environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
     steps:
       - name: Install SSH key
