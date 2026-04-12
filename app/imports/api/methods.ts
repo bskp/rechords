@@ -40,7 +40,7 @@ Meteor.methods({
 
     const [new_first_word, ...secret_words] = chunks;
     Accounts.setUsername(id!, new_first_word);
-    Accounts.setPassword(id!, secret_words.join("-"));
+    Accounts.resetPassword(id!, secret_words.join("-"));
   },
 
   async saveSong(remoteObject: OptionalId<Song>) {

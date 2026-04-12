@@ -61,6 +61,15 @@ const empty_song = {
   author: "Unknown",
 };
 
+const nA403 = (
+  <div className="content chordsheet-colors">
+    <TrackingDocumentTitle title="Hölibu | 403" track_as="error-403" />
+    <span id="logo">
+      <h1>403</h1>
+      <h2>Computer says no</h2>
+    </span>
+  </div>
+);
 const nA404 = (
   <div className="content chordsheet-colors">
     <TrackingDocumentTitle title="Hölibu | 404" track_as="error-404" />
@@ -75,7 +84,7 @@ const NA400 = () => (
     <TrackingDocumentTitle title="Hölibu | 400" track_as="error-400" />
     <span id="logo">
       <h1>400</h1>
-      <h2>n/A</h2>
+      <h2>Oh no!</h2>
     </span>
   </div>
 );
@@ -85,7 +94,7 @@ const WriterRoute = ({ children }: { children: React.ReactNode }) => {
   if (role == "admin" || role == "writer") {
     return <>{children}</>;
   }
-  return <>{nA404}</>;
+  return <>{nA403}</>;
 };
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
@@ -93,7 +102,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   if (role == "admin") {
     return <>{children}</>;
   }
-  return <>{nA404}</>;
+  return <>{nA403}</>;
 };
 
 interface AppStates {
@@ -107,7 +116,9 @@ interface AppProps {
   revisionsLoading: boolean;
 
   songs: Song[];
-  user: Meteor.User | null;
+  user:
+    | (Meteor.User & { profile: { name: string; role: string; theme: string } })
+    | null;
 
   toggleSongList: () => void;
   toggleTheme: () => void;
@@ -169,18 +180,6 @@ class App extends React.Component<AppProps, AppStates> {
       );
     }
 
-    const getSong = (params: { title: string; author: string }) => {
-      if (params.author == "-") {
-        return Songs.findOne({
-          title_: params.title.toLowerCase(),
-        });
-      }
-      return Songs.findOne({
-        author_: params.author.toLowerCase(),
-        title_: params.title.toLowerCase(),
-      });
-    };
-
     const songList = (
       <List songs={this.props.songs} key={list_key} user={this.props.user} />
     );
@@ -232,7 +231,9 @@ class App extends React.Component<AppProps, AppStates> {
                   path="/print/:author/:title"
                   element={
                     <ErrorBoundary fallback={<NA400 />}>
-                      <PrintRoute getSong={getSong} />
+                      <SongRoute action="drucken">
+                        {(song) => <Printer song={song} />}
+                      </SongRoute>
                     </ErrorBoundary>
                   }
                 />
@@ -240,7 +241,9 @@ class App extends React.Component<AppProps, AppStates> {
                   path="/pdf/:author/:title"
                   element={
                     <ErrorBoundary fallback={<NA400 />}>
-                      <PdfRoute getSong={getSong} />
+                      <SongRoute action="PDF">
+                        {(song) => <PdfViewer song={song} />}
+                      </SongRoute>
                     </ErrorBoundary>
                   }
                 />
@@ -249,7 +252,14 @@ class App extends React.Component<AppProps, AppStates> {
                   path="/view/:author/:title"
                   element={
                     <ErrorBoundary fallback={<NA400 />}>
-                      <ViewRoute getSong={getSong} songList={songList} />
+                      <SongRoute>
+                        {(song) => (
+                          <>
+                            {songList}
+                            <Viewer song={song} />
+                          </>
+                        )}
+                      </SongRoute>
                     </ErrorBoundary>
                   }
                 />
@@ -259,7 +269,9 @@ class App extends React.Component<AppProps, AppStates> {
                   element={
                     <WriterRoute>
                       <ErrorBoundary fallback={<NA400 />}>
-                        <EditRoute getSong={getSong} />
+                        <SongRoute action="bearbeiten">
+                          {(song) => <Editor song={song} />}
+                        </SongRoute>
                       </ErrorBoundary>
                     </WriterRoute>
                   }
@@ -283,7 +295,10 @@ class App extends React.Component<AppProps, AppStates> {
                     <ErrorBoundary fallback={<NA400 />}>
                       <TrackingDocumentTitle title="Hölibu | Lieder-Fortschritt" />
                       {songList}
-                      <ProgressContent songs={this.props.songs} revisionsLoading={this.props.revisionsLoading} />
+                      <ProgressContent
+                        songs={this.props.songs}
+                        revisionsLoading={this.props.revisionsLoading}
+                      />
                       <MenuBurger />
                     </ErrorBoundary>
                   }
@@ -307,7 +322,10 @@ class App extends React.Component<AppProps, AppStates> {
                   path="/user"
                   element={
                     <ErrorBoundary fallback={<NA400 />}>
-                      <UserRoute songList={songList} revisionsLoading={this.props.revisionsLoading} />
+                      <UserRoute
+                        songList={songList}
+                        revisionsLoading={this.props.revisionsLoading}
+                      />
                     </ErrorBoundary>
                   }
                 />
@@ -320,86 +338,69 @@ class App extends React.Component<AppProps, AppStates> {
   }
 }
 
-function PrintRoute({ getSong }: { getSong: (p: { title: string; author: string }) => Song | undefined }) {
+function useSongFromParams() {
   const params = useParams<{ author: string; title: string }>();
-  const song = getSong(params);
+  const author = params.author?.toLowerCase();
+  const title = params.title?.toLowerCase();
+  if (!title || !author) return undefined;
+
+  if (author == "-") {
+    return Songs.findOne({ title_: title });
+  }
+  return Songs.findOne({ author_: author, title_: title });
+}
+
+function SongRoute({
+  action = "",
+  children,
+}: {
+  action?: string;
+  children: (song: Song) => React.ReactNode;
+}) {
+  const song = useSongFromParams();
   if (song === undefined) return <>{nA404}</>;
+  if (action) {
+    action = ` (${action})`;
+  }
   return (
     <>
       <TrackingDocumentTitle
-        title={"Hölibu | " + song.author + ": " + song.title}
+        title={`Hölibu | ${song.author}: ${song.title}${action}`}
       />
-      <Printer song={song} />
+      {children(song)}
     </>
   );
 }
 
-function PdfRoute({ getSong }: { getSong: (p: { title: string; author: string }) => Song | undefined }) {
-  const params = useParams<{ author: string; title: string }>();
-  const song = getSong(params);
-  if (song === undefined) return <>{nA404}</>;
-  return (
-    <>
-      <TrackingDocumentTitle
-        title={"Hölibu | " + song.author + ": " + song.title}
-      />
-      <PdfViewer song={song} />
-    </>
-  );
-}
-
-function ViewRoute({ getSong, songList }: { getSong: (p: { title: string; author: string }) => Song | undefined; songList: React.ReactNode }) {
-  const params = useParams<{ author: string; title: string }>();
-  const song = getSong(params);
-  if (song === undefined) return <>{nA404}</>;
-  return (
-    <>
-      <TrackingDocumentTitle
-        title={"Hölibu | " + song.author + ": " + song.title}
-      />
-      {songList}
-      <Viewer song={song} />
-    </>
-  );
-}
-
-function EditRoute({ getSong }: { getSong: (p: { title: string; author: string }) => Song | undefined }) {
-  const params = useParams<{ author: string; title: string }>();
-  const song = getSong(params);
-  if (song === undefined) return <>{nA404}</>;
-  return (
-    <>
-      <TrackingDocumentTitle
-        title={`Hölibu | ${song.author}: ${song.title} (bearbeiten)`}
-      />
-      <Editor song={song} />
-    </>
-  );
-}
-
-function ProgressContent({ songs, revisionsLoading }: { songs: Song[]; revisionsLoading: boolean }) {
+function ProgressContent({
+  songs,
+  revisionsLoading,
+}: {
+  songs: Song[];
+  revisionsLoading: boolean;
+}) {
   const content = revisionsLoading ? (
-    <div className="content chordsheet-colors">
-      Lade Lieder-Fortschritt…
-    </div>
+    <div className="content chordsheet-colors">Lade Lieder-Fortschritt…</div>
   ) : (
     <Progress songs={songs} />
   );
   return content;
 }
 
-function UserRoute({ songList, revisionsLoading }: { songList: React.ReactNode; revisionsLoading: boolean }) {
+function UserRoute({
+  songList,
+  revisionsLoading,
+}: {
+  songList: React.ReactNode;
+  revisionsLoading: boolean;
+}) {
   const user = Meteor.user();
   if (!user) return <Navigate to="/" />;
   return (
     <>
       {songList}
-      <TrackingDocumentTitle title={"Hölibu | " + user.profile.name} />
-      <User
-        user={user}
-        key={user._id}
-        revisionsLoading={revisionsLoading}
-      />
+      <TrackingDocumentTitle title={"Hölibu | " + user.profile?.name || "?"} />
+      <User user={user} key={user._id} revisionsLoading={revisionsLoading} />
       <MenuBurger />
     </>
   );

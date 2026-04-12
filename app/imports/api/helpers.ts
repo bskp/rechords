@@ -23,7 +23,11 @@ export const routePath = (view: View, song: Song) => {
   });
 };
 
-export const navigateTo = (navigate: NavigateFunction, view: View, song?: Song) => {
+export const navigateTo = (
+  navigate: NavigateFunction,
+  view: View,
+  song?: Song,
+) => {
   if (song === undefined) {
     navigate(view);
     return;
@@ -32,15 +36,21 @@ export const navigateTo = (navigate: NavigateFunction, view: View, song?: Song) 
   navigate(routePath(view, song));
 };
 
-export const navigateCallback = (navigate: NavigateFunction, view: View, song?: Song) => {
+export const navigateCallback = (
+  navigate: NavigateFunction,
+  view: View,
+  song?: Song,
+) => {
   return () => navigateTo(navigate, view, song);
 };
 
 export const currentFocusOnInput = (e: KeyboardEvent) => {
   const tagName = (e.target as Element)?.tagName;
+  // Do not steal focus if already on <input>
   if (["INPUT", "TEXTAREA"].includes(tagName)) return true;
   if ((e.target as Element).getAttribute("contenteditable")) return true;
 
+  // Ignore special keys
   if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) return true;
   return false;
 };
