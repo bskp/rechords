@@ -1,10 +1,10 @@
 import { generatePath, NavigateFunction } from "react-router-dom";
 import { Song } from "./collections";
-import { getUser } from "../ui/App";
+import { getUser, hasWritePermission } from "./auth";
 
 export const userMayWrite = () => {
   const role = getUser()?.profile.role;
-  return role == "admin" || role == "writer";
+  return hasWritePermission(role);
 };
 
 export enum View {

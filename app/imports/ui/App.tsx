@@ -28,10 +28,8 @@ import { Button } from "/imports/ui/Button";
 import { ReactSVG } from "react-svg";
 import classnames from "classnames";
 import { PdfViewer } from "./PdfViewer/PdfViewer";
-
-export type RechordsUser = Meteor.User & {
-  profile: { name: string; role: "admin" | "writer" | "user"; theme: string };
-};
+import { getUser } from "../api/auth";
+import type { RechordsUser } from "../api/auth";
 
 export const ThemeContext = React.createContext<{
   toggleTheme: () => void;
@@ -92,8 +90,6 @@ const NA400 = () => (
     </span>
   </div>
 );
-
-export const getUser = () => Meteor.user() as RechordsUser | null;
 
 const WriterRoute = ({ children }: { children: React.ReactNode }) => {
   const role = getUser()?.profile.role;
@@ -158,7 +154,7 @@ class App extends React.Component<AppProps, AppStates> {
     }, 1000);
   };
 
-  render() {
+  private getThemeClass() {
     const ut = this.props.user?.profile.theme ?? "auto";
     let themeDark = false;
     if (ut == "auto")
@@ -166,11 +162,22 @@ class App extends React.Component<AppProps, AppStates> {
     if (ut == "dark") themeDark = true;
     if (this.state.swapTheme) themeDark = !themeDark;
 
-    const theme =
+    return (
       (themeDark ? "dark" : "light") +
-      (this.state.themeTransition ? " transition" : "");
-    // Setting class on body -> used for background color of body
-    document.documentElement.classList.value = theme;
+      (this.state.themeTransition ? " transition" : "")
+    );
+  }
+
+  componentDidMount() {
+    document.documentElement.classList.value = this.getThemeClass();
+  }
+
+  componentDidUpdate() {
+    document.documentElement.classList.value = this.getThemeClass();
+  }
+
+  render() {
+    const theme = this.getThemeClass();
 
     // If any song's title changes, the key for the <List /> changes and flushes all states.
     // This is a hack to easily update all internal "caching states" (matches etc.)
@@ -412,7 +419,7 @@ function UserRoute({
   );
 }
 
-export default withTracker((_) => {
+export default withTracker(() => {
   const songHandle = Meteor.subscribe("songs");
   const revHandle = Meteor.subscribe("revisions");
 

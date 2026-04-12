@@ -4,6 +4,7 @@ import { parse, HTMLElement } from "node-html-parser";
 import slug from "slug";
 import { Meteor } from "meteor/meteor";
 import { parseRechordsDown } from "./parseRechordsDown";
+import { getUser, hasWritePermission } from "/imports/api/auth";
 
 const DATACHORD = "data-chord";
 
@@ -59,7 +60,11 @@ export class Song {
     // A field is missing or bad parser version. Re-parse and store!
     this.parse(this.text);
 
-    Meteor.call("saveSong", this, (error: any) => {
+    // Only editors should trigger reparsing persistence from the client.
+    const role = getUser()?.profile.role;
+    if (!hasWritePermission(role)) return;
+
+    Meteor.call("saveSong", this, (error: unknown) => {
       if (error !== undefined) {
         console.log(error);
       }

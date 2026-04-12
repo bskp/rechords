@@ -7,7 +7,7 @@ import moment from "moment";
 import "moment/locale/de";
 import { Meteor } from "meteor/meteor";
 import { MdEdit } from "react-icons/md";
-import { RechordsUser } from "/imports/ui/App";
+import type { RechordsUser } from "/imports/api/auth";
 
 export function Select({ options, ...rest }) {
   const option_elements = options.map((data) => {
