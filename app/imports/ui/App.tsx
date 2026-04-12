@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useContext } from "react";
 import { withTracker } from "meteor/react-meteor-data";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -25,9 +26,12 @@ import { Meteor } from "meteor/meteor";
 import { Printer } from "/imports/ui/Printer";
 import { Button } from "/imports/ui/Button";
 import { ReactSVG } from "react-svg";
-import { useContext } from "react";
 import classnames from "classnames";
 import { PdfViewer } from "./PdfViewer/PdfViewer";
+
+export type RechordsUser = Meteor.User & {
+  profile: { name: string; role: "admin" | "writer" | "user"; theme: string };
+};
 
 export const ThemeContext = React.createContext<{
   toggleTheme: () => void;
@@ -89,8 +93,10 @@ const NA400 = () => (
   </div>
 );
 
+export const getUser = () => Meteor.user() as RechordsUser | null;
+
 const WriterRoute = ({ children }: { children: React.ReactNode }) => {
-  const role = Meteor.user()?.profile.role;
+  const role = getUser()?.profile.role;
   if (role == "admin" || role == "writer") {
     return <>{children}</>;
   }
@@ -98,7 +104,7 @@ const WriterRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const role = Meteor.user()?.profile.role;
+  const role = getUser()?.profile.role;
   if (role == "admin") {
     return <>{children}</>;
   }
@@ -116,12 +122,7 @@ interface AppProps {
   revisionsLoading: boolean;
 
   songs: Song[];
-  user:
-    | (Meteor.User & { profile: { name: string; role: string; theme: string } })
-    | null;
-
-  toggleSongList: () => void;
-  toggleTheme: () => void;
+  user: RechordsUser | null;
 }
 
 const MenuBurger = () => {
@@ -383,12 +384,11 @@ function ProgressContent({
   songs: Song[];
   revisionsLoading: boolean;
 }) {
-  const content = revisionsLoading ? (
+  return revisionsLoading ? (
     <div className="content chordsheet-colors">Lade Lieder-Fortschritt…</div>
   ) : (
     <Progress songs={songs} />
   );
-  return content;
 }
 
 function UserRoute({
@@ -403,7 +403,9 @@ function UserRoute({
   return (
     <>
       {songList}
-      <TrackingDocumentTitle title={"Hölibu | " + user.profile?.name || "?"} />
+      <TrackingDocumentTitle
+        title={"Hölibu | " + getUser()?.profile.name || "?"}
+      />
       <User user={user} key={user._id} revisionsLoading={revisionsLoading} />
       <MenuBurger />
     </>
@@ -419,6 +421,6 @@ export default withTracker((_) => {
     songsLoading: !songHandle.ready(),
     revisionsLoading: !revHandle.ready(),
     songs,
-    user: Meteor.user(),
+    user: getUser(),
   };
 })(App);

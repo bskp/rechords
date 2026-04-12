@@ -7,6 +7,7 @@ import moment from "moment";
 import "moment/locale/de";
 import { Meteor } from "meteor/meteor";
 import { MdEdit } from "react-icons/md";
+import { RechordsUser } from "/imports/ui/App";
 
 export function Select({ options, ...rest }) {
   const option_elements = options.map((data) => {
@@ -105,7 +106,7 @@ class EditUser extends React.Component<
   };
 
   render() {
-    const u = this.state.user;
+    const u = this.state.user as RechordsUser;
 
     if (u === undefined) return null;
 
@@ -238,9 +239,6 @@ class Users extends React.Component<UsersProps, { user?: Meteor.User }> {
     );
   }
 }
-const wrapped = withTracker((props: UsersProps) => {
-  return {
-    users: Meteor.users.find().fetch(),
-  };
-})(Users);
-export default wrapped;
+export default withTracker(() => ({
+  users: Meteor.users.find().fetch(),
+}))(Users);

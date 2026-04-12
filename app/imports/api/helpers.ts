@@ -1,9 +1,9 @@
 import { generatePath, NavigateFunction } from "react-router-dom";
 import { Song } from "./collections";
-import { Meteor } from "meteor/meteor";
+import { getUser } from "../ui/App";
 
 export const userMayWrite = () => {
-  const role = Meteor.user()?.profile?.role;
+  const role = getUser()?.profile.role;
   return role == "admin" || role == "writer";
 };
 
