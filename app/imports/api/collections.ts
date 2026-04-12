@@ -4,7 +4,7 @@ import { parse, HTMLElement } from "node-html-parser";
 import slug from "slug";
 import { Meteor } from "meteor/meteor";
 import { parseRechordsDown } from "./parseRechordsDown";
-import { getUser, hasWritePermission } from "/imports/api/auth";
+import { getUser, hasWritePermission } from "./auth";
 
 const DATACHORD = "data-chord";
 

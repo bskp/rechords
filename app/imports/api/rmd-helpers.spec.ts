@@ -4,7 +4,7 @@ import { parse, HTMLElement } from "node-html-parser";
 
 const DATACHORD = "data-chord";
 
-class RmdHelpers {
+export class RmdHelpers {
   static collectTags(dom: HTMLElement) {
     return Array.from(dom.getElementsByTagName("ul"))
       .filter((ul) => ul.getAttribute("class") == "tags")

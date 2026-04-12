@@ -16,7 +16,7 @@ export default class Note {
     if (!match || match.length !== 3) {
       return undefined;
     }
-    const [_, valueStr, accidental] = match;
+    const [, valueStr, accidental] = match;
 
     let value = ((v: string) => {
       switch (v.toLowerCase()) {

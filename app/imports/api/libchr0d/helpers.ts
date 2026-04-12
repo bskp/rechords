@@ -21,10 +21,9 @@ export const guessKeyFromChordCounts = (chordCounts: [string, number][]) => {
     bump(chord, 2 * count);
   });
   return Object.entries(votes)
-    .sort(([_, a], [__, b]) => b - a)
-    .map(([chord, votes]) => {
+    .sort((a, b) => b[1] - a[1])
+    .map(([chord]) => {
       const c = Chord.fromCode(chord);
-      //console.log(`${c}: ${votes}`);
       const isMinor = c?.quality == "minor";
       const value = ((c?.key.value ?? 0) + (isMinor ? 3 : 0)) % 12;
       return { keyValue: value, isMinor };
