@@ -41,7 +41,7 @@ test.describe("Smoke Tests", () => {
     await expect(inputs).toHaveCount(4);
   });
 
-  test("document title is set correctly", async ({ page }) => {
+  test("document title and content is set correctly", async ({ page }) => {
     await page.goto(METEOR_URL, { waitUntil: "networkidle" });
 
     await expect(
@@ -57,6 +57,10 @@ test.describe("Smoke Tests", () => {
     await expect(
       page.locator('[data-tooltip-content="Zur Startseite"]'),
     ).toBeVisible();
+    await expect(page.locator("#chordsheetContent")).toContainText(
+      "Emil Luckhard",
+    );
+    await expect(page.locator("#sd-ref-Refrain")).toContainText("Völker,");
 
     title = await page.title();
     expect(title).toBe("Hölibu | Emil Luckhard: Die Internationale");

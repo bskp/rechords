@@ -45,7 +45,7 @@ test.describe("Song Creation & Editing", () => {
 
     await page.waitForURL(/\/view\//, { timeout: E2E_TIMEOUT });
 
-    await expect(page.locator("h1").first()).toContainText("Ich Ess Blumen");
+    await expect(page.getByText("Pferdi text")).toBeVisible();
   });
 
   test("insert lyrics line with unique text appears after save", async ({
