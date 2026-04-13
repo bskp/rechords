@@ -2,7 +2,7 @@
   "name": "rechords",
   "private": true,
   "scripts": {
-    "start": "meteor --settings settings.json --exclude-archs web.browser.legacy --port 0:3000",
+    "start": "meteor --settings settings.json --port 0:3000",
     "pretty:write": "prettier . --write",
     "pretty:check": "prettier . --check",
     "lint": "eslint imports/",

@@ -39,7 +39,8 @@ Meteor.startup(async () => {
     try {
       const seedData = JSON.parse(await Assets.getTextAsync("seed-songs.json"));
       for (const song of seedData) {
-        console.log(await Meteor.call("saveSong", song));
+        // Insert seed songs directly without going through the method authorization
+        await Songs.insertAsync(song);
       }
       console.log(`Seeded ${seedData.length} public domain songs`);
     } catch (e) {
