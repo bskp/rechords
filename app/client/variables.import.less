@@ -22,7 +22,6 @@ html {
 
   --dirt: color-mix(in oklab, var(--void), var(--gray) 30%);
 
-
   // Derived color variables
 
   // swap roles of bg-list & bg-sheet in dark/light theme
@@ -44,7 +43,12 @@ html {
   --bg-revs: color-mix(in oklab, var(--accent-flat), black 60%);
 
   --bg-filter-translucent: color-mix(in oklab, var(--void), transparent 60%);
-  --bg-filter-opaque: color-mix(in oklab, var(--void), var(--dirt), transparent 10%);
+  --bg-filter-opaque: color-mix(
+    in oklab,
+    var(--void),
+    var(--dirt),
+    transparent 10%
+  );
 
   // Theme variations
   aside.drawer#list li a.selected {

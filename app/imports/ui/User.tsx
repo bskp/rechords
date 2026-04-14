@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { withRouter, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Songs, { Revisions, Song } from "../api/collections";
 
 import "moment/locale/de";
@@ -9,12 +9,15 @@ import { Select } from "./Users";
 import { routePath, View } from "../api/helpers";
 import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
+import { readProfile } from "../api/auth";
+import type { RechordsUser } from "../api/auth";
+import type { Theme } from "../api/auth";
 
 class User extends React.Component<
-  { user: Meteor.User; revisionsLoading: boolean },
-  { user: Meteor.User; msg: string }
+  { user: RechordsUser; revisionsLoading: boolean },
+  { user: RechordsUser; msg: string }
 > {
-  constructor(props) {
+  constructor(props: { user: RechordsUser; revisionsLoading: boolean }) {
     super(props);
     this.state = {
       user: this.props.user,
@@ -27,7 +30,7 @@ class User extends React.Component<
     this.setState((prevState) => ({
       user: {
         ...prevState.user,
-        profile: { ...prevState.user.profile, name: val },
+        profile: { ...readProfile(prevState.user.profile), name: val },
       },
       msg: "",
     }));
@@ -43,17 +46,23 @@ class User extends React.Component<
 
   updateTheme = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
+    if (val !== "auto" && val !== "bright" && val !== "dark") return;
+    const theme: Theme = val;
+
     this.setState((prevState) => ({
       user: {
         ...prevState.user,
-        profile: { ...prevState.user.profile, theme: val },
+        profile: {
+          ...readProfile(prevState.user.profile),
+          theme,
+        },
       },
       msg: "",
     }));
   };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    Meteor.call("saveUser", this.state.user, "", (error) => {
+    Meteor.call("saveOwnUser", this.state.user, (error?: Meteor.Error) => {
       console.log(error);
 
       this.setState({
@@ -74,8 +83,9 @@ class User extends React.Component<
     let song_ids: string[] = [];
 
     const u = this.state.user;
-    const admin = this.props.user.profile.role == "admin";
-    const writer = this.props.user.profile.role == "writer" || admin;
+    const profile = readProfile(u.profile);
+    const admin = profile.role == "admin";
+    const writer = profile.role == "writer" || admin;
 
     if (!writer) {
       stats = (
@@ -98,7 +108,7 @@ class User extends React.Component<
       );
     }
 
-    let darlings = u.profile.darlings?.map((id) => {
+    const darlingItems = profile.darlings?.map((id: string) => {
       const s = Songs.findOne(id);
       return s ? (
         <li key={"sl" + s._id}>
@@ -107,8 +117,8 @@ class User extends React.Component<
       ) : undefined;
     });
 
-    if (darlings === undefined || darlings.length == 0) {
-      darlings = (
+    const darlings: React.ReactNode =
+      darlingItems === undefined || darlingItems.length == 0 ? (
         <>
           <li>Du hast noch keine Lieblingslieder!</li>
           <li>
@@ -116,8 +126,9 @@ class User extends React.Component<
             <strong>Herz</strong>, um dir dieses zu merken.
           </li>
         </>
+      ) : (
+        darlingItems
       );
-    }
 
     // Statistiken
     let stats_text = <p>Zähle nach…</p>;
@@ -172,20 +183,20 @@ class User extends React.Component<
       <div className="content" id="user">
         <h1>Benutzer</h1>
         <h2>
-          {u.profile.name}
+          {profile.name ?? ""}
           <em>{this.state.msg}</em>
         </h2>
 
         <p>
-          <Link to="progress" className="btn">
+          <Link to="/progress" className="btn">
             Lieder-Übersicht
           </Link>
           {admin ? (
-            <Link to="users" className="btn">
+            <Link to="/users" className="btn">
               Benutzerverwaltung
             </Link>
           ) : undefined}
-          <a onClick={(e) => Accounts.logout()} className="btn">
+          <a onClick={() => Accounts.logout()} className="btn">
             Abmelden
           </a>
         </p>
@@ -197,7 +208,7 @@ class User extends React.Component<
           <label>Name</label>
           <input
             type="text"
-            value={u.profile.name}
+            value={profile.name ?? ""}
             onChange={this.updateName}
             placeholder="Name"
           />
@@ -212,7 +223,7 @@ class User extends React.Component<
           <br />
           <label>Farbschema</label>
           <Select
-            value={u.profile?.theme ?? "auto"}
+            value={profile.theme ?? "auto"}
             options={options}
             onChange={this.updateTheme}
           />
@@ -241,4 +252,4 @@ class User extends React.Component<
   }
 }
 
-export default withRouter(User);
+export default User;

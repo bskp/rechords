@@ -1,11 +1,6 @@
 import * as React from "react";
 import { useContext, useMemo, useState } from "react";
-import {
-  NavLink,
-  RouteComponentProps,
-  useHistory,
-  withRouter,
-} from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Song } from "../../api/collections";
 
 import Drawer from "../Drawer";
@@ -17,7 +12,7 @@ import { Menu } from "./Menu";
 import { ListGroupItem } from "./ListGroupItem";
 import { MenuContext } from "/imports/ui/App";
 
-interface ListProps extends RouteComponentProps {
+interface ListProps {
   songs: Song[];
   user: Meteor.User | null;
   filter?: string;
@@ -26,8 +21,7 @@ interface ListProps extends RouteComponentProps {
 const List = (props: ListProps) => {
   const [filter, setFilter] = useState("");
 
-  // todo: upgrade to new react-router -> useNavigate can be used
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [fuzzyMatches, exactMatches] = useMemo(() => {
     let visibleSongs = props.songs;
@@ -75,7 +69,7 @@ const List = (props: ListProps) => {
     if (song) {
       const newUrl = routePath(View.view, song);
       showMenu;
-      history.push(newUrl);
+      navigate(newUrl);
     }
   };
 
@@ -132,4 +126,4 @@ const List = (props: ListProps) => {
   );
 };
 
-export default withRouter(List); // injects history, location, match
+export default List;

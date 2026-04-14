@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Transposer, { useTranspose } from "./Transposer";
 import Chord from "../api/libchr0d/chord";
 import { Song } from "../api/collections";
@@ -38,7 +38,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     return initialZoom;
   }, {});
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   let duration_s: number | undefined;
 
@@ -75,7 +75,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
     if (currentFocusOnInput(e)) return;
     if (e.key === "e") {
       e.preventDefault();
-      navigateTo(history, View.edit, song);
+      navigateTo(navigate, View.edit, song);
     }
     if (e.key === "t") {
       e.preventDefault();
@@ -86,7 +86,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   React.useEffect(() => {
     document.addEventListener("keydown", globalKeyHandler);
     const navigateToPrint: EventListener = (event: Event) => {
-      navigateTo(history, View.print, song);
+      navigateTo(navigate, View.print, song);
       event.preventDefault();
       return false;
     };
@@ -99,7 +99,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
     if (userMayWrite()) {
-      navigateTo(history, View.edit, song);
+      navigateTo(navigate, View.edit, song);
     }
     event.preventDefault();
   };
@@ -179,10 +179,10 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
               <MdEdit />
             </Button>
           )}
-          <Button onClick={() => navigateTo(history, View.print, song)}>
+          <Button onClick={() => navigateTo(navigate, View.print, song)}>
             <MdPrint className="iconbutton" />
           </Button>
-          <Button onClick={() => navigateTo(history, View.pdf, song)}>
+          <Button onClick={() => navigateTo(navigate, View.pdf, song)}>
             <MdPictureAsPdf />
           </Button>
         </div>

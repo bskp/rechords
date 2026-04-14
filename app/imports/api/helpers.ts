@@ -1,11 +1,10 @@
-import { generatePath } from "react-router-dom";
+import { generatePath, NavigateFunction } from "react-router-dom";
 import { Song } from "./collections";
-import { History } from "history";
-import { Meteor } from "meteor/meteor";
+import { getUser, hasWritePermission } from "./auth";
 
 export const userMayWrite = () => {
-  const role = Meteor.user()?.profile?.role;
-  return role == "admin" || role == "writer";
+  const role = getUser()?.profile.role;
+  return hasWritePermission(role);
 };
 
 export enum View {
@@ -24,17 +23,25 @@ export const routePath = (view: View, song: Song) => {
   });
 };
 
-export const navigateTo = (history: History, view: View, song?: Song) => {
+export const navigateTo = (
+  navigate: NavigateFunction,
+  view: View,
+  song?: Song,
+) => {
   if (song === undefined) {
-    history.push(view);
+    navigate(view);
     return;
   }
 
-  history.push(routePath(view, song));
+  navigate(routePath(view, song));
 };
 
-export const navigateCallback = (history: History, view: View, song?: Song) => {
-  return () => navigateTo(history, view, song);
+export const navigateCallback = (
+  navigate: NavigateFunction,
+  view: View,
+  song?: Song,
+) => {
+  return () => navigateTo(navigate, view, song);
 };
 
 export const currentFocusOnInput = (e: KeyboardEvent) => {

@@ -1,5 +1,4 @@
 import * as React from "react";
-import DocumentTitle from "react-document-title";
 import { useMatomo } from "@datapunt/matomo-tracker-react";
 import { useLocation } from "react-router-dom";
 import { Meteor } from "meteor/meteor";
@@ -9,13 +8,14 @@ interface TrackingDocumentTitleProps {
   track_as?: string;
 }
 
-const TrackingDocumentTitle = ({
-  title,
-  track_as,
-}: TrackingDocumentTitleProps) => {
-  const location = track_as || useLocation().pathname;
+export const usePageTracking = (title: string, track_as?: string) => {
+  const location = useLocation();
   const { trackPageView } = useMatomo();
+  const pathname = track_as || location.pathname;
+
   React.useEffect(() => {
+    document.title = title;
+
     trackPageView({
       customDimensions: [
         {
@@ -28,9 +28,21 @@ const TrackingDocumentTitle = ({
         },
       ],
     });
-  }, [location]);
+  }, [pathname, title]);
+};
 
-  return <DocumentTitle title={title} />;
+/**
+ * Just a wrapper element in order to use in Route Tsx
+ *
+ * could probably be used directly as a hook but one step at the time
+ * @returns
+ */
+const TrackingDocumentTitle = ({
+  title,
+  track_as,
+}: TrackingDocumentTitleProps) => {
+  usePageTracking(title, track_as);
+  return null;
 };
 
 export default TrackingDocumentTitle;

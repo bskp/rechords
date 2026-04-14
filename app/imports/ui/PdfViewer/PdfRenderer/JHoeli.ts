@@ -16,7 +16,7 @@ export type ChordSection = {
 export type ChordLines = {
   type: "chordline";
   content: { lines: Line[] };
-}
+};
 export type Comment = {
   type: "comment";
   content: string;

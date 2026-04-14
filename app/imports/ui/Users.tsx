@@ -2,12 +2,12 @@ import * as React from "react";
 import { withTracker } from "meteor/react-meteor-data";
 
 import Table from "./Table";
-import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import moment from "moment";
 import "moment/locale/de";
 import { Meteor } from "meteor/meteor";
 import { MdEdit } from "react-icons/md";
+import type { RechordsUser } from "/imports/api/auth";
 
 export function Select({ options, ...rest }) {
   const option_elements = options.map((data) => {
@@ -106,7 +106,7 @@ class EditUser extends React.Component<
   };
 
   render() {
-    const u = this.state.user;
+    const u = this.state.user as RechordsUser;
 
     if (u === undefined) return null;
 
@@ -149,7 +149,7 @@ class EditUser extends React.Component<
 
 type UsersProps = {
   users: Meteor.User[];
-} & RouteComponentProps;
+};
 
 class Users extends React.Component<UsersProps, { user?: Meteor.User }> {
   constructor(props: UsersProps) {
@@ -239,9 +239,6 @@ class Users extends React.Component<UsersProps, { user?: Meteor.User }> {
     );
   }
 }
-const wrapped = withTracker((props: UsersProps) => {
-  return {
-    users: Meteor.users.find().fetch(),
-  };
-})(Users);
-export default withRouter(wrapped);
+export default withTracker(() => ({
+  users: Meteor.users.find().fetch(),
+}))(Users);

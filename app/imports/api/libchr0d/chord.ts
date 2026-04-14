@@ -34,13 +34,13 @@ export default class Chord {
     }
 
     const match = chordString.match(
-      /([a-h][#b]?)(maj7|m|)([^\s\/]*)(?:\/([a-h][#b]?))?/i,
+      /([a-h][#b]?)(maj7|m|)([^\s/]*)(?:\/([a-h][#b]?))?/i,
     );
     if (!match) {
       return undefined;
     }
 
-    let [_, keystr, qualityStr, tensions, slash] = match;
+    let [, keystr, qualityStr, tensions, slash] = match;
 
     const quality = ((q: string): Quality => {
       switch (q) {

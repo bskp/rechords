@@ -1,5 +1,3 @@
-import { showdown } from "./api/showdown-rechords.spec";
-import { ascii } from "./api/ascii-importer.spec";
-
-showdown;
-ascii;
+import "./api/showdown-rechords.spec";
+import "./api/ascii-importer.spec";
+import "./api/rmd-helpers.spec";

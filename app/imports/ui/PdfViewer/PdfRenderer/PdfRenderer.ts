@@ -39,7 +39,7 @@ export type JSong = {
  */
 export async function jsPdfGenerator(
   song: Song,
-  settings: IPdfViewerSettings
+  settings: IPdfViewerSettings,
 ): Promise<string> {
   if (!song) return "";
 
@@ -53,7 +53,7 @@ export async function jsPdfGenerator(
       ...c,
       chordT: Chord.from(c.chord)?.transposed(
         settings.transpose || 0,
-        notation
+        notation,
       ),
     })),
   });
@@ -89,19 +89,19 @@ async function loadFonts(cdoc: ChordPdfJs) {
       "/fonts/pdf/ShantellSans-SemiBold.ttf",
       "Sh",
       "normal",
-      "light"
+      "light",
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Regular.ttf",
       "Bric",
       "normal",
-      "regular"
+      "regular",
     ),
     cdoc.addFontXhr(
       "/fonts/pdf/BricolageGrotesque_Condensed-Bold.ttf",
       "Bric",
       "normal",
-      "bold"
+      "bold",
     ),
   ]);
   return out;
@@ -184,7 +184,7 @@ class ChordPdfRenderer {
 
     const pdfData = this.doc.output("arraybuffer");
     const pdfBlobUrl = window.URL.createObjectURL(
-      new Blob([pdfData], { type: "application/pdf" })
+      new Blob([pdfData], { type: "application/pdf" }),
     );
     return pdfBlobUrl;
   }
@@ -255,7 +255,7 @@ class ChordPdfRenderer {
               this.x0 - g,
               c.y,
               this.x0 - g,
-              c.y + this.cdoc.mediaHeight()
+              c.y + this.cdoc.mediaHeight(),
             );
             this.doc.line(this.x0, c.y, this.x0, c.y + this.cdoc.mediaHeight());
           }
@@ -293,7 +293,7 @@ class ChordPdfRenderer {
       if (section.content.ref) {
         // line
         if (!simulate) {
-          this.cdoc.cursor.y += this.fos.section/2
+          this.cdoc.cursor.y += this.fos.section / 2;
           if (!this.settings.inlineReferences) {
             this.doc.setFillColor(ORANGE);
             const w = this.fos.section / 15,
@@ -303,7 +303,7 @@ class ChordPdfRenderer {
               this.cdoc.cursor.y - h * 0.75,
               w,
               h,
-              "F"
+              "F",
             );
             // optically smaller sizes need more gap hence fixed part
             this.cdoc.cursor.x += 2 + this.fos.section / 10;
@@ -315,10 +315,10 @@ class ChordPdfRenderer {
           this.cdoc.setFont({ ...this.f.Bric, size: this.fos.text });
           const df = this.cdoc.textFragment(
             "  " + section.content.adm,
-            simulate
+            simulate,
           );
         }
-        advance_y += sdf.h 
+        advance_y += sdf.h;
       }
     }
     if (
@@ -338,7 +338,7 @@ class ChordPdfRenderer {
       this.cdoc.setFont({ ...this.f.Bric, size: this.fos.text });
       const texts: string[] = this.cdoc.doc.splitTextToSize(
         section.content,
-        this.colWidth
+        this.colWidth,
       );
       advance_y += texts
         .map((l) => this.cdoc.textLine(l, simulate).h)
@@ -356,7 +356,7 @@ class ChordPdfRenderer {
         line.fragments,
         this.colWidth,
         simulate,
-        this.fas
+        this.fas,
       ).advance_y;
     }
     return advance_y;
@@ -379,7 +379,7 @@ class ChordPdfRenderer {
         {
           align: "left",
           baseline: "top",
-        }
+        },
       );
     }
   }
@@ -419,7 +419,7 @@ class ChordPdfRenderer {
       title + " - " + author,
       this.cdoc.margins.left + this.cdoc.mediaWidth() / 2,
       this.cdoc.maxY(),
-      { align: "center", baseline: "top" }
+      { align: "center", baseline: "top" },
     );
   }
   resetX() {

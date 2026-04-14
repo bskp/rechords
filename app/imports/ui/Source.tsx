@@ -29,10 +29,13 @@ export default class Source extends Component<SourceProps, never> {
       if (inText != newText) {
         e.preventDefault();
         // inserting original text first
-        const oldStart = this.source.current.selectionStart
+        const oldStart = this.source.current.selectionStart;
         document.execCommand("insertText", false, inText);
         // select inserted text
-        this.source.current?.setSelectionRange(oldStart, oldStart+inText.length)
+        this.source.current?.setSelectionRange(
+          oldStart,
+          oldStart + inText.length,
+        );
         // overwrite text with interceptor content
         document.execCommand("insertText", false, newText);
       }

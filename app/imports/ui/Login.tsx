@@ -1,7 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { ReactSVG } from "react-svg";
 import { navigateTo, View } from "../api/helpers";
@@ -18,7 +18,7 @@ export const Login: React.FC = () => {
   const [three, setThree] = useState("");
   const [four, setFour] = useState("");
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
     Meteor.loginWithPassword(
@@ -27,7 +27,7 @@ export const Login: React.FC = () => {
       (err: Meteor.Error | Error | undefined) => {
         if (!err) {
           setMsg("eingeloggt!");
-          navigateTo(history, View.home);
+          navigateTo(navigate, View.home);
         } else {
           let msg = err.message;
           if (err.reason == "Incorrect password") {

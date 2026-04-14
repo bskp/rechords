@@ -4,8 +4,7 @@ import Songs, { Revisions } from "../imports/api/collections";
 import "../imports/api/methods.ts";
 
 Meteor.publish("songs", function () {
-  // todo: some kind of collection
-  if (Meteor.user()?.profile) {
+  if (this.userId) {
     return Songs.find({});
   } else {
     return Songs.find({
@@ -21,28 +20,36 @@ Meteor.publish("songs", function () {
 });
 
 Meteor.publish("revisions", function () {
-  if (Meteor.user()?.profile) {
+  if (this.userId) {
     return Revisions.find({});
   } else {
-    const songids = Songs.find(
-      { tags: "lizenz:frei" } /* , { fields: { _id: 1 } }*/,
-    ).fetch();
-    return Revisions.find({ of: { $in: songids.map((s) => s._id) } });
+    this.ready();
   }
 });
 
 Meteor.startup(async () => {
-  if (Meteor.users.find().count() === 0) {
+  const userCount = await Meteor.users.rawCollection().countDocuments();
+  if (userCount === 0) {
     Accounts.createUser({
       username: "le",
       email: "bitte_noch_anpassen@chabis.ruebli",
       password: "coq-est-mort",
       profile: { name: "Housi", role: "admin" },
     });
+    try {
+      const seedData = JSON.parse(await Assets.getTextAsync("seed-songs.json"));
+      for (const song of seedData) {
+        // Insert seed songs directly without going through the method authorization
+        await Songs.insertAsync(song);
+      }
+      console.log(`Seeded ${seedData.length} public domain songs`);
+    } catch (e) {
+      console.log("No seed songs found:", e);
+    }
   }
 });
 
-Meteor.publish(null, function () {
+Meteor.publish(null, async function () {
   if (!this.userId) {
     this.ready();
     return;
@@ -57,8 +64,8 @@ Meteor.publish(null, function () {
     },
   };
 
-  if (Meteor.user()?.profile.role == "admin")
-    return Meteor.users.find({}, fields);
+  const user = await Meteor.users.findOneAsync({ _id: this.userId });
+  if (user?.profile?.role == "admin") return Meteor.users.find({}, fields);
 
   return Meteor.users.find({ _id: this.userId }, fields);
 });

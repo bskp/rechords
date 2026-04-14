@@ -5,7 +5,7 @@ import { Song } from "../api/collections";
 import Sheet from "./Sheet";
 import { navigateCallback, navigateTo, View } from "../api/helpers";
 import { Button } from "./Button";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import { ColumnSetter } from "./PdfViewer/PdfSettings";
 import Transposer, { useTranspose } from "./Transposer";
@@ -34,7 +34,7 @@ export const Printer = ({ song }: PrinterProps) => {
   const sizeId = React.useId();
   const lineId = React.useId();
   const widthId = React.useId();
-  const history = useHistory();
+  const navigate = useNavigate();
   const settings = (
     <aside id="rightSettings" className="printer--settings">
       <div className="pp--settings">
@@ -137,14 +137,14 @@ export const Printer = ({ song }: PrinterProps) => {
   const colMode = cols == 1 ? " singleCol" : "";
 
   const handleContextMenu: MouseEventHandler = (event) => {
-    navigateTo(history, View.view, song);
+    navigateTo(navigate, View.view, song);
     event.preventDefault();
   };
 
   return (
     <div style={{ display: "contents" }} onContextMenu={handleContextMenu}>
       <Drawer
-        onClick={navigateCallback(history, View.view, song)}
+        onClick={navigateCallback(navigate, View.view, song)}
         className="list-colors"
       >
         <h1>
