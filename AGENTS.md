@@ -2,14 +2,6 @@
 
 See [README.md](README.md) for install and run commands.
 
-## Commands
-
-```bash
-cd app
-meteor                                   # run app
-npm run pretty:write                      # format
-npm run ci:test                          # lint + all tests (headless)
-```
 
 ## Workflow
 
@@ -22,8 +14,3 @@ npm run ci:test                          # lint + all tests (headless)
 
 Use Chrome MCP against http://localhost:3000 (from `opencode.jsonc`):
 - `chrome-devtools_click`, `chrome-devtools_take_snapshot`, etc.
-
-## Gotchas
-
-- LESS mixin deprecation warnings are cosmetic
-- Run `npm run ci:test` at END of session

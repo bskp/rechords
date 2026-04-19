@@ -14,7 +14,6 @@ import "./icons.less";
 import "./gui-elements.less";
 import "./login.less";
 import "./fonts.less";
-import "./fret.less";
 import "./editor.less";
 import "./drawer.less";
 import "./chordsheet.less";

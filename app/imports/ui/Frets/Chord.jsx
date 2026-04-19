@@ -4,6 +4,7 @@ import Neck from "./Neck";
 import Dot from "./Dot";
 import Barre from "./Barre";
 import { instrumentPropTypes } from "./propTypes";
+import "./fret.less";
 
 const onlyDots = (chord) =>
   chord.frets
