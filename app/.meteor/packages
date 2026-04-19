@@ -24,3 +24,4 @@ less@4.1.0
 zodern:types            # Pull in type declarations from other Meteor packages
 accounts-base
 accounts-password
+rspack

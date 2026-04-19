@@ -1,3 +1,9 @@
 node_modules/
 dump/
 test-results/
+
+# Meteor Modern-Tools build context directories
+_build
+*/build-assets
+*/build-chunks
+.rsdoctor
