@@ -2,7 +2,7 @@ import * as React from "react";
 import { Song } from "../api/collections";
 import Table from "./Table";
 
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router";
 
 import moment from "moment";
 import "moment/locale/de";

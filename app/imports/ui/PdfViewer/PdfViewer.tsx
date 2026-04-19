@@ -8,7 +8,7 @@ import { debounce } from "underscore";
 import "./PdfViewerStyle.less";
 import Drawer from "../Drawer";
 import { navigateCallback, View } from "/imports/api/helpers";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export const PdfViewer: FunctionComponent<ViewerProps> = (props) => {
   {

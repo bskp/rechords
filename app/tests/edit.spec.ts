@@ -32,13 +32,15 @@ test.describe("Song Creation & Editing", () => {
   });
 
   test("save new song via right-click", async ({ page }) => {
+    const uniqueSong = `test-song-${Date.now()}`;
+
     await page.goto(`${METEOR_URL}/new`, { waitUntil: "networkidle" });
 
     const textarea = page.locator("textarea").first();
     await expect(textarea).toBeVisible({ timeout: E2E_TIMEOUT });
 
     await textarea.fill(
-      "Ich Ess Blumen\nDie Doktoren\n========\n\n1:\nPferdi text",
+      `Ich Ess Blumen\n${uniqueSong}\n========\n\n1:\nPferdi text`,
     );
 
     await page.locator("#editor").click({ button: "right" });

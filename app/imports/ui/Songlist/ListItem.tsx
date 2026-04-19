@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { MdFavorite, MdFavoriteBorder, MdPendingActions } from "react-icons/md";
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router";
 import { routePath, View } from "/imports/api/helpers";
 import { Song } from "/imports/api/collections";
 import { Meteor } from "meteor/meteor";

@@ -1,4 +1,4 @@
-import { generatePath, NavigateFunction } from "react-router-dom";
+import { generatePath, NavigateFunction } from "react-router";
 import { Song } from "./collections";
 import { getUser, hasWritePermission } from "./auth";
 

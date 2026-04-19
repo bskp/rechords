@@ -5,7 +5,7 @@ import { Song } from "../api/collections";
 import Sheet from "./Sheet";
 import { navigateCallback, navigateTo, View } from "../api/helpers";
 import { Button } from "./Button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ReactSVG } from "react-svg";
 import { ColumnSetter } from "./PdfViewer/PdfSettings";
 import Transposer, { useTranspose } from "./Transposer";

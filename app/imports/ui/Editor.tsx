@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FC, MouseEventHandler, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const Prompt = ({ when, message }: { when: boolean; message: string }) => {
   // Simple implementation - in React 18 this needs proper handling
