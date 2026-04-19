@@ -2,13 +2,20 @@
 
 See [README.md](README.md) for install and run commands.
 
+## Rules
+- Use always relative path to this folder
+- if you need tmp file, create a local tmp folder
+ 
+
 
 ## Workflow
 
 1. Make changes
 2. Format: `npm run pretty:write`
 3. Run tests at END: `npm run ci:test`
-4. Run tests at END: `npm run ci:test:e2e`
+4. Run tests at END: `npm run ci:test:e2e` -> this needs to be gated by a timeout, since if the start fails the e2e does not finish. use 30s
+
+
 
 ## Testing Frontend
 

@@ -5,6 +5,7 @@ export default defineConfig({
   timeout: 10000,
   fullyParallel: false,
   workers: 1,
+  reporter: [["list"], ["html", { outputFolder: "playwright-report" }]],
   use: {
     baseURL: "http://localhost:3333",
     headless: true,
@@ -13,7 +14,7 @@ export default defineConfig({
     command: "meteor --once --production --settings settings.json --port 3333",
     url: "http://localhost:3333",
     reuseExistingServer: !process.env.CI,
-    gracefulShutdown: true,
+    gracefulShutdown: false,
     timeout: 300000,
     stdout: "pipe",
     stderr: "pipe",
