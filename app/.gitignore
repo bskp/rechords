@@ -7,3 +7,4 @@ _build
 */build-assets
 */build-chunks
 .rsdoctor
+playwright-report/

@@ -1,3 +1,5 @@
 /app/node_modules/
 /deploy/node_modules/
 /test-instances/
+.DS_Store
+tmp/
