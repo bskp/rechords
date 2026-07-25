@@ -48,6 +48,49 @@ test.describe("Song Creation & Editing", () => {
     await expect(page.getByText("Pferdi text")).toBeVisible();
   });
 
+  test("unsaved edits survive back-navigation and are dropped on save", async ({
+    page,
+  }) => {
+    const url = `${METEOR_URL}/edit/emil-luckhard/die-internationale`;
+    const uniqueText = `draft-uuid-${Date.now()}`;
+
+    await page.goto(url, { waitUntil: "networkidle" });
+    const textarea = page.locator("textarea").first();
+    await expect(textarea).toBeVisible({ timeout: E2E_TIMEOUT });
+
+    const original = await textarea.inputValue();
+    await textarea.fill(`${original}\n\n\n${uniqueText}`);
+
+    // The dirty marker appearing means the mirroring effect has run.
+    await expect(page.locator("#dirty")).toBeAttached({ timeout: E2E_TIMEOUT });
+
+    // Leave without saving. beforeunload cannot cover this, the draft must.
+    await page.goBack();
+    await page.goto(url, { waitUntil: "networkidle" });
+
+    await expect(textarea).toBeVisible({ timeout: E2E_TIMEOUT });
+    await expect(textarea).toHaveValue(new RegExp(uniqueText), {
+      timeout: E2E_TIMEOUT,
+    });
+    await expect(page.locator("#dirty")).toBeAttached();
+
+    // Saving persists the text and drops the draft.
+    await page.locator("#editor").click({ button: "right" });
+    await page.waitForURL(/\/view\//, { timeout: E2E_TIMEOUT });
+
+    expect(
+      await page.evaluate(() =>
+        Object.keys(window.localStorage).filter((k) =>
+          k.startsWith("rechords.draft."),
+        ),
+      ),
+    ).toEqual([]);
+
+    await page.goto(url, { waitUntil: "networkidle" });
+    await expect(textarea).toBeVisible({ timeout: E2E_TIMEOUT });
+    expect(await textarea.inputValue()).toContain(uniqueText);
+  });
+
   test("insert lyrics line with unique text appears after save", async ({
     page,
   }) => {

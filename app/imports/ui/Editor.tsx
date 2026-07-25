@@ -3,6 +3,7 @@ import { FC, MouseEventHandler, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { UnsavedChangesPrompt } from "./UnsavedChangesPrompt";
+import { clearDraft, readDraft, writeDraft } from "./draftStorage";
 import Source from "./Source";
 import RevBrowser from "./RevBrowser";
 import Preview from "./Preview";
@@ -21,14 +22,30 @@ enum SaveState {
 type EditorProps = { song: Song };
 
 const Editor: FC<EditorProps> = (props: EditorProps) => {
-  const [md, setMd] = useState(props.song.text);
-  const [revisionsTab, setRevisionsTab] = useState(false);
-  const [dirty, setDirty] = useState(false);
-  const [saved, setSaved] = useState(SaveState.UNSAVED);
-
+  const songId = props.song._id;
   const mdServer = props.song.text;
 
+  // Read once per mount: a draft left behind by an earlier editing session.
+  const [restoredDraft] = useState(() => readDraft(songId));
+
+  const [md, setMd] = useState(restoredDraft ?? mdServer);
+  const [revisionsTab, setRevisionsTab] = useState(false);
+  const [dirty, setDirty] = useState(
+    restoredDraft !== undefined && restoredDraft !== mdServer,
+  );
+  const [saved, setSaved] = useState(SaveState.UNSAVED);
+
   const navigate = useNavigate();
+
+  // Mirror the editor content so it outlives the tab. Once the content matches
+  // the server again there is nothing left to recover, so drop the draft.
+  useEffect(() => {
+    if (dirty) {
+      writeDraft(songId, md);
+    } else {
+      clearDraft(songId);
+    }
+  }, [songId, md, dirty]);
 
   const handleContextMenu: MouseEventHandler = (event) => {
     if (revisionsTab) {
@@ -42,6 +59,7 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
         console.error(error);
       } else {
         if (isValid) {
+          clearDraft(songId);
           setDirty(false);
           setSaved(SaveState.SUCCESS);
         } else {
