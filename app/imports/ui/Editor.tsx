@@ -2,11 +2,7 @@ import * as React from "react";
 import { FC, MouseEventHandler, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Prompt = ({ when, message }: { when: boolean; message: string }) => {
-  // Simple implementation - in React 18 this needs proper handling
-  return null;
-};
-
+import { UnsavedChangesPrompt } from "./UnsavedChangesPrompt";
 import Source from "./Source";
 import RevBrowser from "./RevBrowser";
 import Preview from "./Preview";
@@ -81,23 +77,19 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
   {
     const revs = props.song.getRevisions();
 
-    const prompt = (
-      <Prompt
-        when={dirty && revs.length > 0}
-        message={"Du hast noch ungespeicherte Änderungen. Verwerfen?"}
-      />
-    );
+    const prompt = <UnsavedChangesPrompt when={dirty} />;
 
     if (!revisionsTab) {
-      const versions = revs ? (
-        <Drawer id="revs" className="revision-colors" onClick={toggleRevTab}>
-          <h1>Verlauf</h1>
-          <p>
-            Es existieren {revs.length} Versionen. Klicke, um diese zu
-            durchstöbern!
-          </p>
-        </Drawer>
-      ) : undefined;
+      const versions =
+        revs.length > 0 ? (
+          <Drawer id="revs" className="revision-colors" onClick={toggleRevTab}>
+            <h1>Verlauf</h1>
+            <p>
+              Es existieren {revs.length} Versionen. Klicke, um diese zu
+              durchstöbern!
+            </p>
+          </Drawer>
+        ) : undefined;
 
       const dirtyLabel = dirty ? (
         <span id="dirty" title="Ungesicherte Änderungen"></span>

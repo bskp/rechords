@@ -96,8 +96,37 @@ Meteor.methods({
       );
 
     const [new_first_word, ...secret_words] = chunks;
-    Accounts.setUsername(id!, new_first_word);
+    await Accounts.setUsername(id!, new_first_word);
     await Accounts.setPasswordAsync(id!, secret_words.join("-"));
+  },
+
+  // Favourites ("Lieblingslieder") of the calling user. Kept separate from
+  // saveUser, which is admin-only and deliberately ignores profile.darlings.
+  async toggleDarling(songId: string) {
+    const callerId = Meteor.userId();
+    if (!callerId) {
+      throw new Meteor.Error("not-authorized", "Login required");
+    }
+
+    check(songId, String);
+
+    if (!(await Songs.findOneAsync(songId))) {
+      throw new Meteor.Error("songs.not_found", "Unbekanntes Lied");
+    }
+
+    const caller = await Meteor.users.findOneAsync({ _id: callerId });
+    const darlings = readProfile(caller?.profile).darlings ?? [];
+    const isDarling = darlings.includes(songId);
+
+    await Meteor.users.updateAsync(callerId, {
+      $set: {
+        "profile.darlings": isDarling
+          ? darlings.filter((id) => id !== songId)
+          : [...darlings, songId],
+      },
+    });
+
+    return !isDarling;
   },
 
   async saveOwnUser(user: Meteor.User) {

@@ -18,7 +18,8 @@ export default defineConfig({
     stdout: "pipe",
     stderr: "pipe",
     wait: {
-      stdout: /=> App running at: http:\/\/localhost:(?<my_server_port>\d+)\//,
+      // Meteor 3.5 dropped the colon after "at"; match both spellings.
+      stdout: /=> App running at:? http:\/\/localhost:(?<my_server_port>\d+)\//,
     },
   },
 });

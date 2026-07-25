@@ -30,7 +30,7 @@ Meteor.publish("revisions", function () {
 Meteor.startup(async () => {
   const userCount = await Meteor.users.rawCollection().countDocuments();
   if (userCount === 0) {
-    Accounts.createUser({
+    await Accounts.createUser({
       username: "le",
       email: "bitte_noch_anpassen@chabis.ruebli",
       password: "coq-est-mort",

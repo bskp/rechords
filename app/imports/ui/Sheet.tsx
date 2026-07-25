@@ -22,7 +22,7 @@ type SheetProps = {
   processVdom?: (vdom: any) => any;
   style?: CSSProperties;
   classes?: any;
-  inlineRefState: [boolean, (inlineRef: boolean) => void];
+  inlineRefState?: [boolean, (inlineRef: boolean) => void];
 };
 const Sheet = ({
   song,
@@ -31,9 +31,12 @@ const Sheet = ({
   processVdom,
   style,
   classes = [],
-  inlineRefState = useState(true),
+  inlineRefState,
 }: SheetProps) => {
-  const [inlineRefs, setInlineRefs] = inlineRefState;
+  // Hooks must run unconditionally, so the fallback state is always created —
+  // it is simply ignored when the caller controls the state itself.
+  const ownInlineRefState = useState(true);
+  const [inlineRefs, setInlineRefs] = inlineRefState ?? ownInlineRefState;
   const toggleInlineRefs = () => setInlineRefs(!inlineRefs);
 
   // from UI

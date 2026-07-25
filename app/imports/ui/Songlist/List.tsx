@@ -22,6 +22,7 @@ const List = (props: ListProps) => {
   const [filter, setFilter] = useState("");
 
   const navigate = useNavigate();
+  const { showMenu, setShowMenu } = useContext(MenuContext);
 
   const [fuzzyMatches, exactMatches] = useMemo(() => {
     let visibleSongs = props.songs;
@@ -68,7 +69,7 @@ const List = (props: ListProps) => {
     }
     if (song) {
       const newUrl = routePath(View.view, song);
-      showMenu;
+      setShowMenu(false);
       navigate(newUrl);
     }
   };
@@ -82,8 +83,6 @@ const List = (props: ListProps) => {
     }
     groups.get(group)?.push(song);
   }
-
-  const { showMenu } = useContext(MenuContext);
 
   const addSong = userMayWrite() ? (
     <li>

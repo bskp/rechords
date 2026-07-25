@@ -411,7 +411,7 @@ function UserRoute({
     <>
       {songList}
       <TrackingDocumentTitle
-        title={"Hölibu | " + getUser()?.profile.name || "?"}
+        title={"Hölibu | " + (getUser()?.profile.name ?? "?")}
       />
       <User user={user} key={user._id} revisionsLoading={revisionsLoading} />
       <MenuBurger />
