@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Transposer, { useTranspose } from "./Transposer";
 import Chord from "../api/libchr0d/chord";
@@ -25,7 +25,10 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const transposeState = useTranspose(getTransposeFromTag(song.getTags()));
 
   const [showChords] = useState<boolean>(true);
-  const [autoScroll, setAutoScroll] = useState<number | undefined>(undefined);
+  // The interval id lives in a ref so that cleanups always see the running
+  // interval; the state flag only drives the button icon.
+  const autoScrollId = useRef<number | undefined>(undefined);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [isVideoActive, setIsVideoActive] = useState<boolean>(false);
   const [textZoom, setTextZoom] = useState<number>(1);
 
@@ -40,20 +43,9 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
 
   const navigate = useNavigate();
 
-  let duration_s: number | undefined;
-
-  const updateDuration = useCallback(() => {
-    const duration = song.getTag("dauer");
-    if (duration) {
-      const [minutes, seconds] = duration.split(":");
-      duration_s = 60 * Number(minutes) + Number(seconds);
-    } else {
-      duration_s = undefined;
-    }
-  }, [song]);
+  const duration_s = parseDurationTag(song.getTag("dauer"));
 
   useEffect(() => {
-    updateDuration();
     document.scrollingElement?.scrollTo(0, 0);
     transposeState.setTranspose({
       semitones: getTransposeFromTag(song.getTags()),
@@ -105,18 +97,23 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   };
 
   const toggleAutoScroll = () => {
-    autoScroll ? stopAutoScroll() : startAutoScroll();
+    if (isAutoScrolling) {
+      stopAutoScroll();
+    } else {
+      startAutoScroll();
+    }
   };
 
   const startAutoScroll = () => {
-    const scrollContainer = document.scrollingElement!;
+    const scrollContainer = document.scrollingElement;
+    if (!scrollContainer) return;
 
     let delay_ms = 133;
     let step_pixels = 1;
 
-    if (duration_s) {
-      const scrollDistance =
-        scrollContainer.scrollHeight - scrollContainer.clientHeight;
+    const scrollDistance =
+      scrollContainer.scrollHeight - scrollContainer.clientHeight;
+    if (duration_s && scrollDistance > 0) {
       delay_ms = (duration_s * 1000) / scrollDistance;
     }
 
@@ -125,18 +122,19 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
       delay_ms = delay_ms * step_pixels;
     }
 
-    const intervalId = Meteor.setInterval(() => {
+    stopAutoScroll();
+    autoScrollId.current = Meteor.setInterval(() => {
       scrollContainer.scrollBy(0, step_pixels);
     }, delay_ms);
-
-    setAutoScroll(intervalId);
+    setIsAutoScrolling(true);
   };
 
   const stopAutoScroll = () => {
-    if (autoScroll) {
-      Meteor.clearInterval(autoScroll);
-      setAutoScroll(undefined);
+    if (autoScrollId.current !== undefined) {
+      Meteor.clearInterval(autoScrollId.current);
+      autoScrollId.current = undefined;
     }
+    setIsAutoScrolling(false);
   };
 
   const keyTag = song.getTag("tonart");
@@ -209,7 +207,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
             <ReactSVG src="/svg/transposer.svg" />
           </Button>
           <Button onClick={toggleAutoScroll}>
-            {autoScroll ? (
+            {isAutoScrolling ? (
               <ReactSVG src="/svg/conveyor_active.svg" />
             ) : (
               <ReactSVG
@@ -236,6 +234,14 @@ export function parseChords(chords: string[]) {
 export function getTransposeFromTag(tags: string[]): number | undefined {
   const transposeTag = tags.find((tag) => tag.startsWith("transponierung:"));
   if (!transposeTag) return undefined;
-  let dt = parseInt(transposeTag.split(":")[1], 10);
+  const dt = parseInt(transposeTag.split(":")[1], 10);
   return isNaN(dt) ? undefined : dt;
+}
+
+// "#dauer:3:45" -> 225 seconds
+export function parseDurationTag(duration?: string): number | undefined {
+  if (!duration) return undefined;
+  const [minutes, seconds] = duration.split(":");
+  const total = 60 * Number(minutes) + Number(seconds ?? 0);
+  return Number.isFinite(total) && total > 0 ? total : undefined;
 }

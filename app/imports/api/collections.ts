@@ -154,19 +154,21 @@ export class Song {
     this.parsed_rmd_version = rmd_version;
   }
 
-  getRevisions() {
-    if (!isDefined(this.revision_cache)) {
-      this.revision_cache = Revisions.find(
-        { of: this._id },
-        {
-          sort: { timestamp: -1 },
-        },
-      ).fetch();
-    }
-    return this.revision_cache;
+  getRevisions(): Revision[] {
+    const cached = this.revision_cache;
+    if (isDefined(cached)) return cached;
+
+    const revisions: Revision[] = Revisions.find(
+      { of: this._id },
+      {
+        sort: { timestamp: -1 },
+      },
+    ).fetch();
+    this.revision_cache = revisions;
+    return revisions;
   }
 
-  getRevision(steps: number) {
+  getRevision(steps: number): Revision | undefined {
     return this.getRevisions()[steps];
   }
 }
@@ -184,7 +186,7 @@ export interface Revision {
 const Revisions = new Mongo.Collection<Revision>("revisions");
 
 const Songs = new Mongo.Collection<Song>("songs", {
-  transform(doc) {
+  transform(doc: Song) {
     return new Song(doc);
   },
 });

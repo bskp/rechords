@@ -15,22 +15,9 @@ interface ListItemProps {
 const ListItem: React.FC<ListItemProps> = ({ song, user }) => {
   const toggleDarling = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !song._id) return;
 
-    const { profile } = user;
-    if (!profile || !Array.isArray(profile.darlings)) {
-      user.profile = { ...profile, darlings: [] };
-    }
-
-    const { darlings } = user.profile;
-
-    if (darlings.includes(song._id)) {
-      user.profile.darlings = darlings.filter((id) => id !== song._id);
-    } else {
-      user.profile.darlings.push(song._id);
-    }
-
-    Meteor.call("saveUser", user, (error: any) => {
+    Meteor.call("toggleDarling", song._id, (error: unknown) => {
       if (error) {
         console.error(error);
       }
@@ -45,7 +32,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, user }) => {
       <NavLink
         onClick={() => setShowMenu(false)}
         to={routePath(View.view, song)}
-        activeClassName="selected"
+        className={({ isActive }) => (isActive ? "selected" : "")}
       >
         <span className="title">{song.title}</span>
         <span className="author">{song.author}</span>

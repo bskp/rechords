@@ -85,10 +85,12 @@ class EditUser extends React.Component<
   };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    if (this.state.user.username?.length == 0 && this.state.secret.length > 0) {
-      this.state.user.username = "tempusername";
-    }
-    Meteor.call("saveUser", this.state.user, this.state.secret, (error) => {
+    const user =
+      this.state.user.username?.length == 0 && this.state.secret.length > 0
+        ? { ...this.state.user, username: "tempusername" }
+        : this.state.user;
+
+    Meteor.call("saveUser", user, this.state.secret, (error) => {
       console.log(error);
 
       this.setState({
@@ -119,13 +121,13 @@ class EditUser extends React.Component<
         <form onSubmit={this.handleSubmit} className="row">
           <input
             type="text"
-            value={u.profile.name}
+            value={u.profile.name ?? ""}
             onChange={this.updateName}
             placeholder="Name"
           />
           <input
             type="text"
-            value={u.emails?.[0].address}
+            value={u.emails?.[0]?.address ?? ""}
             onChange={this.updateEmail}
             placeholder="Email"
           />
@@ -183,7 +185,7 @@ class Users extends React.Component<UsersProps, { user?: Meteor.User }> {
     },
     {
       Header: "Email-Adresse",
-      accessor: (u: Meteor.User) => u.emails?.[0].address,
+      accessor: (u: Meteor.User) => u.emails?.[0]?.address ?? "",
     },
     {
       Header: "1. Wort",
@@ -192,7 +194,7 @@ class Users extends React.Component<UsersProps, { user?: Meteor.User }> {
     {
       Header: "Rechte",
       accessor: (u: Meteor.User) =>
-        roles.filter((d) => d.value == u.profile.role)[0].label,
+        roles.find((d) => d.value == u.profile?.role)?.label ?? "—",
     },
     /*
         {

@@ -216,7 +216,7 @@ class User extends React.Component<
           <label>Email-Adresse</label>
           <input
             type="text"
-            value={u.emails?.[0].address}
+            value={u.emails?.[0]?.address ?? ""}
             onChange={this.updateEmail}
             placeholder="Email"
           />
