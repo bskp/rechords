@@ -91,6 +91,39 @@ test.describe("Song Creation & Editing", () => {
     expect(await textarea.inputValue()).toContain(uniqueText);
   });
 
+  test("the local draft is listed among the revisions", async ({ page }) => {
+    const uniqueText = `local-uuid-${Date.now()}`;
+
+    await page.goto(`${METEOR_URL}/edit/emil-luckhard/die-internationale`, {
+      waitUntil: "networkidle",
+    });
+
+    const textarea = page.locator("textarea").first();
+    await expect(textarea).toBeVisible({ timeout: E2E_TIMEOUT });
+    await textarea.fill(`${await textarea.inputValue()}\n\n\n${uniqueText}`);
+    await expect(page.locator("#dirty")).toBeAttached({ timeout: E2E_TIMEOUT });
+
+    // Open the "Verlauf" drawer, which mentions the local copy.
+    const verlauf = page.locator("aside#revs");
+    await expect(verlauf).toContainText("lokal gesicherte Fassung");
+    await verlauf.click();
+
+    // It leads the list, ahead of every server-side revision.
+    const draftEntry = page.locator("aside#revs li.draft");
+    await expect(draftEntry).toHaveCount(1, { timeout: E2E_TIMEOUT });
+    await expect(draftEntry).toContainText("lokal");
+    await expect(page.locator("aside#revs li").first()).toHaveClass(/draft/);
+
+    // Selecting it shows the unsaved text in the read-only comparison pane.
+    await draftEntry.click();
+    const readOnly = page.locator("textarea[readonly]");
+    await expect(readOnly).toHaveValue(new RegExp(uniqueText), {
+      timeout: E2E_TIMEOUT,
+    });
+    // The other ".label" is the live buffer's "Version in Bearbeitung".
+    await expect(page.getByText(/Lokal gesichert/)).toBeVisible();
+  });
+
   test("insert lyrics line with unique text appears after save", async ({
     page,
   }) => {

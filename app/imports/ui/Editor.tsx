@@ -28,12 +28,13 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
   // Read once per mount: a draft left behind by an earlier editing session.
   const [restoredDraft] = useState(() => readDraft(songId));
 
-  const [md, setMd] = useState(restoredDraft ?? mdServer);
+  const [md, setMd] = useState(restoredDraft?.text ?? mdServer);
   const [revisionsTab, setRevisionsTab] = useState(false);
   const [dirty, setDirty] = useState(
-    restoredDraft !== undefined && restoredDraft !== mdServer,
+    restoredDraft !== undefined && restoredDraft.text !== mdServer,
   );
   const [saved, setSaved] = useState(SaveState.UNSAVED);
+  const [draftSavedAt, setDraftSavedAt] = useState(restoredDraft?.savedAt);
 
   const navigate = useNavigate();
 
@@ -41,11 +42,16 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
   // the server again there is nothing left to recover, so drop the draft.
   useEffect(() => {
     if (dirty) {
-      writeDraft(songId, md);
+      setDraftSavedAt(writeDraft(songId, md));
     } else {
       clearDraft(songId);
+      setDraftSavedAt(undefined);
     }
   }, [songId, md, dirty]);
+
+  // The draft always mirrors the buffer, so this is what RevBrowser lists
+  // next to the server-side revisions.
+  const draft = dirty ? { text: md, savedAt: draftSavedAt } : undefined;
 
   const handleContextMenu: MouseEventHandler = (event) => {
     if (revisionsTab) {
@@ -99,12 +105,13 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
 
     if (!revisionsTab) {
       const versions =
-        revs.length > 0 ? (
+        revs.length > 0 || draft ? (
           <Drawer id="revs" className="revision-colors" onClick={toggleRevTab}>
             <h1>Verlauf</h1>
             <p>
-              Es existieren {revs.length} Versionen. Klicke, um diese zu
-              durchstöbern!
+              Es existieren {revs.length} Versionen
+              {draft ? " sowie deine lokal gesicherte Fassung" : ""}. Klicke, um
+              diese zu durchstöbern!
             </p>
           </Drawer>
         ) : undefined;
@@ -150,7 +157,7 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
           <Source md={md} updateHandler={update} className="source-colors">
             <span className="label">Version in Bearbeitung</span>
           </Source>
-          <RevBrowser song={props.song} />
+          <RevBrowser song={props.song} draft={draft} />
           {prompt}
         </div>
       );
