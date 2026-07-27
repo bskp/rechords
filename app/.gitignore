@@ -1,3 +1,9 @@
 node_modules/
 dump/
 test-results/
+
+# Meteor modern build stack (rspack) build context
+_build
+*/build-assets
+*/build-chunks
+.rsdoctor
