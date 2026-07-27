@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FC, MouseEventHandler, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { UnsavedChangesPrompt } from "./UnsavedChangesPrompt";
 import Source from "./Source";

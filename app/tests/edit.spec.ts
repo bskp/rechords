@@ -45,7 +45,13 @@ test.describe("Song Creation & Editing", () => {
 
     await page.waitForURL(/\/view\//, { timeout: E2E_TIMEOUT });
 
-    await expect(page.getByText("Pferdi text")).toBeVisible();
+    // Scoped to the chord sheet, as the sibling test below already does.
+    // A page-wide getByText also matches the editor's textarea, which react
+    // -router 7 keeps mounted a moment longer than v6 did: navigation now runs
+    // inside startTransition by default (the v7_startTransition flag in v6).
+    await expect(
+      page.locator("#chordsheetContent").getByText("Pferdi text"),
+    ).toBeVisible({ timeout: E2E_TIMEOUT });
   });
 
   test("insert lyrics line with unique text appears after save", async ({

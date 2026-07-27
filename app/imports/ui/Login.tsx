@@ -1,7 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { ReactSVG } from "react-svg";
 import { navigateTo, View } from "../api/helpers";
