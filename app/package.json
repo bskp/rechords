@@ -14,7 +14,8 @@
     "test:e2e": "playwright install --with-deps chromium && playwright test --ui",
     "ci:test:e2e": "playwright install --with-deps chromium && playwright test",
     "ci:test": "npm test",
-    "ci:formatting": "npm run pretty:check"
+    "ci:formatting": "npm run pretty:check",
+    "fix:rosetta": "node scripts/rosetta-bindings.mjs"
   },
   "dependencies": {
     "@babel/runtime": "^7.23.5",
