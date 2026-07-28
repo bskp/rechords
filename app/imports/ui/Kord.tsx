@@ -1,6 +1,7 @@
 // import * as db from '@tombatossals/chords-db';
 import * as React from "react";
 import Chord from "./Frets/Chord";
+import { Instrument } from "./Frets/types";
 
 interface ChordProps {
   frets: string;
@@ -9,7 +10,7 @@ interface ChordProps {
   capo?: number;
 }
 
-const instrument = {
+const instrument: Instrument = {
   strings: 6,
   fretsOnChord: 4,
   name: "Guitar",
@@ -19,8 +20,16 @@ const instrument = {
   },
 };
 
-export default function Kord(props: ChordProps) {
-  const frets = props.frets.split("", 6).map((n) => {
+// Defaults live in the signature rather than in Kord.defaultProps: React 19
+// drops defaultProps for function components, and TypeScript never applied
+// them when narrowing the optional props below.
+export default function Kord({
+  frets: fretSpec,
+  fingers: fingerSpec = "",
+  barres: barreSpec = "detect",
+  capo: capoSpec = -1,
+}: ChordProps) {
+  const frets = fretSpec.split("", 6).map((n) => {
     const i = parseInt(n, 10);
     return isNaN(i) ? -1 : i;
   });
@@ -33,10 +42,10 @@ export default function Kord(props: ChordProps) {
   let baseFret = 1;
   if (maxFret > 4) baseFret = minFret;
 
-  const fingers = props.fingers.split("", 6).map((n) => parseInt(n, 10) || 0);
+  const fingers = fingerSpec.split("", 6).map((n) => parseInt(n, 10) || 0);
 
-  let barres = [];
-  if (props.barres == "detect") {
+  let barres: number[] = [];
+  if (barreSpec == "detect") {
     for (let b = baseFret; b < baseFret + 4; b++) {
       let barre_finger = -1;
       let barre_width = 0;
@@ -59,14 +68,14 @@ export default function Kord(props: ChordProps) {
       if (barre_width >= 2) barres.push(b);
     }
   } else {
-    barres = props.barres.split("").map((n) => parseInt(n, 10) || 0);
+    barres = barreSpec.split("").map((n) => parseInt(n, 10) || 0);
   }
 
-  let capo;
-  if (props.capo == -1) {
+  let capo: boolean;
+  if (capoSpec == -1) {
     capo = Math.min(...barres) <= Math.min(...frets.filter((f) => f != -1));
   } else {
-    capo = props.capo == 0;
+    capo = capoSpec == 0;
   }
 
   return (
@@ -84,9 +93,3 @@ export default function Kord(props: ChordProps) {
     </div>
   );
 }
-
-Kord.defaultProps = {
-  fingers: "",
-  barres: "detect",
-  capo: -1,
-};

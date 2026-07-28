@@ -1,7 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
+import { Fret } from "./types";
 
-const offsets = {
+/** Keyed by string count; only 4- and 6-string instruments are drawn. */
+const offsets: Record<number, { x: number; y: number; length: number }> = {
   4: {
     x: 10,
     y: 10,
@@ -14,36 +15,47 @@ const offsets = {
   },
 };
 
-const getNeckHorizonalLine = (pos, strings) =>
+const getNeckHorizonalLine = (pos: number, strings: number) =>
   `M ${offsets[strings].x} ${12 * pos} H ${offsets[strings].length}`;
 
-const getNeckVerticalLine = (pos, strings) =>
+const getNeckVerticalLine = (pos: number, strings: number) =>
   `M ${offsets[strings].y + pos * 10} 0 V 48`;
 
-const getNeckPath = (strings, fretsOnChord) =>
-  Array.apply(null, Array(fretsOnChord + 1))
+const getNeckPath = (strings: number, fretsOnChord: number) =>
+  Array.from({ length: fretsOnChord + 1 })
     .map((_, pos) => getNeckHorizonalLine(pos, strings))
     .join(" ")
     .concat(
-      Array.apply(null, Array(strings))
+      Array.from({ length: strings })
         .map((_, pos) => getNeckVerticalLine(pos, strings))
         .join(" "),
     );
 
-const getBarreOffset = (strings, frets, baseFret, capo) => {
+/** Shifts the base-fret label left when a capo or first-fret stop is drawn. */
+const getBarreOffset = (frets: Fret[], capo?: boolean) => {
   let offset = -6;
   if (capo || frets[0] == 1) offset += -3;
   return offset;
 };
 
-const Neck = ({
+interface NeckProps {
+  tuning: string[];
+  frets: Fret[];
+  capo?: boolean;
+  strings: number;
+  baseFret?: number;
+  fretsOnChord: number;
+  lite?: boolean;
+}
+
+const Neck: React.FC<NeckProps> = ({
   tuning,
   frets,
   strings,
   fretsOnChord,
-  baseFret,
+  baseFret = 1,
   capo,
-  lite,
+  lite = false,
 }) => {
   return (
     <g className="fret">
@@ -59,7 +71,7 @@ const Neck = ({
         <text
           className="basefret"
           textAnchor="end"
-          x={getBarreOffset(strings, frets, baseFret, capo)}
+          x={getBarreOffset(frets, capo)}
           y="10"
         >
           {baseFret}.
@@ -84,21 +96,6 @@ const Neck = ({
       )}
     </g>
   );
-};
-
-Neck.propTypes = {
-  tuning: PropTypes.array,
-  frets: PropTypes.array,
-  capo: PropTypes.bool,
-  strings: PropTypes.number.isRequired,
-  baseFret: PropTypes.oneOf([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
-  fretsOnChord: PropTypes.number.isRequired,
-  lite: PropTypes.bool,
-};
-
-Neck.defaultProps = {
-  baseFret: 1,
-  lite: false,
 };
 
 export default Neck;
