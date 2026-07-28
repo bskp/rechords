@@ -1,13 +1,14 @@
 import React from "react";
-import PropTypes from "prop-types";
+import { Finger, Fret } from "./types";
 
-const fretXPosition = {
+/** Keyed by string count; only 4- and 6-string instruments are drawn. */
+const fretXPosition: Record<number, number[]> = {
   4: [10, 20, 30, 40, 50],
   6: [0, 10, 20, 30, 40, 50],
 };
 
 const fretYPosition = [2, 13.9, 26, 38];
-const offset = {
+const offset: Record<number, number> = {
   4: 0,
   6: -1,
 };
@@ -18,15 +19,29 @@ const positions = {
   finger: [-3, 8, 19.5, 31.5, 43.5],
 };
 
-const getStringPosition = (string, strings) =>
+const getStringPosition = (string: number, strings: number) =>
   positions.string[string + offset[strings]];
 
-const onlyBarres = (frets, barre) =>
+const onlyBarres = (frets: Fret[], barre: number) =>
   frets
     .map((f, index) => ({ position: index, value: f }))
     .filter((f) => f.value === barre);
 
-const Barre = ({ barre, frets, capo, finger, lite }) => {
+interface BarreProps {
+  frets: Fret[];
+  barre: number;
+  capo?: boolean;
+  lite?: boolean;
+  finger?: Finger;
+}
+
+const Barre: React.FC<BarreProps> = ({
+  barre,
+  frets,
+  capo,
+  finger,
+  lite = false,
+}) => {
   const strings = frets.length;
   const barreFrets = onlyBarres(frets, barre);
 
@@ -36,9 +51,9 @@ const Barre = ({ barre, frets, capo, finger, lite }) => {
   const y = fretYPosition[barre - 1];
 
   return (
-    <g class="barre">
+    <g className="barre">
       {capo && (
-        <g class="capo">
+        <g className="capo">
           <g
             transform={`translate(${getStringPosition(strings, strings)}, ${positions.fret[barreFrets[0].value]})`}
           >
@@ -98,14 +113,6 @@ const Barre = ({ barre, frets, capo, finger, lite }) => {
         ))}
     </g>
   );
-};
-
-Barre.propTypes = {
-  frets: PropTypes.array,
-  barre: PropTypes.number,
-  capo: PropTypes.bool,
-  lite: PropTypes.bool,
-  finger: PropTypes.oneOf([0, 1, 2, 3, 4, 5]),
 };
 
 export default Barre;

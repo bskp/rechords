@@ -1,19 +1,25 @@
 import React from "react";
-import PropTypes from "prop-types";
 import Neck from "./Neck";
 import Dot from "./Dot";
 import Barre from "./Barre";
-import { instrumentPropTypes } from "./propTypes";
+import { ChordShape, Instrument } from "./types";
 
-const onlyDots = (chord) =>
+/** Every stopped string that is not already covered by a barre. */
+const onlyDots = (chord: ChordShape) =>
   chord.frets
     .map((f, index) => ({ position: index, value: f }))
     .filter((f) => !chord.barres || chord.barres.indexOf(f.value) === -1);
 
-const Chord = ({ chord, instrument, lite }) =>
+interface ChordProps {
+  chord?: ChordShape;
+  instrument: Instrument;
+  lite?: boolean;
+}
+
+const Chord: React.FC<ChordProps> = ({ chord, instrument, lite = false }) =>
   chord ? (
     <svg
-      class="chord-diag"
+      className="chord-diag"
       width="100px"
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMinYMin meet"
@@ -53,15 +59,5 @@ const Chord = ({ chord, instrument, lite }) =>
       ))}
     </svg>
   ) : null;
-
-Chord.propTypes = {
-  chord: PropTypes.any,
-  instrument: instrumentPropTypes,
-  lite: PropTypes.bool,
-};
-
-Chord.defaultProps = {
-  lite: false,
-};
 
 export default Chord;

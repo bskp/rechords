@@ -1,17 +1,18 @@
 import React from "react";
-import PropTypes from "prop-types";
+import { Finger, Fret } from "./types";
 
 const positions = {
   string: [50, 40, 30, 20, 10, 0],
   fret: [-6, 6, 18, 30, 42, 54],
 };
 
-const offset = {
+/** Keyed by string count; only 4- and 6-string instruments are drawn. */
+const offset: Record<number, number> = {
   4: 0,
   6: -1,
 };
 
-const getStringPosition = (string, strings) =>
+const getStringPosition = (string: number, strings: number) =>
   positions.string[string + offset[strings]];
 
 const radius = {
@@ -20,13 +21,27 @@ const radius = {
   fret: 5,
 };
 
-const Dot = ({ string, fret, finger, strings, lite }) => {
+interface DotProps {
+  string: number;
+  fret?: Fret;
+  finger?: Finger;
+  strings: number;
+  lite?: boolean;
+}
+
+const Dot: React.FC<DotProps> = ({
+  string,
+  fret = 0,
+  finger,
+  strings,
+  lite = false,
+}) => {
   const x = getStringPosition(string, strings);
   const y = positions.fret[fret < 0 ? 0 : fret];
 
   if (fret === -1)
     return (
-      <g class="dot muted">
+      <g className="dot muted">
         <line
           x1={x - radius.muted}
           x2={x + radius.muted}
@@ -45,26 +60,13 @@ const Dot = ({ string, fret, finger, strings, lite }) => {
   return (
     <g className={"dot" + (fret === 0 ? " open" : "")}>
       <circle cx={x} cy={y} r={fret === 0 ? radius.open : radius.fret} />
-      {!lite && finger > 0 && fret !== 0 && (
+      {!lite && finger !== undefined && finger > 0 && fret !== 0 && (
         <text x={x} y={y + radius.fret / 2}>
           {finger}
         </text>
       )}
     </g>
   );
-};
-
-Dot.propTypes = {
-  string: PropTypes.number,
-  fret: PropTypes.number,
-  finger: PropTypes.oneOf([0, 1, 2, 3, 4, 5]),
-  strings: PropTypes.number.isRequired,
-  lite: PropTypes.bool,
-};
-
-Dot.defaultProps = {
-  fret: 0,
-  lite: false,
 };
 
 export default Dot;

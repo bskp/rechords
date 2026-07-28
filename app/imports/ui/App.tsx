@@ -20,7 +20,7 @@ import {
   Route,
   Routes,
   useParams,
-} from "react-router-dom";
+} from "react-router";
 import TrackingDocumentTitle from "./TrackingDocumentTitle";
 import { Meteor } from "meteor/meteor";
 import { Printer } from "/imports/ui/Printer";
