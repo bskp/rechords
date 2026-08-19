@@ -1,12 +1,47 @@
 import { test, expect } from "@playwright/test";
 import { METEOR_URL, login, E2E_TIMEOUT } from "./constants";
 
-// Walks the chords of a song in the editor with the keyboard and checks that
-// merely passing through them does not rewrite the source.
-const tabThrough = async (page, path: string, steps: number) => {
-  await page.goto(`${METEOR_URL}${path}`, { waitUntil: "networkidle" });
+// A song carrying the shapes that chord editing used to get wrong: a line of
+// chords alone, chords with no letter between them, a chord behind the last
+// letter of a line, and a space between a chord and the word it belongs to.
+//
+// It is typed into a fresh editor and never saved, so these tests bring their
+// own material instead of relying on a song being in the database.
+const FIXTURE = `Akkordformen
+Fixture
+========
+
+Intro:
+[C] [dm7] [Cmaj7/E] [F]
+
+1:
+[C]eins, [Dm7]zwei drei
+[Fsus4] vier fuenf sechs [G]sieben acht
+[C][Dm7]ne u[Cmaj7/E]n u a u zehn el[Fsus4add9]
+ab[C]cd[Dm7]ef
+
+2:
+[F][G7]a bcde fghi[Gsus4]
+[C] [dm7] [F]
+`;
+
+const openFixture = async (page) => {
+  await page.goto(`${METEOR_URL}/new`, { waitUntil: "networkidle" });
   const textarea = page.locator("textarea").first();
   await expect(textarea).toBeVisible({ timeout: E2E_TIMEOUT });
+
+  await textarea.fill(FIXTURE);
+  await expect(page.locator("#chordsheetContent .before").first()).toBeVisible({
+    timeout: E2E_TIMEOUT,
+  });
+
+  return textarea;
+};
+
+const chordCount = (md: string) => md.match(/\[[^\]]*]/g)?.length ?? 0;
+
+// Walks the chords with the keyboard and reports what that did to the source.
+const tabThrough = async (page, textarea, steps: number) => {
   const before = await textarea.inputValue();
 
   await page.locator("#chordsheetContent .before").first().click();
@@ -26,25 +61,22 @@ test.describe("Tabbing through chords in the editor", () => {
     await login(page);
   });
 
-  test("leaves a plain song untouched", async ({ page }) => {
-    const { before, after } = await tabThrough(
-      page,
-      "/edit/emil-luckhard/die-internationale",
-      6,
-    );
+  test("leaves a stored song untouched", async ({ page }) => {
+    await page.goto(`${METEOR_URL}/edit/emil-luckhard/die-internationale`, {
+      waitUntil: "networkidle",
+    });
+    const textarea = page.locator("textarea").first();
+    await expect(textarea).toBeVisible({ timeout: E2E_TIMEOUT });
+
+    const { before, after } = await tabThrough(page, textarea, 6);
     expect(after).toEqual(before);
   });
 
   test("leaves chord-only lines and stacked chords untouched", async ({
     page,
   }) => {
-    // "Los" has chord-only lines ([C] [dm7] …), chords with no letter between
-    // them ([C][Dm7]) and chords sitting after the last letter of a line.
-    const { before, after } = await tabThrough(
-      page,
-      "/edit/patent-ochsner/los",
-      20,
-    );
+    const textarea = await openFixture(page);
+    const { before, after } = await tabThrough(page, textarea, 20);
     expect(after).toEqual(before);
   });
 });
@@ -52,24 +84,18 @@ test.describe("Tabbing through chords in the editor", () => {
 test.describe("Editing a chord in the editor", () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
-    await page.goto(`${METEOR_URL}/edit/patent-ochsner/los`, {
-      waitUntil: "networkidle",
-    });
-    await expect(page.locator("textarea").first()).toBeVisible({
-      timeout: E2E_TIMEOUT,
-    });
   });
 
-  // Renames the nth chord that reads `text` and returns the source before and after.
+  // Renames the nth chord that reads `text` and reports before and after.
   const rename = async (page, text: string, nth: number, renamed: string) => {
-    const textarea = page.locator("textarea").first();
+    const textarea = await openFixture(page);
     const before = await textarea.inputValue();
 
-    const chord = page
+    await page
       .locator("#chordsheetContent .before")
       .filter({ hasText: new RegExp(`^${text}$`) })
-      .nth(nth);
-    await chord.fill(renamed);
+      .nth(nth)
+      .fill(renamed);
     await page.keyboard.press("Enter");
     await page.waitForTimeout(200);
 
@@ -97,15 +123,9 @@ test.describe("Editing a chord in the editor", () => {
 test.describe("Nudging a chord with shift and an arrow key", () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
-    await page.goto(`${METEOR_URL}/edit/patent-ochsner/los`, {
-      waitUntil: "networkidle",
-    });
-    await expect(page.locator("textarea").first()).toBeVisible({
-      timeout: E2E_TIMEOUT,
-    });
   });
 
-  // Marks the first chord of a line that either has lyrics or has none at all,
+  // Focuses the first chord of a line that either carries lyrics or does not,
   // so that Playwright can address it without knowing the song by heart.
   const focusChordInLine = async (page, withLyrics: boolean) => {
     const found = await page.evaluate((wantsLyrics) => {
@@ -134,7 +154,7 @@ test.describe("Nudging a chord with shift and an arrow key", () => {
   };
 
   test("leaves a line made of chords alone untouched", async ({ page }) => {
-    const textarea = page.locator("textarea").first();
+    const textarea = await openFixture(page);
     const before = await textarea.inputValue();
 
     await focusChordInLine(page, false);
@@ -150,7 +170,7 @@ test.describe("Nudging a chord with shift and an arrow key", () => {
   test("keeps the chord focused, so it can be nudged again", async ({
     page,
   }) => {
-    const textarea = page.locator("textarea").first();
+    const textarea = await openFixture(page);
     const before = await textarea.inputValue();
 
     await focusChordInLine(page, true);
@@ -173,12 +193,30 @@ test.describe("Nudging a chord with shift and an arrow key", () => {
     expect(twice).not.toEqual(once);
   });
 
-  const chordCount = (md: string) => md.match(/\[[^\]]*]/g)?.length ?? 0;
+  test("makes room at the head of a line and takes it back", async ({
+    page,
+  }) => {
+    const textarea = await openFixture(page);
+    const before = await textarea.inputValue();
+
+    await focusChordInLine(page, true);
+    await page.keyboard.press("Shift+ArrowLeft");
+    await page.waitForTimeout(150);
+    const padded = await textarea.inputValue();
+
+    // Exactly one space more, and not a single chord has moved.
+    expect(padded.length).toEqual(before.length + 1);
+    expect(padded.replace(/ /g, "")).toEqual(before.replace(/ /g, ""));
+    expect(padded.match(/\[[^\]]*]/g)).toEqual(before.match(/\[[^\]]*]/g));
+
+    await page.keyboard.press("Shift+ArrowRight");
+    await page.waitForTimeout(150);
+    expect(await textarea.inputValue()).toEqual(before);
+  });
 
   // Clicking a syllable inserts a chord and leaves it focused, ready to be
   // typed into. Nothing but the chord itself may reach the source.
-  const insertFreshChord = async (page) => {
-    const textarea = page.locator("textarea").first();
+  const insertFreshChord = async (page, textarea) => {
     const before = await textarea.inputValue();
 
     await page
@@ -196,8 +234,8 @@ test.describe("Nudging a chord with shift and an arrow key", () => {
   };
 
   test("types into a fresh chord after nudging it", async ({ page }) => {
-    const textarea = page.locator("textarea").first();
-    const before = await insertFreshChord(page);
+    const textarea = await openFixture(page);
+    const before = await insertFreshChord(page, textarea);
 
     await page.keyboard.press("Shift+ArrowRight");
     await page.waitForTimeout(150);
@@ -212,8 +250,8 @@ test.describe("Nudging a chord with shift and an arrow key", () => {
   });
 
   test("drops a nudged chord that was never given a name", async ({ page }) => {
-    const textarea = page.locator("textarea").first();
-    const before = await insertFreshChord(page);
+    const textarea = await openFixture(page);
+    const before = await insertFreshChord(page, textarea);
 
     await page.keyboard.press("Shift+ArrowRight");
     await page.waitForTimeout(150);
@@ -222,35 +260,14 @@ test.describe("Nudging a chord with shift and an arrow key", () => {
 
     expect(await textarea.inputValue()).toEqual(before);
   });
-
-  test("makes room at the head of a line and takes it back", async ({
-    page,
-  }) => {
-    const textarea = page.locator("textarea").first();
-    const before = await textarea.inputValue();
-
-    await focusChordInLine(page, true);
-    await page.keyboard.press("Shift+ArrowLeft");
-    await page.waitForTimeout(150);
-    const padded = await textarea.inputValue();
-
-    // Exactly one space more, and not a single chord has moved.
-    expect(padded.length).toEqual(before.length + 1);
-    expect(padded.replace(/ /g, "")).toEqual(before.replace(/ /g, ""));
-    expect(padded.match(/\[[^\]]*]/g)).toEqual(before.match(/\[[^\]]*]/g));
-
-    await page.keyboard.press("Shift+ArrowRight");
-    await page.waitForTimeout(150);
-    expect(await textarea.inputValue()).toEqual(before);
-  });
 });
 
 test.describe("Sounding a chord while editing", () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
     // abcjs builds an AudioContext the first time it plays something, so the
-    // count of them says whether a chord was sounded — without depending on a
-    // soundfont being reachable.
+    // number of them tells whether a chord was sounded — without depending on
+    // the soundfont being reachable.
     await page.addInitScript(() => {
       (window as any).__audioContexts = 0;
       const Original = window.AudioContext;
@@ -262,18 +279,14 @@ test.describe("Sounding a chord while editing", () => {
         }
       };
     });
-    await page.goto(`${METEOR_URL}/edit/patent-ochsner/los`, {
-      waitUntil: "networkidle",
-    });
-    await expect(page.locator("textarea").first()).toBeVisible({
-      timeout: E2E_TIMEOUT,
-    });
   });
 
   const contexts = (page) =>
     page.evaluate(() => (window as any).__audioContexts as number);
 
   test("stays silent when a chord is clicked for editing", async ({ page }) => {
+    await openFixture(page);
+
     await page.locator("#chordsheetContent .before").first().click();
     await page.waitForTimeout(300);
     expect(await contexts(page)).toEqual(0);
@@ -285,7 +298,7 @@ test.describe("Sounding a chord while editing", () => {
   });
 
   test("sounds on right-click, without saving the song", async ({ page }) => {
-    const textarea = page.locator("textarea").first();
+    const textarea = await openFixture(page);
     const before = await textarea.inputValue();
 
     await page
@@ -296,7 +309,7 @@ test.describe("Sounding a chord while editing", () => {
 
     expect(await contexts(page)).toBeGreaterThan(0);
     // Right-clicking the editor saves and leaves; a chord must not.
-    expect(page.url()).toContain("/edit/");
+    expect(page.url()).toContain("/new");
     expect(await textarea.inputValue()).toEqual(before);
   });
 });
