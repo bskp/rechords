@@ -12,6 +12,7 @@ import classNames from "classnames";
 import { YtInter } from "./YtInter";
 import { VideoContext } from "/imports/ui/App";
 import { Transpose } from "/imports/ui/Transposer";
+import { playableChordProps } from "/imports/ui/audio/chordPlayer";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
 
@@ -84,7 +85,10 @@ const Sheet = ({
           chord_ = <span className="before">{chord}</span>;
         } else {
           chord_ = (
-            <span className={"before " + t.toStringClasses()}>
+            <span
+              className={"before playable " + t.toStringClasses()}
+              {...playableChordProps(t)}
+            >
               {t.toStringKey()}
               <sup>{t.toStringTensionsAndSlash()}</sup>
             </span>
@@ -147,7 +151,12 @@ const Sheet = ({
       const c = Chord.from(chord);
 
       return (
-        <span className="chord-container">
+        <span
+          className={classNames("chord-container", {
+            playable: c !== undefined,
+          })}
+          {...(c === undefined ? {} : playableChordProps(c))}
+        >
           <strong>
             {c?.toStringKey()}
             <sup>{c?.toStringTensionsAndSlash()}</sup>

@@ -239,6 +239,18 @@
       font-weight: 600;
       margin-left: 0.8em;
     }
+
+    &.playable {
+      cursor: pointer;
+
+      &:active .kord {
+        opacity: 0.6;
+      }
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
   }
 
   .chord-container strong,
@@ -375,6 +387,7 @@
 
     flex-direction: column;
     display: flex;
+    align-items: flex-start;
 
     &:first-child {
       margin-left: -@continuation_pad;
@@ -400,12 +413,38 @@
       transform: rotate(-3deg);
       transform-origin: left;
 
-      &:focus {
+      &:not(.playable) {
+        min-width: 2em;
+      }
+
+      // Editable chords only: a playable one must not change width on focus.
+      &:not(.playable):focus {
         background-color: var(--bg-filter-opaque);
-        min-width: 1.5em;
 
         &:empty:before {
           content: "\feff"; // Patches height rendering of empty contenteditables
+        }
+      }
+
+      &.playable {
+        cursor: pointer;
+        // Enlarges the tap target without moving the chord.
+        padding: 0.1em 0.2em;
+        margin-left: -0.2em;
+        margin-right: 0.3em;
+        border-radius: 0.2em;
+        transition: background-color 0.4s ease-out;
+
+        &:active {
+          background-color: var(--bg-filter-opaque);
+          transition: none;
+        }
+
+        // Tabbing through the song sounds one chord after the other, so the
+        // ring has to say clearly which one is playing.
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 0.12em var(--accent);
         }
       }
 
