@@ -57,6 +57,9 @@ export default (props: P) => {
     chord: number;
     select?: boolean;
   } | null>(null);
+  // What the focused chord read on arrival, so that Escape can put it back.
+  const editedFrom = useRef<string | null>(null);
+
   useEffect(() => {
     const wanted = refocus.current;
     refocus.current = null;
@@ -190,7 +193,6 @@ export default (props: P) => {
   };
 
   const handleChordBlur = (event: React.SyntheticEvent<HTMLElement>) => {
-    event.currentTarget.removeAttribute("data-initial");
     const chord = event.currentTarget.innerText;
 
     const { verse, chord: nth } = locate(event.currentTarget.parentElement);
@@ -249,7 +251,7 @@ export default (props: P) => {
 
     if (event.key == "Escape") {
       event.preventDefault();
-      n.innerText = n.getAttribute("data-initial");
+      if (editedFrom.current !== null) n.innerText = editedFrom.current;
       n.blur();
       return;
     }
@@ -263,10 +265,6 @@ export default (props: P) => {
       offsetChordPosition(event, -1);
       event.preventDefault();
     }
-
-    if (!n.hasAttribute("data-initial")) {
-      n.setAttribute("data-initial", n.innerText);
-    }
   };
 
   /*  Return the string's length omitting all whitespace.
@@ -277,68 +275,20 @@ export default (props: P) => {
     return str.replace(/\s/g, "").length;
   }
 
+  /**
+   * Where a syllable sits in the source. parseRechordsDown wrote this down
+   * while it still knew, so nothing here depends on the shape of the document.
+   */
   const locate = (segment: Element) => {
-    if (segment.tagName != "I") {
-      throw "Illegal argument: invoke locate() with a <i>-element";
+    const { verse, lyric, chords } = (segment as HTMLElement).dataset;
+    if (verse === undefined || lyric === undefined || chords === undefined) {
+      throw "Illegal argument: invoke locate() with a syllable of the sheet";
     }
-
-    // Count lyric characters and chords between the syllable and the preceding
-    // h3 (ie. verse label). Whitespace is left out on purpose: the renderer
-    // rewrites it — a chord at the end of a line gets a blank stem, a leading
-    // space becomes an indent — while every other character survives one to one.
-    let lyric = 0;
-    let chord = 0;
-    let section: HTMLElement;
-
-    for (;;) {
-      if (segment.previousElementSibling != null) {
-        segment = segment.previousElementSibling;
-      } else {
-        // reached the start of the current line
-        let line = segment.parentElement;
-
-        if (line.previousElementSibling != null) {
-          // go to preceding line
-          line = line.previousElementSibling as HTMLElement;
-        } else {
-          // this was the last line of the paragraph.
-          const wrapping_div = line.parentElement.parentElement as HTMLElement;
-          if (wrapping_div.previousElementSibling == null) {
-            section = wrapping_div.parentElement;
-            break; // done with letter counting.
-          } else {
-            line = wrapping_div.previousElementSibling.lastElementChild
-              .lastElementChild as HTMLElement;
-          }
-        }
-        if (line.childElementCount == 0) {
-          line = line.previousElementSibling as HTMLElement;
-        }
-        segment = line.lastElementChild;
-      }
-
-      // Count lyrics and chords in this segment
-      for (const node of segment.childNodes) {
-        if (node.nodeName == "#text") {
-          lyric += textLen(node.textContent);
-        } else if ((node as HTMLElement).classList?.contains("before")) {
-          chord += 1;
-        }
-      }
-    }
-    // Count sections up to the current paragraph
-    let verse = 0;
-    while (section.previousElementSibling != null) {
-      section = section.previousElementSibling as HTMLElement;
-      if (section.id.startsWith("sd-ref-")) {
-        verse++;
-      }
-    }
-
+    // The chords before a syllable are also the ordinal of the one it carries.
     return {
-      lyric: lyric,
-      verse: verse,
-      chord: chord,
+      verse: Number(verse),
+      lyric: Number(lyric),
+      chord: Number(chords),
     };
   };
 
@@ -367,12 +317,7 @@ export default (props: P) => {
                   onBlur={handleChordBlur.bind(this)}
                   onKeyDown={handleChordKey.bind(this)}
                   onFocus={(e) => {
-                    // Records what the chord looked like on arrival, so that
-                    // handleChordBlur can tell an edit from a mere visit.
-                    e.currentTarget.setAttribute(
-                      "data-initial",
-                      e.currentTarget.innerText,
-                    );
+                    editedFrom.current = e.currentTarget.innerText;
                   }}
                   // While editing, focus follows typing and clicking around, so
                   // the chord only sounds when it is asked for. The editor saves
@@ -400,6 +345,10 @@ export default (props: P) => {
           if (!("data" in node.children[0])) return node;
           const lyrics = nodeText(node);
 
+          // A syllable is rendered as one element per word, so each word takes
+          // its share of the lyric count the parser noted for the whole of it.
+          let consumed = 0;
+
           return (
             <React.Fragment>
               {lyrics.split(" ").map((word, idx, array) => {
@@ -419,8 +368,17 @@ export default (props: P) => {
                 if (nextNotEmpty) {
                   word += " ";
                 }
+                const lyric = Number(node.attribs["data-lyric"]) + consumed;
+                consumed += textLen(word);
+
                 return (
-                  <i key={idx} className={classes}>
+                  <i
+                    key={idx}
+                    className={classes}
+                    data-verse={node.attribs["data-verse"]}
+                    data-lyric={lyric}
+                    data-chords={node.attribs["data-chords"]}
+                  >
                     {idx == 0 ? chord : undefined}
                     {word}
                   </i>
@@ -438,7 +396,17 @@ export default (props: P) => {
           )
         ) {
           // Fakey syllable to allow appended chords
-          node.children.push(<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>);
+          // The line knows the counts as of its end, which is where such a
+          // chord belongs.
+          node.children.push(
+            <i
+              data-verse={node.attribs["data-verse"]}
+              data-lyric={node.attribs["data-lyric"]}
+              data-chords={node.attribs["data-chords"]}
+            >
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </i>,
+          );
         } else if (node.name == "pre") {
           if (node.children.length != 1) return node;
           const code = node.children[0] as DH.Element;
