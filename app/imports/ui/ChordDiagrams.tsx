@@ -9,23 +9,23 @@ import {
 } from "/imports/api/fret-shapes";
 import { Song } from "/imports/api/collections";
 import { Transpose } from "/imports/ui/Transposer";
+import { playableChordProps } from "/imports/ui/audio/chordPlayer";
 
 /**
  * A grip for every chord a song uses, drawn in the margin beside it: the song's
  * own where the author drew one, from the chord database otherwise. Held back
  * visually, so that the diagrams placed in the sheet itself keep the say.
  */
-const ChordDiagrams = ({
-  song,
-  transpose,
-}: {
-  song: Song;
-  transpose: Transpose;
-}) => {
+/**
+ * The grip for every chord a song uses, by the chord as the sheet spells it.
+ * Where the song draws one it is taken as it stands; transposing moves past
+ * what the author drew, so from there the database supplies them.
+ */
+export const useGrips = (song: Song, transpose: Transpose) => {
   const html = song.getHtml();
   const authored = useMemo(() => authoredShapes(html), [html]);
 
-  const grips = useMemo(() => {
+  return useMemo(() => {
     const found = new Map<string, { chord: Chord; shape: FretShape }>();
 
     for (const name of song.getChords()) {
@@ -38,24 +38,29 @@ const ChordDiagrams = ({
       const label = chord.toString();
       if (found.has(label)) continue;
 
-      // Transposing moves past what the author drew, so the database takes
-      // over — its grips are the ones that then match the sheet.
       const shape = authored.get(label) ?? lookupShape(chord);
       if (shape !== undefined) found.set(label, { chord, shape });
     }
 
-    return [...found.entries()];
+    return found;
   }, [song, authored, transpose.semitones, transpose.notation]);
+};
 
-  if (grips.length === 0) return null;
+const ChordDiagrams = ({ grips }: { grips: ReturnType<typeof useGrips> }) => {
+  const shown = [...grips.entries()];
+  if (shown.length === 0) return null;
 
   return (
     // The rail spans the whole sheet so that the grips can stay in view while
     // it scrolls past underneath them.
     <div className="chord-diagrams">
       <div className="grips">
-        {grips.map(([label, { chord, shape }]) => (
-          <span key={label} className="chord-container">
+        {shown.map(([label, { chord, shape }]) => (
+          <span
+            key={label}
+            className="chord-container playable"
+            {...playableChordProps(chord, shape)}
+          >
             <strong>
               {chord.toStringKey()}
               <sup>{chord.toStringTensionsAndSlash()}</sup>

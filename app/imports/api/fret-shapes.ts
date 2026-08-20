@@ -180,3 +180,20 @@ export function authoredShapes(html: string): Map<string, FretShape> {
 
   return shapes;
 }
+
+// Open strings of a guitar in standard tuning, low to high.
+const TUNING = [40, 45, 50, 55, 59, 64]; // E2 A2 D3 G3 B3 E4
+
+/**
+ * The notes a grip sounds, low string first. Fret numbers count from the fret
+ * the diagram starts at, except for an open string, which is always open.
+ */
+export function shapeToMidiPitches(shape: FretShape): number[] {
+  return shape.frets
+    .map((fret, string) => {
+      if (fret < 0) return undefined; // muted
+      const absolute = fret === 0 ? 0 : fret + shape.baseFret - 1;
+      return TUNING[string] + absolute;
+    })
+    .filter((pitch): pitch is number => pitch !== undefined);
+}

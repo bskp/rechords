@@ -1,7 +1,13 @@
 import { describe, it } from "node:test";
 import assert from "assert";
 import Chord from "./libchr0d/chord";
-import { authoredShapes, lookupShape, shapeFromSpec } from "./fret-shapes";
+import guitar from "@tombatossals/chords-db/lib/guitar.json";
+import {
+  authoredShapes,
+  lookupShape,
+  shapeFromSpec,
+  shapeToMidiPitches,
+} from "./fret-shapes";
 
 describe("shapeFromSpec", () => {
   it("reads a grip the way a song writes it", () => {
@@ -80,5 +86,53 @@ describe("authoredShapes", () => {
       `<abbr class="chord" title="x2444x" data-fingers="013331">H</abbr>`,
     );
     assert.ok(shapes.has("B"));
+  });
+});
+
+describe("shapeToMidiPitches", () => {
+  it("sounds the strings a grip holds down", () => {
+    // C major: A string muted, then C3 E3 G3 C4 E4.
+    assert.deepEqual(
+      shapeToMidiPitches(shapeFromSpec("x32010")!),
+      [48, 52, 55, 60, 64],
+    );
+    // E major, all six strings.
+    assert.deepEqual(
+      shapeToMidiPitches(shapeFromSpec("022100")!),
+      [40, 47, 52, 56, 59, 64],
+    );
+  });
+
+  it("counts from the fret the diagram starts at", () => {
+    // Bb barre at the first fret against the same shape at the sixth.
+    const low = shapeToMidiPitches(shapeFromSpec("113331")!);
+    const high = shapeToMidiPitches(shapeFromSpec("668886")!);
+    assert.deepEqual(
+      high,
+      low.map((p) => p + 5),
+    );
+  });
+
+  it("agrees with every grip the database ships", () => {
+    // The database carries the notes of each position, so the conversion can be
+    // held against all of them at once.
+    let checked = 0;
+    for (const entries of Object.values(guitar.chords)) {
+      for (const entry of entries) {
+        for (const position of entry.positions) {
+          assert.deepEqual(
+            shapeToMidiPitches({
+              frets: position.frets,
+              baseFret: position.baseFret,
+              capo: false,
+            }),
+            position.midi,
+            `${entry.key}${entry.suffix} at fret ${position.baseFret}`,
+          );
+          checked++;
+        }
+      }
+    }
+    assert.ok(checked > 2000, `only ${checked} grips checked`);
   });
 });

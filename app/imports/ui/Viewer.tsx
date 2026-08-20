@@ -10,12 +10,14 @@ import {
   View,
 } from "../api/helpers";
 import Sheet from "./Sheet";
-import ChordDiagrams from "./ChordDiagrams";
+import ChordDiagrams, { useGrips } from "./ChordDiagrams";
+import { useSoundInstrument } from "./audio/chordPlayer";
 import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
-import { MdEdit, MdPictureAsPdf, MdPrint } from "react-icons/md";
+import { MdEdit, MdPiano, MdPictureAsPdf, MdPrint } from "react-icons/md";
+import { GiGuitar } from "react-icons/gi";
 import { usePinch } from "@use-gesture/react";
 
 export interface ViewerProps {
@@ -143,6 +145,8 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const { setShowMenu } = useContext(MenuContext);
 
   const chords = parseChords(song.getChords());
+  const grips = useGrips(song, transposeState.transpose);
+  const [instrument, toggleInstrument] = useSoundInstrument();
   return (
     <VideoContext.Provider
       value={{
@@ -158,11 +162,12 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         style={{ fontSize: textZoom + "em" }}
         onContextMenu={handleContextMenu}
       >
-        <ChordDiagrams song={song} transpose={transposeState.transpose} />
+        <ChordDiagrams grips={grips} />
         <Sheet
           song={song}
           transpose={transposeState.transpose}
           hideChords={!showChords}
+          grips={grips}
         />
         <h1 id="howToPrint">
           Bitte schliess das Druckfenster prüfe deine Druckeinstellungen. Dann
@@ -207,6 +212,20 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
           )}
           <Button onClick={() => transposeState.setShowTransposer(true)}>
             <ReactSVG src="/svg/transposer.svg" />
+          </Button>
+          <Button onClick={toggleInstrument}>
+            {/* The tooltip sits on the icon: Button passes nothing else on. */}
+            {instrument === "guitar" ? (
+              <GiGuitar
+                data-tooltip-content="Akkorde klingen als Gitarre"
+                data-tooltip-id="tt"
+              />
+            ) : (
+              <MdPiano
+                data-tooltip-content="Akkorde klingen als Klavier"
+                data-tooltip-id="tt"
+              />
+            )}
           </Button>
           <Button onClick={toggleAutoScroll}>
             {isAutoScrolling ? (
