@@ -4,3 +4,4 @@ import "./api/rmd-helpers.spec";
 import "./api/libchr0d/voicing.spec";
 import "./api/chord-source.spec";
 import "./api/parseRechordsDown.spec";
+import "./api/fret-shapes.spec";

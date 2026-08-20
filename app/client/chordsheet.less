@@ -1,5 +1,6 @@
 @import (reference) "./responsive.import.less";
 @import (reference) "./variables.import.less";
+@import (reference) "./fret.less";
 
 #chordsheetContent {
   box-sizing: border-box;
@@ -218,49 +219,20 @@
     }
   }
 
+  // Where a diagram sits in the sheet; how it looks lives in fret.less.
   .chord-container {
-    display: inline-flex;
-    flex-direction: column-reverse;
-    text-align: center;
-
     margin-right: 2em;
     margin-bottom: 2em;
     margin-left: -1em;
 
-    .kord {
-      display: inline-block;
-
-      .chord-diag {
-        width: 90px;
-      }
-    }
-
-    strong {
-      font-weight: 600;
-      margin-left: 0.8em;
-    }
-
-    &.playable {
-      cursor: pointer;
-
-      &:active .kord {
-        opacity: 0.6;
-      }
-
-      &:focus-visible {
-        outline: none;
-      }
+    .chord-diag {
+      width: 90px;
     }
   }
 
-  .chord-container strong,
   .line i .before {
     sup {
-      vertical-align: 0.4em;
-      font-size: 0.7em;
-      letter-spacing: 0.02em;
-      padding-left: 0.1em;
-      font-weight: 900;
+      .chord-sup();
     }
   }
 

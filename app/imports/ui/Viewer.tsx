@@ -10,6 +10,7 @@ import {
   View,
 } from "../api/helpers";
 import Sheet from "./Sheet";
+import ChordDiagrams from "./ChordDiagrams";
 import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
@@ -157,6 +158,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         style={{ fontSize: textZoom + "em" }}
         onContextMenu={handleContextMenu}
       >
+        <ChordDiagrams song={song} transpose={transposeState.transpose} />
         <Sheet
           song={song}
           transpose={transposeState.transpose}

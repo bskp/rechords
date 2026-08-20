@@ -1,5 +1,48 @@
 @import (reference) "./variables.import.less";
 
+// Tension and slash, raised beside the chord letter. Shared with the chords
+// printed above the lyrics.
+.chord-sup() {
+  vertical-align: 0.4em;
+  font-size: 0.7em;
+  letter-spacing: 0.02em;
+  padding-left: 0.1em;
+  font-weight: 900;
+}
+
+// A grip with its chord written underneath.
+.chord-container {
+  display: inline-flex;
+  flex-direction: column-reverse;
+  text-align: center;
+
+  .kord {
+    display: inline-block;
+  }
+
+  strong {
+    font-weight: 600;
+    color: var(--gray);
+    margin-left: 12%; // centres it under the neck at this size
+
+    sup {
+      .chord-sup();
+    }
+  }
+
+  &.playable {
+    cursor: pointer;
+
+    &:active .kord {
+      opacity: 0.6;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+}
+
 svg.chord-diag {
   text {
     text-anchor: middle;

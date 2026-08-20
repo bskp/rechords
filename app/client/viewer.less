@@ -65,3 +65,53 @@ a.iconbutton {
     text-align: right;
   }
 }
+
+#chordsheet {
+  position: relative; // anchors the rail of chord diagrams
+}
+
+// The grips for every chord of the song, laid over the free right side of the
+// sheet and kept in view while it scrolls past underneath.
+.chord-diagrams {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  // rem, not em: the sheet scales its font size for pinch zoom, and the rail
+  // should stay clear of the buttons regardless.
+  right: 6.5rem;
+  width: 66px;
+
+  pointer-events: none; // the sheet underneath stays clickable
+
+  .grips {
+    position: sticky;
+    top: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    gap: 1em;
+
+    height: 100dvh;
+    padding: 1em 0;
+    box-sizing: border-box;
+    overflow-y: auto;
+    .scroll-vertical;
+
+    pointer-events: auto;
+  }
+
+  .chord-container {
+    font-size: 0.9em;
+    flex-direction: column;
+
+    .chord-diag {
+      width: 62px;
+    }
+  }
+
+  .phone({
+    display: none;
+  });
+}
