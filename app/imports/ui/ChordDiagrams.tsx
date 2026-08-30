@@ -10,12 +10,30 @@ import {
 import { Song } from "/imports/api/collections";
 import { Transpose } from "/imports/ui/Transposer";
 import { playableChordProps } from "/imports/ui/audio/chordPlayer";
+import { useState } from "react";
 
 /**
  * A grip for every chord a song uses, drawn in the margin beside it: the song's
  * own where the author drew one, from the chord database otherwise. Held back
  * visually, so that the diagrams placed in the sheet itself keep the say.
  */
+const SHOWN = "rechords.grips";
+
+/** Whether the margin shows its grips, remembered across visits. */
+export function useShowGrips(): [boolean, () => void] {
+  const [shown, setShown] = useState(
+    () => globalThis.localStorage?.getItem(SHOWN) !== "off",
+  );
+
+  return [
+    shown,
+    () => {
+      globalThis.localStorage?.setItem(SHOWN, shown ? "off" : "on");
+      setShown(!shown);
+    },
+  ];
+}
+
 /**
  * The grip for every chord a song uses, by the chord as the sheet spells it.
  * Where the song draws one it is taken as it stands; transposing moves past

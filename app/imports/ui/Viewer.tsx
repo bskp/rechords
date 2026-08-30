@@ -10,14 +10,20 @@ import {
   View,
 } from "../api/helpers";
 import Sheet from "./Sheet";
-import ChordDiagrams, { useGrips } from "./ChordDiagrams";
+import ChordDiagrams, { useGrips, useShowGrips } from "./ChordDiagrams";
 import { useSoundInstrument } from "./audio/chordPlayer";
 import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
-import { MdEdit, MdPiano, MdPictureAsPdf, MdPrint } from "react-icons/md";
-import { GiGuitar } from "react-icons/gi";
+import {
+  MdEdit,
+  MdPiano,
+  MdPictureAsPdf,
+  MdPrint,
+  MdSupport,
+} from "react-icons/md";
+import { FaGuitar } from "react-icons/fa";
 import { usePinch } from "@use-gesture/react";
 
 export interface ViewerProps {
@@ -147,6 +153,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const chords = parseChords(song.getChords());
   const grips = useGrips(song, transposeState.transpose);
   const [instrument, toggleInstrument] = useSoundInstrument();
+  const [showGrips, toggleGrips] = useShowGrips();
   return (
     <VideoContext.Provider
       value={{
@@ -162,7 +169,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         style={{ fontSize: textZoom + "em" }}
         onContextMenu={handleContextMenu}
       >
-        <ChordDiagrams grips={grips} />
+        {showGrips && <ChordDiagrams grips={grips} />}
         <Sheet
           song={song}
           transpose={transposeState.transpose}
@@ -216,7 +223,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
           <Button onClick={toggleInstrument}>
             {/* The tooltip sits on the icon: Button passes nothing else on. */}
             {instrument === "guitar" ? (
-              <GiGuitar
+              <FaGuitar
                 data-tooltip-content="Akkorde klingen als Gitarre"
                 data-tooltip-id="tt"
               />
@@ -227,16 +234,20 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
               />
             )}
           </Button>
-          <Button onClick={toggleAutoScroll}>
-            {isAutoScrolling ? (
-              <ReactSVG src="/svg/conveyor_active.svg" />
-            ) : (
-              <ReactSVG
-                src="/svg/conveyor.svg"
-                data-tooltip-content="Auto-Scroll"
-                data-tooltip-id="tt"
-              />
-            )}
+          <Button onClick={toggleGrips} active={showGrips}>
+            <MdSupport
+              data-tooltip-content={
+                showGrips ? "Griffbilder ausblenden" : "Griffbilder einblenden"
+              }
+              data-tooltip-id="tt"
+            />
+          </Button>
+          <Button onClick={toggleAutoScroll} active={isAutoScrolling}>
+            <ReactSVG
+              src="/svg/conveyor.svg"
+              data-tooltip-content="Auto-Scroll"
+              data-tooltip-id="tt"
+            />
           </Button>
         </div>
       </aside>

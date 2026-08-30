@@ -34,7 +34,7 @@ const BASS_VOLUME = 100;
 const STORED = "rechords.instrument";
 
 let instrument: SoundInstrument =
-  (globalThis.localStorage?.getItem(STORED) as SoundInstrument) ?? "piano";
+  (globalThis.localStorage?.getItem(STORED) as SoundInstrument) ?? "guitar";
 
 export const soundInstrument = () => instrument;
 
