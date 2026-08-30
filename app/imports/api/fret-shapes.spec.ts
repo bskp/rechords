@@ -4,6 +4,8 @@ import Chord from "./libchr0d/chord";
 import guitar from "@tombatossals/chords-db/lib/guitar.json";
 import {
   authoredShapes,
+  collectGrips,
+  gripFor,
   lookupShape,
   shapeFromSpec,
   shapeToMidiPitches,
@@ -134,5 +136,59 @@ describe("shapeToMidiPitches", () => {
       }
     }
     assert.ok(checked > 2000, `only ${checked} grips checked`);
+  });
+});
+
+describe("gripFor", () => {
+  const shown = (chord: string) =>
+    gripFor(Chord.from(chord)!)?.chord.toString();
+
+  it("keeps the chord when the database knows its tension", () => {
+    assert.equal(shown("Cmaj7"), "Cmaj7");
+    assert.equal(shown("F#m7"), "F#m7");
+  });
+
+  it("names the plain chord when the tension falls back to the triad", () => {
+    // Nobody has a grip for a C12, so what is drawn is a C.
+    assert.equal(shown("C12"), "C");
+    assert.equal(shown("Amblah"), "Am");
+  });
+
+  it("does the same for a bass note it has no grip for", () => {
+    assert.equal(shown("C/E"), "C");
+  });
+});
+
+describe("collectGrips", () => {
+  const none = new Map();
+  const asIs = (chord: Chord) => chord;
+  const labels = (chords: string[], authored = none) => [
+    ...collectGrips(chords, authored, asIs).keys(),
+  ];
+
+  it("shows a chord that fell back only once, under its plain name", () => {
+    assert.deepEqual(labels(["C", "C12", "F"]), ["C", "F"]);
+  });
+
+  it("keeps the fallen-back grip when the plain chord never appears", () => {
+    assert.deepEqual(labels(["C12", "F"]), ["C", "F"]);
+  });
+
+  it("leaves a tension the database knows alone", () => {
+    assert.deepEqual(labels(["C", "Cmaj7"]), ["C", "Cmaj7"]);
+  });
+
+  it("lets a grip the song draws outrank one from the database", () => {
+    const drawn = new Map([["C", shapeFromSpec("x32013")!]]);
+    const grips = collectGrips(["C12", "C"], drawn, asIs);
+
+    assert.deepEqual([...grips.keys()], ["C"]);
+    assert.equal(grips.get("C")?.drawn, true);
+    assert.deepEqual(grips.get("C")?.shape.frets, [-1, 3, 2, 0, 1, 3]);
+  });
+
+  it("keeps a drawn grip for the tension itself", () => {
+    const drawn = new Map([["C12", shapeFromSpec("x3201x")!]]);
+    assert.deepEqual(labels(["C", "C12"], drawn), ["C", "C12"]);
   });
 });

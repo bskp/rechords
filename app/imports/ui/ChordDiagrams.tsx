@@ -1,12 +1,7 @@
 import * as React from "react";
 import { useMemo } from "react";
 import Kord from "./Kord";
-import Chord from "/imports/api/libchr0d/chord";
-import {
-  authoredShapes,
-  FretShape,
-  lookupShape,
-} from "/imports/api/fret-shapes";
+import { authoredShapes, collectGrips } from "/imports/api/fret-shapes";
 import { Song } from "/imports/api/collections";
 import { Transpose } from "/imports/ui/Transposer";
 import { playableChordProps } from "/imports/ui/audio/chordPlayer";
@@ -43,25 +38,13 @@ export const useGrips = (song: Song, transpose: Transpose) => {
   const html = song.getHtml();
   const authored = useMemo(() => authoredShapes(html), [html]);
 
-  return useMemo(() => {
-    const found = new Map<string, { chord: Chord; shape: FretShape }>();
-
-    for (const name of song.getChords()) {
-      const chord = Chord.from(name)?.transposed(
-        transpose.semitones ?? 0,
-        transpose.notation,
-      );
-      if (chord === undefined) continue;
-
-      const label = chord.toString();
-      if (found.has(label)) continue;
-
-      const shape = authored.get(label) ?? lookupShape(chord);
-      if (shape !== undefined) found.set(label, { chord, shape });
-    }
-
-    return found;
-  }, [song, authored, transpose.semitones, transpose.notation]);
+  return useMemo(
+    () =>
+      collectGrips(song.getChords(), authored, (chord) =>
+        chord.transposed(transpose.semitones ?? 0, transpose.notation),
+      ),
+    [song, authored, transpose.semitones, transpose.notation],
+  );
 };
 
 const ChordDiagrams = ({ grips }: { grips: ReturnType<typeof useGrips> }) => {

@@ -66,10 +66,19 @@ function suffixes(chord: Chord): string[] {
   return [named, tensions, triad];
 }
 
-/** The grip a guitar database offers for a chord, if it knows one. */
-export function lookupShape(chord: Chord): FretShape | undefined {
+/**
+ * The grip a guitar database offers for a chord, along with the chord it really
+ * shows. A tension the database does not know falls back to the plain triad,
+ * and then the grip is that of the plain chord — a C12 nobody has a grip for is
+ * drawn, and named, as a C.
+ */
+export function gripFor(
+  chord: Chord,
+): { shape: FretShape; chord: Chord } | undefined {
   const entries = database[KEYS[mod12(chord.key.value)]];
   if (entries === undefined) return undefined;
+
+  const triad = chord.quality === "minor" ? "minor" : "major";
 
   for (const suffix of suffixes(chord)) {
     const positions = entries.find((e) => e.suffix === suffix)?.positions;
@@ -80,17 +89,26 @@ export function lookupShape(chord: Chord): FretShape | undefined {
       positions.find((p) => p.baseFret === 1 && p.frets.includes(0)) ??
       positions[0];
 
+    const asked = chord.tensions !== "" || chord.slash !== undefined;
     return {
-      frets: position.frets,
-      fingers: position.fingers,
-      barres: position.barres,
-      baseFret: position.baseFret,
-      capo: position.capo ?? false,
+      shape: {
+        frets: position.frets,
+        fingers: position.fingers,
+        barres: position.barres,
+        baseFret: position.baseFret,
+        capo: position.capo ?? false,
+      },
+      chord:
+        suffix === triad && asked ? new Chord(chord.key, chord.quality) : chord,
     };
   }
 
   return undefined;
 }
+
+/** The grip for a chord, whatever it ends up showing. */
+export const lookupShape = (chord: Chord): FretShape | undefined =>
+  gripFor(chord)?.shape;
 
 /**
  * Reads a grip written the way a song does it: one character per string, low to
@@ -196,4 +214,55 @@ export function shapeToMidiPitches(shape: FretShape): number[] {
       return TUNING[string] + absolute;
     })
     .filter((pitch): pitch is number => pitch !== undefined);
+}
+
+/** A grip to show, and the chord it belongs to. */
+export interface Grip {
+  chord: Chord;
+  shape: FretShape;
+  /** Whether the song drew this one itself. */
+  drawn: boolean;
+}
+
+/**
+ * The grips to show for the chords of a song, by the chord each one belongs to.
+ *
+ * A grip the song draws is taken as it stands. Otherwise the database supplies
+ * one — and where it has nothing for a tension, its plain triad stands in. Such
+ * a grip is filed under the plain chord, so that a C12 nobody has a grip for
+ * neither claims a diagram of its own beside an identical C, nor goes missing
+ * in a song that has no plain C at all.
+ */
+export function collectGrips(
+  chords: string[],
+  authored: Map<string, FretShape>,
+  transposed: (chord: Chord) => Chord,
+): Map<string, Grip> {
+  const grips = new Map<string, Grip>();
+
+  for (const name of chords) {
+    const parsed = Chord.from(name);
+    if (parsed === undefined) continue;
+    const chord = transposed(parsed);
+
+    const drawn = authored.get(chord.toString());
+    let grip: Grip;
+
+    if (drawn !== undefined) {
+      grip = { chord, shape: drawn, drawn: true };
+    } else {
+      const found = gripFor(chord);
+      if (found === undefined) continue;
+      grip = { chord: found.chord, shape: found.shape, drawn: false };
+    }
+
+    const label = grip.chord.toString();
+    const existing = grips.get(label);
+    // What the author drew outranks what the database offered.
+    if (existing === undefined || (grip.drawn && !existing.drawn)) {
+      grips.set(label, grip);
+    }
+  }
+
+  return grips;
 }
