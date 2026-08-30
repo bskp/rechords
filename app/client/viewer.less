@@ -13,24 +13,34 @@ a.iconbutton {
   }
 
   svg {
-    width: 1.8em;
+    width: 1.4em;
     font-size: 2.4em;
     stroke: none;
 
     .applySchemeColors;
 
-    &:hover .fillGrayLight {
-      fill: var(--gray-dark);
-    }
-
     &[fill] {
       // Selects Material Design Icons only
       fill: var(--gray-light);
       padding: 0.3em 0;
+    }
+  }
 
-      &:hover {
-        fill: var(--accent);
-      }
+  // Three states, one convention for both kinds of icon: the ones react-icons
+  // draws carry their colour on the svg itself, ours on the shapes inside.
+  // .fillAccent is left alone — for the video and menu icons that is the colour
+  // they are drawn in, not a state.
+  &:hover {
+    svg[fill],
+    svg .fillGrayLight {
+      fill: var(--gray-dark);
+    }
+  }
+
+  &.active {
+    svg[fill],
+    svg .fillGrayLight {
+      fill: var(--accent);
     }
   }
 }
@@ -63,5 +73,36 @@ a.iconbutton {
   #howToPrint {
     display: block;
     text-align: right;
+  }
+}
+
+#chordsheet {
+  position: relative; // anchors the rail of chord diagrams
+}
+
+// The grips for every chord of the song, laid over the free right side of the
+// sheet and kept in view while it scrolls past underneath.
+.chord-diagrams {
+  .grips {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap-reverse;
+    max-height: 100dvh;
+    position: fixed;
+    align-content: end;
+    top: 1em;
+    right: 6em;
+    bottom: 1em;
+    justify-content: flex-end;
+    gap: 0.5em 0.2em;
+  }
+
+  .chord-container {
+    font-size: 0.9em;
+    flex-direction: column;
+
+    .chord-diag {
+      width: 62px;
+    }
   }
 }

@@ -16,6 +16,16 @@ import { useDocumentListener } from "./Songlist/Menu";
 import { VideoContext } from "./App";
 import { ReactSVG } from "react-svg";
 import { Tooltip } from "react-tooltip";
+import Chord from "../api/libchr0d/chord";
+import { playableChordProps, playChord } from "./audio/chordPlayer";
+import {
+  chordIndexForAnchor,
+  chordText,
+  deleteChord,
+  insertChord,
+  moveChord,
+  setChordText,
+} from "../api/chord-source";
 
 const nodeText = (node) => {
   return node.children.reduce(
@@ -38,24 +48,39 @@ export default (props: P) => {
 
   const [isVideoActive, setVideoActive] = useState<boolean>(false);
 
-  useEffect(() => {
-    const traverse = (node: HTMLElement): void => {
-      for (const child of node.children) {
-        if (child.innerHTML.endsWith("|")) {
-          child.innerHTML = child.innerHTML.replace("|", "");
-          const range = document.createRange();
-          range.selectNodeContents(child);
-          const sel = window.getSelection();
-          sel.removeAllRanges();
-          sel.addRange(range);
-          return;
-        } else {
-          traverse(child as HTMLElement);
-        }
-      }
-    };
+  // Editing a chord replaces its element: a nudged chord moves to another
+  // syllable, a fresh one did not exist before. Either way the focus is gone
+  // once React is done, so it is handed back here by the chord's place in the
+  // verse — which nudging keeps, since a chord never passes a neighbour.
+  const refocus = useRef<{
+    verse: number;
+    chord: number;
+    select?: boolean;
+  } | null>(null);
+  // What the focused chord read on arrival, so that Escape can put it back.
+  const editedFrom = useRef<string | null>(null);
 
-    if (html?.current) traverse(html.current);
+  useEffect(() => {
+    const wanted = refocus.current;
+    refocus.current = null;
+    if (wanted === null || html.current === null) return;
+
+    const section = html.current.querySelectorAll('section[id^="sd-ref-"]')[
+      wanted.verse
+    ];
+    const chord = section?.querySelectorAll(".before")[wanted.chord] as
+      HTMLElement | undefined;
+    if (chord === undefined) return;
+
+    chord.focus();
+    if (!wanted.select) return;
+
+    // A fresh chord starts out selected, so typing replaces the guess.
+    const range = document.createRange();
+    range.selectNodeContents(chord);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
   });
 
   useEffect(() => {
@@ -121,20 +146,19 @@ export default (props: P) => {
       return;
     }
 
-    let offset = 0;
-    for (const child of node.children) {
-      offset += 2;
-      offset += textLen((child as HTMLElement)?.innerText);
-    }
+    const { verse, lyric, chord } = locate(node);
 
-    let skipWhitespace = true;
-    if (textLen(node.lastChild.textContent) == 0) {
-      // if a last-of-line, fake-syllable was clicked, attach chord _before_ whitespace (ie. newline)
-      offset = 0;
-      skipWhitespace = false;
-    }
+    // A syllable carries the chord in front of its first letter. The last "syllable"
+    // of a line has no letter of its own, so there the chord goes behind the
+    // preceding one — ahead of the line break rather than onto the next line.
+    const isLineEnd = textLen(node.lastChild.textContent) == 0;
+    const anchor =
+      isLineEnd && lyric > 0
+        ? { lyric: lyric - 1, behind: true }
+        : { lyric: lyric };
+    // Chords of its own line have no letters to order them, hence the tie-break.
+    const afterChord = chord + (node.querySelector(".before") === null ? 0 : 1);
 
-    const { verse, letter, chord } = locate(node);
     const { verseNames, chords } = chordProgressions(props.md);
     const current_verse = verseNames[verse];
 
@@ -159,30 +183,30 @@ export default (props: P) => {
 
     if (guessedChord === undefined) guessedChord = "";
 
-    const md = prependChord(
-      props.md,
-      node,
-      guessedChord + "|",
-      offset,
-      skipWhitespace,
-    );
-    props.updateHandler(md);
+    const where = { ...anchor, afterChord };
+    refocus.current = {
+      verse,
+      chord: chordIndexForAnchor(props.md, verse, where),
+      select: true,
+    };
+    props.updateHandler(insertChord(props.md, verse, where, guessedChord));
   };
 
   const handleChordBlur = (event: React.SyntheticEvent<HTMLElement>) => {
-    event.currentTarget.removeAttribute("data-initial");
     const chord = event.currentTarget.innerText;
 
-    const i = event.currentTarget.parentElement;
+    const { verse, chord: nth } = locate(event.currentTarget.parentElement);
 
-    let md_ = removeChord(props.md, i);
-
+    // An unnamed chord is no chord — that is also how an insert nobody typed
+    // into disappears again. Otherwise what the sheet shows is what the source
+    // should say, and comparing the two keeps merely passing through a chord
+    // from rewriting anything.
     if (textLen(chord) > 0) {
-      const skipWhitespace =
-        textLen(event.currentTarget.nextSibling.textContent) > 0; // ie. a fakey chord
-      md_ = prependChord(md_, i, chord, 0, skipWhitespace);
+      if (chordText(props.md, verse, nth) === chord) return;
+      props.updateHandler(setChordText(props.md, verse, nth, chord));
+    } else {
+      props.updateHandler(deleteChord(props.md, verse, nth));
     }
-    props.updateHandler(md_);
 
     // Remove any selections.
     if (window.getSelection) {
@@ -201,16 +225,20 @@ export default (props: P) => {
     event: React.SyntheticEvent<HTMLElement>,
     offset: number,
   ) => {
-    console.log("offsetchorspos");
-    event.currentTarget.removeAttribute("data-initial");
     const chord = event.currentTarget.innerText;
+    const { verse, chord: nth } = locate(event.currentTarget.parentElement);
 
-    const i = event.currentTarget.parentElement;
+    // Nudging never lets a chord pass a neighbour, so it keeps its ordinal and
+    // can be picked up again once React has rebuilt the sheet around it.
+    refocus.current = { verse, chord: nth };
 
-    let md_ = removeChord(props.md, i);
+    // Commit an edit that has not been blurred yet, so nudging never drops it.
+    const md =
+      textLen(chord) > 0 && chordText(props.md, verse, nth) !== chord
+        ? setChordText(props.md, verse, nth, chord)
+        : props.md;
 
-    md_ = prependChord(md_, i, chord, offset, true);
-    props.updateHandler(md_);
+    props.updateHandler(moveChord(md, verse, nth, offset));
   };
 
   const handleChordKey = (event: React.KeyboardEvent<HTMLElement>) => {
@@ -223,7 +251,7 @@ export default (props: P) => {
 
     if (event.key == "Escape") {
       event.preventDefault();
-      n.innerText = n.getAttribute("data-initial");
+      if (editedFrom.current !== null) n.innerText = editedFrom.current;
       n.blur();
       return;
     }
@@ -237,10 +265,6 @@ export default (props: P) => {
       offsetChordPosition(event, -1);
       event.preventDefault();
     }
-
-    if (!n.hasAttribute("data-initial")) {
-      n.setAttribute("data-initial", n.innerText);
-    }
   };
 
   /*  Return the string's length omitting all whitespace.
@@ -251,135 +275,20 @@ export default (props: P) => {
     return str.replace(/\s/g, "").length;
   }
 
-  const removeChord = (md: string, node: Element) => {
-    const pos = locate(node);
-    // "pos" specifies where the chord to remove _begins_, expressed as "nth verse and mth letter".
-
-    // Iterate over verses
-    let countedVerses = 0;
-    md = md.replace(verseRegex, (match: string, title: string, v: string) => {
-      if (countedVerses++ == pos.verse) {
-        // Iterate over letters
-        let countedLetters = 0;
-        v = v.replace(/(\[[^\]]*])|([^[]*)/gm, (match, chord, lyrics) => {
-          const adding = textLen(match);
-          if (countedLetters == pos.letter) match = lyrics || ""; // retains line breaks.
-          countedLetters += adding;
-          return match;
-        });
-      }
-
-      return title + ":\n" + v;
-    });
-
-    return md;
-  };
-
-  // pre in relation to syllable
-  // but actually inserts the chord in markdown
-  const prependChord = (
-    md: string,
-    segment: Element,
-    chord: string,
-    offset = 0,
-    skipWhitespace = true,
-  ) => {
-    const pos = locate(segment);
-
-    // Apply patch to markdown
-    // Iterate over verses
-    let countedVerses = 0;
-    md = md.replace(verseRegex, (match: string, title: string, v: string) => {
-      if (countedVerses++ == pos.verse) {
-        // Iterate over letters in the appropriate verse
-        let countedLetters: number = -offset;
-        v = v.replace(/\S/g, (l: string) => {
-          if (skipWhitespace) {
-            if (countedLetters++ == pos.letter) {
-              return "[" + chord + "]" + l;
-            }
-          } else {
-            if (++countedLetters == pos.letter) {
-              return l + "[" + chord + "]";
-            }
-          }
-
-          return l;
-        });
-      }
-
-      return title + ":\n" + v;
-    });
-
-    return md;
-  };
-
+  /**
+   * Where a syllable sits in the source. parseRechordsDown wrote this down
+   * while it still knew, so nothing here depends on the shape of the document.
+   */
   const locate = (segment: Element) => {
-    if (segment.tagName != "I") {
-      throw "Illegal argument: invoke locate() with a <i>-element";
+    const { verse, lyric, chords } = (segment as HTMLElement).dataset;
+    if (verse === undefined || lyric === undefined || chords === undefined) {
+      throw "Illegal argument: invoke locate() with a syllable of the sheet";
     }
-
-    // Count letters between clicked syllable and preceding h3 (ie. verse label)
-    let letter = 0;
-    let chord = 0;
-    let section: HTMLElement;
-
-    for (;;) {
-      if (segment.previousElementSibling != null) {
-        segment = segment.previousElementSibling;
-      } else {
-        // reached the start of the current line
-        let line = segment.parentElement;
-
-        if (line.previousElementSibling != null) {
-          // go to preceding line
-          line = line.previousElementSibling as HTMLElement;
-        } else {
-          // this was the last line of the paragraph.
-          const wrapping_div = line.parentElement.parentElement as HTMLElement;
-          if (wrapping_div.previousElementSibling == null) {
-            section = wrapping_div.parentElement;
-            break; // done with letter counting.
-          } else {
-            line = wrapping_div.previousElementSibling.lastElementChild
-              .lastElementChild as HTMLElement;
-          }
-        }
-        if (line.childElementCount == 0) {
-          line = line.previousElementSibling as HTMLElement;
-        }
-        segment = line.lastElementChild;
-      }
-
-      // Count letters in this segment
-      for (const node of segment.childNodes) {
-        if (node.nodeName == "#text") {
-          letter += node.textContent.replace(/\s/g, "").length;
-          continue;
-        }
-        if (
-          node.nodeName == "SPAN" &&
-          (node as HTMLSpanElement).className == "before"
-        ) {
-          letter += 2;
-          letter += textLen(node.textContent);
-          chord += 1;
-        }
-      }
-    }
-    // Count sections up to the current paragraph
-    let verse = 0;
-    while (section.previousElementSibling != null) {
-      section = section.previousElementSibling as HTMLElement;
-      if (section.id.startsWith("sd-ref-")) {
-        verse++;
-      }
-    }
-
+    // The chords before a syllable are also the ordinal of the one it carries.
     return {
-      letter: letter,
-      verse: verse,
-      chord: chord,
+      verse: Number(verse),
+      lyric: Number(lyric),
+      chord: Number(chords),
     };
   };
 
@@ -398,6 +307,7 @@ export default (props: P) => {
           }
           let chord;
           if ("data-chord" in node.attribs) {
+            const c = Chord.from(node.attribs["data-chord"]);
             if (editable) {
               chord = (
                 <span
@@ -406,18 +316,38 @@ export default (props: P) => {
                   suppressContentEditableWarning
                   onBlur={handleChordBlur.bind(this)}
                   onKeyDown={handleChordKey.bind(this)}
+                  onFocus={(e) => {
+                    editedFrom.current = e.currentTarget.innerText;
+                  }}
+                  // While editing, focus follows typing and clicking around, so
+                  // the chord only sounds when it is asked for. The editor saves
+                  // on right-click, hence the stopped propagation.
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (c) playChord(c);
+                  }}
                 >
                   {node.attribs["data-chord"]}
                 </span>
               );
             } else {
               chord = (
-                <span className="before">{node.attribs["data-chord"]}</span>
+                <span
+                  className="before playable"
+                  {...(c === undefined ? {} : playableChordProps(c))}
+                >
+                  {node.attribs["data-chord"]}
+                </span>
               );
             }
           }
           if (!("data" in node.children[0])) return node;
           const lyrics = nodeText(node);
+
+          // A syllable is rendered as one element per word, so each word takes
+          // its share of the lyric count the parser noted for the whole of it.
+          let consumed = 0;
 
           return (
             <React.Fragment>
@@ -438,8 +368,17 @@ export default (props: P) => {
                 if (nextNotEmpty) {
                   word += " ";
                 }
+                const lyric = Number(node.attribs["data-lyric"]) + consumed;
+                consumed += textLen(word);
+
                 return (
-                  <i key={idx} className={classes}>
+                  <i
+                    key={idx}
+                    className={classes}
+                    data-verse={node.attribs["data-verse"]}
+                    data-lyric={lyric}
+                    data-chords={node.attribs["data-chords"]}
+                  >
                     {idx == 0 ? chord : undefined}
                     {word}
                   </i>
@@ -457,7 +396,17 @@ export default (props: P) => {
           )
         ) {
           // Fakey syllable to allow appended chords
-          node.children.push(<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>);
+          // The line knows the counts as of its end, which is where such a
+          // chord belongs.
+          node.children.push(
+            <i
+              data-verse={node.attribs["data-verse"]}
+              data-lyric={node.attribs["data-lyric"]}
+              data-chords={node.attribs["data-chords"]}
+            >
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </i>,
+          );
         } else if (node.name == "pre") {
           if (node.children.length != 1) return node;
           const code = node.children[0] as DH.Element;
