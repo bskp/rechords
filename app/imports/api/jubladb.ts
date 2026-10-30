@@ -10,9 +10,24 @@ import { ServiceConfiguration } from "meteor/service-configuration";
 // redirect URI registered there.
 export const JUBLADB = "jubladb";
 
-// The "name" scope gets us email, first name, last name and nickname from the
-// profile endpoint, which is all a song book needs to know.
-export const JUBLADB_SCOPE = "name";
+// "with_roles" is the only scope that lists every role, including those in
+// the alumni network; the narrower "nextcloud" leaves them out. It brings
+// address and birthday along too, which are read but never kept.
+// "groups" lets us climb from a role's group up to its Schar and Kanton.
+export const JUBLADB_PROFILE_SCOPE = "with_roles";
+export const JUBLADB_SCOPES = [JUBLADB_PROFILE_SCOPE, "groups"].join(" ");
+
+export type JublaDbGroup = { id: number; name: string };
+
+// One role of a person, with the Schar and Kantonalverband its group belongs
+// to. Either is missing where the group sits above it, e.g. in the
+// Bundesleitung, or where the hierarchy could not be read.
+export type JublaDbMembership = {
+  role: string;
+  group: JublaDbGroup & { type: string };
+  flock?: JublaDbGroup;
+  state?: JublaDbGroup;
+};
 
 type AccountsOAuth = {
   registerService(name: string): void;
@@ -59,7 +74,7 @@ export const loginWithJublaDb = (callback: (err?: Error) => void) => {
     response_type: "code",
     client_id: config.clientId,
     redirect_uri: OAuth._redirectUri(JUBLADB, config),
-    scope: JUBLADB_SCOPE,
+    scope: JUBLADB_SCOPES,
     state: OAuth._stateParam(loginStyle, credentialToken),
   });
 

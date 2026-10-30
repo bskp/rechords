@@ -12,6 +12,7 @@ import { Accounts } from "meteor/accounts-base";
 import { readProfile } from "../api/auth";
 import type { RechordsUser } from "../api/auth";
 import type { Theme } from "../api/auth";
+import type { JublaDbMembership } from "../api/jubladb";
 
 class User extends React.Component<
   { user: RechordsUser; revisionsLoading: boolean },
@@ -173,6 +174,21 @@ class User extends React.Component<
       ) : undefined;
     });
 
+    const memberships: JublaDbMembership[] =
+      u.services?.jubladb?.memberships ?? [];
+    const membershipItems = memberships.map((m, i) => {
+      // Name the Schar and Kanton only where the group is not one of them.
+      const context = [m.flock, m.state]
+        .filter((g) => g && g.id != m.group.id)
+        .map((g) => g!.name);
+      return (
+        <li key={"jm" + i}>
+          <strong>{m.role}</strong> in {m.group.name}
+          {context.length > 0 ? ` (${context.join(", ")})` : undefined}
+        </li>
+      );
+    });
+
     const options = [
       { value: "auto", label: "Automatisch" },
       { value: "bright", label: "Tag" },
@@ -201,6 +217,14 @@ class User extends React.Component<
           </a>
         </p>
         <br />
+
+        {membershipItems.length > 0 ? (
+          <>
+            <h2>Jubla-DB</h2>
+            <p>So kennt dich die Jubla-DB seit deinem letzten Login:</p>
+            <ul>{membershipItems}</ul>
+          </>
+        ) : undefined}
 
         <h2>Einstellungen</h2>
 

@@ -4,9 +4,14 @@ import { OAuth } from "meteor/oauth";
 import { ServiceConfiguration } from "meteor/service-configuration";
 import {
   JUBLADB,
-  JUBLADB_SCOPE,
+  JUBLADB_PROFILE_SCOPE,
   jublaDbConfigurations,
 } from "../imports/api/jubladb";
+import {
+  HitobitoRole,
+  readJson,
+  readMemberships,
+} from "../imports/api/jubladb-memberships";
 
 type HitobitoProfile = {
   id: number | string;
@@ -14,15 +19,7 @@ type HitobitoProfile = {
   first_name?: string;
   last_name?: string;
   nickname?: string;
-};
-
-const readJson = async (res: Response, what: string) => {
-  if (!res.ok) {
-    throw new Error(
-      `Jubla-DB ${what} failed: ${res.status} ${await res.text()}`,
-    );
-  }
-  return res.json();
+  roles?: HitobitoRole[];
 };
 
 OAuth.registerService(JUBLADB, 2, null, async (query) => {
@@ -54,7 +51,7 @@ OAuth.registerService(JUBLADB, 2, null, async (query) => {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${tokens.access_token}`,
-        "X-Scope": JUBLADB_SCOPE,
+        "X-Scope": JUBLADB_PROFILE_SCOPE,
       },
     }),
     "profile request",
@@ -64,7 +61,9 @@ OAuth.registerService(JUBLADB, 2, null, async (query) => {
     .filter(Boolean)
     .join(" ");
 
-  // The access token is not kept: the profile is all we ever ask for.
+  // The access token is not kept, and of the profile only names, email and
+  // memberships are. Meteor overwrites these on every login, so the
+  // memberships follow the Jubla-DB.
   return {
     serviceData: {
       id: String(person.id),
@@ -72,6 +71,11 @@ OAuth.registerService(JUBLADB, 2, null, async (query) => {
       firstName: person.first_name,
       lastName: person.last_name,
       nickname: person.nickname,
+      memberships: await readMemberships(
+        config.url,
+        tokens.access_token,
+        person.roles ?? [],
+      ),
     },
     options: {
       profile: { name: person.nickname || fullName, role: "user" },

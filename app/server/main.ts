@@ -62,6 +62,7 @@ Meteor.publish(null, async function () {
       emails: 1,
       username: 1,
       profile: 1,
+      "services.jubladb.memberships": 1,
     },
   };
 
