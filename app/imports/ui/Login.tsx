@@ -1,10 +1,12 @@
 import { Meteor } from "meteor/meteor";
+import { useTracker } from "meteor/react-meteor-data";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
 import { ReactSVG } from "react-svg";
 import { navigateTo, View } from "../api/helpers";
+import { jublaDbConfiguration, loginWithJublaDb } from "../api/jubladb";
 
 export const Login: React.FC = () => {
   const oneR = useRef<HTMLInputElement>(null);
@@ -19,6 +21,22 @@ export const Login: React.FC = () => {
   const [four, setFour] = useState("");
 
   const navigate = useNavigate();
+  const jublaDb = useTracker(() => !!jublaDbConfiguration());
+
+  const handleJublaDb = () => {
+    setMsg("");
+    loginWithJublaDb((err) => {
+      if (!err) {
+        navigateTo(navigate, View.home);
+      } else if (
+        // Closing the popup is not worth a complaint.
+        (err as { errorType?: string }).errorType !==
+        "Accounts.LoginCancelledError"
+      ) {
+        setMsg("Die Anmeldung über die Jubla-DB hat nicht geklappt.");
+      }
+    });
+  };
 
   const handleSubmit = () => {
     Meteor.loginWithPassword(
@@ -113,6 +131,14 @@ export const Login: React.FC = () => {
           placeholder="Wörtern"
         />
       </div>
+      {jublaDb && (
+        <p>
+          …oder mit deinem Login für die{" "}
+          <a onClick={handleJublaDb} className="btn">
+            Jubla-DB
+          </a>
+        </p>
+      )}
       <p>
         Du hast keinen Zugang? Frage deine Scharleitung oder schreibe eine Mail
         an <a href="mailto:hoelibu@posteo.ch">hoelibu@posteo.ch</a> und du

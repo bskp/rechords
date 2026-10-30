@@ -2,6 +2,7 @@ import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
 import Songs, { Revisions } from "../imports/api/collections";
 import "../imports/api/methods.ts";
+import "./jubladb";
 
 Meteor.publish("songs", function () {
   if (this.userId) {

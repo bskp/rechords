@@ -86,3 +86,7 @@ jobs:
           SSH_HOST: ${{ vars.SSH_HOST }}
           DOMAIN: ${{ vars.DOMAIN }}
           PROXY_PORT: ${{ vars.PROXY_PORT }}
+          ROOT_URL: ${{ vars.ROOT_URL }}
+          JUBLADB_URL: ${{ vars.JUBLADB_URL }}
+          JUBLADB_CLIENT_ID: ${{ vars.JUBLADB_CLIENT_ID }}
+          JUBLADB_CLIENT_SECRET: ${{ secrets.JUBLADB_CLIENT_SECRET }}
