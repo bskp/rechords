@@ -22,3 +22,7 @@ zodern:types            # Pull in type declarations from other Meteor packages
 accounts-base
 accounts-password
 rspack
+oauth
+oauth2
+accounts-oauth
+service-configuration

@@ -23,8 +23,16 @@ module.exports = {
 
     env: {
       PORT: process.env.PROXY_PORT,
-      ROOT_URL: 'https://' + process.env.DOMAIN,
-      MONGO_URL: 'mongodb://localhost/meteor'
+      // DOMAIN also names the container, so it stays as it is; ROOT_URL can
+      // differ, e.g. the punycode host the OAuth redirect is registered for.
+      ROOT_URL: process.env.ROOT_URL || 'https://' + process.env.DOMAIN,
+      MONGO_URL: 'mongodb://localhost/meteor',
+      // Without these the Jubla-DB login stays switched off.
+      ...(process.env.JUBLADB_CLIENT_ID && {
+        JUBLADB_URL: process.env.JUBLADB_URL,
+        JUBLADB_CLIENT_ID: process.env.JUBLADB_CLIENT_ID,
+        JUBLADB_CLIENT_SECRET: process.env.JUBLADB_CLIENT_SECRET,
+      }),
     },
 
     docker: {
