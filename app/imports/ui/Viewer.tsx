@@ -10,7 +10,12 @@ import {
   View,
 } from "../api/helpers";
 import Sheet from "./Sheet";
-import ChordDiagrams, { useGrips, useShowGrips } from "./ChordDiagrams";
+import {
+  ChordDialog,
+  PinnedChords,
+  useGrips,
+  usePinnedChords,
+} from "./ChordDiagrams";
 import { useSoundInstrument } from "./audio/chordPlayer";
 import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
@@ -153,7 +158,8 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const chords = parseChords(song.getChords());
   const grips = useGrips(song, transposeState.transpose);
   const [instrument, toggleInstrument] = useSoundInstrument();
-  const [showGrips, toggleGrips] = useShowGrips();
+  const pins = usePinnedChords(song, transposeState.transpose);
+  const [showChordDialog, setShowChordDialog] = useState(false);
   return (
     <VideoContext.Provider
       value={{
@@ -169,7 +175,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
         style={{ fontSize: textZoom + "em" }}
         onContextMenu={handleContextMenu}
       >
-        {showGrips && <ChordDiagrams grips={grips} />}
         <Sheet
           song={song}
           transpose={transposeState.transpose}
@@ -198,6 +203,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
             <MdPictureAsPdf />
           </Button>
         </div>
+        <PinnedChords grips={grips} isPinned={pins.isPinned} />
         <div className="actions-do">
           {!song.has_video ? null : isVideoActive ? (
             <Button onClick={() => setIsVideoActive(false)}>
@@ -217,6 +223,12 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
               chords={chords}
             />
           )}
+          <Button onClick={() => setShowChordDialog(true)}>
+            <MdSupport
+              data-tooltip-content="Alle Akkorde"
+              data-tooltip-id="tt"
+            />
+          </Button>
           <Button onClick={() => transposeState.setShowTransposer(true)}>
             <ReactSVG src="/svg/transposer.svg" />
           </Button>
@@ -234,14 +246,6 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
               />
             )}
           </Button>
-          <Button onClick={toggleGrips} active={showGrips}>
-            <MdSupport
-              data-tooltip-content={
-                showGrips ? "Griffbilder ausblenden" : "Griffbilder einblenden"
-              }
-              data-tooltip-id="tt"
-            />
-          </Button>
           <Button onClick={toggleAutoScroll} active={isAutoScrolling}>
             <ReactSVG
               src="/svg/conveyor.svg"
@@ -251,6 +255,12 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
           </Button>
         </div>
       </aside>
+      <ChordDialog
+        grips={grips}
+        open={showChordDialog}
+        onClose={() => setShowChordDialog(false)}
+        {...pins}
+      />
     </VideoContext.Provider>
   );
 };
