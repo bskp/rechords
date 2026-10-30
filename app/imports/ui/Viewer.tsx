@@ -10,11 +10,25 @@ import {
   View,
 } from "../api/helpers";
 import Sheet from "./Sheet";
+import {
+  ChordDialog,
+  PinnedChords,
+  useGrips,
+  usePinnedChords,
+} from "./ChordDiagrams";
+import { useSoundInstrument } from "./audio/chordPlayer";
 import { Button } from "./Button";
 import { ReactSVG } from "react-svg";
 import { Meteor } from "meteor/meteor";
 import { MenuContext, VideoContext } from "/imports/ui/App";
-import { MdEdit, MdPictureAsPdf, MdPrint } from "react-icons/md";
+import {
+  MdEdit,
+  MdPiano,
+  MdPictureAsPdf,
+  MdPrint,
+  MdSupport,
+} from "react-icons/md";
+import { FaGuitar } from "react-icons/fa";
 import { usePinch } from "@use-gesture/react";
 
 export interface ViewerProps {
@@ -142,6 +156,10 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
   const { setShowMenu } = useContext(MenuContext);
 
   const chords = parseChords(song.getChords());
+  const grips = useGrips(song, transposeState.transpose);
+  const [instrument, toggleInstrument] = useSoundInstrument();
+  const pins = usePinnedChords(song, transposeState.transpose);
+  const [showChordDialog, setShowChordDialog] = useState(false);
   return (
     <VideoContext.Provider
       value={{
@@ -161,6 +179,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
           song={song}
           transpose={transposeState.transpose}
           hideChords={!showChords}
+          grips={grips}
         />
         <h1 id="howToPrint">
           Bitte schliess das Druckfenster prüfe deine Druckeinstellungen. Dann
@@ -184,6 +203,7 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
             <MdPictureAsPdf />
           </Button>
         </div>
+        <PinnedChords grips={grips} isPinned={pins.isPinned} />
         <div className="actions-do">
           {!song.has_video ? null : isVideoActive ? (
             <Button onClick={() => setIsVideoActive(false)}>
@@ -203,22 +223,44 @@ const Viewer: React.FC<ViewerProps> = ({ song }) => {
               chords={chords}
             />
           )}
+          <Button onClick={() => setShowChordDialog(true)}>
+            <MdSupport
+              data-tooltip-content="Alle Akkorde"
+              data-tooltip-id="tt"
+            />
+          </Button>
           <Button onClick={() => transposeState.setShowTransposer(true)}>
             <ReactSVG src="/svg/transposer.svg" />
           </Button>
-          <Button onClick={toggleAutoScroll}>
-            {isAutoScrolling ? (
-              <ReactSVG src="/svg/conveyor_active.svg" />
+          <Button onClick={toggleInstrument}>
+            {/* The tooltip sits on the icon: Button passes nothing else on. */}
+            {instrument === "guitar" ? (
+              <FaGuitar
+                data-tooltip-content="Akkorde klingen als Gitarre"
+                data-tooltip-id="tt"
+              />
             ) : (
-              <ReactSVG
-                src="/svg/conveyor.svg"
-                data-tooltip-content="Auto-Scroll"
+              <MdPiano
+                data-tooltip-content="Akkorde klingen als Klavier"
                 data-tooltip-id="tt"
               />
             )}
           </Button>
+          <Button onClick={toggleAutoScroll} active={isAutoScrolling}>
+            <ReactSVG
+              src="/svg/conveyor.svg"
+              data-tooltip-content="Auto-Scroll"
+              data-tooltip-id="tt"
+            />
+          </Button>
         </div>
       </aside>
+      <ChordDialog
+        grips={grips}
+        open={showChordDialog}
+        onClose={() => setShowChordDialog(false)}
+        {...pins}
+      />
     </VideoContext.Provider>
   );
 };

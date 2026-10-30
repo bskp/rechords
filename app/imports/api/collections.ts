@@ -12,7 +12,7 @@ function isDefined<T>(a: T | null | undefined): a is T {
   return a !== null && a !== undefined;
 }
 
-export const rmd_version = 11;
+export const rmd_version = 12;
 
 export class Song {
   _id?: string;

@@ -6,6 +6,8 @@ type ButtonProps = {
   children: React.ReactNode;
   phoneOnly?: boolean;
   hideOnPhone?: boolean;
+  /** Draws the icon in the accent colour, for a setting that is switched on. */
+  active?: boolean;
 };
 
 export const Button: React.FunctionComponent<ButtonProps> = (props) => (
@@ -14,6 +16,7 @@ export const Button: React.FunctionComponent<ButtonProps> = (props) => (
     className={classnames("iconbutton", {
       hideUnlessMobile: props.phoneOnly,
       hideOnMobile: props.hideOnPhone,
+      active: props.active,
     })}
   >
     {props.children}

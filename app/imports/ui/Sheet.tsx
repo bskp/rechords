@@ -12,6 +12,8 @@ import classNames from "classnames";
 import { YtInter } from "./YtInter";
 import { VideoContext } from "/imports/ui/App";
 import { Transpose } from "/imports/ui/Transposer";
+import { playableChordProps } from "/imports/ui/audio/chordPlayer";
+import { FretShape } from "/imports/api/fret-shapes";
 
 type DomOut = React.JSX.Element | object | void | undefined | null | false;
 
@@ -23,6 +25,8 @@ type SheetProps = {
   style?: CSSProperties;
   classes?: any;
   inlineRefState?: [boolean, (inlineRef: boolean) => void];
+  /** The grips of this song, so that a chord sounds the way it is fingered. */
+  grips?: Map<string, { shape: FretShape }>;
 };
 const Sheet = ({
   song,
@@ -32,6 +36,7 @@ const Sheet = ({
   style,
   classes = [],
   inlineRefState,
+  grips,
 }: SheetProps) => {
   // Hooks must run unconditionally, so the fallback state is always created —
   // it is simply ignored when the caller controls the state itself.
@@ -84,7 +89,10 @@ const Sheet = ({
           chord_ = <span className="before">{chord}</span>;
         } else {
           chord_ = (
-            <span className={"before " + t.toStringClasses()}>
+            <span
+              className={"before playable " + t.toStringClasses()}
+              {...playableChordProps(t, grips?.get(t.toString())?.shape)}
+            >
               {t.toStringKey()}
               <sup>{t.toStringTensionsAndSlash()}</sup>
             </span>
@@ -147,7 +155,14 @@ const Sheet = ({
       const c = Chord.from(chord);
 
       return (
-        <span className="chord-container">
+        <span
+          className={classNames("chord-container", {
+            playable: c !== undefined,
+          })}
+          {...(c === undefined
+            ? {}
+            : playableChordProps(c, grips?.get(c.toString())?.shape))}
+        >
           <strong>
             {c?.toStringKey()}
             <sup>{c?.toStringTensionsAndSlash()}</sup>

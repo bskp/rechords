@@ -70,6 +70,20 @@ export default class Chord {
     );
   }
 
+  /**
+   * The chord regardless of how it is spelled: C# and Db, or H and B, come out
+   * the same, so that it can be recognised again after a round of transposing.
+   */
+  public identity() {
+    const pitch = (value: number) => ((value % 12) + 12) % 12;
+    return [
+      pitch(this.key.value),
+      this.quality,
+      this.tensions,
+      this.slash === undefined ? "" : pitch(this.slash.value),
+    ].join(":");
+  }
+
   public asCode() {
     // Used to style the circle of fifths
     return (this.quality === "minor" ? "m" : "M") + this.key.value;

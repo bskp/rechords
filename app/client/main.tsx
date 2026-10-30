@@ -1,5 +1,5 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, Root } from "react-dom/client";
 import { Meteor } from "meteor/meteor";
 import App from "/imports/ui/App";
 import { createInstance, MatomoProvider } from "@datapunt/matomo-tracker-react";
@@ -40,7 +40,13 @@ const app = matomoUrlBase ? (
 );
 
 Meteor.startup(() => {
-  const container = document.getElementById("react-target");
-  const root = createRoot(container!);
-  root.render(app);
+  // A hot update re-runs this module. Creating a second root on the same
+  // container would leave two of them fighting over the same DOM nodes, which
+  // surfaces as "the node to be removed is not a child of this node", so the
+  // root is kept on the container and reused.
+  const container = document.getElementById("react-target") as HTMLElement & {
+    reactRoot?: Root;
+  };
+  container.reactRoot ??= createRoot(container);
+  container.reactRoot.render(app);
 });
