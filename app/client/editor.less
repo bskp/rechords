@@ -38,6 +38,15 @@ aside.drawer#revs {
       &.active {
         background-color: white; //fade(@text, 50%);
       }
+
+      // The local, not-yet-submitted draft. Same accent as the #dirty dot.
+      &.draft {
+        font-style: italic;
+
+        &::marker {
+          color: var(--accent);
+        }
+      }
     }
   }
 }

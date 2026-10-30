@@ -1,4 +1,5 @@
 import { Revision, Song } from "../api/collections";
+import { Draft } from "./draftStorage";
 import React, { Component } from "react";
 import Source from "./Source";
 import Drawer from "../ui/Drawer";
@@ -6,13 +7,28 @@ import moment from "moment";
 import "moment/locale/de";
 import { Meteor } from "meteor/meteor";
 
+/** Marks the entry that comes from localStorage rather than from the server. */
+export const DRAFT_ID = "__local_draft__";
+
+/**
+ * The subset of a `Revision` this browser needs. `Revision` satisfies it
+ * structurally, so server revisions and the local draft go into one list.
+ */
+type Entry = {
+  _id: string;
+  text: string;
+  timestamp?: Date;
+  editor?: string;
+};
+
 type RevBrowserProps = {
   song: Song;
+  draft?: Draft;
 };
 
 export default class RevBrowser extends React.Component<
   RevBrowserProps,
-  { revision: Revision | undefined }
+  { revision: Entry | undefined }
 > {
   constructor(props: RevBrowserProps) {
     super(props);
@@ -21,10 +37,23 @@ export default class RevBrowser extends React.Component<
     };
   }
 
-  setRev = (rev: Revision) => {
+  setRev = (rev: Entry) => {
     this.setState({
       revision: rev,
     });
+  };
+
+  /** Newest first, so the unsaved draft leads. */
+  entries = (): Entry[] => {
+    const revs: Revision[] = this.props.song.getRevisions();
+    const draft = this.props.draft;
+
+    if (!draft) return revs;
+
+    return [
+      { _id: DRAFT_ID, text: draft.text, timestamp: draft.savedAt },
+      ...revs,
+    ];
   };
 
   componentDidMount() {
@@ -40,7 +69,7 @@ export default class RevBrowser extends React.Component<
     if (e.target?.tagName == "INPUT") return;
 
     const rev = this.state?.revision;
-    const revs: Revision[] = this.props.song.getRevisions();
+    const revs = this.entries();
 
     const n = revs.length;
 
@@ -74,17 +103,25 @@ export default class RevBrowser extends React.Component<
   };
 
   render() {
-    const revs = this.props.song.getRevisions();
+    const revs = this.entries();
     const n = revs.length;
 
-    const ts = this.state.revision?.timestamp;
-    const label = ts ? (
-      <span className="label">Version vom {moment(ts).format("LLLL")}</span>
-    ) : (
-      <span className="label">
-        Wähle rechts eine Version zum Vergleichen aus!
-      </span>
-    );
+    const selected = this.state.revision;
+    const ts = selected?.timestamp;
+
+    let label = <span className="label">Wähle rechts eine Version aus!</span>;
+    if (selected?._id === DRAFT_ID) {
+      label = (
+        <span className="label">
+          Lokal gesichert{ts ? `, ${moment(ts).format("LLLL")}` : ""} — noch
+          nicht abgeschickt
+        </span>
+      );
+    } else if (ts) {
+      label = (
+        <span className="label">Version vom {moment(ts).format("LLLL")}</span>
+      );
+    }
 
     return (
       <>
@@ -128,10 +165,10 @@ export default class RevBrowser extends React.Component<
 }
 
 type RevLinkProps = {
-  rev: Revision;
+  rev: Entry;
   idx: number;
   key: string;
-  showRevision: (rev: Revision) => void;
+  showRevision: (rev: Entry) => void;
   active: boolean;
 };
 
@@ -142,7 +179,13 @@ class RevLink extends Component<RevLinkProps, never> {
 
   render() {
     const r = this.props.rev;
-    const who = (Meteor.users.findOne(r.editor)?.profile.name || "???") + " ";
+    const isDraft = r._id === DRAFT_ID;
+
+    // Meteor.users.findOne(undefined) would return an arbitrary user, so the
+    // draft — which has no editor — never asks.
+    const who = isDraft
+      ? "lokal "
+      : (Meteor.users.findOne(r.editor)?.profile.name || "???") + " ";
 
     return (
       <li
@@ -150,10 +193,12 @@ class RevLink extends Component<RevLinkProps, never> {
         onClick={() => {
           this.props.showRevision(r);
         }}
-        className={this.props.active ? "active" : undefined}
+        className={[this.props.active ? "active" : "", isDraft ? "draft" : ""]
+          .filter(Boolean)
+          .join(" ")}
       >
         {who}
-        {moment(r.timestamp).fromNow()}
+        {r.timestamp ? moment(r.timestamp).fromNow() : "ungesichert"}
       </li>
     );
   }
