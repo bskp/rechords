@@ -10,6 +10,14 @@
   font-weight: 900;
 }
 
+// Holding on to a chord plays it slowly; on a phone that would otherwise
+// select the text, or pop up the callout for it.
+.holdable() {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 // A grip with its chord written underneath.
 .chord-container {
   display: inline-flex;
@@ -32,6 +40,7 @@
 
   &.playable {
     cursor: pointer;
+    .holdable();
 
     &:active .kord {
       opacity: 0.6;
