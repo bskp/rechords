@@ -2,5 +2,11 @@
   "devDependencies": {
     "dotenv": "^16.4.5",
     "mup": "^1.5.10"
+  },
+  "overrides": {
+    "mup": {
+      "axios": "^0.34.0",
+      "uuid": "^11.1.1"
+    }
   }
 }
