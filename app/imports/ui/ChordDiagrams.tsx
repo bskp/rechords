@@ -28,20 +28,19 @@ export const useGrips = (song: Song, transpose: Transpose) => {
 
 const PINNED = "rechords.pinned";
 
-const readPins = (songId: string): string[] => {
+/** The pins stored for a song, or undefined if it was never pinned. */
+const readPins = (songId: string): string[] | undefined => {
   try {
-    return (
-      JSON.parse(globalThis.localStorage?.getItem(PINNED) ?? "{}")[songId] ?? []
-    );
+    return JSON.parse(globalThis.localStorage?.getItem(PINNED) ?? "{}")[songId];
   } catch {
-    return [];
+    return undefined;
   }
 };
 
-const writePins = (songId: string, pins: string[]) => {
+const writePins = (songId: string, pins: string[] | undefined) => {
   try {
     const all = JSON.parse(globalThis.localStorage?.getItem(PINNED) ?? "{}");
-    if (pins.length === 0) delete all[songId];
+    if (pins === undefined) delete all[songId];
     else all[songId] = pins;
     globalThis.localStorage?.setItem(PINNED, JSON.stringify(all));
   } catch {
@@ -49,15 +48,32 @@ const writePins = (songId: string, pins: string[]) => {
   }
 };
 
+const sameChords = (a: string[], b: string[]) =>
+  a.length === b.length && a.every((chord) => b.includes(chord));
+
 /**
  * The chords pinned in a song. They are kept per song, and as the song writes
  * them rather than as they sound right now — so a pinned C follows along and
  * becomes the D it is transposed to, instead of dropping out.
+ *
+ * A grip the song draws itself is pinned from the start: the author thought it
+ * worth showing. Only pins that differ from that are stored, so a song nobody
+ * has touched picks up the grips its author adds later.
  */
 export function usePinnedChords(song: Song, transpose: Transpose) {
   const songId = song._id ?? "";
-  const [pins, setPins] = useState(() => readPins(songId));
-  useEffect(() => setPins(readPins(songId)), [songId]);
+  const html = song.getHtml();
+  const drawn = useMemo(
+    () =>
+      [...authoredShapes(html).keys()].flatMap(
+        (label) => Chord.from(label)?.identity() ?? [],
+      ),
+    [html],
+  );
+
+  const [stored, setStored] = useState(() => readPins(songId));
+  useEffect(() => setStored(readPins(songId)), [songId]);
+  const pins = stored ?? drawn;
 
   const asWritten = (chord: Chord) =>
     chord.transposed(-(transpose.semitones ?? 0)).identity();
@@ -68,10 +84,12 @@ export function usePinnedChords(song: Song, transpose: Transpose) {
       const id = asWritten(chord);
       // From the current pins, not the ones this render saw: two pins in quick
       // succession would otherwise forget the first.
-      setPins((current) => {
-        const next = current.includes(id)
-          ? current.filter((p) => p !== id)
-          : [...current, id];
+      setStored((current) => {
+        const before = current ?? drawn;
+        const after = before.includes(id)
+          ? before.filter((p) => p !== id)
+          : [...before, id];
+        const next = sameChords(after, drawn) ? undefined : after;
         writePins(songId, next);
         return next;
       });
