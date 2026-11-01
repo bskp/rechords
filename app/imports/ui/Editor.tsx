@@ -3,6 +3,7 @@ import { FC, MouseEventHandler, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 import { UnsavedChangesPrompt } from "./UnsavedChangesPrompt";
+import { clearDraft, readDraft, writeDraft } from "./draftStorage";
 import Source from "./Source";
 import RevBrowser from "./RevBrowser";
 import Preview from "./Preview";
@@ -21,14 +22,36 @@ enum SaveState {
 type EditorProps = { song: Song };
 
 const Editor: FC<EditorProps> = (props: EditorProps) => {
-  const [md, setMd] = useState(props.song.text);
-  const [revisionsTab, setRevisionsTab] = useState(false);
-  const [dirty, setDirty] = useState(false);
-  const [saved, setSaved] = useState(SaveState.UNSAVED);
-
+  const songId = props.song._id;
   const mdServer = props.song.text;
 
+  // Read once per mount: a draft left behind by an earlier editing session.
+  const [restoredDraft] = useState(() => readDraft(songId));
+
+  const [md, setMd] = useState(restoredDraft?.text ?? mdServer);
+  const [revisionsTab, setRevisionsTab] = useState(false);
+  const [dirty, setDirty] = useState(
+    restoredDraft !== undefined && restoredDraft.text !== mdServer,
+  );
+  const [saved, setSaved] = useState(SaveState.UNSAVED);
+  const [draftSavedAt, setDraftSavedAt] = useState(restoredDraft?.savedAt);
+
   const navigate = useNavigate();
+
+  // Mirror the editor content so it outlives the tab. Once the content matches
+  // the server again there is nothing left to recover, so drop the draft.
+  useEffect(() => {
+    if (dirty) {
+      setDraftSavedAt(writeDraft(songId, md));
+    } else {
+      clearDraft(songId);
+      setDraftSavedAt(undefined);
+    }
+  }, [songId, md, dirty]);
+
+  // The draft always mirrors the buffer, so this is what RevBrowser lists
+  // next to the server-side revisions.
+  const draft = dirty ? { text: md, savedAt: draftSavedAt } : undefined;
 
   const handleContextMenu: MouseEventHandler = (event) => {
     if (revisionsTab) {
@@ -42,6 +65,7 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
         console.error(error);
       } else {
         if (isValid) {
+          clearDraft(songId);
           setDirty(false);
           setSaved(SaveState.SUCCESS);
         } else {
@@ -81,12 +105,13 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
 
     if (!revisionsTab) {
       const versions =
-        revs.length > 0 ? (
+        revs.length > 0 || draft ? (
           <Drawer id="revs" className="revision-colors" onClick={toggleRevTab}>
             <h1>Verlauf</h1>
             <p>
-              Es existieren {revs.length} Versionen. Klicke, um diese zu
-              durchstöbern!
+              Es existieren {revs.length} Versionen
+              {draft ? " sowie deine lokal gesicherte Fassung" : ""}. Klicke, um
+              diese zu durchstöbern!
             </p>
           </Drawer>
         ) : undefined;
@@ -132,7 +157,7 @@ const Editor: FC<EditorProps> = (props: EditorProps) => {
           <Source md={md} updateHandler={update} className="source-colors">
             <span className="label">Version in Bearbeitung</span>
           </Source>
-          <RevBrowser song={props.song} />
+          <RevBrowser song={props.song} draft={draft} />
           {prompt}
         </div>
       );

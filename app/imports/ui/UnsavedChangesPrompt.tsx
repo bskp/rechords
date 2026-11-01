@@ -10,7 +10,8 @@ import { useEffect } from "react";
  * In-app navigation is not blocked: react-router's `useBlocker` only works
  * inside a data router (`createBrowserRouter`), while this app renders a plain
  * `<BrowserRouter>`. The editor does not link anywhere itself, so the remaining
- * gap is the browser's back button.
+ * gap is the browser's back button — which is covered by the localStorage
+ * draft in `draftStorage.ts` rather than by another prompt.
  */
 export const UnsavedChangesPrompt = ({ when }: { when: boolean }) => {
   useEffect(() => {
