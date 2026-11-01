@@ -52,6 +52,13 @@ textarea {
 
 // Base Layout
 
+:root {
+  --statusbar: 0px; // height of #statusbar, set on iOS
+  // Whatever sits flush with the top moves down by this much. env() only yields
+  // anything but 0 thanks to viewport-fit=cover (main.html).
+  --top-inset: calc(env(safe-area-inset-top, 0px) + var(--statusbar));
+}
+
 html {
   width: 100%;
   background-color: var(--bg-sheet);
@@ -79,6 +86,33 @@ body {
   });
 }
 
+// iOS 27 draws its own blur beneath the status bar of a PWA, which no CSS turns
+// off. If WebKit finds a fixed element with a background-color at the top edge,
+// though, it paints the status bar opaque in that colour and drops the blur.
+// A real element rather than ::before, as it's unclear whether WebKit considers
+// pseudo-elements here. iOS rather than (display-mode: standalone), because that
+// query did not match in a PWA installed over local http (seen on rezept.ee).
+#statusbar {
+  display: none;
+}
+
+@supports (-webkit-touch-callout: none) {
+  :root {
+    --statusbar: 5px;
+  }
+
+  #statusbar {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--statusbar);
+    background-color: var(--bg-sheet);
+    z-index: 1000; // above everything, the drawers included
+  }
+}
+
 #app {
   display: contents;
 }
@@ -104,6 +138,7 @@ body {
 
   width: 100%;
   padding: 1.5em 2em;
+  padding-top: calc(1.5em + var(--top-inset));
 
   padding-left: 6em;
 
@@ -113,6 +148,7 @@ body {
 
   .phone({
     padding: 2em 1em !important;
+    padding-top: calc(2em + var(--top-inset)) !important;
     height: 100vh;  // prevents scrolling when covered by menu
   });
 

@@ -6,14 +6,18 @@
     />
     <meta name="apple-mobile-web-app-title" content="Hölibu"/>
     <meta name="mobile-web-app-capable" content="yes"/>
+    <!-- Deprecated, and unclear whether iOS 27 still reads it. The opaque status
+         bar (#statusbar in main.less) relies on it though: don't remove untested. -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="apple-touch-icon" href="/icons/logo-256.png"/>
     <link rel="manifest" href="/manifest.webmanifest"/>
 </head>
 
 <body>
+<!-- Opaque status bar for the iOS PWA, see #statusbar in main.less. -->
+<div id="statusbar"></div>
 <div id="react-target">
     <div id="body">
         <aside class="drawer open list-colors"> </aside>
