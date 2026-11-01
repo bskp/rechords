@@ -52,13 +52,6 @@ textarea {
 
 // Base Layout
 
-:root {
-  --statusbar: 0px; // height of #statusbar, set on iOS
-  // Whatever sits flush with the top moves down by this much. env() only yields
-  // anything but 0 thanks to viewport-fit=cover (main.html).
-  --top-inset: calc(env(safe-area-inset-top, 0px) + var(--statusbar));
-}
-
 html {
   width: 100%;
   background-color: var(--bg-sheet);
@@ -88,28 +81,34 @@ body {
 
 // iOS 27 draws its own blur beneath the status bar of a PWA, which no CSS turns
 // off. If WebKit finds a fixed element with a background-color at the top edge,
-// though, it paints the status bar opaque in that colour and drops the blur.
+// though, it paints the status bar opaque in that colour and drops the blur. This
+// only works with apple-mobile-web-app-status-bar-style: default (see main.html).
 // A real element rather than ::before, as it's unclear whether WebKit considers
-// pseudo-elements here. iOS rather than (display-mode: standalone), because that
-// query did not match in a PWA installed over local http (seen on rezept.ee).
+// pseudo-elements here.
+// 11px, as WebKit reportedly reads the colour from the style only above 10px.
+// background-clip keeps the element itself from painting, so it adds no band
+// below the status bar and needs no room in the layout.
+// fullscreen as well, because that's what our manifest asks for.
+// Only test this with a PWA installed from Safari: home-screen bookmarks from
+// Firefox behave differently (no blur, no icon).
 #statusbar {
   display: none;
 }
 
 @supports (-webkit-touch-callout: none) {
-  :root {
-    --statusbar: 5px;
-  }
-
-  #statusbar {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: var(--statusbar);
-    background-color: var(--bg-sheet);
-    z-index: 1000; // above everything, the drawers included
+  @media (display-mode: standalone), (display-mode: fullscreen) {
+    #statusbar {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 11px;
+      background-color: var(--bg-sheet);
+      -webkit-background-clip: text;
+      background-clip: text;
+      z-index: 1000; // above everything, the drawers included
+    }
   }
 }
 
@@ -138,7 +137,6 @@ body {
 
   width: 100%;
   padding: 1.5em 2em;
-  padding-top: calc(1.5em + var(--top-inset));
 
   padding-left: 6em;
 
@@ -148,7 +146,6 @@ body {
 
   .phone({
     padding: 2em 1em !important;
-    padding-top: calc(2em + var(--top-inset)) !important;
     height: 100vh;  // prevents scrolling when covered by menu
   });
 

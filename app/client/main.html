@@ -6,9 +6,10 @@
     />
     <meta name="apple-mobile-web-app-title" content="Hölibu"/>
     <meta name="mobile-web-app-capable" content="yes"/>
-    <!-- Deprecated, and unclear whether iOS 27 still reads it. The opaque status
-         bar (#statusbar in main.less) relies on it though: don't remove untested. -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <!-- Not black-translucent: with it, WebKit keeps the iOS 27 blur despite
+         #statusbar (main.less). iOS probably reads this tag only when adding to
+         the home screen, so test with a newly installed PWA. -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="apple-touch-icon" href="/icons/logo-256.png"/>

@@ -13,7 +13,6 @@ aside.drawer#list {
   display: flex;
   flex-direction: column;
   padding: 0;
-  padding-top: var(--top-inset);
 
   overflow-y: hidden;
   .list-colors;
@@ -52,7 +51,6 @@ aside.drawer#list {
     overflow: hidden;
 
     padding: 0.5em @drawer-closed 1.5em 1em;
-    padding-top: calc(0.5em + var(--top-inset));
 
     display: flex;
     flex-direction: row;
@@ -113,9 +111,9 @@ aside.drawer#list {
     }
 
     .phone({
-      top: calc(3rem + var(--top-inset));
+      top: 3rem;
       left:0;
-      height: calc(~"100vh - 3rem - var(--top-inset)"); // -menuheight - padding
+      height: calc(~"100vh - 3rem"); // -menuheight - padding
       padding-left: 0.5em;
       overflow-y: scroll;
       visibility: visible;
